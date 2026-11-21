@@ -602,8 +602,8 @@ is not evil. They are grieving, and the deal is real.
 - home province erased right now: large plus (smaller if it fell once and was reclaimed);
 - personal mission not done, or locked because the home is gone: plus;
 - low bond rank, or an unresolved rivalry (no truce): plus;
-- bond rank 5 or a current romance: large minus (open question: can a romance partner ever betray, e.g. only if
-  their home has fallen).
+- bond rank 5 or a current romance: large minus. A romance partner can still betray Ash, but only if their home
+  is erased (Ojon, 2026-11-21): rare, and meant to hurt.
 
 The top scorer betrays Ash if they clear a threshold. Candidates must be recruited and not lost in the white.
 Neglect is punished, not affection: the player can see it coming and change it by reclaiming homes, finishing
