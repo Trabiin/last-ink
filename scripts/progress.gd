@@ -146,6 +146,14 @@ static func xp_to_next(lvl: int) -> int:
 	return int(round(float(lv.get("xp_base", 20)) * pow(float(lv.get("xp_growth", 1.3)), lvl - 1)))
 
 
+## Total XP from level 1 to this level (the boss test and tests use it to set a party's level).
+static func xp_to_reach(lvl: int) -> int:
+	var total := 0
+	for l in range(1, mini(lvl, max_level())):
+		total += xp_to_next(l)
+	return total
+
+
 static func xp_fraction(id: String) -> float:
 	var need := xp_to_next(level(id))
 	return 1.0 if need <= 0 else clampf(float(hero(id)["xp"]) / need, 0.0, 1.0)

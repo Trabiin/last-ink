@@ -75,6 +75,7 @@ func _ready() -> void:
 		dir = "user://test_logs/"
 	started = Time.get_unix_time_from_system()
 	_add_screenshot_action()
+	add_child(preload("res://scripts/perf_overlay.gd").new())  # F3: fps and memory on real hardware (issue #35)
 	start_session()
 	if OS.has_feature("web"):
 		JavaScriptBridge.eval(WEB_HOOK, true)
