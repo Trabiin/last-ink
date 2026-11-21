@@ -609,7 +609,7 @@ The top scorer betrays Ash if they clear a threshold. Candidates must be recruit
 Neglect is punished, not affection: the player can see it coming and change it by reclaiming homes, finishing
 personal missions and building bonds.
 
-**Candidates (one per Marches home; first build may ship three plus Bran):**
+**Candidates (one per Marches home). First build ships Ottoline, Daro and Odile plus Bran (Ojon, 2026-11-21); Fauvette and Gristle follow:**
 
 | Candidate | Home | The offer |
 |---|---|---|
