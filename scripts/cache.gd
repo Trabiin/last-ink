@@ -96,6 +96,6 @@ func _draw() -> void:
 		draw_arc(Vector2(0, -26), 6.0, 0, TAU, 24, Color(0, 0, 0, 0.35), 1.0)
 	if style == "work" and label != "" and not done:
 		var f := ThemeDB.fallback_font
-		var w := f.get_string_size(label, HORIZONTAL_ALIGNMENT_LEFT, -1, 7).x
-		draw_string_outline(f, Vector2(-w / 2.0, -36), label, HORIZONTAL_ALIGNMENT_LEFT, -1, 7, 3, Color(0, 0, 0, 0.8))
-		draw_string(f, Vector2(-w / 2.0, -36), label, HORIZONTAL_ALIGNMENT_LEFT, -1, 7, Color("ffe7a3"))
+		var w := f.get_string_size(label, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(7)).x
+		draw_string_outline(f, Vector2(-w / 2.0, -36), label, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(7), 3, Color(0, 0, 0, 0.8))
+		draw_string(f, Vector2(-w / 2.0, -36), label, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(7), Color("ffe7a3"))

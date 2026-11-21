@@ -157,9 +157,15 @@ static func fill(h: Hero) -> float:
 
 ## Called every frame for the controlled hero while it can fight (not in town, quick menu closed).
 ## Replaces the old "attack pressed -> swing" so a full gauge waits for the release.
+## Accessibility (issue #34): in Toggle mode the press that starts a charge latches it and the next press
+## fires (or swings, if no tech was reached yet); with Hold to attack on, keeping Attack held swings again
+## each time the gauge fills.
 static func control(h: Hero, delta: float) -> void:
 	if h.charging:
-		if Input.is_action_pressed("attack"):
+		var held := Input.is_action_pressed("attack")
+		if Access.toggle_techs():
+			held = not Input.is_action_just_pressed("attack")
+		if held:
 			h.charge_t += delta / float(Armory.perk(h.hero_id, "tech_charge", 1.0))  # Clockwork Heart (issue #112)
 			_advance(h)
 			return
@@ -180,6 +186,15 @@ static func control(h: Hero, delta: float) -> void:
 			h.charge_ready = false
 		else:
 			h.try_attack()
+	elif Access.hold_attack and Input.is_action_pressed("attack") and h.power >= 1.0 and h.swing_t <= 0.0:
+		h.try_attack()
+
+
+## The HUD's one-line reminder of how techs are charged with the current option.
+static func how_to() -> String:
+	if Access.toggle_techs():
+		return Loc.t("Attack: %s, press when full: tech, press again: fire") % Prompts.key("attack")
+	return Loc.t("Attack: %s, hold when full: tech") % Prompts.key("attack")
 
 
 ## Moves a player's charge on to every tech its hold time has reached.
@@ -198,7 +213,7 @@ static func _advance(h: Hero) -> void:
 ## The flash and chime when a charge reaches a tech (stage 1, 2, ...: each one brighter and higher).
 static func reached(h: Hero, stage: int) -> void:
 	var col := color_of(h)
-	Fx.burst(h.get_parent(), h.global_position + Vector2(0, -10), [col, col.lightened(0.4), Color.WHITE], 14 + 4 * stage, 50.0 + 10.0 * stage)
+	Fx.burst(h.get_parent(), h.global_position + Vector2(0, -10), [col, col.lightened(0.4), Color.WHITE], (14 + 4 * stage) if not Access.reduce_flashing else 8, 50.0 + 10.0 * stage)
 	if stage > 1:
 		Fx.damage_number(h.get_parent(), h.global_position + Vector2(0, -30), str(current(h).get("name", "")), col.lightened(0.3))
 	play(h, "ready_%d" % clampi(stage, 1, 5))
@@ -498,14 +513,14 @@ static func draw_blast(c: CanvasItem, b: Dictionary, col: Color, a_line: float, 
 static func draw(h: Hero, o: Node2D) -> void:
 	if h.tech_flash_t > 0.0:
 		var f := h.tech_flash_t / 0.35
-		o.draw_circle(Vector2(0, -7), 14.0 * (1.2 - f * 0.4), Color(h.tech_flash_color, 0.35 * f))
+		o.draw_circle(Vector2(0, -7), 14.0 * (1.2 - f * 0.4), Color(h.tech_flash_color, Access.calm(0.35 * f)))
 	if not h.charging or h.charge_t < TAP:
 		return
 	var col := color_of(h)
 	var r := charge_ratio(h)
 	var stage := maxi(h.charge_stage, 1) if not h.ai_charging else 1
 	if h.charge_ready:
-		var pulse_a := 0.5 + 0.5 * sin(h.anim_t * 18.0)
+		var pulse_a := Access.pulse(h.anim_t, 18.0)
 		o.draw_circle(Vector2(0, -7), 11.0 + pulse_a * 2.0, Color(col, 0.22 + 0.12 * pulse_a))
 		for s in stage:  # one ring per tech reached
 			o.draw_arc(Vector2(0, -7), 13.0 + pulse_a * 1.5 + s * 2.5, 0, TAU, 28, Color(col.lightened(0.4), 0.95 - s * 0.12), 1.0 if s > 0 else 1.5)

@@ -309,12 +309,12 @@ func _close_rect() -> Rect2:
 # ---------------------------------------------------------------- drawing
 
 func _text(pos: Vector2, s: String, fsize: int, col: Color) -> void:
-	draw_string(font, pos, s, HORIZONTAL_ALIGNMENT_LEFT, -1, fsize, col)
+	draw_string(font, pos, s, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(fsize), col)
 
 
 func _wrap(pos: Vector2, s: String, width: float, fsize: int, col: Color) -> float:
-	draw_multiline_string(font, pos, s, HORIZONTAL_ALIGNMENT_LEFT, width, fsize, -1, col)
-	return font.get_multiline_string_size(s, HORIZONTAL_ALIGNMENT_LEFT, width, fsize).y
+	draw_multiline_string(font, pos, s, HORIZONTAL_ALIGNMENT_LEFT, width, Access.fs(fsize), -1, col)
+	return font.get_multiline_string_size(s, HORIZONTAL_ALIGNMENT_LEFT, width, Access.fs(fsize)).y + (Access.fs(fsize) - fsize)  # bigger text (issue #34) also sits lower on its baseline
 
 
 func _row_status(row: Dictionary) -> Array:
@@ -342,7 +342,7 @@ func _draw() -> void:
 	for k in ["gilt", "supplies", "ink", "insight"]:
 		var s := "%s %d" % [Loc.t(Empire.RES_NAMES[k]), int(Empire.res.get(k, 0))]
 		_text(Vector2(x, 19), s, 9, RES_COLORS[k])
-		x += font.get_string_size(s, HORIZONTAL_ALIGNMENT_LEFT, -1, 9).x + 12
+		x += font.get_string_size(s, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(9)).x + 12
 	var crew := tr("Builders: idle")
 	if not Empire.construction.is_empty():
 		crew = tr("Builders: %s, %s left") % [Empire.building(Empire.construction["id"])["name"], Empire.job_left_text(Empire.construction)]
@@ -404,7 +404,7 @@ func _draw() -> void:
 		UiSkin.draw_icon(self, id, Rect2(DETAIL_X + w - 34, dy - 14, 32, 32))
 		_text(Vector2(DETAIL_X, dy), b["name"], 15, Color("f3efe4"))
 		var lvl_s := tr("Not built") if lv == 0 else tr("Level %d of %d") % [lv, Empire.max_level(id)]
-		_text(Vector2(DETAIL_X + font.get_string_size(b["name"], HORIZONTAL_ALIGNMENT_LEFT, -1, 15).x + 10, dy), lvl_s, 9, Color(0.75, 0.72, 0.7))
+		_text(Vector2(DETAIL_X + font.get_string_size(b["name"], HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(15)).x + 10, dy), lvl_s, 9, Color(0.75, 0.72, 0.7))
 		dy += 8
 		dy += _wrap(Vector2(DETAIL_X, dy + 9), Prompts.fill(str(b["blurb"])), w, 8, Color(0.62, 0.6, 0.62)) + 6
 		if lv > 0:
@@ -428,7 +428,7 @@ func _draw() -> void:
 		var col := Color("ece6da") if a["enabled"] else Color(0.42, 0.41, 0.44)
 		_text(r.position + Vector2(8, 12), a["label"], 9, GOLD if hl and a["enabled"] and focus == 1 else col)
 		if not a["enabled"] and a["note"] != "":
-			var lw := font.get_string_size(a["label"], HORIZONTAL_ALIGNMENT_LEFT, -1, 9).x
+			var lw := font.get_string_size(a["label"], HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(9)).x
 			_text(r.position + Vector2(14 + lw, 12), "(" + a["note"] + ")", 7, Color(0.6, 0.45, 0.42))
 		ay += 19
 	if acts.is_empty():

@@ -68,7 +68,7 @@ func _draw_overlay() -> void:
 	if dying_t >= 0.0:
 		return
 	var rng := RandomNumberGenerator.new()
-	rng.seed = static_seed + int(anim_t * 10.0)
+	rng.seed = static_seed + int(anim_t * (2.0 if Access.reduce_flashing else 10.0))  # reduced flashing: slow drift
 	for i in 10:
 		var p := Vector2(rng.randf_range(-22, 22), rng.randf_range(-40, 2))
 		overlay.draw_rect(Rect2(p, Vector2(1, 1)), Color(1, 1, 1, 0.9) if i % 2 else Color(0, 0, 0, 0.8))

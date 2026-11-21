@@ -6,6 +6,8 @@ extends Control
 ## Enter / J / click / tap: next line (finishes the current line first if it is still typing).
 ## Tab / Q / gamepad Y: text speed (Slow, Normal, Fast, Instant; remembered on this device).
 ## Esc: skip the rest of the conversation.
+## Backspace / gamepad Back / mouse wheel up: the dialogue log (issue #34). Auto-advance is an
+## accessibility option (Access.auto_advance).
 ##
 ## play("talk_id") plays a conversation from data/dialogue.json; play_lines([...]) plays any lines.
 ## Portraits come from Dialogue.portrait (assets/portraits/); a letter read aloud stands as a sheet of paper.
@@ -29,6 +31,8 @@ var _slots := ["", ""]  # who stands on the left and on the right
 var _exprs := ["", ""]
 var _speed_rect := Rect2()
 var _skip_rect := Rect2()
+var _log_rect := Rect2()
+var _auto_t := 0.0  # seconds the finished line has waited (auto-advance)
 var font: Font
 
 
@@ -99,6 +103,7 @@ func _advance() -> void:
 		return
 	_at += 1
 	_shown = 0.0
+	_auto_t = 0.0
 	if _at >= _lines.size():
 		_close()
 	else:
@@ -115,12 +120,22 @@ func _process(delta: float) -> void:
 	if not visible:
 		return
 	size = get_viewport_rect().size
+	DialogueLog.track(self, _current(), "talk")
+	queue_redraw()
+	if DialogueLog.is_open():
+		return  # the log is up over us: wait, don't type on
 	var cps := Dialogue.chars_per_sec()
 	_shown = 99999.0 if cps <= 0.0 else _shown + delta * cps
-	queue_redraw()
 	if Engine.get_process_frames() == opened_frame:
 		return
-	if Input.is_action_just_pressed("ui_accept") or Input.is_action_just_pressed("attack"):
+	if not _typing() and Access.auto_delay(_current()[1]) > 0.0:
+		_auto_t += delta
+		if _auto_t >= Access.auto_delay(_current()[1]):
+			_advance()
+			return
+	if DialogueLog.asked():
+		DialogueLog.popup(get_parent())
+	elif Input.is_action_just_pressed("ui_accept") or Input.is_action_just_pressed("attack"):
 		_advance()
 	elif Input.is_action_just_pressed("swap"):
 		Dialogue.cycle_speed()
@@ -129,6 +144,12 @@ func _process(delta: float) -> void:
 
 
 func _gui_input(event: InputEvent) -> void:
+	if DialogueLog.is_open():
+		return
+	if DialogueLog.asked(event) and event is InputEventMouseButton:  # wheel up
+		accept_event()
+		DialogueLog.popup(get_parent())
+		return
 	var pos := Vector2.INF
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 		pos = event.position
@@ -141,6 +162,8 @@ func _gui_input(event: InputEvent) -> void:
 		Dialogue.cycle_speed()
 	elif _skip_rect.has_point(pos):
 		_close()
+	elif _log_rect.has_point(pos):
+		DialogueLog.popup(get_parent())
 	else:
 		_advance()
 
@@ -152,7 +175,8 @@ func _draw() -> void:
 	draw_rect(Rect2(Vector2.ZERO, vs), Color(0.03, 0.025, 0.05, 0.6))
 	var cur := _current()
 	var speaker: String = cur[0]
-	var box := Rect2(12, vs.y - 92, vs.x - 24, 82)
+	var box_h := Access.px(82.0)
+	var box := Rect2(12, vs.y - box_h - Access.px(9.0) - 3.0, vs.x - 24, box_h)  # room for the tags underneath
 	# The cast, standing behind the text box.
 	var ph := vs.y - 24.0
 	var pw := ph * 2.0 / 3.0
@@ -171,38 +195,49 @@ func _draw() -> void:
 		Dialogue.draw_portrait(self, r, who, _exprs[side], 0.0 if talking else 0.55, side == 0)
 
 	if title != "":
-		draw_string(UiSkin.TITLE_FONT, Vector2(14, 20), title, HORIZONTAL_ALIGNMENT_LEFT, -1, 16, SOFT)
+		draw_string(UiSkin.TITLE_FONT, Vector2(14, 20), title, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(16), SOFT)
 	UiSkin.page(self, box)
 	var text: String = cur[1]
 	var shown := text.substr(0, int(_shown))
-	var ty := box.position.y + 22
+	var ty := box.position.y + Access.px(22.0)
 	var tx := box.position.x + 30  # right of the ledger's red margin line
 	if speaker != "":
 		# The speaker's name, written in the heading face with a brushed underline in their colour.
 		var nm := Dialogue.display_name(speaker)
 		var acc := Dialogue.accent(speaker)
-		var nw := UiSkin.TITLE_FONT.get_string_size(nm, HORIZONTAL_ALIGNMENT_LEFT, -1, 14).x
-		var np := Vector2(tx, box.position.y + 18)
+		var nw := UiSkin.TITLE_FONT.get_string_size(nm, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(14)).x
+		var np := Vector2(tx, box.position.y + Access.px(18.0))
 		if _slots[1] == speaker and _slots[0] != speaker:  # name on the speaker's side
 			np.x = box.end.x - 20 - nw
 		UiSkin.brush(self, np + Vector2(-3, 3), nw + 8, acc.darkened(0.15))
-		draw_string(UiSkin.TITLE_FONT, np, nm, HORIZONTAL_ALIGNMENT_LEFT, -1, 14, INK)
-		ty += 12
-	draw_multiline_string(font, Vector2(tx, ty), shown, HORIZONTAL_ALIGNMENT_LEFT, box.size.x - 52, 11, -1,
+		draw_string(UiSkin.TITLE_FONT, np, nm, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(14), INK)
+		ty += Access.px(12.0)
+	draw_multiline_string(font, Vector2(tx, ty), shown, HORIZONTAL_ALIGNMENT_LEFT, box.size.x - 52, Access.fs(11), -1,
 		INK if speaker != "" else INK_SOFT)
 	if not _typing():
 		# A quill nib bobbing in the corner: there's more.
 		var tip := box.end - Vector2(22, 14 - sin(Time.get_ticks_msec() / 220.0) * 1.5)
 		draw_colored_polygon(PackedVector2Array([tip, tip + Vector2(-3, -7), tip + Vector2(0, -10), tip + Vector2(3, -7)]), INK)
 		draw_line(tip + Vector2(0, -2), tip + Vector2(0, -6), Color("d6cdba"), 1.0)
-	# Speed and skip, small, under the box (they are also on Tab and Esc).
+	# Speed, skip and the log, small, under the box (they are also on Tab, Esc and Backspace).
+	var tag_h := Access.px(9.0)
+	var tag_y := box.end.y + 1
+	var tag_col := Color(0.62, 0.6, 0.64)
 	var sp := tr("Text: %s") % Dialogue.speed_name()
-	var sw := font.get_string_size(sp, HORIZONTAL_ALIGNMENT_LEFT, -1, 7).x
-	_speed_rect = Rect2(box.position.x, box.end.y + 1, sw + 10, 9)
-	draw_string(font, _speed_rect.position + Vector2(4, 7), sp, HORIZONTAL_ALIGNMENT_LEFT, -1, 7, Color(0.62, 0.6, 0.64))
-	_skip_rect = Rect2(_speed_rect.end.x + 4, box.end.y + 1, 30, 9)
-	draw_string(font, _skip_rect.position + Vector2(4, 7), tr("Skip"), HORIZONTAL_ALIGNMENT_LEFT, -1, 7, Color(0.62, 0.6, 0.64))
-	var hint := Prompts.help([["ui_accept", "next"], ["swap", tr("text speed")], ["ui_cancel", "skip"]], tr("Tap: next"))
-	draw_string(font, Vector2(vs.x - font.get_string_size(hint, HORIZONTAL_ALIGNMENT_LEFT, -1, 7).x - 14, vs.y - 2), hint,
-		HORIZONTAL_ALIGNMENT_LEFT, -1, 7, Color(0.5, 0.48, 0.52))
+	_speed_rect = _tag(Vector2(box.position.x, tag_y), sp, tag_h, tag_col)
+	_skip_rect = _tag(Vector2(_speed_rect.end.x + 4, tag_y), tr("Skip"), tag_h, tag_col)
+	_log_rect = _tag(Vector2(_skip_rect.end.x + 4, tag_y), tr("Log"), tag_h, tag_col)
+	if Access.auto_advance > 0:
+		_tag(Vector2(_log_rect.end.x + 4, tag_y), tr("Auto"), tag_h, GOLD.darkened(0.2))
+	var hint := Prompts.help([["ui_accept", "next"], ["swap", tr("text speed")], ["ui_cancel", "skip"], [DialogueLog.ACTION, tr("log")]], tr("Tap: next"))
+	draw_string(font, Vector2(vs.x - font.get_string_size(hint, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(7)).x - 14, vs.y - 2), hint,
+		HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(7), Color(0.5, 0.48, 0.52))
 
+
+
+## A small tag under the box (Text speed, Skip, Log). Returns its tap rect.
+func _tag(at: Vector2, s: String, h: float, col: Color) -> Rect2:
+	var w := font.get_string_size(s, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(7)).x + 10.0
+	var r := Rect2(at, Vector2(w, h))
+	draw_string(font, at + Vector2(4, h - 2.0), s, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(7), col)
+	return r

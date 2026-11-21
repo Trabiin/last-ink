@@ -558,12 +558,12 @@ func _process(delta: float) -> void:
 
 
 func _str(font: Font, pos: Vector2, s: String, size: int, col: Color) -> void:
-	draw_string(font, pos, s, HORIZONTAL_ALIGNMENT_LEFT, -1, size, col)
+	draw_string(font, pos, s, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(size), col)
 
 
 func _str_right(font: Font, right_x: float, y: float, s: String, size: int, col: Color) -> void:
-	var w := font.get_string_size(s, HORIZONTAL_ALIGNMENT_LEFT, -1, size).x
-	draw_string(font, Vector2(right_x - w, y), s, HORIZONTAL_ALIGNMENT_LEFT, -1, size, col)
+	var w := font.get_string_size(s, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(size)).x
+	draw_string(font, Vector2(right_x - w, y), s, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(size), col)
 
 
 func _marker(x: float, y: float) -> void:
@@ -591,7 +591,7 @@ func _draw() -> void:
 			draw_rect(r, Color(1, 0.82, 0.4, 0.14))
 			draw_rect(Rect2(r.position.x + 6, r.end.y - 2, r.size.x - 12, 2), GOLD)
 		var label: String = Loc.t(TABS[i])
-		var lw := font.get_string_size(label, HORIZONTAL_ALIGNMENT_LEFT, -1, 11).x
+		var lw := font.get_string_size(label, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(11)).x
 		_str(font, Vector2(r.position.x + (tw - lw) / 2.0, r.position.y + 16), label, 11, GOLD if i == tab else TEXT)
 	draw_line(Vector2(_panel.position.x, _panel.position.y + 24), Vector2(_panel.end.x, _panel.position.y + 24), Color(1, 1, 1, 0.12))
 
@@ -644,7 +644,7 @@ func _draw() -> void:
 		var sw := 170.0
 		# A tech's description sits under the list while it is highlighted (Techs tab).
 		var desc := str(sub[sub_sel].get("desc", "")) if sub_sel >= 0 and sub_sel < sub.size() else ""
-		var desc_h := font.get_multiline_string_size(desc, HORIZONTAL_ALIGNMENT_LEFT, sw - 20.0, 8).y + 8.0 if desc != "" else 0.0
+		var desc_h := font.get_multiline_string_size(desc, HORIZONTAL_ALIGNMENT_LEFT, sw - 20.0, Access.fs(8)).y + 8.0 if desc != "" else 0.0
 		var sh := 26.0 + sub.size() * 18.0 + desc_h
 		var anchor: Rect2 = _row_rects[sel] if sel < _row_rects.size() else _panel
 		var sx := minf(_panel.end.x - sw - 8.0, vs.x - sw - 6.0)
@@ -667,4 +667,4 @@ func _draw() -> void:
 				_marker(sx + 10, yy)
 			yy += 18.0
 		if desc != "":
-			draw_multiline_string(font, Vector2(sx + 10, yy - 4), desc, HORIZONTAL_ALIGNMENT_LEFT, sw - 20.0, 8, -1, Color(0.78, 0.76, 0.72))
+			draw_multiline_string(font, Vector2(sx + 10, yy - 4), desc, HORIZONTAL_ALIGNMENT_LEFT, sw - 20.0, Access.fs(8), -1, Color(0.78, 0.76, 0.72))

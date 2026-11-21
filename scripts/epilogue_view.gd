@@ -112,15 +112,15 @@ func _draw() -> void:
 	var ink := UiSkin.PAGE_INK
 	var nm := str(c["name"])
 	var np := box.position + Vector2(26, 34)
-	var nw := UiSkin.TITLE_FONT.get_string_size(nm, HORIZONTAL_ALIGNMENT_LEFT, -1, 18).x
+	var nw := UiSkin.TITLE_FONT.get_string_size(nm, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(18)).x
 	UiSkin.brush(self, np + Vector2(-4, 4), nw + 10, accent.darkened(0.1))
-	draw_string(UiSkin.TITLE_FONT, np, nm, HORIZONTAL_ALIGNMENT_LEFT, -1, 18, ink)
+	draw_string(UiSkin.TITLE_FONT, np, nm, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(18), ink)
 	var text := str(c["text"]).substr(0, int(_shown))
-	draw_multiline_string(font, box.position + Vector2(26, 58), text, HORIZONTAL_ALIGNMENT_LEFT, box.size.x - 52, 10, -1, ink)
+	draw_multiline_string(font, box.position + Vector2(26, 58), text, HORIZONTAL_ALIGNMENT_LEFT, box.size.x - 52, Access.fs(10), -1, ink)
 	# Header and footer
 	var head := tr("Afterwards")
-	draw_string(UiSkin.TITLE_FONT, Vector2(vs.x * 0.44, 30), head, HORIZONTAL_ALIGNMENT_LEFT, -1, 16, Color("e8d9a8"))
+	draw_string(UiSkin.TITLE_FONT, Vector2(vs.x * 0.44, 30), head, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(16), Color("e8d9a8"))
 	var count := "%d / %d" % [at + 1, cards.size()]
-	draw_string(font, Vector2(vs.x - font.get_string_size(count, HORIZONTAL_ALIGNMENT_LEFT, -1, 9).x - 16, 30), count, HORIZONTAL_ALIGNMENT_LEFT, -1, 9, Color(0.6, 0.58, 0.6))
+	draw_string(font, Vector2(vs.x - font.get_string_size(count, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(9)).x - 16, 30), count, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(9), Color(0.6, 0.58, 0.6))
 	var hint := Prompts.help([["ui_accept", "next"], ["ui_cancel", tr("last card")]], tr("Tap: next"))
-	draw_string(font, Vector2(vs.x - font.get_string_size(hint, HORIZONTAL_ALIGNMENT_LEFT, -1, 7).x - 14, vs.y - 6), hint, HORIZONTAL_ALIGNMENT_LEFT, -1, 7, Color(0.5, 0.48, 0.52))
+	draw_string(font, Vector2(vs.x - font.get_string_size(hint, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(7)).x - 14, vs.y - 6), hint, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(7), Color(0.5, 0.48, 0.52))

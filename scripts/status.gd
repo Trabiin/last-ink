@@ -465,7 +465,7 @@ static func draw_marks(ci: CanvasItem, t: Node, top: float) -> void:
 		var id: String = a[0]
 		var c := Vector2(x, top)
 		var col := color_of(id)
-		var blink := float(a[1]) < 1.5 and int(tm * 8.0) % 2 == 0
+		var blink := float(a[1]) < 1.5 and not Access.reduce_flashing and int(tm * 8.0) % 2 == 0
 		if blink:
 			col.a = 0.4
 		ci.draw_circle(c, 4.0, Color(0.06, 0.05, 0.08, 0.75 * col.a))
@@ -506,5 +506,5 @@ static func draw_icons(ci: CanvasItem, t: Node, pos: Vector2, size := 10.0) -> v
 		if not UiSkin.draw_icon(ci, "status_" + id, r):
 			ci.draw_rect(r, color_of(id))
 		ci.draw_rect(r.grow(1), color_of(id), false, 1.0)
-		ci.draw_string(font, Vector2(x + size + 2, pos.y + size - 1), str(ceili(float(a[1]))), HORIZONTAL_ALIGNMENT_LEFT, -1, 7, color_of(id))
+		ci.draw_string(font, Vector2(x + size + 2, pos.y + size - 1), str(ceili(float(a[1]))), HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(7), color_of(id))
 		x += size + 12.0

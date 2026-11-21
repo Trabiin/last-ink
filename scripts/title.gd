@@ -59,7 +59,21 @@ func _ready() -> void:
 	credits.setup(tr("Credits"), [{"id": "back", "label": tr("Back")}], _credit_lines())
 	credits.chosen.connect(_close_credits)
 
-	_show_save_notices()
+	if Access.needs_first_boot() and not Diag.scripted:
+		_first_boot()
+	else:
+		_show_save_notices()
+
+
+## The very first start (issue #34): text size, flashing, difficulty, danger markers and how techs are
+## charged, before the title menu and the prologue. Shown once; everything is under Options later.
+func _first_boot() -> void:
+	menu.visible = false
+	var view := OptionsView.popup(self, "first")
+	view.closed.connect(func():
+		Access.finish_first_boot()  # however it was closed
+		menu.visible = true
+		_show_save_notices())
 
 
 ## Saves that could not be read were set aside at start-up (scripts/save.gd): say so once. Then the
@@ -324,8 +338,8 @@ func _draw() -> void:
 	_draw_logo(vs)
 	var ver := "v" + Saves.game_version()
 	var font := ThemeDB.fallback_font
-	var vw := font.get_string_size(ver, HORIZONTAL_ALIGNMENT_LEFT, -1, 10).x
-	draw_string(font, Vector2(vs.x - vw - 6, vs.y - 6), ver, HORIZONTAL_ALIGNMENT_LEFT, -1, 10, Color(0.75, 0.72, 0.7, 0.7))
+	var vw := font.get_string_size(ver, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(10)).x
+	draw_string(font, Vector2(vs.x - vw - 6, vs.y - 6), ver, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(10), Color(0.75, 0.72, 0.7, 0.7))
 
 
 ## Painted key art (Phase 8), scaled to cover the screen, with a slow drift so the scene breathes.
@@ -369,8 +383,8 @@ func _draw_logo(vs: Vector2) -> void:
 		draw_rect(Rect2(dx - 1, top, 2, dl), Color("ece6da"))
 		draw_rect(Rect2(dx - 1.5, top + dl, 3, 2), Color("ece6da"))
 	var tag := tr("Reality is being eaten. You were spat back out.")
-	var tw := font.get_string_size(tag, HORIZONTAL_ALIGNMENT_LEFT, -1, 10).x
-	draw_string(font, Vector2(c.x - tw / 2.0, c.y + 30), tag, HORIZONTAL_ALIGNMENT_LEFT, -1, 10, Color(0.75, 0.72, 0.7))
+	var tw := font.get_string_size(tag, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(10)).x
+	draw_string(font, Vector2(c.x - tw / 2.0, c.y + 30), tag, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(10), Color(0.75, 0.72, 0.7))
 
 
 var _mask_cache := {}

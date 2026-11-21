@@ -104,14 +104,14 @@ func _hidden() -> bool:
 
 
 func _text(pos: Vector2, s: String, size: int, col: Color) -> void:
-	draw_string_outline(font, pos, s, HORIZONTAL_ALIGNMENT_LEFT, -1, size, 3, Color(0, 0, 0, col.a * 0.8))
-	draw_string(font, pos, s, HORIZONTAL_ALIGNMENT_LEFT, -1, size, col)
+	draw_string_outline(font, pos, s, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(size), 3, Color(0, 0, 0, col.a * 0.8))
+	draw_string(font, pos, s, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(size), col)
 
 
 func _fit(s: String, w: float, size: int) -> String:
-	if font.get_string_size(s, HORIZONTAL_ALIGNMENT_LEFT, -1, size).x <= w:
+	if font.get_string_size(s, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(size)).x <= w:
 		return s
-	while s.length() > 4 and font.get_string_size(s + "...", HORIZONTAL_ALIGNMENT_LEFT, -1, size).x > w:
+	while s.length() > 4 and font.get_string_size(s + "...", HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(size)).x > w:
 		s = s.substr(0, s.length() - 1)
 	return s.strip_edges() + "..."
 
@@ -140,11 +140,11 @@ func _draw() -> void:
 		goal_target = g.get("target", {})
 		var gs := tr("Story: ") + str(g["text"])
 		var hint := Prompts.fill(str(g.get("hint", "")))
-		var gw := font.get_string_size(gs, HORIZONTAL_ALIGNMENT_LEFT, -1, 8).x
+		var gw := font.get_string_size(gs, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(8)).x
 		var key := ""
 		if not goal_target.is_empty():
 			key = tr("  [%s: go]") % tab_hint if pend.is_empty() else tr("  [go]")
-		var hw := font.get_string_size(("  " + hint if hint != "" else "") + key, HORIZONTAL_ALIGNMENT_LEFT, -1, 7).x
+		var hw := font.get_string_size(("  " + hint if hint != "" else "") + key, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(7)).x
 		goal_rect = Rect2(x, y, minf(gw + hw + 12, width + 60), 13)
 		draw_rect(goal_rect, Color(0.06, 0.05, 0.08, 0.78))
 		draw_rect(Rect2(x, y, 2, 13), GOLD)
@@ -152,7 +152,7 @@ func _draw() -> void:
 		if hint != "":
 			_text(Vector2(x + 6 + gw + 6, y + 10), hint, 7, Color(0.75, 0.72, 0.66))
 		if key != "":
-			var kx := x + 6 + gw + (font.get_string_size("  " + hint, HORIZONTAL_ALIGNMENT_LEFT, -1, 7).x if hint != "" else 0.0)
+			var kx := x + 6 + gw + (font.get_string_size("  " + hint, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(7)).x if hint != "" else 0.0)
 			_text(Vector2(kx, y + 10), key, 7, GOLD.darkened(0.15))
 		y += 15.0
 
@@ -170,7 +170,7 @@ func _draw() -> void:
 		draw_rect(r, Color(0.06, 0.05, 0.08, 0.8))
 		draw_rect(Rect2(x, y, 2, ROW_H), (WARN if a["warning"] else GOLD).lerp(Color.WHITE, pulse * 0.6))
 		var go := (tr("%s: go") % tab_hint) if shown == 0 else Loc.t("go")
-		var gw2 := font.get_string_size(go, HORIZONTAL_ALIGNMENT_LEFT, -1, 7).x
+		var gw2 := font.get_string_size(go, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(7)).x
 		_text(Vector2(x + 6, y + 9), _fit(str(a["text"]), width - gw2 - 30, 8), 8, col)
 		_text(Vector2(x + width - 18 - gw2, y + 9), go, 7, GOLD)
 		_text(Vector2(xr.position.x + 3, y + 9), "x", 7, Color(0.6, 0.58, 0.6))
@@ -212,7 +212,7 @@ func _draw_markers(store: Alerts) -> void:
 			var tip := pos + Vector2(14, -14 + bob)
 			draw_colored_polygon(PackedVector2Array([tip, tip + Vector2(-4, -6), tip + Vector2(0, -12), tip + Vector2(4, -6)]), Color(0.05, 0.04, 0.07))
 			draw_colored_polygon(PackedVector2Array([tip + Vector2(0, -1.5), tip + Vector2(-3, -6), tip + Vector2(0, -10.5), tip + Vector2(3, -6)]), col)
-			draw_string(font, tip + Vector2(-1.5, -3), "!", HORIZONTAL_ALIGNMENT_LEFT, -1, 7, Color(0.05, 0.04, 0.07))
+			draw_string(font, tip + Vector2(-1.5, -3), "!", HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(7), Color(0.05, 0.04, 0.07))
 		if pid == flash_pid and flash_t > 0.0:
 			var k := 1.0 - flash_t / 1.2
 			draw_arc(pos + Vector2(0, -6), 6.0 + 30.0 * k, 0, TAU, 40, Color(1, 1, 1, 1.0 - k), 2.0)

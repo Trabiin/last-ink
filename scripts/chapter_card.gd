@@ -74,5 +74,5 @@ func _draw() -> void:
 
 
 func _centered(y: float, s: String, fsize: int, col: Color) -> void:
-	var w := font.get_string_size(s, HORIZONTAL_ALIGNMENT_LEFT, -1, fsize).x
-	draw_string(font, Vector2((size.x - w) / 2.0, y), s, HORIZONTAL_ALIGNMENT_LEFT, -1, fsize, col)
+	var w := font.get_string_size(s, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(fsize)).x
+	draw_string(font, Vector2((size.x - w) / 2.0, y), s, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(fsize), col)

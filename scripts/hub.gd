@@ -953,20 +953,20 @@ func _draw_tags(canvas: Node2D) -> void:
 		var a := clampf((80.0 - d) / 25.0, 0.0, 1.0)
 		var r := Empire.recruit(id)
 		var name_s: String = r["name"]
-		var w := font.get_string_size(name_s, HORIZONTAL_ALIGNMENT_LEFT, -1, 6).x
+		var w := font.get_string_size(name_s, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(6)).x
 		var p := npc.global_position + Vector2(-w / 2.0, -26)
 		if Empire.is_visitor(id) and target.get("id", "") != id:  # a gold "!" over newcomers looking for work
 			var bob := sin(Time.get_ticks_msec() * 0.006)
 			var bp := npc.global_position + Vector2(-1.5, -35 + bob)
-			canvas.draw_string_outline(font, bp, "!", HORIZONTAL_ALIGNMENT_LEFT, -1, 9, 2, Color(0, 0, 0, 0.8 * a))
-			canvas.draw_string(font, bp, "!", HORIZONTAL_ALIGNMENT_LEFT, -1, 9, Color("ffd166", a))
+			canvas.draw_string_outline(font, bp, "!", HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(9), 2, Color(0, 0, 0, 0.8 * a))
+			canvas.draw_string(font, bp, "!", HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(9), Color("ffd166", a))
 		var box := Rect2(p + Vector2(-2, -6), Vector2(w + 4, 8))
 		if drawn.any(func(o): return (o as Rect2).intersects(box)):
 			continue
 		drawn.append(box)
 		var col := Color("ffd166", a) if target.get("id", "") == id else Color(0.95, 0.93, 0.88, a)
-		canvas.draw_string_outline(font, p, name_s, HORIZONTAL_ALIGNMENT_LEFT, -1, 6, 2, Color(0, 0, 0, 0.8 * a))
-		canvas.draw_string(font, p, name_s, HORIZONTAL_ALIGNMENT_LEFT, -1, 6, col)
+		canvas.draw_string_outline(font, p, name_s, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(6), 2, Color(0, 0, 0, 0.8 * a))
+		canvas.draw_string(font, p, name_s, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(6), col)
 		if Empire.bond_next_scene(id) > 0:  # a heart: they want a word
 			var hc := npc.global_position + Vector2(0, -38 + sin(Time.get_ticks_msec() * 0.005) * 1.5)
 			Art.draw_heart(canvas, hc, 4.0, Color("ff8fa3"))

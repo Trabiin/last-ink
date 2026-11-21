@@ -62,9 +62,9 @@ func _on_death() -> void:
 	pass
 
 
-## Returns WHITE while the hit flash is active, else the given color.
+## Returns WHITE while the hit flash is active (a soft tint with reduced flashing), else the given color.
 func c(col: Color) -> Color:
-	return Color.WHITE if flash_t > 0.0 else col
+	return Access.flash(col) if flash_t > 0.0 else col
 
 
 func draw_shadow(r := 7.0) -> void:

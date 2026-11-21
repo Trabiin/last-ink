@@ -146,10 +146,10 @@ func _process(delta: float) -> void:
 
 
 func _centered(font: Font, y: float, s: String, fsize: int, col: Color) -> float:
-	var w := font.get_string_size(s, HORIZONTAL_ALIGNMENT_LEFT, -1, fsize).x
+	var w := font.get_string_size(s, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(fsize)).x
 	var x := (get_viewport_rect().size.x - w) / 2.0
-	draw_string_outline(font, Vector2(x, y), s, HORIZONTAL_ALIGNMENT_LEFT, -1, fsize, 4, Color(0, 0, 0, col.a * 0.9))
-	draw_string(font, Vector2(x, y), s, HORIZONTAL_ALIGNMENT_LEFT, -1, fsize, col)
+	draw_string_outline(font, Vector2(x, y), s, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(fsize), 4, Color(0, 0, 0, col.a * 0.9))
+	draw_string(font, Vector2(x, y), s, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(fsize), col)
 	return w
 
 
@@ -170,12 +170,12 @@ func _draw() -> void:
 	# A ledger panel behind the whole menu, sized to its widest line.
 	var pw := 120.0
 	if title != "":
-		pw = maxf(pw, UiSkin.TITLE_FONT.get_string_size(title, HORIZONTAL_ALIGNMENT_LEFT, -1, title_size + 6).x)
+		pw = maxf(pw, UiSkin.TITLE_FONT.get_string_size(title, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(title_size + 6)).x)
 	for line in subtitle.split("\n"):
-		pw = maxf(pw, font.get_string_size(line, HORIZONTAL_ALIGNMENT_LEFT, -1, 9).x)
+		pw = maxf(pw, font.get_string_size(line, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(9)).x)
 	for it in items:
-		pw = maxf(pw, font.get_string_size(str(it["label"]), HORIZONTAL_ALIGNMENT_LEFT, -1, 12).x + 30.0)
-		pw = maxf(pw, font.get_string_size(str(it.get("detail", "")), HORIZONTAL_ALIGNMENT_LEFT, -1, 8).x)
+		pw = maxf(pw, font.get_string_size(str(it["label"]), HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(12)).x + 30.0)
+		pw = maxf(pw, font.get_string_size(str(it.get("detail", "")), HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(8)).x)
 	pw = minf(pw + 36.0, vs.x - 16.0)
 	var ptop := y - float(title_size) - 14.0 if title != "" else y - 18.0
 	UiSkin.panel(self, Rect2((vs.x - pw) / 2.0, maxf(ptop, 4.0), pw, minf(y + head + list_h - 4.0, bottom) - maxf(ptop, 4.0)), "ledger", Color(1, 1, 1, panel_alpha))
@@ -230,7 +230,7 @@ func _draw() -> void:
 			draw_circle(Vector2(mx, y - 4.0), 3.0, Color("ffd166"))
 			draw_colored_polygon(PackedVector2Array([Vector2(mx - 2.6, y - 5.5), Vector2(mx + 2.6, y - 5.5), Vector2(mx, y - 10.5)]), Color("ffd166"))
 		if not enabled and it.get("note", "") != "":
-			draw_string(font, Vector2(r.end.x + 6.0, y - 1.0), it["note"], HORIZONTAL_ALIGNMENT_LEFT, -1, 8, Color(0.55, 0.55, 0.58))
+			draw_string(font, Vector2(r.end.x + 6.0, y - 1.0), it["note"], HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(8), Color(0.55, 0.55, 0.58))
 		if it.get("detail", "") != "":
 			# A second, smaller line under the label (save slot info and the like).
 			_centered(font, y + 11.0, it["detail"], 8, Color(0.62, 0.6, 0.6) if enabled else Color(0.45, 0.45, 0.48))

@@ -142,9 +142,9 @@ func _process_moth_art() -> void:
 		art.apply(sprite, "idle", row, anim_t + orbit_a)
 	sprite.position = Vector2(0, -6.0 + sin(anim_t * 6.0 + orbit_a) * 1.5)
 	if flash_t > 0.0:
-		sprite.modulate = Color(2, 2, 2)
-	elif state == State.WINDUP and int(anim_t * 16.0) % 2 == 0:
-		sprite.modulate = Color(1.6, 0.5, 0.5)
+		sprite.modulate = Color(1.25, 1.25, 1.25) if Access.reduce_flashing else Color(2, 2, 2)
+	elif state == State.WINDUP and Access.strobe(anim_t, 8.0):  # reduced flashing: a steady red, no strobe
+		sprite.modulate = Color(1.3, 0.6, 0.6) if Access.reduce_flashing else Color(1.6, 0.5, 0.5)
 	else:
 		sprite.modulate = Color.WHITE
 
@@ -160,7 +160,7 @@ func _draw_overlay() -> void:
 	var y := -11.0 + sin(anim_t * 6.0 + orbit_a) * 1.5
 	if art != null:
 		if state == State.WINDUP:
-			overlay.draw_string(ThemeDB.fallback_font, Vector2(-2, y - 9), "!", HORIZONTAL_ALIGNMENT_LEFT, -1, 9, Color("ff5d5d"))
+			Telegraph.alert(overlay, Vector2(-2, y - 9), 9)
 		if hp < max_hp:
 			overlay.draw_rect(Rect2(-4, y - 11, 8, 1.5), Color(0, 0, 0, 0.6))
 			overlay.draw_rect(Rect2(-4, y - 11, 8.0 * hp / max_hp, 1.5), Color("ff6b6b"))
@@ -169,8 +169,8 @@ func _draw_overlay() -> void:
 	var flap := absf(sin(anim_t * (26.0 if state != State.WINDUP else 40.0)))
 	var col := paper
 	if flash_t > 0.0:
-		col = Color.WHITE
-	elif state == State.WINDUP and int(anim_t * 16.0) % 2 == 0:
+		col = Access.flash(paper)
+	elif state == State.WINDUP and Access.strobe(anim_t, 8.0):
 		col = Color("ff6b6b")
 	var wing := 2.0 + 4.0 * flap
 	var c := Vector2(0, y)
@@ -181,7 +181,7 @@ func _draw_overlay() -> void:
 	overlay.draw_rect(Rect2(c + Vector2(-0.5, -1), Vector2(1, 1)), Color("8a1e2a"))
 	overlay.draw_line(c + Vector2(-wing * 0.6, -1), c + Vector2(-1.5, 0), Color("15101a", 0.6), 1.0)
 	if state == State.WINDUP:
-		overlay.draw_string(ThemeDB.fallback_font, Vector2(-2, y - 5), "!", HORIZONTAL_ALIGNMENT_LEFT, -1, 9, Color("ff5d5d"))
+		Telegraph.alert(overlay, Vector2(-2, y - 5), 9)
 	if hp < max_hp:
 		overlay.draw_rect(Rect2(-4, y - 7, 8, 1.5), Color(0, 0, 0, 0.6))
 		overlay.draw_rect(Rect2(-4, y - 7, 8.0 * hp / max_hp, 1.5), Color("ff6b6b"))

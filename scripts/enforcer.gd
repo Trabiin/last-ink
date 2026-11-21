@@ -204,8 +204,7 @@ func _draw() -> void:
 		var k := 1.0 - state_t / SLAM_WINDUP
 		var at := facing * SLAM_AHEAD
 		draw_set_transform(at, 0.0, Vector2(1.0, 0.55))
-		draw_circle(Vector2.ZERO, SLAM_R * k, Color(1, 0.3, 0.3, 0.18))
-		draw_arc(Vector2.ZERO, SLAM_R, 0, TAU, 32, Color(1, 0.35, 0.35, 0.5 + 0.4 * k), 1.0)
+		Telegraph.circle(self, Vector2.ZERO, SLAM_R, k)
 		draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 	draw_shadow(7.0)
 
@@ -222,7 +221,7 @@ func _draw_overlay() -> void:
 	if taunt_t > 0.0:
 		overlay.draw_rect(Rect2(-1.5, -26 - top, 3, 3), Color("f2a65a"))
 	if state == State.WINDUP:
-		overlay.draw_string(ThemeDB.fallback_font, Vector2(-2, -22 - top), "!", HORIZONTAL_ALIGNMENT_LEFT, -1, 10, Color("ff5d5d"))
+		Telegraph.alert(overlay, Vector2(-2, -22 - top), 10)
 	if hp < max_hp:
 		overlay.draw_rect(Rect2(-8, -24 - top, 16, 2), Color(0, 0, 0, 0.6))
 		overlay.draw_rect(Rect2(-8, -24 - top, 16.0 * hp / max_hp, 2), Color("ffd166"))
