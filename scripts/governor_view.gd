@@ -150,7 +150,7 @@ func _close_rect() -> Rect2:
 # ---------------------------------------------------------------- drawing
 
 func _text(pos: Vector2, s: String, fsize: int, col: Color) -> void:
-	draw_string(font, pos, s, HORIZONTAL_ALIGNMENT_LEFT, -1, fsize, col)
+	draw_string(font, pos, s, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(fsize), col)
 
 
 func _rate_text(r: int) -> String:
@@ -222,7 +222,7 @@ func _draw() -> void:
 			var doing := Empire.role_label(id)
 			if row["note"] != "":
 				doing = row["note"]
-			draw_string(font, base + Vector2(hx[1] - 8, 0), doing, HORIZONTAL_ALIGNMENT_LEFT, hx[2] - hx[1] - 6, 8, Color(0.62, 0.6, 0.62))
+			draw_string(font, base + Vector2(hx[1] - 8, 0), doing, HORIZONTAL_ALIGNMENT_LEFT, hx[2] - hx[1] - 6, Access.fs(8), Color(0.62, 0.6, 0.62))
 			var e := Empire.governor_effect(id, pid)
 			var stat := int(Empire.recruit(id)["stats"][fav])
 			_text(base + Vector2(hx[2] - 8, 0), "%s (%d)" % [e["fit"].capitalize(), stat], 9, FIT_COLORS[e["fit"]] if row["enabled"] else col)

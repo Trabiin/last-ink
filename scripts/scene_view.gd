@@ -136,10 +136,17 @@ func _finish() -> void:
 func _process(delta: float) -> void:
 	if not visible:
 		return
+	queue_redraw()
+	if _stage in ["lines", "reply"]:
+		DialogueLog.track(self, _current(), "scene")
+	if DialogueLog.is_open():
+		return  # the dialogue log is up over the scene (issue #34)
 	if _stage in ["lines", "reply"]:
 		_shown += delta * CHARS_PER_SEC
-	queue_redraw()
 	if Engine.get_process_frames() == opened_frame:
+		return
+	if DialogueLog.asked():
+		DialogueLog.popup(get_parent())
 		return
 	var opts: Array = _scene().get("choice", [])
 	if _stage == "choice":
@@ -250,9 +257,9 @@ func _draw() -> void:
 	# Header: whose scene, which rank
 	var head := "%s  ·  %s: %s%s" % [Empire.short_name(id), tr("Between ranks 3 and 4") if rank == Relationships.MOMENT else tr("Bond rank %d") % rank,
 		sc.get("title", ""), tr("   (memory)") if replay else ""]
-	var hw := font.get_string_size(head, HORIZONTAL_ALIGNMENT_LEFT, -1, 10).x
+	var hw := font.get_string_size(head, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(10)).x
 	draw_rect(Rect2(vs.x - hw - 18, 5, hw + 12, 18), Color(0, 0, 0, 0.6))
-	draw_string(font, Vector2(vs.x - hw - 12, 18), head, HORIZONTAL_ALIGNMENT_LEFT, -1, 10, accent.lightened(0.2))
+	draw_string(font, Vector2(vs.x - hw - 12, 18), head, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(10), accent.lightened(0.2))
 
 	var box := Rect2(12, vs.y - 96, vs.x - 24, 86)
 	UiSkin.page(self, box)
@@ -268,18 +275,18 @@ func _draw() -> void:
 			var ty := box.position.y + 22
 			if speaker != "":
 				var nm := Empire.short_name(speaker)
-				var nw := UiSkin.TITLE_FONT.get_string_size(nm, HORIZONTAL_ALIGNMENT_LEFT, -1, 14).x
+				var nw := UiSkin.TITLE_FONT.get_string_size(nm, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(14)).x
 				var np := Vector2(tx, box.position.y + 18)
 				UiSkin.brush(self, np + Vector2(-3, 3), nw + 8, Dialogue.accent(speaker).darkened(0.15))
-				draw_string(UiSkin.TITLE_FONT, np, nm, HORIZONTAL_ALIGNMENT_LEFT, -1, 14, ink)
+				draw_string(UiSkin.TITLE_FONT, np, nm, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(14), ink)
 				ty += 12
-			draw_multiline_string(font, Vector2(tx, ty), shown, HORIZONTAL_ALIGNMENT_LEFT, box.size.x - 52, 11, -1,
+			draw_multiline_string(font, Vector2(tx, ty), shown, HORIZONTAL_ALIGNMENT_LEFT, box.size.x - 52, Access.fs(11), -1,
 				ink if speaker != "" else UiSkin.PAGE_INK_SOFT)
 			if not _typing():
 				var tip := box.end - Vector2(22, 14 - sin(Time.get_ticks_msec() / 220.0) * 1.5)
 				draw_colored_polygon(PackedVector2Array([tip, tip + Vector2(-3, -7), tip + Vector2(0, -10), tip + Vector2(3, -7)]), ink)
 		"choice":
-			draw_string(font, box.position + Vector2(30, 14), tr("Ash..."), HORIZONTAL_ALIGNMENT_LEFT, -1, 9, UiSkin.PAGE_INK_SOFT)
+			draw_string(font, box.position + Vector2(30, 14), tr("Ash..."), HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(9), UiSkin.PAGE_INK_SOFT)
 			var opts: Array = sc.get("choice", [])
 			var y := box.position.y + 20
 			for i in opts.size():
@@ -289,12 +296,12 @@ func _draw() -> void:
 				if on:  # an ink wash under the picked answer, with a nib pointing at it
 					draw_rect(rr, Color(0.35, 0.27, 0.19, 0.18))
 					draw_colored_polygon(PackedVector2Array([rr.position + Vector2(-8, 5), rr.position + Vector2(-3, 8.5), rr.position + Vector2(-8, 12)]), ink)
-				draw_string(font, rr.position + Vector2(8, 12), opts[i]["label"], HORIZONTAL_ALIGNMENT_LEFT, rr.size.x - 16, 10, ink if on else UiSkin.PAGE_INK_SOFT)
+				draw_string(font, rr.position + Vector2(8, 12), opts[i]["label"], HORIZONTAL_ALIGNMENT_LEFT, rr.size.x - 16, Access.fs(10), ink if on else UiSkin.PAGE_INK_SOFT)
 				y += 20
 		"done":
-			draw_multiline_string(font, box.position + Vector2(30, 22), _outro, HORIZONTAL_ALIGNMENT_LEFT, box.size.x - 52, 10, -1, Color("3f6a32"))
+			draw_multiline_string(font, box.position + Vector2(30, 22), _outro, HORIZONTAL_ALIGNMENT_LEFT, box.size.x - 52, Access.fs(10), -1, Color("3f6a32"))
 	var hint := Prompts.help([["ui_accept", "next"], ["ui_cancel", "skip"]], tr("Tap: next")) if _stage != "choice" \
 		else Prompts.help([["updown", "choose"], ["ui_accept", "pick"]], tr("Tap an answer"))
 	if _stage == "done":
 		hint = Prompts.help([["ui_accept", "close"]], tr("Tap to close"))
-	draw_string(font, Vector2(vs.x - font.get_string_size(hint, HORIZONTAL_ALIGNMENT_LEFT, -1, 7).x - 14, vs.y - 3), hint, HORIZONTAL_ALIGNMENT_LEFT, -1, 7, Color(0.5, 0.48, 0.52))
+	draw_string(font, Vector2(vs.x - font.get_string_size(hint, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(7)).x - 14, vs.y - 3), hint, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(7), Color(0.5, 0.48, 0.52))

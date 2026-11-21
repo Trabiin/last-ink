@@ -234,11 +234,11 @@ func _page_rect() -> Rect2:
 # ---------------------------------------------------------------- drawing
 
 func _text(pos: Vector2, s: String, fsize: int, col: Color, width := -1.0, f: Font = null) -> void:
-	draw_string(f if f else font, pos, s, HORIZONTAL_ALIGNMENT_LEFT, width, fsize, col)
+	draw_string(f if f else font, pos, s, HORIZONTAL_ALIGNMENT_LEFT, width, Access.fs(fsize), col)
 
 
 func _tw(s: String, fsize: int, f: Font = null) -> float:
-	return (f if f else font).get_string_size(s, HORIZONTAL_ALIGNMENT_LEFT, -1, fsize).x
+	return (f if f else font).get_string_size(s, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(fsize)).x
 
 
 func _wrap(s: String, w: float, fsize: int) -> PackedStringArray:

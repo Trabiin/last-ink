@@ -165,6 +165,4 @@ func _draw() -> void:
 		if state == State.WINDUP and aim.length() > 0.1:  # faint aim line along the ground
 			var n := aim.normalized()
 			var k := 1.0 - state_t / SPIT_WINDUP
-			for i in 6:
-				var p := n * (12.0 + i * 12.0)
-				draw_rect(Rect2(p - Vector2(1, 1), Vector2(2, 2)), Color(1, 0.35, 0.35, 0.25 + 0.4 * k))
+			Telegraph.aim(self, n * 12.0, n, 6, 12.0, k)

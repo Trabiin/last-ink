@@ -160,7 +160,7 @@ func _draw() -> void:
 			draw_line(tip - dir * 4.0 * a, tip + dir * 4.0 * a, Color(Color.WHITE, a), 1.0)
 		"beam":
 			var len2 := reach * minf(t * 6.0, 1.0)
-			var w2 := clampf(tan(minf(half, 0.6)) * reach, 4.0, 9.0) * (1.0 + 0.3 * sin(life * 60.0))
+			var w2 := clampf(tan(minf(half, 0.6)) * reach, 4.0, 9.0) * (1.0 + (0.0 if Access.reduce_flashing else 0.3 * sin(life * 60.0)))  # the beam's crackle is a 10 Hz flicker
 			var side2 := dir.orthogonal()
 			var quad := PackedVector2Array([side2 * w2, side2 * w2 + dir * len2, -side2 * w2 + dir * len2, -side2 * w2])
 			draw_colored_polygon(quad, Color(color.darkened(0.35), 0.9 * a))
@@ -187,7 +187,7 @@ func _draw() -> void:
 				var tk := clampf((t - k * 0.15) / 0.7, 0.0, 1.0)
 				if tk > 0.0:
 					_ground_ring(reach * tk, Color(hi if k == 0 else color, (1.0 - tk) * 0.9), 2.5 - k * 0.5)
-			draw_circle(Vector2.ZERO, reach * 0.25 * a, Color(Color.WHITE, 0.5 * a))
+			draw_circle(Vector2.ZERO, reach * 0.25 * a, Color(Color.WHITE, Access.calm(0.5 * a)))
 		"spiral":
 			var spin := life * 9.0
 			for k in 6:
@@ -202,7 +202,7 @@ func _draw() -> void:
 			var w3 := reach * 0.35 * (1.0 - t * 0.5)
 			var hgt := 70.0 * minf(t * 4.0, 1.0)
 			draw_rect(Rect2(-w3, -hgt, w3 * 2.0, hgt), Color(color, 0.35 * a))
-			draw_rect(Rect2(-w3 * 0.35, -hgt, w3 * 0.7, hgt), Color(Color.WHITE, 0.6 * a))
+			draw_rect(Rect2(-w3 * 0.35, -hgt, w3 * 0.7, hgt), Color(Color.WHITE, Access.calm(0.6 * a)))
 			draw_set_transform(Vector2.ZERO, 0.0, Vector2(1.0, FLAT))
 			draw_circle(Vector2.ZERO, reach * minf(t * 2.5, 1.0), Color(color, 0.3 * a))
 			draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)

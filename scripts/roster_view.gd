@@ -143,13 +143,13 @@ func _close_rect() -> Rect2:
 # ---------------------------------------------------------------- drawing
 
 func _text(pos: Vector2, s: String, fsize: int, col: Color) -> void:
-	draw_string(font, pos, s, HORIZONTAL_ALIGNMENT_LEFT, -1, fsize, col)
+	draw_string(font, pos, s, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(fsize), col)
 
 
 func _wrap(pos: Vector2, s: String, width: float, fsize: int, col: Color) -> float:
-	draw_multiline_string(font, pos, s, HORIZONTAL_ALIGNMENT_LEFT, width, fsize, -1, col)
-	var lines := font.get_multiline_string_size(s, HORIZONTAL_ALIGNMENT_LEFT, width, fsize).y
-	return lines
+	draw_multiline_string(font, pos, s, HORIZONTAL_ALIGNMENT_LEFT, width, Access.fs(fsize), -1, col)
+	var lines := font.get_multiline_string_size(s, HORIZONTAL_ALIGNMENT_LEFT, width, Access.fs(fsize)).y
+	return lines + (Access.fs(fsize) - fsize)  # bigger text (issue #34) also sits lower on its baseline
 
 
 func _draw() -> void:
@@ -187,8 +187,8 @@ func _draw() -> void:
 		else:  # compact: name and role on one line
 			var mid := row.size.y / 2.0
 			draw_rect(Rect2(row.position + Vector2(5, mid - 5), Vector2(5, 10)), TIER_COLORS[r["tier"]])
-			draw_string(font, row.position + Vector2(16, mid + 3.5), r["name"], HORIZONTAL_ALIGNMENT_LEFT, 92, 9, GOLD if on else Color("ece6da"))
-			draw_string(font, row.position + Vector2(110, mid + 3), Empire.role_label(id), HORIZONTAL_ALIGNMENT_LEFT, LIST_W - 114, 7, role_col)
+			draw_string(font, row.position + Vector2(16, mid + 3.5), r["name"], HORIZONTAL_ALIGNMENT_LEFT, 92, Access.fs(9), GOLD if on else Color("ece6da"))
+			draw_string(font, row.position + Vector2(110, mid + 3), Empire.role_label(id), HORIZONTAL_ALIGNMENT_LEFT, LIST_W - 114, Access.fs(7), role_col)
 	if n == 0:
 		return
 
@@ -250,8 +250,10 @@ func _draw() -> void:
 			Art.draw_heart(self, hc, 3.5, Color("ff8fa3") if mood == "likes" else Color(0.4, 0.37, 0.42))
 		_text(rr.position + Vector2(14, 12), o["label"], 9, GOLD if hl and o["enabled"] else col)
 		if not o["enabled"] and o["note"] != "":
-			var lw := font.get_string_size(o["label"], HORIZONTAL_ALIGNMENT_LEFT, -1, 9).x
-			_text(rr.position + Vector2(20 + lw, 12), "(" + o["note"] + ")", 7, Color(0.45, 0.44, 0.47))
+			var lw := font.get_string_size(o["label"], HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(9)).x
+			var room := rr.size.x - 26 - lw
+			var note := Access.fit(font, "(" + o["note"] + ")", Access.fs(7), room)  # big text: trimmed, the row's footer says it in full
+			_text(rr.position + Vector2(20 + lw, 12), note, 7, Color(0.45, 0.44, 0.47))
 		oy += 19
 	# Preview of the highlighted option
 	var show: Dictionary = opts[opt if focus == 1 else current]

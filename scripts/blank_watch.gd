@@ -119,7 +119,7 @@ func _draw() -> void:
 		var col := Color(1, 0.6, 0.52) if yours else Color(0.85, 0.83, 0.78)
 		if yours and next["days"] <= 5:
 			col.a = 0.7 + 0.3 * sin(t * 4.0)
-		var w: float = cmd.font.get_string_size(s, HORIZONTAL_ALIGNMENT_LEFT, -1, 8).x
+		var w: float = cmd.font.get_string_size(s, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(8)).x
 		_text(Vector2(map_rect.end.x - w - 6, map_rect.end.y - 8), s, 8, col)
 
 
@@ -139,10 +139,10 @@ static func next_to_fall() -> Dictionary:
 
 
 func _text(pos: Vector2, s: String, fsize: int, col: Color) -> void:
-	draw_string_outline(cmd.font, pos, s, HORIZONTAL_ALIGNMENT_LEFT, -1, fsize, 3, Color(0.05, 0.04, 0.06, col.a))
-	draw_string(cmd.font, pos, s, HORIZONTAL_ALIGNMENT_LEFT, -1, fsize, col)
+	draw_string_outline(cmd.font, pos, s, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(fsize), 3, Color(0.05, 0.04, 0.06, col.a))
+	draw_string(cmd.font, pos, s, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(fsize), col)
 
 
 func _text_c(center: Vector2, s: String, fsize: int, col: Color) -> void:
-	var w: float = cmd.font.get_string_size(s, HORIZONTAL_ALIGNMENT_LEFT, -1, fsize).x
+	var w: float = cmd.font.get_string_size(s, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(fsize)).x
 	_text(center - Vector2(w / 2.0, 0), s, fsize, col)

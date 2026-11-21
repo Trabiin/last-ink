@@ -107,7 +107,7 @@ func _build() -> void:
 	box.add_child(head)
 	title_label = Label.new()
 	title_label.add_theme_font_override("font", UiSkin.TITLE_FONT)
-	title_label.add_theme_font_size_override("font_size", 20)
+	title_label.add_theme_font_size_override("font_size", Access.fs(20))
 	title_label.add_theme_color_override("font_color", GOLD)
 	title_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	head.add_child(title_label)
@@ -267,7 +267,7 @@ func _pick_row(qid: String, opts: Array, multi: bool) -> Control:
 		var b := Button.new()
 		b.text = o["label"]
 		b.toggle_mode = true
-		b.add_theme_font_size_override("font_size", 9)
+		b.add_theme_font_size_override("font_size", Access.fs(9))
 		_pick_look(b)
 		var cur = answers.get(qid)
 		b.button_pressed = (o["value"] in cur) if multi and cur is Array else cur == o["value"]

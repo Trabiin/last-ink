@@ -39,7 +39,7 @@ func _draw() -> void:
 	var glow := 0.5 + 0.5 * sin(t * 2.5)
 	var ratio := float(hp) / max_hp
 	draw_circle(Vector2(0, -12), 18.0 + glow * 3.0, Color(0.55, 0.82, 1.0, 0.08 + 0.1 * ratio))
-	var stone := Color("6d6878") if flash_t <= 0.0 else Color.WHITE
+	var stone := Color("6d6878") if flash_t <= 0.0 else Access.flash(Color("6d6878"))
 	draw_colored_polygon(PackedVector2Array([Vector2(-7, 0), Vector2(-6, -18), Vector2(0, -24), Vector2(6, -18), Vector2(7, 0)]), stone)
 	draw_polyline(PackedVector2Array([Vector2(-7, 0), Vector2(-6, -18), Vector2(0, -24), Vector2(6, -18), Vector2(7, 0)]), Color("2b2733"), 1.0)
 	# The rune dims as the stone takes damage.

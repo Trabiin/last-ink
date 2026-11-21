@@ -108,7 +108,7 @@ func _build() -> void:
 	var title := Label.new()
 	title.text = tr("Send a report about last time") if _about_previous() else tr("Report a bug or send feedback")
 	title.add_theme_font_override("font", UiSkin.TITLE_FONT)
-	title.add_theme_font_size_override("font_size", 20)
+	title.add_theme_font_size_override("font_size", Access.fs(20))
 	title.add_theme_color_override("font_color", GOLD)
 	box.add_child(title)
 	if _about_previous():
@@ -257,7 +257,7 @@ func _button(text: String, cb: Callable) -> Button:
 ## The look: ledger panel, leather buttons, parchment text fields, a gold frame round whatever has focus.
 func _theme() -> Theme:
 	var t := Theme.new()
-	t.default_font_size = 10
+	t.default_font_size = Access.fs(10)
 	var pan := UiSkin.box("ledger").duplicate() as StyleBoxTexture
 	for side in [SIDE_LEFT, SIDE_RIGHT, SIDE_TOP, SIDE_BOTTOM]:
 		pan.set_content_margin(side, 16)

@@ -99,6 +99,7 @@ func _process(delta: float) -> void:
 		gap -= delta
 		if gap <= 0.0 and not queue.is_empty():
 			_cur = queue.pop_front()
+			DialogueLog.track(self, _cur, "banter")
 			_shown = 0.0
 			_hold = 1.8 + String(_cur[1]).length() * 0.035
 			_fade = 0.0
@@ -133,7 +134,7 @@ func _draw() -> void:
 	var r := _panel_rect()
 	var who: String = _cur[0]
 	var tw := r.size.x - (49.0 if who != "" else 14.0)
-	var need := font.get_multiline_string_size(String(_cur[1]), HORIZONTAL_ALIGNMENT_LEFT, tw, 9).y
+	var need := font.get_multiline_string_size(String(_cur[1]), HORIZONTAL_ALIGNMENT_LEFT, tw, Access.fs(9)).y
 	r.size.y = maxf(r.size.y, need + (22.0 if who != "" else 12.0))
 	UiSkin.page(self, r)  # the same torn ledger page as the dialogue box
 	var tx := r.position.x + 8
@@ -141,8 +142,8 @@ func _draw() -> void:
 		var face := Rect2(r.position + Vector2(5, 5), Vector2(30, 30))
 		Dialogue.draw_face(self, face, who, _cur[2])
 		tx = face.end.x + 7
-		draw_string(font, Vector2(tx, r.position.y + 13), Dialogue.display_name(who), HORIZONTAL_ALIGNMENT_LEFT, -1, 9,
+		draw_string(font, Vector2(tx, r.position.y + 13), Dialogue.display_name(who), HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(9),
 			Dialogue.accent(who).darkened(0.35))
 	var text := String(_cur[1]).substr(0, int(_shown))
 	draw_multiline_string(font, Vector2(tx, r.position.y + (25 if who != "" else 15)), text, HORIZONTAL_ALIGNMENT_LEFT,
-		r.end.x - tx - 6, 9, -1, UiSkin.PAGE_INK if who != "" else UiSkin.PAGE_INK_SOFT)
+		r.end.x - tx - 6, Access.fs(9), -1, UiSkin.PAGE_INK if who != "" else UiSkin.PAGE_INK_SOFT)

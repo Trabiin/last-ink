@@ -49,12 +49,12 @@ func _input(event: InputEvent) -> void:
 
 
 func _text(pos: Vector2, s: String, size: int, col: Color) -> void:
-	draw_string(ThemeDB.fallback_font, pos, s, HORIZONTAL_ALIGNMENT_LEFT, -1, size, col)
+	draw_string(ThemeDB.fallback_font, pos, s, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(size), col)
 
 
 func _text_c(cx: float, y: float, s: String, size: int, col: Color) -> void:
-	var w := ThemeDB.fallback_font.get_string_size(s, HORIZONTAL_ALIGNMENT_LEFT, -1, size).x
-	draw_string_outline(ThemeDB.fallback_font, Vector2(cx - w / 2.0, y), s, HORIZONTAL_ALIGNMENT_LEFT, -1, size, 4, Color(0, 0, 0, 0.8))
+	var w := ThemeDB.fallback_font.get_string_size(s, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(size)).x
+	draw_string_outline(ThemeDB.fallback_font, Vector2(cx - w / 2.0, y), s, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(size), 4, Color(0, 0, 0, 0.8))
 	_text(Vector2(cx - w / 2.0, y), s, size, col)
 
 
@@ -74,7 +74,7 @@ func _wrap(s: String, width: float, size: int) -> Array:
 	var cur := ""
 	for word in s.split(" "):
 		var test := word if cur == "" else cur + " " + word
-		if cur != "" and font.get_string_size(test, HORIZONTAL_ALIGNMENT_LEFT, -1, size).x > width:
+		if cur != "" and font.get_string_size(test, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(size)).x > width:
 			out.append(cur)
 			cur = word
 		else:

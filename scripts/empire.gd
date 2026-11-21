@@ -143,6 +143,7 @@ func territory() -> Territory:
 
 ## Fresh campaign: day 1, provinces as written in data/provinces.json.
 func reset() -> void:
+	DialogueLog.clear()  # a new game or another save: the log starts empty (issue #34)
 	satchel = Satchel.start_stock()
 	ai_presets = {}
 	ai_techs = {}

@@ -38,12 +38,12 @@ func _process(delta: float) -> void:
 func _text(pos: Vector2, s: String, size := 10, col := Color.WHITE, outline := true) -> void:
 	var font := ThemeDB.fallback_font
 	if outline:
-		draw_string_outline(font, pos, s, HORIZONTAL_ALIGNMENT_LEFT, -1, size, 3, Color(0, 0, 0, col.a * 0.85))
-	draw_string(font, pos, s, HORIZONTAL_ALIGNMENT_LEFT, -1, size, col)
+		draw_string_outline(font, pos, s, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(size), 3, Color(0, 0, 0, col.a * 0.85))
+	draw_string(font, pos, s, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(size), col)
 
 
 func _text_centered(y: float, s: String, size := 10, col := Color.WHITE) -> void:
-	var w := ThemeDB.fallback_font.get_string_size(s, HORIZONTAL_ALIGNMENT_LEFT, -1, size).x
+	var w := ThemeDB.fallback_font.get_string_size(s, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(size)).x
 	_text(Vector2((size_px().x - w) / 2.0, y), s, size, col)
 
 
@@ -82,7 +82,7 @@ func _draw_ability_bar(hero: Hero, vs: Vector2) -> void:
 		if k == "":
 			k = str(i + 1)
 		_text(Vector2(x + 4 + ox, y + 10), k, 9, col, false)
-		var kw := ThemeDB.fallback_font.get_string_size(k, HORIZONTAL_ALIGNMENT_LEFT, -1, 9).x
+		var kw := ThemeDB.fallback_font.get_string_size(k, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(9)).x
 		_text(Vector2(x + 8 + ox + kw, y + 10), str(a.get("name", "")), 8, txt_col, false)
 		var cost_col := INK_COL if why != "ink" else Color("ff6b6b")
 		_text(Vector2(x + 4 + ox, y + 22), tr("%d Ink") % int(a.get("cost", 0)), 8, cost_col, false)
@@ -182,7 +182,7 @@ func _draw() -> void:
 		var abil := "%s %s %s %s" % [Prompts.key("ability_1"), Prompts.key("ability_2"), Prompts.key("ability_3"), Prompts.key("ability_4")]
 		var lines_h := [
 			tr("Move: ") + (tr("left stick / D-pad") if pad else tr("WASD / arrows")),
-			tr("Attack: %s, hold when full: tech") % Prompts.key("attack"),
+			Techs.how_to(),
 			tr("Swap hero: ") + Prompts.key("swap"),
 			tr("Pause: ") + Prompts.key("pause"),
 			tr("Abilities: ") + abil,
@@ -190,7 +190,7 @@ func _draw() -> void:
 			"" if pad else tr("F1: show or hide this"),
 		]
 		for li in lines_h.size():
-			_text(Vector2(vs.x - 150, 96 + 11 * li), lines_h[li], 8, Color(1, 1, 1, a2))  # clear of the banter panel
+			_text(Vector2(vs.x - Access.px(150.0), 96 + Access.px(11.0) * li), lines_h[li], 8, Color(1, 1, 1, a2))  # clear of the banter panel
 	if center_text != "":
 		draw_rect(Rect2(Vector2.ZERO, vs), Color(0.95, 0.94, 0.9, 0.55))
 		var lines2 := center_text.split("\n")

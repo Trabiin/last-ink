@@ -356,17 +356,17 @@ func _close_rect() -> Rect2:
 # ---------------------------------------------------------------- drawing
 
 func _text(pos: Vector2, s: String, fsize: int, col: Color, width := -1.0) -> void:
-	draw_string(font, pos, s, HORIZONTAL_ALIGNMENT_LEFT, width, fsize, col)
+	draw_string(font, pos, s, HORIZONTAL_ALIGNMENT_LEFT, width, Access.fs(fsize), col)
 
 
 func _text_r(right: Vector2, s: String, fsize: int, col: Color) -> void:
-	var w := font.get_string_size(s, HORIZONTAL_ALIGNMENT_LEFT, -1, fsize).x
+	var w := font.get_string_size(s, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(fsize)).x
 	_text(right - Vector2(w, 0), s, fsize, col)
 
 
 func _wrap(pos: Vector2, s: String, width: float, fsize: int, col: Color) -> float:
-	draw_multiline_string(font, pos, s, HORIZONTAL_ALIGNMENT_LEFT, width, fsize, -1, col)
-	return font.get_multiline_string_size(s, HORIZONTAL_ALIGNMENT_LEFT, width, fsize).y
+	draw_multiline_string(font, pos, s, HORIZONTAL_ALIGNMENT_LEFT, width, Access.fs(fsize), -1, col)
+	return font.get_multiline_string_size(s, HORIZONTAL_ALIGNMENT_LEFT, width, Access.fs(fsize)).y + (Access.fs(fsize) - fsize)  # bigger text (issue #34) also sits lower on its baseline
 
 
 func _bar(r: Rect2, f: float, col: Color) -> void:
@@ -392,7 +392,7 @@ func _draw() -> void:
 	var tx := 100.0
 	for t in _tabs():
 		var label: String = {"equip": tr("Equip"), "skills": tr("Skills"), "tree": _tree_label()}.get(t, Progress.data().get("shop_name", tr("Shop")))
-		var w := font.get_string_size(label, HORIZONTAL_ALIGNMENT_LEFT, -1, 9).x + 14
+		var w := font.get_string_size(label, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(9)).x + 14
 		var r := Rect2(tx, 8, w, 15)
 		_tab_rects[t] = r
 		_box(r, tab == t)
@@ -423,7 +423,7 @@ func _draw() -> void:
 		_text(Vector2(8, vs.y - 8), Prompts.help([["updown", "choose"], ["ui_accept", tr("buy / sell")], ["swap", "tab"], [["ui_cancel", "gear"], "close"]], tr("Tap an item twice to buy or sell")), 7, Color(0.5, 0.48, 0.52))
 	if flash_t > 0.0:
 		var a := clampf(flash_t / 0.4, 0.0, 1.0)
-		var fw := font.get_string_size(flash, HORIZONTAL_ALIGNMENT_LEFT, -1, 9).x
+		var fw := font.get_string_size(flash, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(9)).x
 		draw_rect(Rect2(vs.x - fw - 18, vs.y - 21, fw + 12, 15), Color(0.1, 0.08, 0.06, 0.95 * a))
 		_text(Vector2(vs.x - fw - 12, vs.y - 10), flash, 9, Color(1, 0.9, 0.7, a))
 
