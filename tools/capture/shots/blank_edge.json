@@ -1,0 +1,20 @@
+{
+	"_about": "Trailer hook (first 5 seconds): a slow push along the Blank's edge at dusk while Ash walks up to it, then a Nibbler crawls out.",
+	"scene": "mission",
+	"mission": "meadow_patrol",
+	"party": ["ash"],
+	"day": 0.78,
+	"seed": 2,
+	"seconds": 7,
+	"all_ai": false,
+	"party_at": {"from": "blank", "off": [-9, 1]},
+	"camera": [
+		{"t": 0, "at": {"from": "blank", "off": [-1, -7]}, "zoom": 2.6},
+		{"t": 4.5, "at": {"from": "blank", "off": [-3, 1]}, "zoom": 2.2, "ease": "smooth"},
+		{"t": 7, "at": {"from": "blank", "off": [-4, 1]}, "zoom": 3.2, "ease": "in"}
+	],
+	"beats": [
+		{"t": 1.2, "walk": [1, 0], "for": 2.4, "say": "Ash walks to the edge"},
+		{"t": 4.6, "spawn": "nibbler", "count": 1, "at": {"from": "blank", "off": [1, 1]}, "say": "something crawls out"}
+	]
+}
