@@ -144,7 +144,7 @@ func test_retreat_keeps_the_mission_open() -> void:
 
 func test_boss_mission() -> void:
 	_campaign()
-	Progress.award(PartyPicker.mission_party(), 200)
+	Progress.award(PartyPicker.mission_party(), Progress.xp_to_reach(6))  # the Auditor is tuned for level 6 (issue #35)
 	await _play(Missions.find("auditor_duel"))
 	check(Missions.cleared("auditor_duel"), "Auditor beaten")
 

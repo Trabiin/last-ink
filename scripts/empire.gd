@@ -34,6 +34,9 @@ const RESOURCES := ["gilt", "supplies", "ink"]
 const RES_NAMES := {"gilt": "Gilt", "supplies": "Supplies", "ink": "Ink", "renown": "Renown", "insight": "Insight"}
 const START := {"gilt": 120, "supplies": 40, "ink": 5, "renown": 0, "insight": 0}
 const UPKEEP_SUPPLIES := 1  # per recruit per day
+const FIELD_RATIONS := 1  # extra per field hero per day: fighters eat for two (balance sim, issue #35)
+const HUNGRY_RESEARCH := 0.5  # study pace while Supplies are out
+const HUNGRY_TEMPER := -1  # bond points a day for everyone with a bond while Supplies are out
 ## A province keeps producing as it frays, but loses up to this share of its output.
 const FRAY_OUTPUT_LOSS := 0.5
 ## A province you hold with no governor only delivers this share (nobody collects).
@@ -258,6 +261,9 @@ func ledger() -> Array:
 			"supplies": -int(HOLD_UPKEEP["supplies"]) * extra, "ink": 0, "note": ""})
 	var upkeep := UPKEEP_SUPPLIES * recruits.size()
 	lines.append({"label": tr("Upkeep (%d people)") % recruits.size(), "gilt": 0, "supplies": -upkeep, "ink": 0, "note": ""})
+	var fighters := field_count()
+	if fighters > 0 and FIELD_RATIONS > 0:
+		lines.append({"label": tr("  Field rations (%d fighters)") % fighters, "gilt": 0, "supplies": -FIELD_RATIONS * fighters, "ink": 0, "note": ""})
 	var qm := current_effect("command_table")
 	if int(qm.get("upkeep_cut", 0)) > 0:
 		lines.append({"label": tr("  Quartermaster's savings"), "gilt": 0, "supplies": mini(int(qm["upkeep_cut"]), upkeep), "ink": 0, "note": ""})
@@ -338,7 +344,10 @@ func fray_sources(p: Dictionary, gov := "-") -> Array:
 			out.append([tr("No governor posted"), FRAY_UNGOVERNED])
 		else:
 			out.append([tr("Governed by %s") % recruit(gov)["name"], governor_effect(gov, p["id"])["fray"]])
-		out.append([tr("Tended by your people"), FRAY_TENDED])
+		if hungry:
+			out.append([tr("Nobody tends it: your people are hungry"), 0])
+		else:
+			out.append([tr("Tended by your people"), FRAY_TENDED])
 		if has_research("ward_margins"):
 			out.append([tr("Margin wards (research)"), -1])
 		if p["id"] == "hollowmark":
@@ -477,6 +486,15 @@ func recruit(id: String) -> Dictionary:
 
 
 ## Joined recruits in roster order (the order of data/recruits.json).
+## Field heroes on the roster (they eat field rations on top of upkeep).
+func field_count() -> int:
+	var n := 0
+	for id in recruits:
+		if recruit(id).get("tier", "") == "field":
+			n += 1
+	return n
+
+
 func roster_ids() -> Array:
 	return recruit_data.keys().filter(func(id): return recruits.has(id))
 
@@ -1199,6 +1217,9 @@ func research_pace() -> Dictionary:
 	for pk in bond_perks_with("research_pace"):
 		pace += float(pk["effect"]["research_pace"])
 		why.append(tr("%s (%s's bond): +%d%%") % [pk["name"], short_name(pk["id"]), int(round(float(pk["effect"]["research_pace"]) * 100))])
+	if hungry:
+		pace *= HUNGRY_RESEARCH
+		why.append(tr("Supplies ran out: hungry readers, pace x%s") % Loc.dec(HUNGRY_RESEARCH))
 	return {"pace": pace, "why": why}
 
 
@@ -2421,6 +2442,8 @@ func role_mood_for(id: String, role: String, target: String) -> String:
 
 func _advance_bonds() -> void:
 	for id in bond_ids():
+		if hungry and recruits.has(id):
+			bond_gain(id, HUNGRY_TEMPER, "", true)  # tempers go when the kitchen is empty
 		match role_mood(id):
 			"likes":
 				bond_gain(id, int(bond_data["points"]["liked_role"]), "", true)
