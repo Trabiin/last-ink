@@ -1,0 +1,7 @@
+1
+00:00:00,500 --> 00:00:03,000
+Something is eating the world.
+
+2
+00:00:03,500 --> 00:00:06,500
+It started with the edges.

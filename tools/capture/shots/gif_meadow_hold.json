@@ -1,0 +1,20 @@
+{
+	"_about": "Store GIF: a held camera on a short, busy fight, so the ground doesn't change and the GIF stays small.",
+	"scene": "mission",
+	"mission": "meadow_patrol",
+	"party": ["ash", "bran", "gristle"],
+	"presets": {"ash": "aggressive", "bran": "aggressive", "gristle": "support"},
+	"day": 0.6,
+	"seed": 6,
+	"seconds": 5,
+	"numbers": false,
+	"party_at": {"from": "blank", "off": [-34, 0]},
+	"camera": [ {"t": 0, "at": {"from": "mark:here", "off": [3, 0]}, "zoom": 2.5} ],
+	"beats": [
+		{"t": 0.0, "mark": "here", "at": "party"},
+		{"t": 0.0, "spawn": "nibbler", "count": 3, "hp": 1.5, "at": {"from": "party", "off": [5, 0]}},
+		{"t": 0.3, "spawn": "spitter", "count": 1, "at": {"from": "party", "off": [7, -2]}},
+		{"t": 2.4, "order": "bran"},
+		{"t": 3.6, "tech": "ash"}
+	]
+}

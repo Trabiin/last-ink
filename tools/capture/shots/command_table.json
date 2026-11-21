@@ -1,0 +1,13 @@
+{
+	"_about": "Empire beat: the Command Table with its menus as players see them, a slow push in on the map.",
+	"scene": "command",
+	"hide_ui": false,
+	"party": ["ash", "bran", "gristle"],
+	"day": 0.55,
+	"seed": 1,
+	"seconds": 6,
+	"camera": [
+		{"t": 0, "zoom": 1.0, "focus": [0.5, 0.5]},
+		{"t": 6, "zoom": 1.25, "focus": [0.45, 0.5], "ease": "linear"}
+	]
+}
