@@ -92,6 +92,24 @@ func test_logs_count_errors_but_not_shutdown_noise() -> void:
 	check_eq(Diag.count_problems("all fine\n")["errors"], 0, "a clean log has no errors")
 
 
+## The web build reads errors from the browser console, where Godot prints one engine error as two or
+## more lines (the message, then "at: ..."). One error must count once, now and in logs written before.
+func test_one_browser_error_counts_once() -> void:
+	var got: Dictionary = Diag.console_lines([
+		["error", "USER ERROR: Something broke"],
+		["error", "   at: push_error (core/variant/variant_utility.cpp:1092)"],
+		["error", "Uncaught TypeError: x is undefined"],
+		["warn", "WARNING: Careful"],
+		["warn", "   at: push_warning (core/variant/variant_utility.cpp:1112)"],
+	])
+	check_eq(got["errors"], 2, "two errors, not four")
+	check_eq(got["warnings"], 1, "one warning")
+	check_eq(got["lines"][1], "   at: push_error (core/variant/variant_utility.cpp:1092)", "the location stays, under its error")
+	check_eq(got["lines"][2], "ERROR: Uncaught TypeError: x is undefined", "untagged browser errors are tagged")
+	var old_log := "USER ERROR: Something broke\nERROR:    at: push_error (core/variant/variant_utility.cpp:1092)\n"
+	check_eq(Diag.count_problems(old_log)["errors"], 1, "logs written by the old counter count the error once too")
+
+
 func test_sessions_rotate_and_a_crash_is_noticed() -> void:
 	# A clean first session.
 	Diag.start_session()
@@ -152,6 +170,7 @@ func test_title_offers_a_report_once_after_a_crash() -> void:
 	check(not title.menu.visible, "the main menu waits")
 	check(Diag.previous.is_empty(), "asked once per launch")
 	check(offer.items.map(func(i): return i["id"]) == ["send", "logs", "later", "mute"], "send, logs, not now, don't ask again")
+	check(offer.subtitle.contains("boom"), "the offer quotes the first error, so a player can tell us what broke")
 	offer.chosen.emit("send")
 	var v := await _wait_view()
 	if not check(v != null, "Send report opens the form"):
@@ -290,6 +309,56 @@ func test_send_posts_the_report_and_says_how_it_went() -> void:
 	Feedback.override = {"endpoint": ""}
 	check(not Feedback.can_send(), "no endpoint: the form only saves to a file")
 	check_eq((await Feedback.send(tree.root, report))["ok"], false, "and send does nothing")
+
+
+## The whole way a player goes: the town pause menu, the form, typing, Send, and the thank-you, against a
+## local fake inbox.
+func test_send_from_the_form_in_town() -> void:
+	var server := TCPServer.new()
+	var port := 0
+	for p in range(28481, 28501):
+		if server.listen(p, "127.0.0.1") == OK:
+			port = p
+			break
+	if not check(port > 0, "a local port for the fake endpoint"):
+		return
+	Feedback.override = {"endpoint": "http://127.0.0.1:%d/report" % port, "timeout": 10}
+	Diag.start_session()
+	Empire.reset()
+	var hub := await goto(HUB, 20)
+	hub.open_menu()
+	await frames(2)
+	hub._on_menu("report")
+	var v := await _wait_view()
+	if not check(v != null, "the form opens in town"):
+		server.stop()
+		return
+	check(v.send_button.visible and not v.send_button.disabled, "Send is offered when the inbox is set up")
+	v._on_send()
+	await frames(2)
+	check(v.status.text != "" and not v.sending, "Send with nothing typed asks for a line first")
+	v.text_box.text = "The lamp-lighter walks through the Guildhall wall."
+	v._set_kind("bug")
+	v._on_send()
+	check(v.sending, "sending")
+	var got := await _serve(server, 200, JSON.stringify({"ok": true, "id": v.report_id}))
+	for i in 120:
+		if v.sent or not v.sending:
+			break
+		await tree.process_frame
+	var body = JSON.parse_string(str(got.get("body", "")))
+	if check(typeof(body) == TYPE_DICTIONARY, "the form posted a report"):
+		check_eq(body["text"], "The lamp-lighter walks through the Guildhall wall.", "with what was typed")
+		check_eq(body["context"]["scene"], HUB, "and where the player was")
+		check(body["attachments"].has("session.log"), "and the log")
+	check(v.sent, "the form says it was sent")
+	check(v.status.text.contains(v.report_id), "and gives the report number")
+	check_eq(v.send_button.text, tr("Close"), "Send turns into Close")
+	v._on_send()  # Close
+	await frames(3)
+	check(hub.menu.visible, "back to the town menu")
+	hub._close_menu()
+	server.stop()
 
 
 func test_form_from_the_title_and_every_pause_menu() -> void:
