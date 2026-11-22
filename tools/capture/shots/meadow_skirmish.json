@@ -1,0 +1,25 @@
+{
+	"_about": "Combat beat for the announce trailer: a Nibbler pack and a Spitter jump the party in the meadow; Bran charges his tech, Ash fires hers in slow motion.",
+	"scene": "mission",
+	"mission": "meadow_patrol",
+	"party": ["ash", "bran", "gristle"],
+	"presets": {"ash": "aggressive", "bran": "aggressive", "gristle": "support"},
+	"day": 0.62,
+	"seed": 4,
+	"seconds": 9,
+	"party_at": {"from": "blank", "off": [-34, 0]},
+	"camera": [
+		{"t": 0, "follow": "party", "off": [4, -1], "zoom": 1.8},
+		{"t": 3, "follow": "party", "off": [2, 0], "zoom": 2.5},
+		{"t": 6.2, "follow": "ash", "zoom": 3.0, "ease": "out"},
+		{"t": 9, "follow": "party", "zoom": 2.3}
+	],
+	"beats": [
+		{"t": 0.0, "spawn": "nibbler", "count": 3, "at": {"from": "party", "off": [7, 0]}},
+		{"t": 1.0, "spawn": "spitter", "count": 1, "at": {"from": "party", "off": [9, -3]}},
+		{"t": 2.6, "spawn": "nibbler", "count": 2, "at": {"from": "party", "off": [6, 4]}},
+		{"t": 4.0, "order": "bran", "say": "Bran charges his tech"},
+		{"t": 6.0, "tech": "ash", "say": "Ash tech, slow motion"},
+		{"t": 6.0, "slow": 0.3, "for": 1.0}
+	]
+}

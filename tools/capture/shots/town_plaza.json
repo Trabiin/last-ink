@@ -1,0 +1,16 @@
+{
+	"_about": "Hub beat: a slow drift across Hollowmark's plaza at a late afternoon, every building built up.",
+	"scene": "town",
+	"party": ["ash", "bran", "gristle"],
+	"levels": 3,
+	"day": 0.68,
+	"seed": 3,
+	"seconds": 7,
+	"camera": [
+		{"t": 0, "follow": "leader", "off": [-8, -3], "zoom": 2.2},
+		{"t": 7, "follow": "leader", "off": [6, 1], "zoom": 2.0, "ease": "linear"}
+	],
+	"beats": [
+		{"t": 1.0, "walk": [1, 0.15], "for": 4.5}
+	]
+}

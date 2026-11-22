@@ -1,0 +1,26 @@
+{
+	"_about": "Second combat beat, another biome and party: Odile, Velvette and Jessamy against moths and an Enforcer in the Gutterwoods, everyone's tech in turn.",
+	"scene": "mission",
+	"mission": "gutterwoods_patrol",
+	"map": "gutterwoods",
+	"party": ["ash", "odile", "velvette"],
+	"presets": {"ash": "aggressive", "odile": "balanced", "velvette": "aggressive"},
+	"day": 0.45,
+	"seed": 9,
+	"seconds": 10,
+	"party_at": [30, 26],
+	"camera": [
+		{"t": 0, "follow": "party", "off": [3, 0], "zoom": 2.0},
+		{"t": 4, "follow": "party", "off": [2, 0], "zoom": 2.6},
+		{"t": 10, "follow": "party", "zoom": 2.4}
+	],
+	"beats": [
+		{"t": 0.0, "spawn": "enforcer", "count": 1, "hp": 2, "at": {"from": "party", "off": [8, 0]}},
+		{"t": 0.5, "spawn": "moth", "count": 1, "at": {"from": "party", "off": [7, -4]}},
+		{"t": 2.0, "spawn": "nibbler", "count": 3, "at": {"from": "party", "off": [7, 3]}},
+		{"t": 3.5, "order": "odile"},
+		{"t": 5.5, "order": "velvette"},
+		{"t": 7.5, "tech": "ash"},
+		{"t": 7.5, "slow": 0.35, "for": 0.8, "shake": 3}
+	]
+}
