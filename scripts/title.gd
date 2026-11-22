@@ -159,7 +159,7 @@ func _on_choice(id: String) -> void:
 		"boss_test":  # Act 1's last fight without playing Act 1 first (issue #17)
 			Saves.pending = {}
 			Empire.reset()
-			Progress.award(PartyPicker.mission_party(), 200)
+			Progress.award(PartyPicker.mission_party(), Progress.xp_to_reach(6))  # the Auditor is tuned for level 6 (issue #35)
 			Dialogue.mark_seen("talk:meadow_intro")  # Bran already knows Ash by now
 			Missions.launch(Missions.find("auditor_duel"))
 		"heroes_test":  # the four new field heroes, hired on day one, Ottoline and Jessamy in the party
