@@ -605,7 +605,7 @@
 			],
 			"summary": "Filling the gauge and holding Attack.",
 			"lines": [
-				"Hitting things fills the tech gauge. When it's full, hold {key:attack} for a second and let go. Each hero's weapon has its own, and more come as the weapon levels.",
+				"Hitting things fills the tech gauge. When it's full, hold {key:attack} for a second and let go (or, with Charged techs set to Toggle under Options, Accessibility, press it once to charge and again to fire). Each hero's weapon has its own, and more come as the weapon levels.",
 				"Allies use theirs when they see a good moment. Their idea of a good moment may differ from yours."
 			]
 		},

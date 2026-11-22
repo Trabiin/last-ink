@@ -467,6 +467,6 @@ class Pointer extends Control:
 
 	func _label(pos: Vector2, s: String) -> void:
 		var f := ThemeDB.fallback_font
-		var w := f.get_string_size(s, HORIZONTAL_ALIGNMENT_LEFT, -1, 8).x
-		draw_string_outline(f, pos - Vector2(w / 2.0, 0), s, HORIZONTAL_ALIGNMENT_LEFT, -1, 8, 3, Color(0, 0, 0, 0.8))
-		draw_string(f, pos - Vector2(w / 2.0, 0), s, HORIZONTAL_ALIGNMENT_LEFT, -1, 8, Color("ffd166"))
+		var w := f.get_string_size(s, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(8)).x
+		draw_string_outline(f, pos - Vector2(w / 2.0, 0), s, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(8), 3, Color(0, 0, 0, 0.8))
+		draw_string(f, pos - Vector2(w / 2.0, 0), s, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(8), Color("ffd166"))

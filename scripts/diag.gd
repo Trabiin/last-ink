@@ -421,7 +421,7 @@ func toast(text: String, secs := 3.0) -> void:
 	add_child(layer)
 	_toast = Label.new()
 	_toast.text = text
-	_toast.add_theme_font_size_override("font_size", 10)
+	_toast.add_theme_font_size_override("font_size", Access.fs(10))
 	_toast.add_theme_color_override("font_color", Color("ece6da"))
 	_toast.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.85))
 	_toast.add_theme_constant_override("shadow_offset_x", 1)

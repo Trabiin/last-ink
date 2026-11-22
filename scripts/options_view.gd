@@ -20,7 +20,7 @@ const W := 440.0
 const ROW_H := 22.0
 const ROW_H_CONTROLS := 17.0  # the Controls page has more rows
 
-var page := "main"  # "main", "controls", "fx" or "display"
+var page := "main"  # "main", "controls", "fx", "display", "access" or "first" (the first-start page, issue #34)
 var sel := 0
 var listening := ""  # action id waiting for a new key/button
 var note := ""
@@ -33,11 +33,12 @@ var _row_rects: Array = []
 var _left_rects: Array = []
 var _right_rects: Array = []
 var _panel := Rect2()
+var _first_row := 0  # long pages at big text sizes scroll (issue #34): the first row shown
 
 
 ## Opens the options over whatever scene is running, on its own top layer. The returned view
 ## emits `closed` and frees itself when the player backs out.
-static func popup(host: Node) -> OptionsView:
+static func popup(host: Node, first_page := "main") -> OptionsView:
 	var layer := CanvasLayer.new()
 	layer.layer = 20
 	layer.process_mode = Node.PROCESS_MODE_ALWAYS
@@ -45,7 +46,7 @@ static func popup(host: Node) -> OptionsView:
 	var view := OptionsView.new()
 	layer.add_child(view)
 	view.closed.connect(layer.queue_free)
-	view.open()
+	view.open(first_page)
 	return view
 
 
@@ -55,10 +56,11 @@ func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 
 
-func open() -> void:
+func open(first_page := "main") -> void:
 	Settings.load_settings()
+	Access.load_settings()
 	visible = true
-	page = "main"
+	page = first_page
 	sel = 0
 	listening = ""
 	_opened_frame = Engine.get_process_frames()
@@ -94,6 +96,8 @@ func _rebuild() -> void:
 			var label: String = {"Master": tr("Master volume"), "Music": tr("Music volume"), "SFX": tr("Sound effects volume")}[bus]
 			_rows.append({"id": "vol:" + bus, "kind": "slider", "label": label, "value": "%d%%" % Settings.volumes[bus],
 				"level": Settings.volumes[bus], "detail": ""})
+		_rows.append({"id": "access_page", "kind": "open", "label": tr("Accessibility"), "value": tr("text size, flashing, techs, sticks"),
+			"detail": tr("Bigger text, calmer effects, danger markers, toggle instead of hold, stick deadzone, dialogue log.")})
 		_rows.append({"id": "controls", "kind": "open", "label": tr("Controls"), "value": tr("remap keys and buttons"),
 			"detail": ""})
 		_rows.append({"id": "fx_page", "kind": "open", "label": tr("Visual effects"), "value": tr("shadows, clouds, mist, lamps"),
@@ -107,6 +111,10 @@ func _rebuild() -> void:
 		_rows.append({"id": "back", "kind": "button", "label": tr("Back"), "value": "", "detail": ""})
 	elif page == "display":
 		_display_rows()
+	elif page == "access":
+		_access_rows(false)
+	elif page == "first":
+		_access_rows(true)
 	elif page == "fx":
 		for f in Settings.FX:
 			var v := Settings.fx_value(f[0])
@@ -123,6 +131,45 @@ func _rebuild() -> void:
 		_rows.append({"id": "reset", "kind": "button", "label": tr("Reset to defaults"), "value": "", "detail": ""})
 		_rows.append({"id": "controls_back", "kind": "button", "label": tr("Back"), "value": "", "detail": ""})
 	sel = clampi(sel, 0, _rows.size() - 1)
+
+
+## The Accessibility page (issue #34), and the short version the title screen shows the first time the
+## game starts (first = true): the options that matter before the prologue, then Start.
+func _access_rows(first: bool) -> void:
+	var A := Access
+	A.load_settings()
+	_rows.append({"id": "a:text", "kind": "cycle", "label": tr("Text size"), "value": Loc.t(A.TEXT_SIZES[A.text_size]),
+		"detail": Loc.t(A.TEXT_INFO[A.text_size])})
+	_rows.append({"id": "a:flash", "kind": "cycle", "label": tr("Reduce flashing"), "value": tr("On") if A.reduce_flashing else tr("Off"),
+		"detail": tr("Softens hit flashes, blinking, bright bursts and the Blank's flicker.") if A.reduce_flashing
+			else tr("On: hit flashes, blinking tells, bright bursts and the Blank's flicker are softened or held still.")})
+	if first:
+		_rows.append({"id": "difficulty", "kind": "cycle", "label": tr("Difficulty"), "value": Loc.t(Settings.DIFFICULTIES[Settings.difficulty]),
+			"detail": Loc.t(Settings.DIFFICULTY_INFO[Settings.difficulty]) + tr("  Change it any time.")})
+	_rows.append({"id": "a:danger", "kind": "cycle", "label": tr("Danger markers"), "value": tr("Patterned") if A.danger_patterns else tr("Colour only"),
+		"detail": tr("Where an attack will land is striped and outlined, and wind-ups show a warning sign, so nothing relies on red alone.") if A.danger_patterns
+			else tr("Danger zones are a red wash only.")})
+	_rows.append({"id": "a:tech", "kind": "cycle", "label": tr("Charged techs"), "value": Loc.t(A.TECH_MODES[A.tech_mode]),
+		"detail": Loc.t(A.TECH_INFO[A.tech_mode])})
+	if first:
+		_rows.append({"id": "start", "kind": "button", "label": tr("Start"), "value": "",
+			"detail": tr("Everything here and more is under Options > Accessibility, any time.")})
+		return
+	_rows.append({"id": "a:hold", "kind": "cycle", "label": tr("Hold to attack"), "value": tr("On") if A.hold_attack else tr("Off"),
+		"detail": tr("Keep Attack held to swing again each time the gauge fills.")})
+	var dz_level := roundi(100.0 * (A.deadzone - A.DEADZONE_MIN) / float(A.DEADZONE_MAX - A.DEADZONE_MIN))
+	_rows.append({"id": "a:deadzone", "kind": "slider", "label": tr("Stick deadzone"), "value": "%d%%" % A.deadzone, "level": dz_level,
+		"detail": tr("How far the stick must tilt before you move. Raise it if a worn stick drifts; lower it for small movements.")})
+	_rows.append({"id": "a:auto", "kind": "cycle", "label": tr("Auto-advance dialogue"), "value": Loc.t(A.AUTO_ADVANCE[A.auto_advance]),
+		"detail": tr("Conversations move on by themselves after each line. Any button still moves on at once.")})
+	_rows.append({"id": "text_speed", "kind": "cycle", "label": tr("Text speed"), "value": Dialogue.speed_name(),
+		"detail": tr("Typewriter speed in conversations.")})
+	_rows.append({"id": "shake", "kind": "cycle", "label": tr("Screen shake"), "value": Loc.t(Settings.SHAKES[Settings.shake_i]),
+		"detail": tr("Camera shake on heavy hits and techs.")})
+	_rows.append({"id": "dialogue_log", "kind": "open", "label": tr("Dialogue log"), "value": tr("everything said so far"),
+		"detail": tr("Also on %s while a conversation is open.") % Prompts.key("journal") if Prompts.key("journal") != "" else ""})
+	_rows.append({"id": "a:reset", "kind": "button", "label": tr("Reset accessibility"), "value": "", "detail": ""})
+	_rows.append({"id": "access_back", "kind": "button", "label": tr("Back"), "value": "", "detail": ""})
 
 
 ## The Display page (issue #145). Only what this platform can change.
@@ -163,6 +210,10 @@ func _step(i: int, step: int) -> void:
 		DisplaySettings.step(id.substr(2), step)
 		_rebuild()
 		return
+	if id.begins_with("a:"):
+		_step_access(id.substr(2), step)
+		_rebuild()
+		return
 	match id:
 		"battle_speed":
 			Settings.battle_speed_i = clampi(Settings.battle_speed_i + step, 0, Settings.BATTLE_SPEEDS.size() - 1)
@@ -192,6 +243,27 @@ func _step(i: int, step: int) -> void:
 				return
 	Settings.save()
 	_rebuild()
+
+
+func _step_access(what: String, step: int) -> void:
+	var A := Access
+	match what:
+		"text":
+			A.text_size = clampi(A.text_size + step, 0, A.TEXT_SIZES.size() - 1)
+		"flash":
+			A.reduce_flashing = step > 0
+		"danger":
+			A.danger_patterns = step < 0  # left = Patterned, right = Colour only, in the order shown
+		"tech":
+			A.tech_mode = clampi(A.tech_mode + step, 0, A.TECH_MODES.size() - 1)
+		"hold":
+			A.hold_attack = step > 0
+		"deadzone":
+			A.deadzone = clampi(A.deadzone + step * 5, A.DEADZONE_MIN, A.DEADZONE_MAX)
+			A.apply_deadzone()
+		"auto":
+			A.auto_advance = clampi(A.auto_advance + step, 0, A.AUTO_ADVANCE.size() - 1)
+	A.save()
 
 
 ## Text speed stays where Dialogue has always kept it (user://settings.cfg, [dialogue]).
@@ -224,7 +296,10 @@ func _activate(i: int) -> void:
 			if r["id"] == "save_folder":
 				_open_save_folder()
 				return
-			page = {"fx_page": "fx", "display_page": "display"}.get(r["id"], "controls")
+			if r["id"] == "dialogue_log":
+				DialogueLog.popup(get_parent())
+				return
+			page = {"fx_page": "fx", "display_page": "display", "access_page": "access"}.get(r["id"], "controls")
 			sel = 0
 			_rebuild()
 		"bind":
@@ -234,8 +309,15 @@ func _activate(i: int) -> void:
 			match r["id"]:
 				"back":
 					close()
-				"controls_back", "fx_back", "display_back":
+				"controls_back", "fx_back", "display_back", "access_back":
 					_back()
+				"start":
+					Access.finish_first_boot()
+					close()
+				"a:reset":
+					Access.reset()
+					_say(tr("Accessibility options are back to the defaults."))
+					_rebuild()
 				"fx_reset":
 					for f in Settings.FX:
 						Settings.fx[f[0]] = f[2]
@@ -263,6 +345,12 @@ func _value_index(id: String) -> int:
 		"shake": return Settings.shake_i
 		"tips": return 1 if Settings.tips_enabled() else 0
 		"language": return Loc.languages().find(_language_choice())
+		"a:text": return Access.text_size
+		"a:flash": return 1 if Access.reduce_flashing else 0
+		"a:danger": return 0 if Access.danger_patterns else 1
+		"a:tech": return Access.tech_mode
+		"a:hold": return 1 if Access.hold_attack else 0
+		"a:auto": return Access.auto_advance
 	return -1
 
 
@@ -277,8 +365,10 @@ func _language_choice() -> String:
 func _back() -> void:
 	if listening != "":
 		listening = ""
+	elif page == "first":
+		_activate(_rows.size() - 1)  # backing out of the first-start page is the same as Start
 	elif page != "main":
-		var from: String = {"controls": "controls", "fx": "fx_page", "display": "display_page"}[page]
+		var from: String = {"controls": "controls", "fx": "fx_page", "display": "display_page", "access": "access_page"}[page]
 		page = "main"
 		_rebuild()
 		sel = maxi(0, _rows.map(func(r): return r["id"]).find(from))
@@ -403,11 +493,11 @@ func _process(delta: float) -> void:
 
 
 func _str(font: Font, pos: Vector2, s: String, fsize: int, col: Color) -> void:
-	draw_string(font, pos, s, HORIZONTAL_ALIGNMENT_LEFT, -1, fsize, col)
+	draw_string(font, pos, s, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(fsize), col)
 
 
 func _str_w(font: Font, s: String, fsize: int) -> float:
-	return font.get_string_size(s, HORIZONTAL_ALIGNMENT_LEFT, -1, fsize).x
+	return font.get_string_size(s, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(fsize)).x
 
 
 func _marker(x: float, y: float) -> void:
@@ -416,61 +506,86 @@ func _marker(x: float, y: float) -> void:
 	draw_colored_polygon(PackedVector2Array([Vector2(mx - 2.6, y - 5.5), Vector2(mx + 2.6, y - 5.5), Vector2(mx, y - 10.5)]), GOLD)
 
 
+## A small arrow above or below the rows: more that way.
+func _scroll_mark(at: Vector2, dir: float) -> void:
+	draw_colored_polygon(PackedVector2Array([at + Vector2(-4, 0), at + Vector2(4, 0), at + Vector2(0, 3.0 * dir)]), SOFT)
+
+
 func _draw() -> void:
 	var vs := get_viewport_rect().size
 	var font := ThemeDB.fallback_font
 	draw_rect(Rect2(Vector2.ZERO, vs), Color(0.04, 0.03, 0.07, 0.75))
-	var w := minf(W, vs.x - 16.0)
-	var row_h := ROW_H_CONTROLS if page == "controls" else ROW_H
-	row_h = maxf(ROW_H_CONTROLS, minf(row_h, floorf((vs.y - 92.0) / maxf(_rows.size(), 1))))  # long pages squeeze to fit
-	var h := 40.0 + _rows.size() * row_h + 40.0
+	var w := minf(W * (1.0 + (Access.text_scale() - 1.0) * 0.6), vs.x - 16.0)
+	var row_h := Access.px(ROW_H_CONTROLS if page == "controls" else ROW_H)
+	var min_h := Access.px(ROW_H_CONTROLS)
+	var foot := Access.px(50.0)  # two lines of explanation and the hint line
+	row_h = maxf(min_h, minf(row_h, floorf((vs.y - 52.0 - foot) / maxf(_rows.size(), 1))))  # long pages squeeze to fit
+	var fit := maxi(1, int(floorf((vs.y - 52.0 - foot) / row_h)))  # ...and scroll when squeezing is not enough
+	var shown := mini(_rows.size(), fit)
+	if sel < _first_row:
+		_first_row = sel
+	elif sel >= _first_row + shown:
+		_first_row = sel - shown + 1
+	_first_row = clampi(_first_row, 0, maxi(_rows.size() - shown, 0))
+	var h := 40.0 + shown * row_h + foot
+	var ty := row_h / 2.0 + Access.px(3.0)  # text baseline inside a row
 	_panel = Rect2((vs.x - w) / 2.0, maxf(6.0, (vs.y - h) / 2.0), w, minf(h, vs.y - 12.0))
 	draw_rect(_panel, PANEL)
 	draw_rect(_panel, Color(1, 1, 1, 0.18), false, 1.0)
 	var x0 := _panel.position.x + 24.0
 	var x1 := _panel.end.x - 14.0
-	_str(font, Vector2(x0 - 8, _panel.position.y + 22), {"main": tr("Options"), "controls": tr("Controls"), "fx": tr("Visual effects"), "display": tr("Display")}[page], 16, Color("f3f1ea"))
+	_str(font, Vector2(x0 - 8, _panel.position.y + 22), {"main": tr("Options"), "controls": tr("Controls"), "fx": tr("Visual effects"), "display": tr("Display"),
+		"access": tr("Accessibility"), "first": tr("Before you start")}[page], 16, Color("f3f1ea"))
 	if page == "controls":
-		_str(font, Vector2(x1 - 168, _panel.position.y + 22), tr("Keyboard"), 9, SOFT)
-		_str(font, Vector2(x1 - 70, _panel.position.y + 22), tr("Gamepad"), 9, SOFT)
+		_str(font, Vector2(x1 - Access.px(168.0), _panel.position.y + 22), tr("Keyboard"), 9, SOFT)
+		_str(font, Vector2(x1 - Access.px(70.0), _panel.position.y + 22), tr("Gamepad"), 9, SOFT)
 
 	_row_rects.clear()
 	_left_rects.clear()
 	_right_rects.clear()
 	var y := _panel.position.y + 40.0
+	if _first_row > 0:
+		_scroll_mark(Vector2(_panel.get_center().x, y - 3.0), -1.0)
+	if _first_row + shown < _rows.size():
+		_scroll_mark(Vector2(_panel.get_center().x, y + shown * row_h + 1.0), 1.0)
 	for i in _rows.size():
+		if i < _first_row or i >= _first_row + shown:
+			_row_rects.append(Rect2())  # off the page: nothing to tap
+			_left_rects.append(Rect2())
+			_right_rects.append(Rect2())
+			continue
 		var r: Dictionary = _rows[i]
 		var rr := Rect2(_panel.position.x + 4, y, w - 8, row_h - 2)
 		_row_rects.append(rr)
 		var on_row := i == sel
 		if on_row:
 			draw_rect(rr, Color(1, 1, 1, 0.06))
-			_marker(x0 - 12.0, y + 14)
+			_marker(x0 - 12.0, y + ty)
 		var col := GOLD if on_row else TEXT
-		_str(font, Vector2(x0, y + 14), str(r["label"]), 11, col)
+		_str(font, Vector2(x0, y + ty), str(r["label"]), 11, col)
 		match r["kind"]:
 			"cycle", "slider":
-				var vx := x1 - 150.0
+				var vx := x1 - Access.px(150.0)
 				var lr := Rect2(vx - 4, y, 18, row_h - 2)
 				var rgt := Rect2(x1 - 14, y, 18, row_h - 2)
 				_left_rects.append(lr)
 				_right_rects.append(rgt)
-				_str(font, Vector2(vx, y + 14), "<", 11, col)
-				_str(font, Vector2(x1 - 8, y + 14), ">", 11, col)
+				_str(font, Vector2(vx, y + ty), "<", 11, col)
+				_str(font, Vector2(x1 - 8, y + ty), ">", 11, col)
 				if r["kind"] == "slider":
-					var bar := Rect2(vx + 14, y + 7, 92, 6)
+					var bar := Rect2(vx + 14, y + ty - 7, 92, 6)
 					draw_rect(bar, Color(1, 1, 1, 0.12))
 					draw_rect(Rect2(bar.position, Vector2(bar.size.x * float(r["level"]) / 100.0, bar.size.y)), col)
-					_str(font, Vector2(vx + 110, y + 14), str(r["value"]), 9, col)
+					_str(font, Vector2(vx + 110, y + ty), str(r["value"]), 9, col)
 				else:
 					var vs_text := str(r["value"])
 					var tw := _str_w(font, vs_text, 10)
-					_str(font, Vector2(vx + 70 - tw / 2.0, y + 14), vs_text, 10, col)
+					_str(font, Vector2(vx + 70 - tw / 2.0, y + ty), vs_text, 10, col)
 			"open":
 				_left_rects.append(Rect2())
 				_right_rects.append(Rect2())
 				var t := str(r["value"]) + "  >"
-				_str(font, Vector2(x1 - _str_w(font, t, 9), y + 14), t, 9, col if on_row else SOFT)
+				_str(font, Vector2(x1 - _str_w(font, t, 9), y + ty), t, 9, col if on_row else SOFT)
 			"bind":
 				_left_rects.append(Rect2())
 				_right_rects.append(Rect2())
@@ -478,17 +593,17 @@ func _draw() -> void:
 				var kcol := col
 				if waiting:
 					var blink := Color(GOOD, 0.55 + 0.45 * sin(_t * 8.0))
-					_str(font, Vector2(x1 - 168, y + 14), tr("press a key or button..."), 9, blink)
+					_str(font, Vector2(x1 - Access.px(168.0), y + ty), tr("press a key or button..."), 9, blink)
 				else:
-					_str(font, Vector2(x1 - 168, y + 14), str(r["key"]), 10, kcol)
-					_str(font, Vector2(x1 - 70, y + 14), str(r["pad"]), 10, kcol)
+					_str(font, Vector2(x1 - Access.px(168.0), y + ty), str(r["key"]), 10, kcol)
+					_str(font, Vector2(x1 - Access.px(70.0), y + ty), str(r["pad"]), 10, kcol)
 			_:
 				_left_rects.append(Rect2())
 				_right_rects.append(Rect2())
 		y += row_h
 
 	# Footer: the highlighted row's explanation, a result, or how to drive it.
-	var fy := _panel.end.y - 22.0
+	var fy := _panel.end.y - Access.px(32.0)
 	var detail := ""
 	if sel < _rows.size():
 		detail = str(_rows[sel].get("detail", ""))
@@ -497,7 +612,7 @@ func _draw() -> void:
 	elif listening != "":
 		_str(font, Vector2(x0 - 8, fy), tr("Press the new key or gamepad input for %s.  Esc / Start: cancel.") % Settings.action_label(listening), 9, SOFT)
 	elif detail != "":
-		_str(font, Vector2(x0 - 8, fy), detail, 9, SOFT)
+		draw_multiline_string(font, Vector2(x0 - 8, fy), detail, HORIZONTAL_ALIGNMENT_LEFT, w - 32, Access.fs(9), 2, SOFT)
 	var hint := tr("Up/Down: pick    Left/Right: change    X/B: back") if page != "controls" \
 		else tr("J/A: rebind (keyboard key or gamepad input)    X/B: back")
-	_str(font, Vector2(x0 - 8, fy + 13), hint, 8, DIM)
+	_str(font, Vector2(x0 - 8, fy + Access.px(23.0)), hint, 8, DIM)

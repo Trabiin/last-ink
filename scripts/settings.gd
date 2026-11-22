@@ -134,6 +134,7 @@ static func apply_all() -> void:
 	apply_audio()
 	apply_bindings()
 	DisplaySettings.apply()  # window mode, size, vsync, frame cap, focus handling (issue #145)
+	Access.apply()  # stick deadzone and the other accessibility options (issue #34)
 
 
 # ---------------------------------------------------------------- battle speed and difficulty

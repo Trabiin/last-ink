@@ -321,14 +321,14 @@ func _draw_overlay() -> void:
 		return
 	# Static flecks: the Blank leaking out of it.
 	var rng := RandomNumberGenerator.new()
-	rng.seed = static_seed + int(anim_t * 12.0)
+	rng.seed = static_seed + int(anim_t * (2.0 if Access.reduce_flashing else 12.0))  # reduced flashing: the flecks drift, not flicker
 	for i in 3:
 		var p := Vector2(rng.randf_range(-8, 8), rng.randf_range(-12, 2))
 		overlay.draw_rect(Rect2(p, Vector2(1, 1)), Color(1, 1, 1, 0.9) if i % 2 else Color(0, 0, 0, 0.7))
 	if taunt_t > 0.0:  # Hold the Line: a little orange tag shows who it is locked onto
 		overlay.draw_rect(Rect2(-1.5, -19, 3, 3), Color("f2a65a"))
 	if state == State.WINDUP:
-		overlay.draw_string(ThemeDB.fallback_font, Vector2(-2, -12), "!", HORIZONTAL_ALIGNMENT_LEFT, -1, 10, Color("ff5d5d"))
+		Telegraph.alert(overlay, Vector2(-2, -12), 10)
 	if hp < max_hp:
 		overlay.draw_rect(Rect2(-6, -14, 12, 2), Color(0, 0, 0, 0.6))
 		overlay.draw_rect(Rect2(-6, -14, 12.0 * hp / max_hp, 2), Color("ff6b6b"))

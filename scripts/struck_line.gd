@@ -84,9 +84,8 @@ func _draw() -> void:
 	var start := rect.position + across * thick / 2.0  # one end of the centre line
 	if t < warn:
 		var k := t / warn
-		var blink := 1.0 if k < 0.7 else (0.5 + 0.5 * sin(t * 40.0))
-		draw_rect(rect, Color(1, 0.25, 0.25, (0.08 + 0.18 * k) * blink))
-		draw_rect(rect, Color(1, 0.35, 0.35, 0.35 + 0.4 * k), false, 1.0)
+		var blink := 1.0 if k < 0.7 or Access.reduce_flashing else (0.5 + 0.5 * sin(t * 40.0))
+		Telegraph.rect(self, rect, 1.0, k * blink)
 		var d := 0.0
 		while d < long:
 			draw_line(start + along * d, start + along * minf(d + 4.0, long), Color(INK, 0.55 + 0.4 * k), 1.0)

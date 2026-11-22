@@ -1196,12 +1196,12 @@ func _play_rect() -> Rect2:
 
 func _text(pos: Vector2, s: String, fsize: int, col: Color, outline := 0) -> void:
 	if outline > 0:
-		_cv.draw_string_outline(font, pos, s, HORIZONTAL_ALIGNMENT_LEFT, -1, fsize, outline, Color(0, 0, 0, 0.85 * col.a))
-	_cv.draw_string(font, pos, s, HORIZONTAL_ALIGNMENT_LEFT, -1, fsize, col)
+		_cv.draw_string_outline(font, pos, s, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(fsize), outline, Color(0, 0, 0, 0.85 * col.a))
+	_cv.draw_string(font, pos, s, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(fsize), col)
 
 
 func _text_c(center: Vector2, s: String, fsize: int, col: Color, outline := 0) -> void:
-	var w := font.get_string_size(s, HORIZONTAL_ALIGNMENT_LEFT, -1, fsize).x
+	var w := font.get_string_size(s, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(fsize)).x
 	_text(center - Vector2(w / 2.0, 0), s, fsize, col, outline)
 
 
@@ -1320,7 +1320,7 @@ func _draw_locked_button(r: Rect2, label: String, screen: String) -> bool:
 	UiSkin.panel(_cv, r, "button", Color(0.55, 0.52, 0.5))
 	var note := Help.locked_note(screen)
 	var s := "%s: %s" % [label, note]
-	var w := font.get_string_size(s, HORIZONTAL_ALIGNMENT_LEFT, -1, 8).x
+	var w := font.get_string_size(s, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(8)).x
 	var x := r.get_center().x - (w + 9.0) / 2.0
 	var lk := Vector2(x + 3, r.position.y + 9)  # padlock: shackle over a body
 	_cv.draw_arc(lk + Vector2(0, -2), 2.0, PI, TAU, 6, Color(0.6, 0.57, 0.53), 1.0)
@@ -1384,7 +1384,7 @@ func _draw_resources() -> void:
 		if k == "supplies" and (Empire.hungry or v + int(net["supplies"]) < 0):
 			col = Color("ff8a7a")
 		_text(Vector2(x + 10, 15), str(v), 10, col)
-		var w := font.get_string_size(str(v), HORIZONTAL_ALIGNMENT_LEFT, -1, 10).x
+		var w := font.get_string_size(str(v), HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(10)).x
 		if net.has(k) and int(net[k]) != 0:
 			var n := int(net[k])
 			_text(Vector2(x + 12 + w, 15), ("+%d" if n > 0 else "%d") % n, 8, Color("9fd18b") if n > 0 else Color("ff8a7a"))
@@ -1552,7 +1552,7 @@ func _draw_labels() -> void:
 			var tcol: Color = MissionTypes.TYPE_COLORS[tm["type"]]
 			if tm["blocker"] != "":
 				tcol = tcol.darkened(0.45)
-			_cv.draw_circle(pos + Vector2(-font.get_string_size(Loc.t(MissionTypes.TYPE_NAMES[tm["type"]]), HORIZONTAL_ALIGNMENT_LEFT, -1, 8).x / 2.0 - 5, ty - 3), 2.0 + (0.6 * sin(t * 4.0) if tm["blocker"] == "" else 0.0), tcol)
+			_cv.draw_circle(pos + Vector2(-font.get_string_size(Loc.t(MissionTypes.TYPE_NAMES[tm["type"]]), HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(8)).x / 2.0 - 5, ty - 3), 2.0 + (0.6 * sin(t * 4.0) if tm["blocker"] == "" else 0.0), tcol)
 			_text_c(pos + Vector2(0, ty), Loc.t(MissionTypes.TYPE_NAMES[tm["type"]]), 8, tcol, 3)
 			ty += 10.0
 
@@ -1575,7 +1575,7 @@ func _draw_region_names() -> void:
 		var big := 13 if zoom >= 1.2 else 11
 		# Keep the name out from under the screen buttons along the map's top edge: lower it when the
 		# region reaches further down than they do, or leave it out.
-		var half := font.get_string_size(str(r["name"]).to_upper(), HORIZONTAL_ALIGNMENT_LEFT, -1, big).x / 2.0
+		var half := font.get_string_size(str(r["name"]).to_upper(), HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(big)).x / 2.0
 		var clear_y := MAP_ORIGIN.y + 76.0
 		var bottom := _cell_to_screen((r["bounds"] as Rect2).end).y
 		if pos.y < clear_y and pos.x + half > MAP_ORIGIN.x + 128.0:
@@ -1604,8 +1604,8 @@ func _draw_region_panel(r: Dictionary, x: float, w: float) -> void:
 	_text(Vector2(x, y), str(r.get("mood", "")), 9, Color("e8d9a8"))
 	y += 16
 	var hint: String = r.get("hint", "")
-	_cv.draw_multiline_string(font, Vector2(x, y), hint, HORIZONTAL_ALIGNMENT_LEFT, w, 9, -1, Color(0.85, 0.83, 0.78))
-	y += 13 * ceilf(font.get_string_size(hint, HORIZONTAL_ALIGNMENT_LEFT, -1, 9).x / w) + 10
+	_cv.draw_multiline_string(font, Vector2(x, y), hint, HORIZONTAL_ALIGNMENT_LEFT, w, Access.fs(9), -1, Color(0.85, 0.83, 0.78))
+	y += 13 * ceilf(font.get_string_size(hint, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(9)).x / w) + 10
 	var n: int = (r.get("provinces", []) as Array).size()
 	_text(Vector2(x, y), tr("Provinces"), 9, Color(0.7, 0.68, 0.7))
 	_text(Vector2(x + 60, y), tr("%d, uncharted") % n, 9, Color(0.85, 0.83, 0.78))
@@ -1615,7 +1615,7 @@ func _draw_region_panel(r: Dictionary, x: float, w: float) -> void:
 	_text(Vector2(x + 60, y), (tr("with Chapter %d of the story") % ch) if ch > 0 else tr("later in the story"), 9, Color(0.85, 0.83, 0.78))
 	y += 18
 	_cv.draw_multiline_string(font, Vector2(x, y), tr("Nobody you could send has been past the fog. The Blank's work there waits until the story takes you in, and so does yours."),
-		HORIZONTAL_ALIGNMENT_LEFT, w, 9, -1, Color(0.62, 0.6, 0.62))
+		HORIZONTAL_ALIGNMENT_LEFT, w, Access.fs(9), -1, Color(0.62, 0.6, 0.62))
 	var pr := _play_rect()
 	_text_c(Vector2(pr.get_center().x, pr.position.y + 16), tr("No missions past the fog"), 8, Color(0.45, 0.44, 0.47))
 
@@ -1628,7 +1628,7 @@ func _draw_legend() -> void:
 		_cv.draw_rect(Rect2(x, y - 6, 6, 6), BORDER_COLOR, false, 1.0)
 		var label: String = {"you": tr("Yours"), "free": tr("Unclaimed"), "concord": tr("Concord"), "coven": tr("Coven"), "guild": tr("Guild")}[k]
 		_text(Vector2(x + 9, y), label, 8, Color(0.85, 0.83, 0.78), 3)
-		x += 13 + font.get_string_size(label, HORIZONTAL_ALIGNMENT_LEFT, -1, 8).x + 6
+		x += 13 + font.get_string_size(label, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(8)).x + 6
 
 
 func _draw_panel() -> void:
@@ -1738,11 +1738,11 @@ func _draw_panel() -> void:
 			fogged[q["region"]] = true
 			nb.append(tr("the fog over %s") % territory.region_of(q).get("name", "?"))
 	_text(Vector2(x, y), tr("Borders"), 9, Color(0.7, 0.68, 0.7))
-	_cv.draw_multiline_string(font, Vector2(x + 52, y), ", ".join(nb), HORIZONTAL_ALIGNMENT_LEFT, w - 52, 9, -1, Color(0.85, 0.83, 0.78))
-	y += 13 * ceilf(font.get_string_size(", ".join(nb), HORIZONTAL_ALIGNMENT_LEFT, -1, 9).x / (w - 52)) + 8
+	_cv.draw_multiline_string(font, Vector2(x + 52, y), ", ".join(nb), HORIZONTAL_ALIGNMENT_LEFT, w - 52, Access.fs(9), -1, Color(0.85, 0.83, 0.78))
+	y += 13 * ceilf(font.get_string_size(", ".join(nb), HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(9)).x / (w - 52)) + 8
 
 	# Flavour
-	_cv.draw_multiline_string(font, Vector2(x, y), p["blurb"], HORIZONTAL_ALIGNMENT_LEFT, w, 9, -1, Color(0.62, 0.6, 0.62))
+	_cv.draw_multiline_string(font, Vector2(x, y), p["blurb"], HORIZONTAL_ALIGNMENT_LEFT, w, Access.fs(9), -1, Color(0.62, 0.6, 0.62))
 
 	# Mission button
 	var m := _mission(selected)

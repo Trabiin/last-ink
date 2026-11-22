@@ -134,9 +134,9 @@ func _process(_delta: float) -> void:
 ## A code-drawn name board over a building's door.
 func _draw_plate(c: Node2D) -> void:
 	var font := ThemeDB.fallback_font
-	var w := font.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, 6).x + 8.0
+	var w := font.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(6)).x + 8.0
 	var y := -float(KINDS[kind][3]) * 16.0 * 0.42 if KINDS.has(kind) else _plate_y
 	var r := Rect2(-w / 2.0, y - 7.0, w, 9.0)
 	c.draw_rect(r, Color("3a2a1c"))
 	c.draw_rect(r, Color("c9a46a"), false, 1.0)
-	c.draw_string(font, Vector2(r.position.x + 4.0, y), text, HORIZONTAL_ALIGNMENT_LEFT, -1, 6, Color("f3e3c3"))
+	c.draw_string(font, Vector2(r.position.x + 4.0, y), text, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(6), Color("f3e3c3"))

@@ -181,12 +181,12 @@ func _gui_input(event: InputEvent) -> void:
 # ---------------------------------------------------------------- drawing
 
 func _text(pos: Vector2, s: String, fsize: int, col: Color) -> void:
-	draw_string(font, pos, s, HORIZONTAL_ALIGNMENT_LEFT, -1, fsize, col)
+	draw_string(font, pos, s, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(fsize), col)
 
 
 func _wrap(pos: Vector2, s: String, width: float, fsize: int, col: Color) -> float:
-	draw_multiline_string(font, pos, s, HORIZONTAL_ALIGNMENT_LEFT, width, fsize, -1, col)
-	return font.get_multiline_string_size(s, HORIZONTAL_ALIGNMENT_LEFT, width, fsize).y
+	draw_multiline_string(font, pos, s, HORIZONTAL_ALIGNMENT_LEFT, width, Access.fs(fsize), -1, col)
+	return font.get_multiline_string_size(s, HORIZONTAL_ALIGNMENT_LEFT, width, Access.fs(fsize)).y + (Access.fs(fsize) - fsize)  # bigger text (issue #34) also sits lower on its baseline
 
 
 ## What the row under a hero's name says.
@@ -238,10 +238,10 @@ func _draw() -> void:
 			draw_rect(box.grow(-3), GOLD)
 		var name_col := (GOLD if on else Color("ece6da")) if joined else Color(0.45, 0.44, 0.47)
 		_text(row.position + Vector2(28, 15), r["name"], 10, name_col)
-		var nw := font.get_string_size(r["name"], HORIZONTAL_ALIGNMENT_LEFT, -1, 10).x
+		var nw := font.get_string_size(r["name"], HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(10)).x
 		_text(row.position + Vector2(34 + nw, 15), r["title"], 8, Color(0.6, 0.58, 0.6) if joined else Color(0.38, 0.37, 0.4))
 		var st := _status(id)
-		draw_string(font, row.position + Vector2(28, 28), st[0], HORIZONTAL_ALIGNMENT_LEFT, LIST_W - 34, 8, st[1])
+		draw_string(font, row.position + Vector2(28, 28), st[0], HORIZONTAL_ALIGNMENT_LEFT, LIST_W - 34, Access.fs(8), st[1])
 
 	var gy := 32 + ids.size() * rh + 3
 	_go_rect = Rect2(LIST_X, gy, 150, 22)
@@ -306,9 +306,9 @@ func _draw() -> void:
 	for i in Empire.PARTY_SIZE:
 		var cx := x + w * (i + 0.5) / Empire.PARTY_SIZE
 		if i < party.size():
-			_text(Vector2(cx - font.get_string_size(short_of(party[i]), HORIZONTAL_ALIGNMENT_LEFT, -1, 8).x / 2.0, py + 50), short_of(party[i]), 8, Color("ece6da"))
+			_text(Vector2(cx - font.get_string_size(short_of(party[i]), HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(8)).x / 2.0, py + 50), short_of(party[i]), 8, Color("ece6da"))
 		else:
-			draw_string(font, Vector2(cx - 30, py + 24), Loc.t("empty"), HORIZONTAL_ALIGNMENT_CENTER, 60, 8, Color(0.35, 0.33, 0.38))
+			draw_string(font, Vector2(cx - 30, py + 24), Loc.t("empty"), HORIZONTAL_ALIGNMENT_CENTER, 60, Access.fs(8), Color(0.35, 0.33, 0.38))
 
 	var help := Prompts.help([["updown", "choose"], ["ui_accept", tr("pick or drop")], ["roster", "roster"], ["ui_cancel", "back"]], tr("Tap heroes to pick or drop them"))
 	_text(Vector2(DETAIL_X, vs.y - 4), help, 7, Color(0.5, 0.48, 0.52))

@@ -187,19 +187,19 @@ func _draw_over() -> void:
 		label = tr("BUILDING: ") + label
 	var y := -PLOT.y * 0.5 if lv > 0 else -10.0
 	if highlight or not job.is_empty():
-		var w := font.get_string_size(label, HORIZONTAL_ALIGNMENT_LEFT, -1, 6).x + 8.0
+		var w := font.get_string_size(label, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(6)).x + 8.0
 		var r := Rect2(-w / 2.0, y - 7.0, w, 9.0)
 		_over.draw_rect(r, Color("3a2a1c"))
 		_over.draw_rect(r, Color("e8c65a") if highlight else Color("7d5836"), false, 1.0)
-		_over.draw_string(font, Vector2(r.position.x + 4.0, y), label, HORIZONTAL_ALIGNMENT_LEFT, -1, 6, Color("f3e3c3"))
+		_over.draw_string(font, Vector2(r.position.x + 4.0, y), label, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(6), Color("f3e3c3"))
 	if not job.is_empty():
 		var by := y - 12.0
 		_over.draw_rect(Rect2(-24, by, 48, 4), Color(0.1, 0.08, 0.12, 0.85))
 		_over.draw_rect(Rect2(-24, by, 48 * Empire.job_progress(job), 4), Color("ffd166"))
 		var t := Empire.job_left_text(job)
-		var tw := font.get_string_size(t, HORIZONTAL_ALIGNMENT_LEFT, -1, 6).x
-		_over.draw_string_outline(font, Vector2(-tw / 2.0, by - 2), t, HORIZONTAL_ALIGNMENT_LEFT, -1, 6, 2, Color(0, 0, 0, 0.8))
-		_over.draw_string(font, Vector2(-tw / 2.0, by - 2), t, HORIZONTAL_ALIGNMENT_LEFT, -1, 6, Color("ffd166"))
+		var tw := font.get_string_size(t, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(6)).x
+		_over.draw_string_outline(font, Vector2(-tw / 2.0, by - 2), t, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(6), 2, Color(0, 0, 0, 0.8))
+		_over.draw_string(font, Vector2(-tw / 2.0, by - 2), t, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(6), Color("ffd166"))
 
 
 ## Stakes and rope around an empty plot: pegs with a lit side, rope sagging between them with its shadow on the

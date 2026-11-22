@@ -262,17 +262,17 @@ func _close_rect() -> Rect2:
 # ---------------------------------------------------------------- drawing
 
 func _text(pos: Vector2, s: String, fsize: int, col: Color, width := -1.0) -> void:
-	draw_string(font, pos, s, HORIZONTAL_ALIGNMENT_LEFT, width, fsize, col)
+	draw_string(font, pos, s, HORIZONTAL_ALIGNMENT_LEFT, width, Access.fs(fsize), col)
 
 
 func _text_r(right: Vector2, s: String, fsize: int, col: Color) -> void:
-	var w := font.get_string_size(s, HORIZONTAL_ALIGNMENT_LEFT, -1, fsize).x
+	var w := font.get_string_size(s, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(fsize)).x
 	_text(right - Vector2(w, 0), s, fsize, col)
 
 
 func _wrap(pos: Vector2, s: String, width: float, fsize: int, col: Color) -> float:
-	draw_multiline_string(font, pos, s, HORIZONTAL_ALIGNMENT_LEFT, width, fsize, -1, col)
-	return font.get_multiline_string_size(s, HORIZONTAL_ALIGNMENT_LEFT, width, fsize).y
+	draw_multiline_string(font, pos, s, HORIZONTAL_ALIGNMENT_LEFT, width, Access.fs(fsize), -1, col)
+	return font.get_multiline_string_size(s, HORIZONTAL_ALIGNMENT_LEFT, width, Access.fs(fsize)).y + (Access.fs(fsize) - fsize)  # bigger text (issue #34) also sits lower on its baseline
 
 
 ## A -100..100 standing bar with tier marks.
@@ -303,7 +303,7 @@ func _draw() -> void:
 	_text(Vector2(8, vs.y - 8), help, 7, Color(0.5, 0.48, 0.52))
 	if flash_t > 0.0:
 		var a := clampf(flash_t / 0.4, 0.0, 1.0)
-		var w := minf(font.get_string_size(flash, HORIZONTAL_ALIGNMENT_LEFT, -1, 9).x, vs.x - 40)
+		var w := minf(font.get_string_size(flash, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(9)).x, vs.x - 40)
 		draw_rect(Rect2(vs.x - w - 18, vs.y - 21, w + 12, 15), Color(0.1, 0.08, 0.06, 0.95 * a))
 		_text(Vector2(vs.x - w - 12, vs.y - 10), flash, 9, Color(1, 0.9, 0.7, a), w)
 

@@ -99,19 +99,19 @@ func _input(event: InputEvent) -> void:
 
 func _text(pos: Vector2, s: String, size := 10, col := Color.WHITE, outline := true) -> void:
 	if outline:
-		draw_string_outline(font, pos, s, HORIZONTAL_ALIGNMENT_LEFT, -1, size, 3, Color(0, 0, 0, col.a * 0.85))
-	draw_string(font, pos, s, HORIZONTAL_ALIGNMENT_LEFT, -1, size, col)
+		draw_string_outline(font, pos, s, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(size), 3, Color(0, 0, 0, col.a * 0.85))
+	draw_string(font, pos, s, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(size), col)
 
 
 func _centered(y: float, s: String, size := 10, col := Color.WHITE, outline := true) -> void:
-	var w := font.get_string_size(s, HORIZONTAL_ALIGNMENT_LEFT, -1, size).x
+	var w := font.get_string_size(s, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(size)).x
 	_text(Vector2((_vs().x - w) / 2.0, y), s, size, col, outline)
 
 
 func _button(r: Rect2, label: String) -> void:
 	UiSkin.panel(self, r, "button")
-	var w := font.get_string_size(label, HORIZONTAL_ALIGNMENT_LEFT, -1, 8).x
-	draw_string(font, r.position + Vector2((r.size.x - w) / 2.0, 11), label, HORIZONTAL_ALIGNMENT_LEFT, -1, 8, Color(0.85, 0.82, 0.76))
+	var w := font.get_string_size(label, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(8)).x
+	draw_string(font, r.position + Vector2((r.size.x - w) / 2.0, 11), label, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(8), Color(0.85, 0.82, 0.76))
 
 
 func _prompt_rect() -> Rect2:
@@ -138,7 +138,7 @@ func _draw() -> void:
 		if UiSkin.draw_icon(self, k, Rect2(x - 1, 25, 11, 11)):
 			x += 12.0
 		_text(Vector2(x, 34), s, 8, col, false)
-		x += font.get_string_size(s, HORIZONTAL_ALIGNMENT_LEFT, -1, 8).x + 10.0
+		x += font.get_string_size(s, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(8)).x + 10.0
 	_button(roster_rect(), (tr("Roster  ") + Prompts.key("roster")).strip_edges())
 	_button(buildings_rect(), (tr("Buildings  ") + Prompts.key("buildings")).strip_edges())
 	_button(menu_rect(), tr("Menu"))
@@ -149,8 +149,8 @@ func _draw() -> void:
 		var r := _prompt_rect()
 		UiSkin.panel(self, r, "button")
 		var label := "%s:  %s" % [key, hub.target["label"]]
-		var w := font.get_string_size(label, HORIZONTAL_ALIGNMENT_LEFT, -1, 9).x
-		draw_string(font, r.position + Vector2((r.size.x - w) / 2.0, 14), label, HORIZONTAL_ALIGNMENT_LEFT, -1, 9, Color("ffd166"))
+		var w := font.get_string_size(label, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(9)).x
+		draw_string(font, r.position + Vector2((r.size.x - w) / 2.0, 14), label, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(9), Color("ffd166"))
 
 	if banter_t > 0.0:
 		var a := clampf(banter_t / 0.4, 0.0, 1.0)
@@ -175,21 +175,21 @@ func _draw() -> void:
 	# The story goal, alerts and notices are drawn by the alert tray (alert_tray.gd, issue #22).
 	if help_t > 0.0 and not hub.touch_active():
 		var a4 := clampf(help_t, 0.0, 1.0)
-		_text(Vector2(vs.x - 236, 36), tr("Walk: WASD / arrows / stick"), 8, Color(1, 1, 1, a4))
-		_text(Vector2(vs.x - 236, 47), tr("Talk / use: ") + Prompts.key("attack"), 8, Color(1, 1, 1, a4))
+		_text(Vector2(vs.x - Access.px(236.0), 36), tr("Walk: WASD / arrows / stick"), 8, Color(1, 1, 1, a4))
+		_text(Vector2(vs.x - Access.px(236.0), 36 + Access.px(11.0)), tr("Talk / use: ") + Prompts.key("attack"), 8, Color(1, 1, 1, a4))
 		if Prompts.pad():  # issue #23: the prompts follow the device in use
-			_text(Vector2(vs.x - 236, 58), tr("Clock: %s / %s   Menu: %s") % [Prompts.key("clock_slower"), Prompts.key("clock_faster"), Prompts.key("pause")], 8, Color(1, 1, 1, a4))
-			_text(Vector2(vs.x - 236, 69), tr("Roster %s  Buildings %s  Expeditions %s") % [Prompts.key("roster"), Prompts.key("buildings"), Prompts.key("expeditions")], 8, Color(1, 1, 1, a4))
-			_text(Vector2(vs.x - 236, 80), tr("Everything else: the Menu"), 8, Color(1, 1, 1, a4))
+			_text(Vector2(vs.x - Access.px(236.0), 36 + Access.px(22.0)), tr("Clock: %s / %s   Menu: %s") % [Prompts.key("clock_slower"), Prompts.key("clock_faster"), Prompts.key("pause")], 8, Color(1, 1, 1, a4))
+			_text(Vector2(vs.x - Access.px(236.0), 36 + Access.px(33.0)), tr("Roster %s  Buildings %s  Expeditions %s") % [Prompts.key("roster"), Prompts.key("buildings"), Prompts.key("expeditions")], 8, Color(1, 1, 1, a4))
+			_text(Vector2(vs.x - Access.px(236.0), 36 + Access.px(44.0)), tr("Everything else: the Menu"), 8, Color(1, 1, 1, a4))
 		else:  # read from the InputMap, so remapped keys show (issue #115)
-			_text(Vector2(vs.x - 236, 58), tr("Clock: %s-%s   Menu: %s   Journal: %s") % [Prompts.key("clock_speed_0"), Prompts.key("clock_speed_3"),
+			_text(Vector2(vs.x - Access.px(236.0), 36 + Access.px(22.0)), tr("Clock: %s-%s   Menu: %s   Journal: %s") % [Prompts.key("clock_speed_0"), Prompts.key("clock_speed_3"),
 				Prompts.key("pause"), Prompts.key("journal")], 8, Color(1, 1, 1, a4))
 			var keys := PackedStringArray()
 			for a in [["roster", tr("Roster")], ["buildings", tr("Buildings")], ["research", tr("Research")], ["diplomacy", tr("Factions")], ["bonds", tr("Bonds")], ["newcomers", tr("Newcomers")]]:
 				if Prompts.key(a[0]) != "" and Help.is_open(a[0]):
 					keys.append("%s %s" % [a[1], Prompts.key(a[0])])
-			_text(Vector2(vs.x - 236, 69), "  ".join(keys), 8, Color(1, 1, 1, a4))
-			_text(Vector2(vs.x - 236, 80), tr("F1: show or hide this   Help: in the Menu"), 8, Color(1, 1, 1, a4))
+			_text(Vector2(vs.x - Access.px(236.0), 36 + Access.px(33.0)), "  ".join(keys), 8, Color(1, 1, 1, a4))
+			_text(Vector2(vs.x - Access.px(236.0), 36 + Access.px(44.0)), tr("F1: show or hide this   Help: in the Menu"), 8, Color(1, 1, 1, a4))
 
 
 func _wrap_lines(s: String, width: float, size: int) -> PackedStringArray:
@@ -197,7 +197,7 @@ func _wrap_lines(s: String, width: float, size: int) -> PackedStringArray:
 	var cur := ""
 	for word in s.split(" "):
 		var test := word if cur == "" else cur + " " + word
-		if font.get_string_size(test, HORIZONTAL_ALIGNMENT_LEFT, -1, size).x > width and cur != "":
+		if font.get_string_size(test, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(size)).x > width and cur != "":
 			out.append(cur)
 			cur = word
 		else:

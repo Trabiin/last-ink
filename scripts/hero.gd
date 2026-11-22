@@ -483,8 +483,8 @@ func _update_frame() -> void:
 	if body_sprite == null:
 		return
 	_refresh_art()
-	var blink := invuln_t > 0.0 and not dead and int(invuln_t * 20.0) % 2 == 0
-	modulate.a = 0.3 if vanish_t > 0.0 else (0.45 if blink else 1.0)  # Lamps Out: a shadow of herself
+	var blink := invuln_t > 0.0 and not dead and Access.strobe(invuln_t, 10.0)
+	modulate.a = 0.3 if vanish_t > 0.0 else ((0.7 if Access.reduce_flashing else 0.45) if blink else 1.0)  # reduced: held see-through, no blinking  # Lamps Out: a shadow of herself
 	if art != null:
 		_update_art()
 		return

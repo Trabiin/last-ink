@@ -256,24 +256,24 @@ func _close_rect() -> Rect2:
 # ---------------------------------------------------------------- drawing
 
 func _text(pos: Vector2, s: String, fsize: int, col: Color, width := -1.0) -> void:
-	draw_string(font, pos, s, HORIZONTAL_ALIGNMENT_LEFT, width, fsize, col)
+	draw_string(font, pos, s, HORIZONTAL_ALIGNMENT_LEFT, width, Access.fs(fsize), col)
 
 
 func _text_c(center: Vector2, s: String, fsize: int, col: Color, width := -1.0) -> void:
-	var w := font.get_string_size(s, HORIZONTAL_ALIGNMENT_LEFT, width, fsize).x
+	var w := font.get_string_size(s, HORIZONTAL_ALIGNMENT_LEFT, width, Access.fs(fsize)).x
 	if width > 0.0:
 		w = minf(w, width)
 	_text(Vector2(center.x - w / 2.0, center.y), s, fsize, col, width)
 
 
 func _text_r(right: Vector2, s: String, fsize: int, col: Color) -> void:
-	var w := font.get_string_size(s, HORIZONTAL_ALIGNMENT_LEFT, -1, fsize).x
+	var w := font.get_string_size(s, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(fsize)).x
 	_text(right - Vector2(w, 0), s, fsize, col)
 
 
 func _wrap(pos: Vector2, s: String, width: float, fsize: int, col: Color) -> float:
-	draw_multiline_string(font, pos, s, HORIZONTAL_ALIGNMENT_LEFT, width, fsize, -1, col)
-	return font.get_multiline_string_size(s, HORIZONTAL_ALIGNMENT_LEFT, width, fsize).y
+	draw_multiline_string(font, pos, s, HORIZONTAL_ALIGNMENT_LEFT, width, Access.fs(fsize), -1, col)
+	return font.get_multiline_string_size(s, HORIZONTAL_ALIGNMENT_LEFT, width, Access.fs(fsize)).y + (Access.fs(fsize) - fsize)  # bigger text (issue #34) also sits lower on its baseline
 
 
 func _draw() -> void:
@@ -282,7 +282,7 @@ func _draw() -> void:
 	var cr := _close_rect()
 	UiSkin.panel(self, cr, "button")
 	_text(cr.position + Vector2(9, 12), tr("Close"), 9, Color(0.75, 0.72, 0.7))
-	draw_string(UiSkin.TITLE_FONT, Vector2(8, 20), tr("Skill tree"), HORIZONTAL_ALIGNMENT_LEFT, -1, 16, PAPER)
+	draw_string(UiSkin.TITLE_FONT, Vector2(8, 20), tr("Skill tree"), HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(16), PAPER)
 	_hero_rects.clear()
 	_node_rects.clear()
 	_reset_rect = Rect2()
@@ -302,7 +302,7 @@ func _draw() -> void:
 	_text(Vector2(8, vs.y - 5), help, 7, Color(0.5, 0.48, 0.52))
 	if flash_t > 0.0:
 		var a := clampf(flash_t / 0.4, 0.0, 1.0)
-		var fw := font.get_string_size(flash, HORIZONTAL_ALIGNMENT_LEFT, -1, 9).x
+		var fw := font.get_string_size(flash, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(9)).x
 		var fr := Rect2(vs.x - fw - 20, vs.y - 34, fw + 12, 15)
 		draw_rect(fr, Color(0.1, 0.08, 0.06, 0.95 * a))
 		draw_rect(fr, Color(GOLD, 0.5 * a), false, 1.0)
@@ -469,7 +469,7 @@ func _draw_details(area: Rect2) -> void:
 	var col := _node_color(id, sel)
 	var branch_name := tr("Root") if int(inf["branch"]) < 0 else str(SkillTree.branches(id)[int(inf["branch"])].get("name", ""))
 	var tag := branch_name if int(inf["branch"]) < 0 else "%s, %s" % [branch_name, tr("capstone") if SkillTree.is_capstone(sel) else tr("step %d of 5") % int(inf["tier"])]
-	draw_string(UiSkin.TITLE_FONT, Vector2(x, y + 2), str(n.get("name", "?")), HORIZONTAL_ALIGNMENT_LEFT, w, 14, col.lightened(0.35))
+	draw_string(UiSkin.TITLE_FONT, Vector2(x, y + 2), str(n.get("name", "?")), HORIZONTAL_ALIGNMENT_LEFT, w, Access.fs(14), col.lightened(0.35))
 	y += 13
 	_text(Vector2(x, y), tag, 8, col.lightened(0.1), w)
 	_text_r(Vector2(area.end.x - 8, y), tr("%d Skill Point%s") % [SkillTree.cost(sel), "" if SkillTree.cost(sel) == 1 else "s"], 8, GOLD)

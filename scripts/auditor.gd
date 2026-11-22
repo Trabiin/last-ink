@@ -399,8 +399,7 @@ func _draw() -> void:
 		var len := THRUST_LEN + 24.0
 		draw_set_transform(Vector2.ZERO, aim_dir.angle(), Vector2.ONE)
 		var r := Rect2(0, -THRUST_WIDTH / 2.0, len, THRUST_WIDTH)
-		draw_rect(Rect2(0, -THRUST_WIDTH / 2.0, len * minf(k / LOCK_AT, 1.0), THRUST_WIDTH), Color(1, 0.25, 0.25, 0.32 if locked else 0.16))
-		draw_rect(r, Color(1, 0.35, 0.35, 0.95 if locked else 0.45), false, 1.0)
+		Telegraph.rect(self, r, minf(k / LOCK_AT, 1.0), 1.0 if locked else 0.1)
 		if locked:
 			draw_line(Vector2(0, 0), Vector2(len, 0), Color(1, 0.8, 0.8, 0.6), 1.0)
 		draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
@@ -412,7 +411,7 @@ func _draw_overlay() -> void:
 		return
 	if art != null:  # the sprite carries the hat and the quill; only the tells are drawn
 		if dying_t < 0.0 and (act == Act.LINES or act == Act.TRANSITION):
-			overlay.draw_string(ThemeDB.fallback_font, Vector2(-3, -64), "!", HORIZONTAL_ALIGNMENT_LEFT, -1, 12, Color("ff5d5d"))
+			Telegraph.alert(overlay, Vector2(-3, -64), 12)
 		if taunt_t > 0.0:
 			overlay.draw_rect(Rect2(-1.5, -66, 3, 3), Color("f2a65a"))
 		if phase == 2 and dying_t < 0.0:  # ink drips from the nib
@@ -444,7 +443,7 @@ func _draw_overlay() -> void:
 			base = hand + Vector2(0, -6) - dir * 10.0
 	_draw_quill(base, dir, 44.0)
 	if act == Act.LINES or act == Act.TRANSITION:
-		overlay.draw_string(ThemeDB.fallback_font, Vector2(-3, -52), "!", HORIZONTAL_ALIGNMENT_LEFT, -1, 12, Color("ff5d5d"))
+		Telegraph.alert(overlay, Vector2(-3, -52), 12)
 	if taunt_t > 0.0:
 		overlay.draw_rect(Rect2(-1.5, -52, 3, 3), Color("f2a65a"))
 

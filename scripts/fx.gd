@@ -31,9 +31,13 @@ static func burst(parent: Node, pos: Vector2, cols: Array, count := 14, speed :=
 	f.position = pos
 	f.max_life = 0.55
 	f.z_index = 40
-	for i in count:
+	var calm := Access.reduce_flashing  # issue #34: no pure white sparks, fewer of them
+	for i in (count if not calm else ceili(count * 0.6)):
 		var dir := Vector2.RIGHT.rotated(randf() * TAU)
-		f.particles.append([Vector2.ZERO, dir * randf_range(speed * 0.3, speed), randf_range(1.0, 3.0), cols[i % cols.size()]])
+		var col: Color = cols[i % cols.size()]
+		if calm and col.v > 0.9 and col.s < 0.15:
+			col = Color(0.78, 0.76, 0.72)
+		f.particles.append([Vector2.ZERO, dir * randf_range(speed * 0.3, speed), randf_range(1.0, 3.0), col])
 	parent.add_child(f)
 
 
@@ -82,10 +86,10 @@ func _draw() -> void:
 	if kind == Kind.NUMBER:
 		var font := ThemeDB.fallback_font
 		var size := 8
-		var w := font.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, size).x
+		var w := font.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(size)).x
 		for o in [Vector2(-1, 0), Vector2(1, 0), Vector2(0, -1), Vector2(0, 1)]:
-			draw_string(font, Vector2(-w / 2.0, 0) + o, text, HORIZONTAL_ALIGNMENT_LEFT, -1, size, Color(0, 0, 0, a))
-		draw_string(font, Vector2(-w / 2.0, 0), text, HORIZONTAL_ALIGNMENT_LEFT, -1, size, Color(color, a))
+			draw_string(font, Vector2(-w / 2.0, 0) + o, text, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(size), Color(0, 0, 0, a))
+		draw_string(font, Vector2(-w / 2.0, 0), text, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(size), Color(color, a))
 	elif kind == Kind.SWEEP:
 		var t := life / max_life
 		var rr := radius * (0.6 + 0.4 * t)

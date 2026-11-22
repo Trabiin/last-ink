@@ -180,8 +180,8 @@ class BossBar extends Control:
 		var a := shown
 		var f := ThemeDB.fallback_font
 		var title: String = fight.info["name"]
-		draw_string_outline(f, Vector2(x, y - 4), title, HORIZONTAL_ALIGNMENT_LEFT, -1, 10, 3, Color(0, 0, 0, 0.85 * a))
-		draw_string(f, Vector2(x, y - 4), title, HORIZONTAL_ALIGNMENT_LEFT, -1, 10, Color(0.96, 0.92, 0.82, a))
+		draw_string_outline(f, Vector2(x, y - 4), title, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(10), 3, Color(0, 0, 0, 0.85 * a))
+		draw_string(f, Vector2(x, y - 4), title, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(10), Color(0.96, 0.92, 0.82, a))
 		draw_rect(Rect2(x - 2, y - 1, w + 4, 9), Color(0.05, 0.04, 0.08, 0.8 * a))
 		var r := 0.0
 		var phase := 1
@@ -193,6 +193,6 @@ class BossBar extends Control:
 		var px := x + w * Auditor.PHASE2_AT  # where Final Notice starts
 		draw_line(Vector2(px, y - 1), Vector2(px, y + 8), Color(0.96, 0.92, 0.82, 0.8 * a), 1.0)
 		var sub: String = fight.info["title"] if phase == 1 else tr("Final Notice")
-		var sw := f.get_string_size(sub, HORIZONTAL_ALIGNMENT_LEFT, -1, 7).x
-		draw_string_outline(f, Vector2(x + w - sw, y - 4), sub, HORIZONTAL_ALIGNMENT_LEFT, -1, 7, 2, Color(0, 0, 0, 0.8 * a))
-		draw_string(f, Vector2(x + w - sw, y - 4), sub, HORIZONTAL_ALIGNMENT_LEFT, -1, 7, Color(0.8, 0.76, 0.68, a) if phase == 1 else Color("ff8a7a", a))
+		var sw := f.get_string_size(sub, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(7)).x
+		draw_string_outline(f, Vector2(x + w - sw, y - 4), sub, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(7), 2, Color(0, 0, 0, 0.8 * a))
+		draw_string(f, Vector2(x + w - sw, y - 4), sub, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(7), Color(0.8, 0.76, 0.68, a) if phase == 1 else Color("ff8a7a", a))

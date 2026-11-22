@@ -32,6 +32,8 @@ func before_each() -> void:
 	DirAccess.remove_absolute(STATE)
 	for t in Help.topics():
 		Help.mark(t["id"])
+	Access.load_settings()
+	Access.first_boot_done = true  # these tests drive the title as a returning player (the first-start page is test_access)
 
 
 func after_each() -> void:
