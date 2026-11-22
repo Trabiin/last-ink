@@ -3,40 +3,39 @@ extends StaticBody2D
 ##
 ## Each kind is one line here, so swapping a sprite never touches the maps or the code that places them.
 
-## kind -> [tile x, tile y, width, height (tiles), collision radius, optional collision box,
-## optional source rect in pixels (when the art is not on the 16px grid)]
+## kind -> [tile x, tile y, width, height (tiles), optional source rect in pixels (when the art is not on the
+## 16px grid)]: the CC0 fallback art and the tile footprint a big prop is anchored by on the map. Collision comes
+## from data/footprints.json (scripts/footprints.gd), traced from the art pass sprite.
 const KINDS := {
-	"bush": [5, 16, 2, 2, 11.0],
-	"shrub": [2, 14, 1, 1, 6.0],
-	"rock_big": [4, 1, 2, 2, 11.0],
-	"rock": [7, 5, 1, 1, 6.0],
-	"stump": [31, 3, 2, 2, 11.0],
-	"skull": [28, 2, 1, 1, 0.0],
-	"bones": [29, 2, 1, 1, 0.0],
-	"sign": [34, 2, 1, 1, 5.0],
-	"pond": [2, 9, 2, 2, 13.0],
+	"bush": [5, 16, 2, 2],
+	"shrub": [2, 14, 1, 1],
+	"rock_big": [4, 1, 2, 2],
+	"rock": [7, 5, 1, 1],
+	"stump": [31, 3, 2, 2],
+	"skull": [28, 2, 1, 1],
+	"bones": [29, 2, 1, 1],
+	"sign": [34, 2, 1, 1],
+	"pond": [2, 9, 2, 2],
 	# Hollowmark
-	"house": [6, 0, 5, 5, 0.0, Vector2(72, 40)],
-	"townhall": [6, 0, 5, 5, 0.0, Vector2(72, 40)],
-	"tavern": [6, 0, 5, 5, 0.0, Vector2(72, 40)],
-	"barn": [11, 0, 5, 5, 0.0, Vector2(72, 40)],
-	"stores": [11, 0, 5, 5, 0.0, Vector2(72, 40)],
-	"stall": [18, 22, 4, 5, 0.0, Vector2(58, 14)],
-	"fountain": [22, 9, 3, 3, 0.0, Vector2(42, 26)],
-	"crates": [30, 0, 2, 2, 0.0, Vector2(28, 14)],
-	"barrels": [33, 0, 2, 1, 0.0, Vector2(26, 8)],
-	"produce": [24, 20, 5, 2, 0.0, Vector2(36, 10)],
-	"bench": [28, 4, 3, 1, 0.0, Vector2(40, 6)],
-	"banner": [5, 27, 1, 2, 3.0],
-	"grave": [0, 0, 1, 2, 0.0, Vector2(16, 6), Rect2(566, 82, 22, 26)],
+	"house": [6, 0, 5, 5],
+	"townhall": [6, 0, 5, 5],
+	"tavern": [6, 0, 5, 5],
+	"barn": [11, 0, 5, 5],
+	"stores": [11, 0, 5, 5],
+	"stall": [18, 22, 4, 5],
+	"fountain": [22, 9, 3, 3],
+	"crates": [30, 0, 2, 2],
+	"barrels": [33, 0, 2, 1],
+	"produce": [24, 20, 5, 2],
+	"bench": [28, 4, 3, 1],
+	"banner": [5, 27, 1, 2],
+	"grave": [0, 0, 1, 2, Rect2(566, 82, 22, 26)],
 	# Art pass only (no CC0 fallback worth keeping: they fall back to crates)
-	"well": [30, 0, 3, 3, 0.0, Vector2(34, 18)],
-	"cart": [30, 0, 3, 2, 0.0, Vector2(36, 14)],
-	"lamppost": [30, 0, 1, 2, 3.0],
-	"noticeboard": [30, 0, 3, 2, 0.0, Vector2(36, 6)],
+	"well": [30, 0, 3, 3],
+	"cart": [30, 0, 3, 2],
+	"lamppost": [30, 0, 1, 2],
+	"noticeboard": [30, 0, 3, 2],
 }
-## Small growth you walk through (no collision).
-const NOBLOCK := ["fern", "drygrass", "reeds", "lilypad", "planks", "dock", "roots", "fungus", "inkspring"]
 ## Flat things lie on the ground: always drawn under characters.
 const FLAT := ["pond", "bones", "skull", "garden", "lilypad", "planks", "inkspring", "dock"]
 
@@ -44,6 +43,17 @@ var kind := "bush"
 var text := ""  # sign text, or a building's name plate
 var _plate_y := 0.0
 var seed_v := 0
+var collision_poly := PackedVector2Array()  # the footprint this prop stands on (empty: walk-through)
+
+
+## The collision polygon for a kind: its traced footprint, nothing for walk-through growth, and for art that has
+## no entry yet (tests/test_footprints.gd fails on that) a box from the sprite's size so it is never walk-through.
+static func footprint_poly(k: String, sprite_size: Vector2, has_art: bool) -> PackedVector2Array:
+	if Footprints.has("props", k):
+		return Footprints.poly("props", k)
+	if not has_art and KINDS.has(k):
+		return Footprints.box(Vector2(KINDS[k][2] * 16.0 * 0.8, maxf(KINDS[k][3] * 16.0 * 0.35, 4.0)))
+	return Footprints.box(Vector2(sprite_size.x * 0.8, clampf(sprite_size.y * 0.32, 4.0, 60.0)))
 
 
 static func footprint(k: String) -> Vector2i:
@@ -56,13 +66,13 @@ func _ready() -> void:
 	collision_layer = 1
 	if kind in FLAT:
 		z_index = -1
-	var k: Array = KINDS.get(kind, [30, 0, 1, 1, 0.0])
+	var k: Array = KINDS.get(kind, [30, 0, 1, 1])
 	var spr := Sprite2D.new()
-	spr.texture = Art.region(k[6]) if k.size() > 6 else Art.tile_region(k[0], k[1], k[2], k[3])
+	spr.texture = Art.region(k[4]) if k.size() > 4 else Art.tile_region(k[0], k[1], k[2], k[3])
 	var art_path := "res://assets/props/%s.png" % kind  # art pass sprite, trimmed to its pixels
 	var has_art := ResourceLoader.exists(art_path)
 	if has_art:
-		spr.texture = load(_variant(art_path))
+		spr.texture = load(variant_path(art_path, seed_v))
 	spr.centered = true
 	# Bottom of the sprite sits a few pixels below the origin, so Y-sorting feels right.
 	spr.offset = Vector2(0, -spr.texture.get_height() / 2.0 + 3.0)
@@ -77,25 +87,10 @@ func _ready() -> void:
 	add_child(spr)
 	if has_art and not kind in FLAT and spr.texture.get_height() > 12:
 		Art.add_cast_shadow(self, spr.texture, 3.0)
-	if not KINDS.has(kind) and has_art and not kind in NOBLOCK:  # free-standing art: a footprint box from the sprite's size
-		k = k + [Vector2(spr.texture.get_width() * 0.8, minf(spr.texture.get_height() * 0.3, 28.0))]
-	if k.size() > 5:
-		var box: Vector2 = k[5]
-		var rect := RectangleShape2D.new()
-		rect.size = box
-		var colb := CollisionShape2D.new()
-		colb.shape = rect
-		colb.position = Vector2(0, -box.y / 2.0)
-		add_child(colb)
-		if has_art and not kind in FLAT:
-			Art.add_occluder(self, Vector2(box.x * 0.9, maxf(box.y * 0.6, 4.0)))
-	elif k[4] > 0.0:
-		var shape := CircleShape2D.new()
-		shape.radius = k[4]
-		var col := CollisionShape2D.new()
-		col.shape = shape
-		col.position = Vector2(0, -2)
-		add_child(col)
+	var pts := footprint_poly(footprint_key(kind, seed_v) if has_art else kind, spr.texture.get_size(), has_art)
+	collision_poly = pts
+	if Footprints.attach(self, pts) != null and has_art and not kind in FLAT:
+		Art.add_footprint_occluder(self, pts)
 	if kind == "lamppost" and has_art:
 		_add_lamp_light(spr.texture.get_height())
 	if text != "" and kind != "sign":
@@ -108,13 +103,23 @@ func _ready() -> void:
 
 ## Recoloured copies (<kind>_v1.png, _v2..., made by tools/depth_pass.py) so a repeated prop doesn't read as a
 ## copy: each placement picks one from its map position.
-func _variant(path: String) -> String:
+static func variant_path(path: String, pick: int) -> String:
 	var opts := [path]
 	var i := 1
 	while ResourceLoader.exists(path.replace(".png", "_v%d.png" % i)):
 		opts.append(path.replace(".png", "_v%d.png" % i))
 		i += 1
-	return opts[posmod(seed_v * 7 + seed_v / 5, opts.size())]
+	return opts[posmod(pick * 7 + pick / 5, opts.size())]
+
+
+## The footprint entry a placement uses: its variant's own when that variant is shaped differently (a different
+## tree, another house), else the kind's (data/footprints.json, tools/footprints.py).
+static func footprint_key(k: String, pick: int) -> String:
+	var path := "res://assets/props/%s.png" % k
+	if not ResourceLoader.exists(path):
+		return k
+	var v := variant_path(path, pick).get_file().get_basename()
+	return v if Footprints.has("props", v) else k
 
 
 ## Street lamps glow after dark (the light follows the clock, like Ambience's lantern).

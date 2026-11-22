@@ -13,6 +13,8 @@ func _initialize() -> void:
 	for a in OS.get_cmdline_user_args():
 		var kv := a.split("=", true, 1)
 		args[kv[0]] = kv[1] if kv.size() > 1 else "1"
+	if args.has("collisions"):  # collisions=1: draw every collision shape (footprint review, data/footprints.json)
+		debug_collisions_hint = true
 
 
 func _process(_delta: float) -> bool:
@@ -83,6 +85,8 @@ func _process(_delta: float) -> bool:
 				for k in str(args["kinds"]).split(","):
 					load("res://scripts/enemy_kinds.gd").spawn(cur.entities, pos + Vector2(50 + 36 * i, -10 + 24 * (i % 2)), cur.mission, k)
 					i += 1
+	if args.has("walk") and frame == 21:  # walk=left (up/down/right): Ash walks that way until the shot, into a wall
+		Input.action_press("move_" + str(args["walk"]))
 	if args.has("zoom") and frame == 22 and current_scene != null and "camera" in current_scene:
 		current_scene.camera.zoom = Vector2.ONE * float(args["zoom"])  # wider overview shots
 		current_scene.camera.reset_smoothing()

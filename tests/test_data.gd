@@ -486,13 +486,11 @@ func test_every_speaker_has_a_portrait() -> void:
 
 ## Every building has an art pass sprite for every level, and the Command Table has its sprite.
 func test_every_building_level_has_art() -> void:
-	var looks: Dictionary = load("res://scripts/building_site.gd").get_script_constant_map()["LOOKS"]
 	for b in D["buildings.json"]["buildings"]:
 		var look := str(b.get("look", ""))
 		if look == "table":
 			check(_res("res://assets/props/command_table.png"), "buildings.json %s: no assets/props/command_table.png" % b["id"])
 			continue
-		check(looks.has(look), "buildings.json %s: look %s has no collision box in building_site.gd" % [b["id"], look])
 		for lv in range(1, b.get("levels", []).size() + 1):
 			var p := "res://assets/buildings/%s_%d.png" % [look, lv]
 			check(_res(p), "buildings.json %s: level %d has no art %s" % [b["id"], lv, p])
