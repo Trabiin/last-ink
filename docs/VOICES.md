@@ -183,8 +183,9 @@ The world borrows its regions from British and French sources (docs/NAMING.md 2.
 ## 5. Voice sheets
 
 Each sheet: how they talk, their tics (words and moves they own), what they never say, and sample lines. Lines
-marked *(in game)* are from the current script and show the voice at its best; unmarked lines are new examples
-written to this sheet.
+marked *(in game)* show the voice as first written, before the dialect pass (2026-11-22); lines marked *With
+dialect* show how the character sounds now, and the script has been rewritten to match. Unmarked lines are new
+examples written to this sheet.
 
 ### Narrator
 - **Talks:** present tense, plain, dry. Short sentences. Hands, objects, weather, the Blank's behaviour. One odd

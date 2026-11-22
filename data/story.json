@@ -10,71 +10,71 @@
 	"talks": {
 		"ch1_arrest": {"title": "Chapter 1  ·  No Such Person", "lines": [
 			["", "Hollowmark: a wall, a well, a few hundred people pretending the horizon is not getting closer. Bran walks you in through the south gate like a man delivering a parcel he has not been paid for yet."],
-			["bran", "Right. Tax office first. Everyone who comes through here gets written down. Then we find out what you're worth."],
+			["bran", "Right. Tax office first. Everyone who comes through 'ere gets written down. Then we find out what you're worth."],
 			["clerk", "Next. Name?"],
 			["", "You say nothing. You have nothing to say it with."],
 			["clerk", "Name, please. For the Ledger."],
 			["bran", "Ash. Put Ash. Ash, of nowhere, occupation: lucky.", "smug"],
 			["clerk", "There is no Ash in the Ledger. There is nobody of nowhere in the Ledger. There is, in fact, nothing at all where you are standing.", "surprised"],
-			["clerk", "I'm afraid the Concord cannot process you. And anything the Concord cannot process is, by statute, a violation."],
+			["clerk", "I regret the Concord cannot process you. And anything the Concord cannot process is, per statute, a violation."],
 			["warden", "Existing without authorization. Come along."],
-			["bran", "Hey. Hey! That's my discovery. I found that. I have a prior claim!", "angry"],
+			["bran", "Hey. Hey! That's my discovery. I found that. I got a prior claim!", "angry"],
 			["", "The cell is small, clean, and has a window exactly the size of a person who will never fit through it. Night comes down. Somewhere to the east, the Blank hums to itself."],
 			["", "Then the humming gets closer."]
 		]},
 		"ch1_breakout_intro": {"title": "Chapter 1  ·  No Such Person", "lines": [
 			["", "A key scrapes in the lock. The east wall of the tax office is... not there anymore. Just white, eating its way along the stone like frost."],
 			["bran", "Evening. Don't get up on my account. Actually, do get up, the building's being eaten."],
-			["bran", "Breaking you out is a service. Services cost money. You'll pay me later, when you have some. With interest.", "smug"],
-			["bran", "The wardens are still more scared of paperwork than of the Blank, so they'll try to stop us. Put them down, mind the Nibblers, and we walk out the front like taxpayers."]
+			["bran", "Breakin' you out's a service. Services cost money. You'll pay me later, when you got some. With interest.", "smug"],
+			["bran", "Wardens are still more scared of paperwork than of the Blank, so they'll try to stop us. Put 'em down, mind the Nibblers, and we walk out the front like taxpayers."]
 		]},
 		"ch1_recaptured": {"title": "Chapter 1  ·  No Such Person", "lines": [
 			["", "The wardens drag you back to the cell. It is smaller than you remember. The Blank is louder."],
-			["bran", "That was a practice run. This time, try hitting the ones in uniform.", "angry"]
+			["bran", "That was a practice run. This time, try 'itting the ones in uniform.", "angry"]
 		]},
 		"ch1_takeover": {"title": "Chapter 1  ·  No Such Person", "lines": [
 			["", "Dawn. The square is full of people in nightclothes, staring at the place where the tax office used to be. It is a neat white hole now, with a few desks at the edge, still being filed."],
 			["", "At the rim of the white stands a woman in a pale archivist's coat, hands folded, watching it eat. She notices you. She does not look surprised. She looks interested."],
-			["verity", "Oh. So you're the one it gave back. How rude of it. It never gives anything back."],
+			["verity", "Oh. So you are the one it gave back. How rude of it. It never gives anything back, you know."],
 			["verity", "I'm sorry about the building. Well. Not very. Do you know how many families that office struck out of the Ledger for being three coins short?", "sad"],
-			["verity", "We'll speak again, I think. You have the look of someone who's about to be very inconvenient."],
+			["verity", "We shall speak again, I should think. You have the look of someone who is about to be rather inconvenient."],
 			["", "She steps backward into the white, and the white closes behind her like a door."],
-			["governor", "Out of my way! The Ledger will hear of this! I'm going to be writing reports for a decade!", "angry"],
+			["governor", "Out of my way! The Ledger shall hear of this, I say! I shall be writing reports for a decade!", "angry"],
 			["", "Governor Thale's carriage rattles out of the north gate at a speed carriages are not built for. He takes the town seal with him. He does not take the town."],
-			["quill", "Well. Hollowmark now has no governor, no tax office and no legal standing. By Concord law, nobody may run it."],
+			["quill", "Well. Hollowmark now has no governor, no tax office and no legal standing. Per Concord law, nobody may run it."],
 			["quill", "And you, according to the Ledger, are nobody. I hate how well that works.", "smug"],
-			["tobble", "Oh, that's perfect. Nobody running the place. Half the town's been wishing for that for years.", "happy"],
-			["bran", "I'm hearing 'unregistered town with no tax collector.' I'm hearing a business opportunity.", "smug"],
+			["tobble", "Oh, that's grand. Nobody running the place. Half the town's been wishing for that for years.", "happy"],
+			["bran", "I'm 'earing 'unregistered town with no tax collector.' I'm hearing a business opportunity.", "smug"],
 			["quill", "There's a table in the square with a map of the Inklands pinned to it. The governor used it to decide who to tax. You could use it to decide who to save."],
 			["", "Somebody has to hold the line. Everyone in the square turns, slowly, to look at the one person who legally isn't there."]
 		]},
 		"act1_rumours": {"title": "Act 1  ·  The Unregistered Town", "lines": [
-			["tobble", "Word travels when a town loses its governor. Two bits of it might interest the person who isn't running Hollowmark."],
+			["tobble", "Word travels when a town loses its governor. Two bits of it might interest them as isn't running Hollowmark."],
 			["tobble", "First: there's a hedge-witch in the Gutterwoods, selling cures out of a hollow tree. The Coven wants her gone. A town with no healer could do worse.", "smug"],
-			["tobble", "Second: a Concord corporal walked out on an Erasure order and is hiding along the Tithe Road. Nine fingers. Ten opinions. The Concord has a price on him."],
+			["tobble", "Second: a Concord corporal walked out on an Erasure order and is hiding along the Tithe Road. Nine fingers. Ten opinions. The Concord's put a price on their head."],
 			["quill", "Rumours like that show up as Rescue jobs on the Guildhall board, or as Rescue missions on the territory map if you'd rather fetch them yourself."],
-			["bran", "A healer and a deserter. Now we're a real outfit. A real, illegal outfit.", "happy"]
+			["bran", "A 'ealer and a deserter. Now we're a real outfit. A real, illegal outfit.", "happy"]
 		]},
 		"act1_writ": {"title": "Act 1  ·  The Concord Answers", "lines": [
 			["quill", "A Concord rider nailed this to the well. I'll read it in the voice it deserves.", "angry"],
 			["quill", "'By order of the Office of Audits: the unregistered settlement of Hollowmark has failed to file. A tithe column will assess it at Old Mill Crossing and collect all outstanding sums.'"],
-			["bran", "Collect what? We don't owe them anything. We don't even exist.", "surprised"],
-			["quill", "That's the outstanding sum. Us."],
-			["ninefingers", "I know that column. Tithe-Captain Morrow. He counts people the way other men count sheep. Meet him at the Crossing before he reaches the gate."],
-			["gristle", "Bring him back alive if you can. I've a tonic I've been dying to try on a tax man.", "smug"]
+			["bran", "Collect what? We don't owe 'em nothin'. We don't even exist.", "surprised"],
+			["quill", "That's the outstanding sum, as it were. Us."],
+			["ninefingers", "Know that column. Tithe-Captain Morrow. Counts people the way other men count sheep. Meet him at the Crossing before he reaches the gate."],
+			["gristle", "Bring him back alive if you can. A tonic I've got, been dying to try it on a tax man.", "smug"]
 		]},
 		"act1_concord_intro": {"title": "Act 1  ·  The Concord Answers", "lines": [
 			["captain", "Halt. You there, the one standing where nobody's written. You'll do as a first entry."],
-			["captain", "Hollowmark owes the Concord eleven months of tithe, a governor, a tax office and a full apology. We'll take it in coin, grain or people."],
+			["captain", "Hollowmark owes the Concord eleven months of tithe, a governor, a tax office and a full apology, duly assessed. We'll take it in coin, grain or people."],
 			["bran", "How about none of the above, and you walk home lighter?", "smug"],
 			["captain", "Wardens! Assess them."]
 		]},
 		"act1_concord_after": {"title": "Act 1  ·  The Concord Answers", "lines": [
 			["", "The tithe column is broken. Its strongbox was empty: they came to fill it. Among Morrow's papers is an order stamped with a red quill."],
-			["ninefingers", "That seal. I've seen it twice. Both times, the town it was stamped on stopped being a town by morning.", "sad"],
+			["ninefingers", "That seal. Seen it twice. Both times, the town it was stamped on stopped being a town by morning.", "sad"],
 			["quill", "The Auditor. The Concord doesn't send him to collect. It sends him to strike things out of the Ledger. Streets. Families. Whole towns."],
 			["quill", "He's marching down the Tithe Road. If he reaches Hollowmark with that quill, we won't be erased by the Blank. We'll be erased by paperwork.", "angry"],
-			["bran", "Then we meet him on the road. Somebody check what a giant pen is weak to."]
+			["bran", "Then we meet 'im on the road. Somebody check what a giant pen is weak to."]
 		]},
 		"act1_end": {"title": "End of Act 1", "lines": [
 			["", "Three days after the Auditor falls, a letter arrives. Nobody delivered it. It is simply on the Command Table one morning, weighed down with a smooth white stone."],
@@ -83,7 +83,7 @@
 			["letter", "'I want you to understand that I am not your enemy. I am the person who has read the drafts. When you have read them too, I think we will agree about the Concord.'"],
 			["letter", "'Please stop pushing the white back. It is only trying to help. Fondly, and with regret for what comes next: V. Hale.'"],
 			["quill", "She has lovely handwriting. I'd like to set it on fire.", "angry"],
-			["bran", "Polite letters are the worst kind. Means they've already decided.", "sad"],
+			["bran", "Polite letters are the worst kind. Means they already decided.", "sad"],
 			["", "Outside, the Blank hums against the edges of the map. Hollowmark holds. For now, that is enough."]
 		]}
 	},
