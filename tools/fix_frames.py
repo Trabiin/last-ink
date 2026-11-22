@@ -7,6 +7,9 @@ character's own approved rotation frame (rot_<dir>.png), so no new art is invent
 
   breathe  rebuild an idle strip as a calm breathing loop of the rotation frame: the body above the hips
            sinks one pixel on the middle frames. Used where an idle strip is broken beyond saving.
+  bob      keep an idle strip's own frames but let the upper body sink one pixel on the middle frames, built
+           from the strip's first frame. Used where most of the idle is fine but the top half is frozen while
+           the rest moves (the Reedling facing north-east).
   lock     keep a walk/idle strip's motion but paste the rotation frame's head/body band (aligned to each
            frame's bob) over every frame, so the face and markings stay the same. Used for simple shapes
            whose legs carry the motion (the Nibbler).
@@ -14,6 +17,7 @@ character's own approved rotation frame (rot_<dir>.png), so no new art is invent
     python3 tools/fix_frames.py               # apply every repair listed in tools/ai_fixes.json
     python3 tools/fix_frames.py breathe velvette idle_north
     python3 tools/fix_frames.py lock nibbler walk_south 0.7
+    python3 tools/fix_frames.py bob reedling idle_north-east 0.75
 
 Both repairs rebuild from rot_<dir>.png, so running them again is harmless. git keeps the generated strips
 (see docs/AI_AUDIT.md).
@@ -61,6 +65,26 @@ def breathe(sid, name):
     for i in range(n):
         out.paste(pattern[i % 4], (i * fw, 0))
     out.save(_path(sid, name))
+
+
+def bob(sid, name, ratio=0.62):
+    """Frames 3-4 (of each 4) get frame 1's upper body one pixel lower; rows below stay the frame's own.
+    Frame 1 is never changed and rows below the cut are never written, so running it again is harmless."""
+    strip = Image.open(_path(sid, name)).convert("RGBA")
+    fw, fh = _frame_size(sid)
+    first = strip.crop((0, 0, fw, fh))
+    feet_y = SPRITES.get(sid, {}).get("feet", [fw // 2, fh - 8])[1]
+    top = first.getchannel("A").getbbox()[1]
+    cut = top + int((feet_y - top) * ratio)
+    upper = first.crop((0, 0, fw, cut))
+    for i in range(strip.size[0] // fw):
+        if i % 4 < 2:
+            continue
+        frame = strip.crop((i * fw, 0, (i + 1) * fw, fh))
+        frame.paste((0, 0, 0, 0), (0, 0, fw, cut + 1))
+        frame.alpha_composite(upper, (0, 1))
+        strip.paste(frame, (i * fw, 0))
+    strip.save(_path(sid, name))
 
 
 def _best_offset(can, frame, rows):
@@ -114,11 +138,18 @@ def main(argv):
     if not argv:
         for fix in json.load(open(os.path.join(HERE, "ai_fixes.json")))["fixes"]:
             op, sid, name = fix["op"], fix["sprite"], fix["strip"]
-            (breathe(sid, name) if op == "breathe" else lock(sid, name, fix.get("band", 0.7)))
+            if op == "breathe":
+                breathe(sid, name)
+            elif op == "bob":
+                bob(sid, name, fix.get("ratio", 0.62))
+            else:
+                lock(sid, name, fix.get("band", 0.7))
             print("%-8s %s/%s  (%s)" % (op, sid, name, fix["why"]))
         return 0
     if argv[0] == "breathe":
         breathe(argv[1], argv[2])
+    elif argv[0] == "bob":
+        bob(argv[1], argv[2], float(argv[3]) if len(argv) > 3 else 0.62)
     elif argv[0] == "lock":
         lock(argv[1], argv[2], float(argv[3]) if len(argv) > 3 else 0.7)
     else:

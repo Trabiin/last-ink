@@ -105,6 +105,13 @@
    "strip": "walk_east",
    "band": 0.72,
    "why": "the face melts into a smear on frames 3-5"
+  },
+  {
+   "op": "bob",
+   "sprite": "reedling",
+   "strip": "idle_north-east",
+   "ratio": 0.75,
+   "why": "top half frozen while the base moves (flagged in Art Review); the north idle is the approved reference"
   }
  ],
  "recolors": [
