@@ -590,6 +590,53 @@ Vacancy**, fought as a page that keeps erasing your HUD.
 is gone, so nothing is true just because the Concord said so. Verity got her clean page, just not the way she
 wanted it. Bran sends Ash an invoice.
 
+### The betrayal (climax twist, decided 2026-11-21)
+
+At the end of Chapter 5 one companion betrays Ash. Who it is depends on the player's empire and relationships.
+
+**Motive.** The Vacancy keeps everything it has eaten. After Verity falls it makes one companion a fair offer:
+hand over Ash, the one thing it failed to digest, and it writes their home back exactly as it was. The betrayer
+is not evil. They are grieving, and the deal is real.
+
+**Who: the leverage score.** Each candidate scores:
+- home province erased right now: large plus (smaller if it fell once and was reclaimed);
+- personal mission not done, or locked because the home is gone: plus;
+- low bond rank, or an unresolved rivalry (no truce): plus;
+- bond rank 5 or a current romance: large minus. A romance partner can still betray Ash, but only if their home
+  is erased (Ojon, 2026-11-21): rare, and meant to hurt.
+
+The top scorer betrays Ash if they clear a threshold. Candidates must be recruited and not lost in the white.
+Neglect is punished, not affection: the player can see it coming and change it by reclaiming homes, finishing
+personal missions and building bonds.
+
+**Candidates (one per Marches home). First build ships Ottoline, Daro and Odile plus Bran (Ojon, 2026-11-21); Fauvette and Gristle follow:**
+
+| Candidate | Home | The offer |
+|---|---|---|
+| Big Ottoline | Gallows Ferry | The six people she shut the Encore door on, back (her six coat-check tickets are the seed) |
+| Daro | Tithe Road | The village they refused to strike, unstruck; or a Concord pardon if the Concord still stands |
+| Odile | Old Mill | Her mother written back in, or her mother's skim written out |
+| Fauvette | Saltreed | One last sale for a secret broker: Ash, to the highest bidder |
+| Mother Gristle | Gutterwoods | The bill nobody paid, settled at last |
+
+**Fallback: Bran.** If no one clears the threshold, Bran "sells Ash out", as he has promised since the Prologue.
+It is a con on the Vacancy: his contract tattoo tightens and he does it anyway. This pays off into his invoice in
+the ending.
+
+**Decoy.** Hortense's Chapter 3 spy reveal makes her the obvious suspect. She never betrays Ash in the climax.
+
+**Foreshadowing (Chapter 4 on).** The top candidate's banter gains redacted black-bar words; their "wants a word"
+heart turns grey; Verity's letters mention them by name. One Verity plan in Chapter 4 aims the Blank at the top
+candidate's home, giving the player a fair chance to defend it and lower the score.
+
+**Payoff.** The betrayer opens the Margin and hands Ash over; Chapter 6 starts one hero short. Midway through the
+Margin the betrayer is fought with their own kit (BossFight reusing the hero's abilities and tech) inside their
+home written as words. Afterwards Ash chooses a gesture: take them back, or let them go. Fates record
+`betrayed` / `redeemed` / `let_go`, and epilogue cards get matching variants.
+
+**Scope and tests.** Per candidate: ~3 seed lines/scenes, the betrayal scene, the fight, two resolution scenes and
+epilogue variants. A test checks that every save state picks exactly one betrayer (or Bran).
+
 ## 11. Roster
 
 Flavor targets: **morally grey mercenaries** and **glamorous/flirty** types, with the weird edge of the setting.
