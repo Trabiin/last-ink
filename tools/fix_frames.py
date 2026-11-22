@@ -10,6 +10,12 @@ character's own approved rotation frame (rot_<dir>.png), so no new art is invent
   bob      keep an idle strip's own frames but let the upper body sink one pixel on the middle frames, built
            from the strip's first frame. Used where most of the idle is fine but the top half is frozen while
            the rest moves (the Reedling facing north-east).
+  swell    rebuild an attack strip as the rotation frame swelling up (the wind-up), a short squash as it
+           fires, then rest. Used for spitters seen from behind, where the generator opened a mouth in the
+           back of the head; the projectile itself is drawn by the game.
+  ends     put the rotation frame (the idle face) on an attack strip's first and last frame, so every
+           direction starts from and returns to the same face (the Reedling ended some directions with its
+           eyes shut and others open).
   lock     keep a walk/idle strip's motion but paste the rotation frame's head/body band (aligned to each
            frame's bob) over every frame, so the face and markings stay the same. Used for simple shapes
            whose legs carry the motion (the Nibbler).
@@ -18,6 +24,7 @@ character's own approved rotation frame (rot_<dir>.png), so no new art is invent
     python3 tools/fix_frames.py breathe velvette idle_north
     python3 tools/fix_frames.py lock nibbler walk_south 0.7
     python3 tools/fix_frames.py bob reedling idle_north-east 0.75
+    python3 tools/fix_frames.py swell reedling attack_north
 
 Both repairs rebuild from rot_<dir>.png, so running them again is harmless. git keeps the generated strips
 (see docs/AI_AUDIT.md).
@@ -87,6 +94,67 @@ def bob(sid, name, ratio=0.62):
     strip.save(_path(sid, name))
 
 
+# Extra (width, height) in pixels per frame, cycled over the strip: swell, hold, squash as it fires, rest.
+SWELL = [(0, 0), (2, 1), (2, 2), (4, 2), (4, 3), (2, -1), (0, 0), (0, 0)]
+
+
+def _stretch(im, dw, dh):
+    """Grows (or shrinks) an image by repeating (or dropping) interior rows/columns spread evenly, so the
+    outline stays one pixel thick instead of doubling at the edges like a plain resize."""
+    def pick(n, d):
+        inner = list(range(3, n - 3))
+        if d == 0 or not inner:
+            return list(range(n))
+        marks = {inner[(k * len(inner)) // abs(d) + len(inner) // (2 * abs(d))] for k in range(abs(d))}
+        idx = []
+        for i in range(n):
+            if d < 0 and i in marks:
+                continue
+            idx.append(i)
+            if d > 0 and i in marks:
+                idx.append(i)
+        return idx
+    w, h = im.size
+    cols, rows = pick(w, dw), pick(h, dh)
+    src = im.load()
+    out = Image.new("RGBA", (len(cols), len(rows)), (0, 0, 0, 0))
+    dst = out.load()
+    for y, sy in enumerate(rows):
+        for x, sx in enumerate(cols):
+            dst[x, y] = src[sx, sy]
+    return out
+
+
+def ends(sid, name):
+    """First and last frame become the rotation frame; the frames between are untouched."""
+    strip = Image.open(_path(sid, name)).convert("RGBA")
+    fw, fh = _frame_size(sid)
+    base = _rot(sid, name)
+    n = strip.size[0] // fw
+    for i in (0, n - 1):
+        strip.paste((0, 0, 0, 0), (i * fw, 0, (i + 1) * fw, fh))
+        strip.paste(base, (i * fw, 0))
+    strip.save(_path(sid, name))
+
+
+def swell(sid, name):
+    """Rebuilds the strip from the rotation frame grown around its feet; frame count stays the same."""
+    strip = Image.open(_path(sid, name)).convert("RGBA")
+    fw, fh = _frame_size(sid)
+    base = _rot(sid, name)
+    x0, y0, x1, y1 = base.getchannel("A").getbbox()
+    body = base.crop((x0, y0, x1, y1))
+    cx = (x0 + x1) / 2.0
+    out = Image.new("RGBA", strip.size, (0, 0, 0, 0))
+    n = strip.size[0] // fw
+    for i in range(n):
+        dw, dh = SWELL[i * len(SWELL) // n] if n != len(SWELL) else SWELL[i]
+        w, h = body.size[0] + dw, body.size[1] + dh
+        grown = _stretch(body, dw, dh)
+        out.alpha_composite(grown, (i * fw + int(round(cx - w / 2.0)), y1 - h))
+    out.save(_path(sid, name))
+
+
 def _best_offset(can, frame, rows):
     """(dx, dy) that lines the canonical silhouette's band up with the frame's."""
     ca, fa = can.getchannel("A").load(), frame.getchannel("A").load()
@@ -140,6 +208,10 @@ def main(argv):
             op, sid, name = fix["op"], fix["sprite"], fix["strip"]
             if op == "breathe":
                 breathe(sid, name)
+            elif op == "ends":
+                ends(sid, name)
+            elif op == "swell":
+                swell(sid, name)
             elif op == "bob":
                 bob(sid, name, fix.get("ratio", 0.62))
             else:
@@ -148,6 +220,10 @@ def main(argv):
         return 0
     if argv[0] == "breathe":
         breathe(argv[1], argv[2])
+    elif argv[0] == "ends":
+        ends(argv[1], argv[2])
+    elif argv[0] == "swell":
+        swell(argv[1], argv[2])
     elif argv[0] == "bob":
         bob(argv[1], argv[2], float(argv[3]) if len(argv) > 3 else 0.62)
     elif argv[0] == "lock":

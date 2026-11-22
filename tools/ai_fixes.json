@@ -112,6 +112,43 @@
    "strip": "idle_north-east",
    "ratio": 0.75,
    "why": "top half frozen while the base moves (flagged in Art Review); the north idle is the approved reference"
+  },
+  {
+   "op": "swell",
+   "sprite": "reedling",
+   "strip": "attack_north",
+   "why": "spat out of a hole in the back of its head; now it swells and squashes, and the game draws the glob"
+  },
+  {
+   "op": "ends",
+   "sprite": "reedling",
+   "strip": "attack_south",
+   "why": "start and end on the idle face like every other direction"
+  },
+  {
+   "op": "ends",
+   "sprite": "reedling",
+   "strip": "attack_south-east",
+   "why": "ended with its eyes shut while other directions ended open"
+  },
+  {
+   "op": "ends",
+   "sprite": "reedling",
+   "strip": "attack_east",
+   "why": "start and end on the idle face like every other direction"
+  },
+  {
+   "op": "ends",
+   "sprite": "reedling",
+   "strip": "attack_north-east",
+   "why": "start and end on the idle face like every other direction"
+  },
+  {
+   "op": "lock",
+   "sprite": "scarecrow",
+   "strip": "walk_north",
+   "band": 0.62,
+   "why": "hat and shoulders shrank and changed on frames 4-6; now held to the north rotation"
   }
  ],
  "recolors": [
@@ -129,6 +166,10 @@
   }
  ],
  "hand_edits": [
+  {
+   "file": "assets/icons/assessors_seal.png",
+   "why": "light specks on the stamp knob read as a face; knob repainted as a plain shaded wooden ball (rows 2-9)"
+  },
   {
    "file": "assets/sprites/nibbler/rot_east.png",
    "why": "grey glyph-like scribble on its side painted out (11 pixels to body white)"
