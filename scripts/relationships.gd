@@ -12,7 +12,7 @@ extends RefCounted
 ## Rivals who work together long enough make peace (a truce), which changes the pair for good.
 ##
 ## Fates: per person, what happened to them over the campaign (missions fought, injuries, lost in the white,
-## personal mission tries, the choices Ash made in their scenes). Epilogues (scripts/epilogues.gd) read them.
+## personal mission tries, the choices Ash made in their scenes, the climax betrayal: scripts/betrayal.gd). Epilogues (scripts/epilogues.gd) read them.
 ##
 ## State lives in Empire.relations (saved; see fresh()). Every function here is static.
 
@@ -31,7 +31,7 @@ static func data() -> Dictionary:
 
 ## A new campaign's state.
 static func fresh() -> Dictionary:
-	return {"partner": "", "romance": {}, "ended_seen": {}, "pairs": {}, "fates": {}}
+	return {"partner": "", "romance": {}, "ended_seen": {}, "pairs": {}, "fates": {}, "betrayal": Betrayal.fresh()}
 
 
 ## Cleans a saved state up (unknown keys and ids are kept harmlessly; wrong types are replaced).
@@ -43,6 +43,7 @@ static func from_save(d) -> Dictionary:
 	for k in ["romance", "ended_seen", "pairs", "fates"]:
 		if typeof(d.get(k)) == TYPE_DICTIONARY:
 			out[k] = d[k]
+	out["betrayal"] = Betrayal.from_save(d.get("betrayal"))  # issue #186
 	if out["partner"] != "" and str(out["romance"].get(out["partner"], "")) != "partner":
 		out["partner"] = ""  # a partner the romance table doesn't agree with: trust the table
 	return out
@@ -427,6 +428,8 @@ static func fate(id: String) -> Dictionary:
 			f[k] = 0
 	if not f.has("lost_where"):
 		f["lost_where"] = ""
+	if not f.has("betrayal"):
+		f["betrayal"] = ""  # issue #186: "", "betrayed", "redeemed", "let_go" or "faked" (scripts/betrayal.gd)
 	if typeof(f.get("choices")) != TYPE_DICTIONARY:
 		f["choices"] = {}
 	return f

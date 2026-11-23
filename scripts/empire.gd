@@ -421,6 +421,7 @@ func _erase(p: Dictionary) -> void:
 		notice.emit(tr("%s fled %s, hurt. Out of action for 3 days.") % [recruit(gov)["name"], p["name"]], true)
 	p["owner"] = "erased"
 	p["fray"] = 100
+	Betrayal.note_fell(p["id"])  # the climax betrayal remembers homes that fell (issue #186)
 	lamps.erase(p["id"])  # the lamp goes out with everything else
 	lamp_jobs.erase(p["id"])
 	p["scar"] = 0
