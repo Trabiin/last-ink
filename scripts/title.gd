@@ -301,11 +301,24 @@ func _credit_lines() -> String:
 			var cols := row.split("|", false)
 			if cols.size() >= 4:
 				var asset := cols[0].strip_edges().get_slice(" (", 0)
-				lines.append("%s  -  %s  (%s)" % [asset, cols[1].strip_edges(), cols[3].strip_edges()])
+				lines.append_array(_wrap("%s  -  %s  (%s)" % [asset, cols[1].strip_edges(), cols[3].strip_edges()], 96))
 	lines.append("")
 	lines.append_array(ai_use_lines())
 	lines.append(tr("Made with Godot Engine"))
+	lines.append("")
+	lines.append_array(licence_lines())
 	return "\n".join(lines)
+
+
+## Godot's MIT notice, which every copy of the game must show (issue #157), wrapped for the credits box,
+## then where the other licence texts are. The notice stays in English: it is a legal text.
+static func licence_lines() -> Array:
+	var out := []
+	for para in Engine.get_license_text().split("\n\n", false):
+		out.append_array(_wrap(para.replace("\n", " ").strip_edges(), 96))
+		out.append("")
+	out.append_array(_wrap(TranslationServer.translate("Licences for the libraries inside Godot and for the fonts: THIRD_PARTY_LICENSES.md, included with the game."), 96))
+	return out
 
 
 ## The short AI statement (docs/AI_USE.md, issue #164) from data/ai_use.json, then a blank line.
