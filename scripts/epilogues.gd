@@ -90,6 +90,10 @@ static func meets(id: String, w: Dictionary) -> bool:
 				var other := str(v.get("with", ""))
 				if not Empire.recruits.has(other) or Relationships.pair_state(id, other) != str(v.get("state", "")):
 					return false
+			"betrayal":
+				var b := Betrayal.outcome(id)
+				if (b if b != "" else "none") != str(v):
+					return false
 			_:
 				push_warning("epilogues.json: unknown condition '%s' for %s" % [k, id])
 				return false

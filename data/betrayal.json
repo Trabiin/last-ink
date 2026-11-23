@@ -1,0 +1,21 @@
+{
+	"_comment": "The climax betrayal (issue #186, docs/DESIGN.md section 10 'The betrayal'), read by scripts/betrayal.gd. At the end of Chapter 5 the Vacancy offers one companion their erased home back in exchange for Ash. Each candidate who has joined and was not lost in the white gets a leverage score from 'weights'; the top scorer betrays Ash if they reach 'threshold', and ties go to whoever is listed first in 'candidates'. If nobody reaches it, 'fallback' (Bran) fakes a betrayal to con the Vacancy. weights: home_erased (their home province is erased right now), home_reclaimed (it fell at least once and was won back; used instead of home_erased), personal_locked (personal mission not done and out of reach because the home is gone), personal_open (personal mission not done but still possible; used instead of personal_locked), bond_low (bond rank 0 or 1), bond_mid (bond rank 2), rival (at least one rivalry with someone on the roster that never reached a truce), ex (Ash ended a romance with them), close (bond rank 5 or a current romance; one minus, not both). A current romance partner is only a candidate while their home is erased (Ojon, 2026-11-21). 'home' must match their personal mission's province in data/personal.json; '_offer' is what the Vacancy promises: a writer's note for the Chapter 5 scene (#31), which writes the player text.",
+	"threshold": 40,
+	"weights": {
+		"home_erased": 50,
+		"home_reclaimed": 20,
+		"personal_locked": 20,
+		"personal_open": 15,
+		"bond_low": 20,
+		"bond_mid": 10,
+		"rival": 15,
+		"ex": 10,
+		"close": -35
+	},
+	"fallback": "bran",
+	"candidates": [
+		{"id": "ottoline", "home": "gallows", "_offer": "The six people she shut the Encore door on, back. Her six coat-check tickets are the seed."},
+		{"id": "ninefingers", "home": "tithe", "_offer": "The village Daro refused to strike, unstruck. Or a Concord pardon, if the Concord still stands."},
+		{"id": "odile", "home": "oldmill", "_offer": "Her mother written back in, or her mother's skim written out."}
+	]
+}

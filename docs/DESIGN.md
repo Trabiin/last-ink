@@ -637,6 +637,13 @@ home written as words. Afterwards Ash chooses a gesture: take them back, or let 
 **Scope and tests.** Per candidate: ~3 seed lines/scenes, the betrayal scene, the fight, two resolution scenes and
 epilogue variants. A test checks that every save state picks exactly one betrayer (or Bran).
 
+**Built (core, #186):** `scripts/betrayal.gd` + `data/betrayal.json` (weights and threshold, tunable there),
+tests in `tests/test_betrayal.gd`. Scores: home erased +50 (fell and reclaimed +20), personal mission locked +20
+(open +15), bond rank 0-1 +20 (rank 2 +10), a rival on the roster with no truce +15, an ended romance +10, rank 5
+or current romance -35 (once); threshold 40, ties go to data order. If Bran is gone, the top candidate takes the
+deal whatever their score. Chapters call `Betrayal.top()` (Ch4 foreshadowing), `Betrayal.lock()` (Ch5 scene),
+`Betrayal.away(id)` and `Betrayal.resolve("redeemed"|"let_go")` (Ch6). Bran's con records the fate `faked`.
+
 ## 11. Roster
 
 Flavor targets: **morally grey mercenaries** and **glamorous/flirty** types, with the weird edge of the setting.
