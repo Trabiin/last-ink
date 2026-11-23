@@ -190,14 +190,15 @@ func text_width() -> float:
 
 ## text broken into lines no wider than max_w pixels at this (already scaled) font size. Each "\n" starts
 ## a new line and an empty paragraph stays an empty line. A word too long for a line on its own is cut.
+## Spaces inside a line are kept as written; a line ends without trailing spaces.
 static func wrap_px(font: Font, text: String, size: int, max_w: float) -> PackedStringArray:
 	var out := PackedStringArray()
 	for para in text.split("\n"):
 		var line := ""
-		for word in para.split(" ", false):
+		for word in para.split(" "):  # empty words keep runs of spaces (a sign spaces out "pop. 212   pop. 40")
 			var tryline := word if line == "" else line + " " + word
-			if line != "" and font.get_string_size(tryline, HORIZONTAL_ALIGNMENT_LEFT, -1, size).x > max_w:
-				out.append(line)
+			if line != "" and word != "" and font.get_string_size(tryline, HORIZONTAL_ALIGNMENT_LEFT, -1, size).x > max_w:
+				out.append(line.strip_edges(false, true))
 				line = word
 			else:
 				line = tryline
@@ -207,7 +208,7 @@ static func wrap_px(font: Font, text: String, size: int, max_w: float) -> Packed
 					cut -= 1
 				out.append(line.left(cut))
 				line = line.substr(cut)
-		out.append(line)
+		out.append(line.strip_edges(false, true))
 	return out
 
 

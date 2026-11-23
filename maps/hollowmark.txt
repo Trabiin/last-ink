@@ -52,7 +52,7 @@
 @markY visitors
 @dirt CFMPNVhvqwmx12LOQZlXU
 @sign1 THE INKLANDS  (south)|Missions leave from the Command Table
-@sign2 HOLLOWMARK|pop. 212   pop. 40   pop. you
+@sign2 HOLLOWMARK|~~pop. 212~~   ~~pop. 40~~   pop. you
 ---
 ttt.t.ttt.tt...ttt.ttt..tt...tt.tt...t.t.tt..t
 ..............................................

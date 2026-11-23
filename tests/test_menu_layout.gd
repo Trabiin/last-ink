@@ -72,6 +72,7 @@ func test_wrap_px_keeps_every_line_inside_the_width() -> void:
 	var lines := InkMenu.wrap_px(font, "short\n\n" + "word ".repeat(80) + "x".repeat(200), 9, 200.0)
 	check_eq(lines[0], "short", "first paragraph")
 	check_eq(lines[1], "", "blank line kept")
+	check_eq(InkMenu.wrap_px(font, "pop. 212   pop. 40", 9, 400.0)[0], "pop. 212   pop. 40", "runs of spaces kept")
 	check(lines.size() > 4, "long text wrapped onto several lines")
 	for l in lines:
 		check(font.get_string_size(l, HORIZONTAL_ALIGNMENT_LEFT, -1, 9).x <= 200.0, "line fits: " + l)
