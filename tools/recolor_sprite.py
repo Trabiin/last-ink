@@ -56,8 +56,63 @@ def hue_set(lo, hi, min_s, min_l, hue, s_mul, l_mul, max_l=1.0, max_s=1.0, s_add
     return f
 
 
+def hue_ramp(lo, hi, min_s, min_l, ramp):
+    """Colours in the hue window go onto ramp (dark to light) by their lightness (e.g. gold to bone white)."""
+    def f(c):
+        h, l, s = _hls(c)
+        if lo <= h <= hi and s >= min_s and l >= min_l:
+            t = min(0.999, max(0.0, (l - min_l) / (0.85 - min_l)))
+            return ramp[int(t * len(ramp))]
+        return None
+    return f
+
+
+def vest_split(path, fw):
+    """Ottoline: the sprite had magenta sleeves over a black-and-magenta checked vest; the portrait has a
+    dark shirt under a crimson vest. Magenta in blobs of 5+ pixels (4-connected: the sleeves) and anything
+    below the waist (frame row 29 down) goes charcoal; the checked magenta goes crimson, and the dark checks between them
+    deep crimson, so the vest reads as one crimson piece."""
+    import numpy as np
+
+    def is_mag(c):
+        h, l, s = _hls(c)
+        return 300 <= h <= 335 and s >= 0.8 and l >= 0.1
+
+    im = Image.open(path).convert("RGBA")
+    a = np.asarray(im).copy()
+    H, W = a.shape[:2]
+    mag = np.zeros((H, W), bool)
+    for y in range(H):
+        for x in range(W):
+            if a[y, x, 3] and is_mag(a[y, x]):
+                mag[y, x] = True
+    from scipy import ndimage
+    lab, nl = ndimage.label(mag)  # the vest's checks are single pixels or short runs; sleeves are solid
+    sizes = ndimage.sum(mag, lab, range(1, nl + 1))
+    big = np.isin(lab, np.nonzero(sizes >= 5)[0] + 1)
+    rows = (np.arange(H) % fw)[:, None]
+    sleeve = mag & (big | (rows >= 29))
+    vest = mag & ~sleeve
+    out = a.copy()
+    for y, x in zip(*np.nonzero(sleeve)):
+        h, l, s_ = _hls(a[y, x])
+        v = max(24, min(70, int(20 + (l - 0.2) * 90)))
+        out[y, x, :3] = (v, v - 2, v + 2)
+    for y, x in zip(*np.nonzero(vest)):
+        h, l, s_ = _hls(a[y, x])
+        r, g, b = colorsys.hls_to_rgb(352 / 360.0, l * 0.9, s_ * 0.72)
+        out[y, x, :3] = (round(r * 255), round(g * 255), round(b * 255))
+    vp = np.pad(vest, 1)
+    vn = sum(np.roll(np.roll(vp, dy, 0), dx, 1) for dy, dx in ((0, 1), (0, -1), (1, 0), (-1, 0)))[1:-1, 1:-1]
+    dark = (a[..., 3] > 0) & (a[..., :3].max(-1) < 60) & ~mag & (vn >= 3) & (rows < 29)
+    out[dark, :3] = (92, 14, 30)
+    Image.fromarray(out).save(path)
+
+
+REGION = {("ottoline", "vest"): vest_split}  # fixes that need the pixel's neighbours, not only its colour
+
 ROW_LIMIT = {("abeyance", "hood"): 34}  # frame rows at or below this are left alone
-ROW_FROM = {("auditor", "accents"): 34}  # frame rows above this are left alone (the Auditor's mask)
+ROW_FROM = {("auditor", "cravat"): 34}  # frame rows above this are left alone (the Auditor's mask)
 
 FIXES = {
     # Portrait: crimson red bob. Sprite was magenta-maroon.
@@ -72,17 +127,21 @@ FIXES = {
     # Portrait: dark brown-black leather coat. Sprite coat was grey-blue (Ojon, 2026-11-23).
     # Light greys (the pike's blade) and outline ink stay.
     ("ninefingers", "coat"): hue_set(195, 215, 0.06, 0.12, 24, 1.0, 0.58, max_l=0.52, max_s=0.2, s_add=0.12),
-    # Portrait: deep crimson. Sprite outfit was hot magenta (Ojon, 2026-11-23).
-    ("ottoline", "outfit"): hue_set(300, 335, 0.80, 0.10, 352, 0.72, 0.9),
     # Portrait: brown leather coat. Sprite coat was black-navy; outline ink and the grey sword stay.
     ("velvette", "coat"): hue_set(225, 265, 0.06, 0.12, 22, 1.0, 1.25, max_l=0.30, max_s=0.35, s_add=0.22),
-    # Portrait: crimson cravat and lining on the black coat. Sprite's gold chest detail goes crimson
-    # (from row 34 down, so the bone mask above keeps its colour).
-    ("auditor", "accents"): hue_set(28, 58, 0.30, 0.15, 352, 1.3, 0.62),
+    # Portrait: bone-white cravat on the black coat (Ojon, 2026-11-23). Sprite's gold chest detail goes
+    # bone white (from row 34 down, so the mask above keeps its colour).
+    ("auditor", "cravat"): hue_ramp(28, 58, 0.30, 0.15, [(120, 112, 100), (160, 151, 135), (196, 188, 170), (222, 214, 196)]),
 }
 
 
 def apply(sid, material):
+    if (sid, material) in REGION:
+        import json as _json
+        fw = _json.load(open(os.path.join(ROOT, "data", "sprites.json")))["sprites"][sid]["size"][0]
+        for path in sorted(glob.glob(os.path.join(ROOT, "assets", "sprites", sid, "*.png"))):
+            REGION[(sid, material)](path, fw)
+        return
     fn = FIXES[(sid, material)]
     limit = ROW_LIMIT.get((sid, material), 10 ** 6)
     start = ROW_FROM.get((sid, material), 0)
@@ -104,8 +163,8 @@ def apply(sid, material):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 3 or tuple(sys.argv[1:]) not in FIXES:
+    if len(sys.argv) != 3 or (tuple(sys.argv[1:]) not in FIXES and tuple(sys.argv[1:]) not in REGION):
         print(__doc__)
-        print("known:", ", ".join("%s %s" % k for k in FIXES))
+        print("known:", ", ".join("%s %s" % k for k in list(FIXES) + list(REGION)))
         sys.exit(1)
     apply(sys.argv[1], sys.argv[2])

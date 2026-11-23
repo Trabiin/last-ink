@@ -312,9 +312,9 @@
   },
   {
    "sprite": "ottoline",
-   "material": "outfit",
-   "tool": "tools/recolor_sprite.py ottoline outfit",
-   "why": "sprite outfit was hot magenta, portrait wears deep crimson (Ojon, 2026-11-23)"
+   "material": "vest",
+   "tool": "tools/recolor_sprite.py ottoline vest",
+   "why": "sprite had magenta sleeves over a checked vest; portrait has a dark shirt under a crimson vest (Ojon, 2026-11-23)"
   },
   {
    "sprite": "velvette",
@@ -324,9 +324,9 @@
   },
   {
    "sprite": "auditor",
-   "material": "accents",
-   "tool": "tools/recolor_sprite.py auditor accents",
-   "why": "sprite chest detail was gold, portrait has a crimson cravat and lining (Ojon, 2026-11-23)"
+   "material": "cravat",
+   "tool": "tools/recolor_sprite.py auditor cravat",
+   "why": "sprite chest detail was gold, portrait has a bone-white cravat (Ojon, 2026-11-23)"
   }
  ],
  "hand_edits": [
