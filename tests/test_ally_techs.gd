@@ -42,6 +42,9 @@ func _field(id: String) -> Array:
 	for k in Dialogue.data().get("talks", {}):
 		Dialogue.mark_seen("talk:" + str(k))
 	var other := id if id != "ash" else "bran"
+	for rid in Empire.recruits:  # a new campaign starts with Bran in the party: only Ash and `id` go
+		if Empire.recruits[rid]["role"] == "party":
+			Empire.recruits[rid]["role"] = "idle"
 	for rid in ["ash", other]:
 		Empire.recruits[rid] = {"role": "party", "target": "", "injured": 0}
 	Empire.active_mission = Missions.find("meadow_patrol").duplicate(true)
@@ -129,14 +132,22 @@ func _press(ally: Hero) -> void:
 			e.knockback = Vector2.ZERO
 
 
+## One physics step: returns the game time it covered, in ms. Waits count game time, not the wall clock,
+## so a slow or busy machine (a CI runner, software rendering) that can't keep up with FAST still gives
+## the ally the same time to act instead of less.
+func _step() -> float:
+	await tree.physics_frame
+	return 1000.0 * Engine.time_scale / Engine.physics_ticks_per_second
+
+
 ## Waits up to ms for the ally's tech to go off. Returns the seconds it took, or -1. While waiting,
 ## keeps the crowd pressing and records whether the ally ever started an AI charge (meta "charged").
 func _wait_fire(ally: Hero, ms: int, on_charge := Callable()) -> float:
-	var t0 := Time.get_ticks_msec()
+	var game_ms := 0.0
 	var prev := ally.tech_flash_t
 	ally.set_meta("charged", false)
-	while (Time.get_ticks_msec() - t0) * Engine.time_scale < ms:
-		await tree.process_frame
+	while game_ms < ms:
+		game_ms += await _step()
 		if not is_instance_valid(ally):
 			return -1.0
 		if ally.ai_charging:
@@ -146,7 +157,7 @@ func _wait_fire(ally: Hero, ms: int, on_charge := Callable()) -> float:
 				on_charge = Callable()
 		_press(ally)
 		if ally.tech_flash_t > prev + 0.1:
-			return float(Time.get_ticks_msec() - t0) * Engine.time_scale / 1000.0
+			return game_ms / 1000.0
 		prev = ally.tech_flash_t
 	return -1.0
 
@@ -253,6 +264,17 @@ func _stunned_out_of_reach(main: Node, ally: Hero) -> void:
 			var e: Enemy = es[i]
 			e.global_position = ally.global_position + Vector2(gap + (i % 2) * 3.0, floorf(i / 2.0) * 6.0 - 3.0)
 			e.remove_meta("offset")  # stunned: they stay where they are
+			e.velocity = Vector2.ZERO
+			e.knockback = Vector2.ZERO
+			e.invuln_t = 0.0  # a swing during setup leaves them flashing, and a flashing enemy scores nothing
+		# The crowd was in reach while it spawned: an ally that started a charge on it then is now chasing
+		# a crowd that jumped away, which says nothing about the decision under test (and failed whenever
+		# its think tick fell inside the setup frames). Start the watch from a clean slate.
+		Techs.cancel(ally)
+		ally.power = 1.0
+		ally.ai_tech_cd = 0.0
+		ally.ai_think_t = 0.0
+		ally.ai_tech_promise = false
 		if preset == "balanced":  # the scoring itself: slack counts for enemies that can come, not stunned ones
 			var here := ally.global_position
 			var lead: Hero = main.leader
@@ -272,11 +294,11 @@ func _stunned_out_of_reach(main: Node, ally: Hero) -> void:
 ## Watches the ally for ms of game time: charges it starts, techs it fires, charges it drops unfired.
 func _watch(ally: Hero, ms: int) -> Dictionary:
 	var out := {"started": 0, "fired": 0, "abandoned": 0}
-	var t0 := Time.get_ticks_msec()
+	var game_ms := 0.0
 	var was := false
 	var prev := ally.tech_flash_t
-	while (Time.get_ticks_msec() - t0) * Engine.time_scale < ms:
-		await tree.process_frame
+	while game_ms < ms:
+		game_ms += await _step()
 		if not is_instance_valid(ally):
 			break
 		for e in tree.get_nodes_in_group("enemies"):
