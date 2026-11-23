@@ -44,18 +44,20 @@ def ramp_map(max_s, l_lo, l_hi, ramp):
     return f
 
 
-def hue_set(lo, hi, min_s, min_l, hue, s_mul, l_mul):
+def hue_set(lo, hi, min_s, min_l, hue, s_mul, l_mul, max_l=1.0, max_s=1.0, s_add=0.0):
     """Colours in the hue window (and not outline-dark) move to one hue, keeping their shading."""
     def f(c):
         h, l, s = _hls(c)
-        if lo <= h <= hi and s >= min_s and l >= min_l:
-            r, g, b = colorsys.hls_to_rgb(hue / 360.0, l * l_mul, s * s_mul)
+        if lo <= h <= hi and min_s <= s <= max_s and min_l <= l <= max_l:
+            s = min(1.0, s * s_mul + s_add)
+            r, g, b = colorsys.hls_to_rgb(hue / 360.0, min(1.0, l * l_mul), s)
             return (round(r * 255), round(g * 255), round(b * 255))
         return None
     return f
 
 
 ROW_LIMIT = {("abeyance", "hood"): 34}  # frame rows at or below this are left alone
+ROW_FROM = {("auditor", "accents"): 34}  # frame rows above this are left alone (the Auditor's mask)
 
 FIXES = {
     # Portrait: crimson red bob. Sprite was magenta-maroon.
@@ -67,12 +69,23 @@ FIXES = {
     # Portrait: dark warm brown-black hood and coat. Sprite hood and coat were slate blue (Ojon, round 3).
     # Outline ink (lightness under 0.08) stays as it is.
     ("jessamy", "cloak"): hue_set(212, 262, 0.10, 0.08, 16, 0.8, 0.84),
+    # Portrait: dark brown-black leather coat. Sprite coat was grey-blue (Ojon, 2026-11-23).
+    # Light greys (the pike's blade) and outline ink stay.
+    ("ninefingers", "coat"): hue_set(195, 215, 0.06, 0.12, 24, 1.0, 0.58, max_l=0.52, max_s=0.2, s_add=0.12),
+    # Portrait: deep crimson. Sprite outfit was hot magenta (Ojon, 2026-11-23).
+    ("ottoline", "outfit"): hue_set(300, 335, 0.80, 0.10, 352, 0.72, 0.9),
+    # Portrait: brown leather coat. Sprite coat was black-navy; outline ink and the grey sword stay.
+    ("velvette", "coat"): hue_set(225, 265, 0.06, 0.12, 22, 1.0, 1.25, max_l=0.30, max_s=0.35, s_add=0.22),
+    # Portrait: crimson cravat and lining on the black coat. Sprite's gold chest detail goes crimson
+    # (from row 34 down, so the bone mask above keeps its colour).
+    ("auditor", "accents"): hue_set(28, 58, 0.30, 0.15, 352, 1.3, 0.62),
 }
 
 
 def apply(sid, material):
     fn = FIXES[(sid, material)]
     limit = ROW_LIMIT.get((sid, material), 10 ** 6)
+    start = ROW_FROM.get((sid, material), 0)
     for path in sorted(glob.glob(os.path.join(ROOT, "assets", "sprites", sid, "*.png"))):
         im = Image.open(path).convert("RGBA")
         px = im.load()
@@ -80,7 +93,7 @@ def apply(sid, material):
         for y in range(im.size[1]):
             for x in range(im.size[0]):
                 p = px[x, y]
-                if not p[3] or y % im.size[1] >= limit:
+                if not p[3] or y % im.size[1] >= limit or y % im.size[1] < start:
                     continue
                 if p[:3] not in cache:
                     cache[p[:3]] = fn(p)

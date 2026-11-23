@@ -15,7 +15,9 @@ const RING := 3
 const PALE_MAX := 10  # per mille of the ring
 ## Reviewed 2026-11-21: Hild's white hood, the Auditor's quill-feather blade, Ilse's silver hair and
 ## armour, the Merrow kids' pale hair and collars, Verity's bone robe and erased sleeve.
-const PALE_OK := {"abeyance": 160, "auditor": 35, "ilse": 200, "merrow": 50, "verity": 70}
+## Reviewed 2026-11-23 (portraits redrawn to match the sprites): Quill's steel-grey hair, white quill and papers;
+## Verity's cream robe and erased hem.
+const PALE_OK := {"abeyance": 160, "auditor": 35, "ilse": 200, "merrow": 50, "quill": 135, "verity": 175}
 const SPECK := 20  # opaque islands (8-connected) smaller than this float free of the figure
 
 

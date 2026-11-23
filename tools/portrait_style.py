@@ -170,7 +170,7 @@ def ink(rgb, alpha, pal):
     return out, a
 
 
-def pixelate(rgb, alpha, pal, height, k=24):
+def pixelate(rgb, alpha, pal, height, k=24, amt=0.4):
     """Hi-res pixel art: edge-preserving smooth, premultiplied box downscale, per-portrait palette of k
     colours pulled onto the game palette, singles tidied, 1px ink outline, darkest lines in ink."""
     h, w = alpha.shape
@@ -189,7 +189,7 @@ def pixelate(rgb, alpha, pal, height, k=24):
     if n8 > 1:
         sizes = ndimage.sum(solid, lab8, range(1, n8 + 1))
         solid &= ~np.isin(lab8, np.nonzero(sizes < SPECK)[0] + 1)
-    idx, cols, lab = quantize(c, solid, pal, k, 0.4)
+    idx, cols, lab = quantize(c, solid, pal, k, amt)
     maj = majority(idx, 3)
     same = np.zeros_like(solid)
     for dy, dx in ((0, 1), (0, -1), (1, 0), (-1, 0)):

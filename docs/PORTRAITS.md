@@ -110,6 +110,13 @@ portraits (downscaled to 512x768) as references. That keeps new faces on-model w
 portrait costs about $0.054; every call is logged in `tools/art_spend.jsonl` with its token usage. The paragraphs used
 are in project files `last-ink/portraits/` next to the raw images.
 
+**The sprite is canon (Ojon, 2026-11-23).** When a portrait and the field sprite disagree, redraw the portrait to
+match the sprite: pass the sprite's south and south-east rotations (scaled up 8x, nearest neighbour, on light
+grey) as a third reference and add "The third reference is this character's in-game pixel sprite: the portrait
+must match the sprite's design, body build, hair, colours, clothing and props exactly". Quill, Odile, Hesper and
+Verity were redrawn this way ($0.059 each); briefs in project files `last-ink/portraits/phase8-prompts.json`.
+Colour-only gaps can go the other way with `tools/recolor_sprite.py` (Daro, Ottoline, Velvette, Auditor).
+
 Corporal Daro is non-binary (they/them).
 
 ## Style trial (2026-11-21)
