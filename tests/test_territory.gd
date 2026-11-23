@@ -173,3 +173,18 @@ func test_command_table_camera_and_fog() -> void:
 	await frames(2)
 	cmd._process_camera(5.0)
 	check(cmd.zoom < cmd.ZOOM_MAX, "opening a region flies the camera out to it")
+
+
+## Re-baking the map (after a screen closes, at dawn) updates its textures in place. A card that pauses
+## the game right after (a locked screen's "from day 4") stops the map being redrawn, and new textures
+## left it drawing freed ones: the whole map went white.
+func test_rebake_keeps_the_same_map_textures() -> void:
+	var cmd := await goto(COMMAND, 10)
+	if not check(cmd != null and cmd.scene_file_path == COMMAND, "command table running"):
+		return
+	var map_rid: RID = cmd.map_tex.get_rid()
+	var fog_rid: RID = cmd.fog_tex.get_rid()
+	_p("frayed_meadow")["fray"] = 90
+	cmd._bake()
+	check_eq(cmd.map_tex.get_rid(), map_rid, "the map texture is updated in place")
+	check_eq(cmd.fog_tex.get_rid(), fog_rid, "the fog texture is updated in place")
