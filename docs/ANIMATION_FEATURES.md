@@ -11,7 +11,7 @@ docs/ANIMATION_RULES.md. "His/her right" means the character's own right.
 | Face marks | Red scar on the forehead, over his right eye; one clouded eye (portrait) | Red smears spreading across the face (walk south) [5, 19] |
 | Back of head | Plain skin with a red collar/scarf at the neck | The red collar climbing up the back of the head and reading as a face (idle and walk north) [6, 16] |
 | Pauldron | Steel pauldron on his **left** shoulder | Swapping shoulders between frames [19]; it flips in the mirrored west views [20] |
-| Axe | Single-bitten axe held low in his **right** hand, steel head, short wooden haft, orange tip | Haft growing into a long pole, head changing colour (idle north-east) [8]; swapping hands [17] |
+| Axe | Single-bladed axe held low in his **right** hand, steel head, short wooden haft, orange tip | Haft growing into a long pole, head changing colour (idle north-east) [8]; swapping hands [17] |
 | Clothes | Brown leather vest, red-orange belt, blue-grey trousers, brown boots | Belt colour flicker [5] |
 | Build | Broad, heavy; walks with weight | A walk with no visible leg swing (walk south, north) [1] |
 
