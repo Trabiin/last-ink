@@ -25,7 +25,8 @@ var _occluder: LightOccluder2D
 var _sprites: Array = []
 var highlight := false
 ## Chimney tops on the art pass sprites (offset from the plot's bottom-centre, per level), for the smoke.
-const SMOKE := {}  # e.g. "inkworks_3": Vector2(x, y); empty: the current sprites draw their own chimney smoke
+## The lit forges (levels 2 and 3) smoke from the chimney cap; the sprites carry no painted smoke.
+const SMOKE := {"forge_2": Vector2(27, -92), "forge_3": Vector2(28, -92)}
 var _over: Node2D  # code-drawn labels above everything: name plate, build progress, smoke
 var _scaffold: Node2D
 
@@ -199,7 +200,7 @@ func _draw_over() -> void:
 	var lv := Empire.level_of(id)
 	var job: Dictionary = Empire.construction if Empire.construction.get("id", "") == id else {}
 	var font := ThemeDB.fallback_font
-	if look == "inkworks" and lv > 0 and SMOKE.has("%s_%d" % [look, lv]):
+	if lv > 0 and SMOKE.has("%s_%d" % [look, lv]):
 		_draw_smoke(SMOKE["%s_%d" % [look, lv]])
 	# Name board: only while the player stands at the plot or it is being built (no always-on labels on the map,
 	# docs/ART_STYLE.md); the interaction prompt names it too.
