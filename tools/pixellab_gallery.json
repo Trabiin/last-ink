@@ -1,0 +1,1420 @@
+{
+ "items": {
+  "assets/buildings/barracks_1.png": {
+   "gallery": "732c5929-470b-4dcb-aa82-8d858f2b1ccb",
+   "hash": "84cad06fffbab5e4"
+  },
+  "assets/buildings/barracks_2.png": {
+   "gallery": "4a14a46c-9fea-48f8-a6b6-3665f0752fff",
+   "hash": "48bf8e0ac63fb85c"
+  },
+  "assets/buildings/barracks_3.png": {
+   "gallery": "a79be918-4dfe-4227-b4b0-c6d1b587bc73",
+   "hash": "13467050f1538ec9"
+  },
+  "assets/buildings/forge_1.png": {
+   "gallery": "20b78fb2-2786-41fc-b598-e99c0caf103e",
+   "hash": "b2c3197bd2d76e3b"
+  },
+  "assets/buildings/forge_2.png": {
+   "gallery": "b591d7de-1d93-4307-893f-92730f1b760f",
+   "hash": "373c09325b9845a2"
+  },
+  "assets/buildings/forge_3.png": {
+   "gallery": "1967d0ea-00c4-4105-8012-901aa8fc1bb6",
+   "hash": "7c6bd8041898bf45"
+  },
+  "assets/buildings/guildhall_1.png": {
+   "gallery": "ab1db6b6-916e-4b2b-937a-85b542dcaea2",
+   "hash": "41647ab1221c7b4d"
+  },
+  "assets/buildings/guildhall_2.png": {
+   "gallery": "d984dd09-bba1-418d-8e3a-68307b6747bc",
+   "hash": "1b1272f1f7f0134a"
+  },
+  "assets/buildings/guildhall_3.png": {
+   "gallery": "49a930a9-9c81-47e8-aa0a-7a9a8dda6f8b",
+   "hash": "52aca9d5e32279ba"
+  },
+  "assets/buildings/infirmary_1.png": {
+   "gallery": "dc44e417-480f-4557-a542-5982dc42feaf",
+   "hash": "637dd28fc89b9378"
+  },
+  "assets/buildings/infirmary_2.png": {
+   "gallery": "e2d46afc-f9db-42a1-9a1c-0daec35eaf33",
+   "hash": "219d57ca2a3e4954"
+  },
+  "assets/buildings/infirmary_3.png": {
+   "gallery": "c4f2f568-8337-4e43-871a-0ffae74c2142",
+   "hash": "db8e108bd324dbe7"
+  },
+  "assets/buildings/inkworks_1.png": {
+   "gallery": "db284865-98e2-49de-92d5-7f2e2ce87383",
+   "hash": "b1c25c4c057a9728"
+  },
+  "assets/buildings/inkworks_2.png": {
+   "gallery": "d3a71bff-48c5-415f-8485-822a667f7b7e",
+   "hash": "0466a9ee82dcdb47"
+  },
+  "assets/buildings/inkworks_3.png": {
+   "gallery": "ee1fce15-353f-426a-91dc-05221e63be55",
+   "hash": "634f6202bc5058de"
+  },
+  "assets/buildings/market_1.png": {
+   "gallery": "538a3ee6-9b22-443a-b6d3-58432ab398b3",
+   "hash": "47037c1922f0b991"
+  },
+  "assets/buildings/market_2.png": {
+   "gallery": "5b3606f5-27c7-4ea7-94f7-fd0a680abf91",
+   "hash": "7646ed3aee571666"
+  },
+  "assets/buildings/market_3.png": {
+   "gallery": "7ffa47d1-15cc-4214-b39d-db1b046ae9e4",
+   "hash": "993f9dcb4e35b337"
+  },
+  "assets/buildings/scriptorium_1.png": {
+   "gallery": "9418fdcc-a039-4d28-bab7-7a5a770209c0",
+   "hash": "b013f7a79fff28f5"
+  },
+  "assets/buildings/scriptorium_2.png": {
+   "gallery": "4c0367f3-5dfd-4530-be76-d37bd4022948",
+   "hash": "8cadbc7b3bc057be"
+  },
+  "assets/buildings/scriptorium_3.png": {
+   "gallery": "fd468056-acd9-484b-b6e5-56022a032d71",
+   "hash": "8750f775f621b8ba"
+  },
+  "assets/icons/abbots_headsman.png": {
+   "gallery": "9ccbf353-c55e-4eae-b289-4575852b831b",
+   "hash": "3b60af4cb677a575"
+  },
+  "assets/icons/arms_leather.png": {
+   "gallery": "3e30a9d3-0d00-41c6-bc37-94bde86e6b17",
+   "hash": "8202cb1e78521a07"
+  },
+  "assets/icons/arms_steel.png": {
+   "gallery": "41a04e92-c848-462e-9bf4-ca9afb307adf",
+   "hash": "dd838668883c2840"
+  },
+  "assets/icons/arms_whetstone.png": {
+   "gallery": "815f21c0-9e9f-44a1-90af-3a9630519d7c",
+   "hash": "e229746e853a3173"
+  },
+  "assets/icons/assessors_seal.png": {
+   "gallery": "13520ba0-ab84-4fa4-8f8b-3d1e15b3d7f1",
+   "hash": "6578ec84ad9ffc11"
+  },
+  "assets/icons/banquet_spoon.png": {
+   "gallery": "95d75a65-a0a9-4c31-b1de-62b782bcd5db",
+   "hash": "5e301b2d80807f48"
+  },
+  "assets/icons/barracks.png": {
+   "gallery": "3aab8373-7c33-4f77-80b8-ecd0894172da",
+   "hash": "3b1ef5212f1c97e5"
+  },
+  "assets/icons/bell_bronze.png": {
+   "gallery": "65166b2e-9e05-437e-b811-394d18c3106c",
+   "hash": "8ab4b0b0dfa33923"
+  },
+  "assets/icons/bellclapper_fists.png": {
+   "gallery": "75742725-9797-474a-a2ce-67ec64779268",
+   "hash": "91ef309dcd865b19"
+  },
+  "assets/icons/bellringers_clapper.png": {
+   "gallery": "4bacca81-4632-4fd7-adad-d30942d0dd2d",
+   "hash": "087d455b5473631f"
+  },
+  "assets/icons/belltower_halberd.png": {
+   "gallery": "f3a03896-ab3c-4f02-ae4f-ed0d18b3e26c",
+   "hash": "10bec986b90c130c"
+  },
+  "assets/icons/bent_nib.png": {
+   "gallery": "8cf740b8-8363-4bb5-a48e-f44bc10853b6",
+   "hash": "978b13f3c132e299"
+  },
+  "assets/icons/blank_pith.png": {
+   "gallery": "23b3a58a-506b-41e9-ac53-8cb43cd99ca0",
+   "hash": "4940a138d137f1f8"
+  },
+  "assets/icons/blotter_charm.png": {
+   "gallery": "f83d17d7-f428-4486-8f1d-78b98f23b695",
+   "hash": "3f1abd1a33bb97ce"
+  },
+  "assets/icons/bone_ladle.png": {
+   "gallery": "dfedf49d-c109-4e89-a33a-efa5b5bc968c",
+   "hash": "6ceb09d12de7b16f"
+  },
+  "assets/icons/book_of_arrears.png": {
+   "gallery": "2f56c642-24c0-4019-9c07-02a5450e59ae",
+   "hash": "b6f931de697fb509"
+  },
+  "assets/icons/bouncers_gauntlets.png": {
+   "gallery": "59803e4f-161b-4547-9b4a-e431004ab245",
+   "hash": "2fd8033fc7e2a23c"
+  },
+  "assets/icons/brass_bandolier.png": {
+   "gallery": "aca89b43-b910-4371-92a3-bb6058180a93",
+   "hash": "926ff33ded2318a0"
+  },
+  "assets/icons/brass_knuckles.png": {
+   "gallery": "302ab87a-d3c3-436d-98bb-f25b4b1b3513",
+   "hash": "e7e3deb749f0c704"
+  },
+  "assets/icons/breach_lance.png": {
+   "gallery": "66b58050-3a26-4d6e-afea-1be46c63500f",
+   "hash": "3d89447a0fb5db57"
+  },
+  "assets/icons/cauldron_spoon.png": {
+   "gallery": "6cd0ca3a-691b-4be8-97b8-8885a4784c29",
+   "hash": "ec905071bcaf8497"
+  },
+  "assets/icons/causeway_glaive.png": {
+   "gallery": "2a4080e7-0620-4305-957e-be3b264bc499",
+   "hash": "75c024a18d1b5f3e"
+  },
+  "assets/icons/censer_ladle.png": {
+   "gallery": "0df37d17-35ab-47de-ba0b-8ea3e5b5573e",
+   "hash": "292de7732bd31476"
+  },
+  "assets/icons/chapel_hauberk.png": {
+   "gallery": "543adaf5-8d21-4efb-9bbf-89eebc0b67e3",
+   "hash": "bd38f6188933fff6"
+  },
+  "assets/icons/clean_sheet.png": {
+   "gallery": "e1396441-8215-49f4-936d-eb1ea4e15cab",
+   "hash": "3d4412e868e04d1f"
+  },
+  "assets/icons/cleave.png": {
+   "gallery": "db06aad5-4418-4028-b81e-c2fc0391ddc1",
+   "hash": "595d8beb59b4134c"
+  },
+  "assets/icons/clock.png": {
+   "gallery": "0cadafd9-fc7b-4eb7-ba59-267a673704cc",
+   "hash": "8a30a558c5c6ab1d"
+  },
+  "assets/icons/clockwork_heart.png": {
+   "gallery": "347ad112-ad56-4658-88e4-bd274f7ba1e5",
+   "hash": "176f1fc5f78b09d3"
+  },
+  "assets/icons/closing_time.png": {
+   "gallery": "44063d92-5ae8-4c17-b5ad-18e1d84e4792",
+   "hash": "1d029ffada4413ec"
+  },
+  "assets/icons/command_table.png": {
+   "gallery": "9cb7a3a9-b302-494a-8af4-4845d2ae388b",
+   "hash": "12756867a3678b7c"
+  },
+  "assets/icons/concord.png": {
+   "gallery": "95290c60-e687-4cf5-abfc-d24684f20eea",
+   "hash": "96a9a628803dbb92"
+  },
+  "assets/icons/concord_pike.png": {
+   "gallery": "8a6ea847-bf08-4e72-be09-3fbf7cfdc0ef",
+   "hash": "8421ac622ee9dc67"
+  },
+  "assets/icons/contract_cleaver.png": {
+   "gallery": "e5d78f92-2069-4d0b-9141-a12fa5ed2b21",
+   "hash": "2709f893dbc42d33"
+  },
+  "assets/icons/copper_ladle.png": {
+   "gallery": "65d0b881-d4e3-46ce-85c3-f73243b808b2",
+   "hash": "843036991b3c8c6d"
+  },
+  "assets/icons/courier_snuff.png": {
+   "gallery": "b58de791-6480-4e3a-80b6-5c6d6014c91b",
+   "hash": "c439bd0fd4d50f8a"
+  },
+  "assets/icons/courtiers_smallsword.png": {
+   "gallery": "5a1e5ad8-5b0f-47c0-91a1-3c052b094eab",
+   "hash": "fc3642f61e918d32"
+  },
+  "assets/icons/coven.png": {
+   "gallery": "55ccded7-9394-4fc9-aa13-1726ba464b51",
+   "hash": "0777169f6c2d0c92"
+  },
+  "assets/icons/crimson_encore.png": {
+   "gallery": "b575ede9-7427-40b0-9fc0-99b6f4d073b1",
+   "hash": "82b102f6068be05d"
+  },
+  "assets/icons/door_knocker.png": {
+   "gallery": "678dea80-38e8-4167-9d0a-74df7a9209a1",
+   "hash": "84d9f11be3cb5967"
+  },
+  "assets/icons/draught.png": {
+   "gallery": "1dbda175-21d1-4551-8620-94fb2d7bde53",
+   "hash": "8e0f5427ad9189d2"
+  },
+  "assets/icons/final_notice.png": {
+   "gallery": "e3430438-ad2d-4282-80ef-a1415c248caa",
+   "hash": "1557655c037e040d"
+  },
+  "assets/icons/flash_powder.png": {
+   "gallery": "02333c95-b64e-410b-89c0-7eeeea6a3b14",
+   "hash": "1a8386cd339d0327"
+  },
+  "assets/icons/foreclosure.png": {
+   "gallery": "d268bffa-253a-4328-b9d7-2352bc4526a8",
+   "hash": "80094044408a92d8"
+  },
+  "assets/icons/forge.png": {
+   "gallery": "05601373-7fcd-49ed-887e-84b50008171b",
+   "hash": "97c0efca4994313f"
+  },
+  "assets/icons/fresh_ink.png": {
+   "gallery": "fac38db2-be54-47dc-ae9f-6c1c64a6bd7c",
+   "hash": "989df2a437c3c43d"
+  },
+  "assets/icons/gamblers_die.png": {
+   "gallery": "2e7ac0d9-7aa9-46f7-a09d-055481c75c7e",
+   "hash": "b6d904159c39ffc2"
+  },
+  "assets/icons/gilt.png": {
+   "gallery": "3f5bedb6-344c-46eb-850c-9475e4764f56",
+   "hash": "4ddbdbd4a2cfc9e5"
+  },
+  "assets/icons/gilt_tooth.png": {
+   "gallery": "f02df9e3-f1a8-467a-8fc3-af204367d100",
+   "hash": "c6ebf36e0278157d"
+  },
+  "assets/icons/guild.png": {
+   "gallery": "3dedb343-3238-426b-8938-99ad9cb1c199",
+   "hash": "a09f8bdf55bf8043"
+  },
+  "assets/icons/guildhall.png": {
+   "gallery": "e9025d8b-d334-4af7-9200-13a39f1e4af5",
+   "hash": "c095181fbaaa9b67"
+  },
+  "assets/icons/gutter_gin.png": {
+   "gallery": "9702260b-e332-4ce5-acd7-4489d588c5fc",
+   "hash": "e6d8986fa5b88344"
+  },
+  "assets/icons/hold_the_line.png": {
+   "gallery": "e081e692-a21d-4458-9d62-3618504e3336",
+   "hash": "00e766fdb22622b4"
+  },
+  "assets/icons/hook_knives.png": {
+   "gallery": "8445c2a6-8d71-46d1-8844-09de974b196b",
+   "hash": "ac52c0e7681a55e0"
+  },
+  "assets/icons/index_of_the_ledger.png": {
+   "gallery": "6b11e827-982d-41d9-9845-a6006abe292b",
+   "hash": "7344a0464ec30d05"
+  },
+  "assets/icons/infirmary.png": {
+   "gallery": "b0a58585-3ffb-414e-a135-e2a7a7e2763b",
+   "hash": "4c78a4c3e8e9e04a"
+  },
+  "assets/icons/ink.png": {
+   "gallery": "2f520809-04ec-465f-812e-46436026b9c2",
+   "hash": "018e12f11cbc06c4"
+  },
+  "assets/icons/ink_blot.png": {
+   "gallery": "4a1a400d-a1ae-42e2-8191-88b81b86cd39",
+   "hash": "27d7d07c58b802e9"
+  },
+  "assets/icons/ink_pearl.png": {
+   "gallery": "f5232155-5b86-4f52-b4ba-f8f839f14e6f",
+   "hash": "3d2c5f1e8c7a64b0"
+  },
+  "assets/icons/ink_skin.png": {
+   "gallery": "6eafb8fe-a264-498a-814a-19fee3f46531",
+   "hash": "baee1222022c6ce6"
+  },
+  "assets/icons/ink_tap.png": {
+   "gallery": "b41b69ef-1bc1-4592-8768-ce456a3043e2",
+   "hash": "428ede4e693e707a"
+  },
+  "assets/icons/inkblot_brooch.png": {
+   "gallery": "d736142b-3f50-4796-aea7-4e30a8c403fd",
+   "hash": "a77d80b4a7fe131b"
+  },
+  "assets/icons/inkpearl_quill.png": {
+   "gallery": "48567d37-f4f1-4b93-ae1f-039355a0604e",
+   "hash": "33c78e53d4e861ce"
+  },
+  "assets/icons/inkskin_vest.png": {
+   "gallery": "63879937-65c0-4742-b320-993dd660e916",
+   "hash": "ae35864eec79fb5c"
+  },
+  "assets/icons/inkworks.png": {
+   "gallery": "28e68f3e-8598-4e7b-b986-2b6e39b8085c",
+   "hash": "dca351205b402016"
+  },
+  "assets/icons/insight.png": {
+   "gallery": "6cac6f04-968c-4c8f-95b7-e0b60b23d8b4",
+   "hash": "75cd390643bd8363"
+  },
+  "assets/icons/iron_ledger.png": {
+   "gallery": "a3c2dfb5-db33-4b13-a096-6312bd96e678",
+   "hash": "5e1bfaa9d9c74fac"
+  },
+  "assets/icons/iron_tea.png": {
+   "gallery": "c246c5eb-3b7f-484f-a1aa-78e30134379a",
+   "hash": "6bad121b74458dbd"
+  },
+  "assets/icons/ladle_of_last_rites.png": {
+   "gallery": "7a44a684-278f-46ab-8f5b-790bef8fb92d",
+   "hash": "c43c8dc7e0e918bc"
+  },
+  "assets/icons/lamp_brass.png": {
+   "gallery": "276870f0-2faa-46c5-8d8d-37cb515be39f",
+   "hash": "036b40bd8f1b3ca0"
+  },
+  "assets/icons/last_warning.png": {
+   "gallery": "25b5b47c-96c1-483b-a2e0-72d3cc83bd8c",
+   "hash": "73c12b7068d67203"
+  },
+  "assets/icons/ledger_mail.png": {
+   "gallery": "004adbb2-0299-451f-b9be-92f4d11d039c",
+   "hash": "fac87a2301ce80d3"
+  },
+  "assets/icons/ledger_steel.png": {
+   "gallery": "01530624-742b-4581-82f3-7e1c5aaafa0e",
+   "hash": "cf31e1aec2c9afe4"
+  },
+  "assets/icons/ledgerplate.png": {
+   "gallery": "b133b3c8-549c-4d70-89c3-dade21e5a5b0",
+   "hash": "67d0253029caa5ed"
+  },
+  "assets/icons/leech_locket.png": {
+   "gallery": "67916bd0-02c4-4847-8870-68d5b4acc4d6",
+   "hash": "fe004954ae0c1780"
+  },
+  "assets/icons/log_fieldmaps.png": {
+   "gallery": "8459ae28-52e2-4b58-88d2-b196a2810f0f",
+   "hash": "a1ab789d7ab9e120"
+  },
+  "assets/icons/log_rations.png": {
+   "gallery": "038780f6-9c9c-4cf0-90fc-7acda23cb64e",
+   "hash": "db87413e40d4e80a"
+  },
+  "assets/icons/log_waystations.png": {
+   "gallery": "94478673-6cf1-46ac-ae25-b379ff73f7f0",
+   "hash": "663d001b6657dd16"
+  },
+  "assets/icons/long_thrust.png": {
+   "gallery": "50199acc-7b2f-473e-9b45-f4003f9d2d89",
+   "hash": "4500bb1eb4b4de8f"
+  },
+  "assets/icons/lucky_button.png": {
+   "gallery": "9994de31-7e2d-4842-81b0-81a683a93db3",
+   "hash": "666113a9d78333c3"
+  },
+  "assets/icons/market.png": {
+   "gallery": "b189c094-4d91-4945-8232-22a4f62f2c36",
+   "hash": "cc6dfee0530186cb"
+  },
+  "assets/icons/marrow_broth.png": {
+   "gallery": "06ee7f58-7085-48a6-b535-59d1ed3586d1",
+   "hash": "36f6f1ab964c8f30"
+  },
+  "assets/icons/masked_ball.png": {
+   "gallery": "01c0c5e5-2f1c-4ebd-b168-8119b6ed6a98",
+   "hash": "8653628dbeb5e815"
+  },
+  "assets/icons/masquerade_register.png": {
+   "gallery": "70efe297-9070-400a-b203-ac39f0d7b154",
+   "hash": "19bb24efa8df3cb4"
+  },
+  "assets/icons/masquers_brigandine.png": {
+   "gallery": "609f0ed9-8835-41f2-ae27-9ad971742d43",
+   "hash": "bf1aa21d27f36739"
+  },
+  "assets/icons/matins_foil.png": {
+   "gallery": "5ef744f0-e5f1-4481-b5fe-e38d2803df71",
+   "hash": "b0b37af3afebedbe"
+  },
+  "assets/icons/moonless_pair.png": {
+   "gallery": "fbc561bb-7209-4538-8665-1f901bfa3cf0",
+   "hash": "7776fb1c1d42aaf5"
+  },
+  "assets/icons/moth_silk.png": {
+   "gallery": "320c8574-c084-4e5c-bf7b-8fd8498ca74a",
+   "hash": "74239ebcb45bb998"
+  },
+  "assets/icons/mothsilk_shawl.png": {
+   "gallery": "46d6b62f-284f-4610-b828-3c446ffe1548",
+   "hash": "f680f39d9a010bb9"
+  },
+  "assets/icons/notary_axe.png": {
+   "gallery": "6f65a32e-14c5-42f5-97aa-a16e8cc3c8d6",
+   "hash": "2b8bc68f70f0bd01"
+  },
+  "assets/icons/nothing_declared.png": {
+   "gallery": "c897d027-ed6f-4f40-8a15-2096e6fa3914",
+   "hash": "3819e70596163954"
+  },
+  "assets/icons/oak_gall.png": {
+   "gallery": "f90426b7-712e-4e51-8b9b-b716d7327071",
+   "hash": "4710858acd40befc"
+  },
+  "assets/icons/oil_flask.png": {
+   "gallery": "0dc69c3a-77fb-4220-a419-b54a477618cc",
+   "hash": "b5a681865ba4071d"
+  },
+  "assets/icons/oilcloth_satchel.png": {
+   "gallery": "30b98588-7b3c-4f44-9b2f-b5833807eca0",
+   "hash": "b65b9a16ee0d9c28"
+  },
+  "assets/icons/padded_coat.png": {
+   "gallery": "2f2670e6-b6cc-48e5-a554-5f9339478017",
+   "hash": "10a373cbdcad69e8"
+  },
+  "assets/icons/pearl_divers_pair.png": {
+   "gallery": "88c050bf-fbe3-473b-8c36-e835e9d0919f",
+   "hash": "cb73d26313b09666"
+  },
+  "assets/icons/pearlscale_coat.png": {
+   "gallery": "8c459f11-ba85-495c-b7fb-c169e12c865f",
+   "hash": "fbf30bcfc18b1a2f"
+  },
+  "assets/icons/penitents_cassock.png": {
+   "gallery": "dde8b40a-6e3d-4f58-a12b-787a2024fb35",
+   "hash": "6e80de3684f6bc3f"
+  },
+  "assets/icons/penitents_tally.png": {
+   "gallery": "9341effa-a0d2-459f-861b-bf43c62c8219",
+   "hash": "deb2302f4c227f25"
+  },
+  "assets/icons/pike_sweep.png": {
+   "gallery": "3fdc0bfb-5e9e-4c8e-aaab-743c2f9a67d2",
+   "hash": "cb3667ff23798a90"
+  },
+  "assets/icons/poultice_toss.png": {
+   "gallery": "d84d397f-5a01-4ec8-9265-bf88b36d9abb",
+   "hash": "6dd4a7e48f9be2c6"
+  },
+  "assets/icons/quill_knife.png": {
+   "gallery": "91da4634-54f7-4756-a96e-b36974b10888",
+   "hash": "39d52285c826c456"
+  },
+  "assets/icons/ravens_quill.png": {
+   "gallery": "aa9d973e-d724-4c61-a606-d68046ac0bfc",
+   "hash": "b9cd48a9a3593af1"
+  },
+  "assets/icons/relic_silver.png": {
+   "gallery": "4859649c-db01-4219-8d90-685795321c06",
+   "hash": "0c099819bb12ea55"
+  },
+  "assets/icons/renown.png": {
+   "gallery": "6d1ed8d1-0bcc-413b-bb35-5ab52292434f",
+   "hash": "8efc07501aec4a5a"
+  },
+  "assets/icons/rewrite.png": {
+   "gallery": "442f5441-2009-409d-996d-f6783f2ce97b",
+   "hash": "901a876743f3f691"
+  },
+  "assets/icons/role_envoy.png": {
+   "gallery": "17565713-4721-451a-bf0e-b99d04a5b381",
+   "hash": "5dae3d9421ffa4d1"
+  },
+  "assets/icons/role_expedition.png": {
+   "gallery": "e236354b-c3fd-42ef-abce-024d54429c7f",
+   "hash": "b8472ec3b9644b68"
+  },
+  "assets/icons/role_governor.png": {
+   "gallery": "6c9ec70f-d6c9-4d4f-a5f7-f7a02b9a9952",
+   "hash": "e4b0782231fe94b4"
+  },
+  "assets/icons/role_party.png": {
+   "gallery": "aa078ec2-1706-43ca-8fcb-c3966bef1625",
+   "hash": "d8977460d8a4cf57"
+  },
+  "assets/icons/role_researcher.png": {
+   "gallery": "593ba54f-b2a5-4a07-8770-808b3b67e33b",
+   "hash": "ff5ed361cd4c467a"
+  },
+  "assets/icons/role_staff.png": {
+   "gallery": "e8f1801c-0289-402c-bb65-e61e45cf8dba",
+   "hash": "7cc3870bb35c6ce2"
+  },
+  "assets/icons/running_boots.png": {
+   "gallery": "bf40df15-38a9-4481-8c30-cb641d3e56a3",
+   "hash": "13f3699edc42c1ef"
+  },
+  "assets/icons/saltglass.png": {
+   "gallery": "5721627b-ffe2-4671-8aca-530c0b5ee9ef",
+   "hash": "d9468a2a205b8a7c"
+  },
+  "assets/icons/saltglass_eye.png": {
+   "gallery": "3257742e-48bb-49b9-afda-2d023393aad2",
+   "hash": "58e91f78ea7ab16a"
+  },
+  "assets/icons/saltglass_mantle.png": {
+   "gallery": "6af5403a-60c3-4fba-8df2-b339486abd87",
+   "hash": "5fa4f023a9038300"
+  },
+  "assets/icons/salts.png": {
+   "gallery": "752f7e07-0552-4ee6-8602-38f8f2b8be6a",
+   "hash": "29ab43eecbe81fe3"
+  },
+  "assets/icons/scald.png": {
+   "gallery": "ef0f5faa-0d62-46f1-bf61-f300d59ae185",
+   "hash": "a17bd04045a127b2"
+  },
+  "assets/icons/scrap_iron.png": {
+   "gallery": "defe53cd-1fc7-4517-9330-a2976d00e122",
+   "hash": "c036de9f4d024d2a"
+  },
+  "assets/icons/scriptorium.png": {
+   "gallery": "ffedd9a4-ad25-4cde-bfba-6f66030a269f",
+   "hash": "0025561a8dad2cf1"
+  },
+  "assets/icons/second_signature.png": {
+   "gallery": "95923450-d193-4c9e-a9a6-c624c18217d4",
+   "hash": "e54a6bf2db8ac5b9"
+  },
+  "assets/icons/smiths_patch.png": {
+   "gallery": "8219ea83-f08f-4025-8c6e-5c2ebc001f3a",
+   "hash": "2aa7c4a1a7c62860"
+  },
+  "assets/icons/spire_breaker.png": {
+   "gallery": "32761abe-bda8-4eac-87ab-69102f811857",
+   "hash": "01743b1243581f93"
+  },
+  "assets/icons/spire_leaf.png": {
+   "gallery": "5486b067-110b-4bc2-925a-fa55afc23fe6",
+   "hash": "7d9ea71bbdf102a5"
+  },
+  "assets/icons/stage_rapier.png": {
+   "gallery": "4dbff75a-0169-4e5b-9679-0cef24af0d64",
+   "hash": "082cbf7ce0660d1b"
+  },
+  "assets/icons/standing_ovation.png": {
+   "gallery": "b21dab12-9a47-438d-8d36-fe0d5b756d6f",
+   "hash": "ff2a140be39ccb36"
+  },
+  "assets/icons/status_burn.png": {
+   "gallery": "7bcf3b94-49e7-46cd-ae81-3403b2a05194",
+   "hash": "7e2d656cf37acda1"
+  },
+  "assets/icons/status_erase.png": {
+   "gallery": "4c286fb7-943d-49cf-af13-9da67b4f92d2",
+   "hash": "b3f44818998e1bfd"
+  },
+  "assets/icons/status_guard.png": {
+   "gallery": "71624e5c-d471-481a-965c-0e52f476650d",
+   "hash": "09e67304e42b8e98"
+  },
+  "assets/icons/status_haste.png": {
+   "gallery": "ed71cd38-4227-4f64-9901-cddc421ab806",
+   "hash": "b05b524398641270"
+  },
+  "assets/icons/status_might.png": {
+   "gallery": "77e0ccfe-67e6-4c05-ac0b-cdf5d7cf226f",
+   "hash": "6e4c26593fb7d531"
+  },
+  "assets/icons/status_poison.png": {
+   "gallery": "6531c2c2-3d70-4c0b-a4ca-4e798947fa60",
+   "hash": "84e278d572311bc6"
+  },
+  "assets/icons/status_stun.png": {
+   "gallery": "9942f48f-2d79-4f23-94b8-bce99eb6a0ca",
+   "hash": "22727bdb01e37738"
+  },
+  "assets/icons/status_ward.png": {
+   "gallery": "83703842-3936-4be8-bbf4-6acc687a3670",
+   "hash": "f602d7b13c01f4d3"
+  },
+  "assets/icons/steady_bell.png": {
+   "gallery": "b55cc757-f71a-4688-b16f-ef32b05abc5a",
+   "hash": "4c903c171951ce06"
+  },
+  "assets/icons/steel_nib.png": {
+   "gallery": "61033cca-ced9-4cba-9d29-8c847b828c98",
+   "hash": "3af37557ee92873d"
+  },
+  "assets/icons/strikethrough.png": {
+   "gallery": "25568302-d0d3-4d0c-b283-b43052f5ca02",
+   "hash": "5f45a060804186a6"
+  },
+  "assets/icons/supplies.png": {
+   "gallery": "505d2db7-146b-4925-80ba-769cc94dbe45",
+   "hash": "1b2c03c2eba52e2e"
+  },
+  "assets/icons/tech_ash.png": {
+   "gallery": "e0f3cb74-a6b2-47f5-8473-370a59f83704",
+   "hash": "f02a35f58c1405e3"
+  },
+  "assets/icons/tech_bran.png": {
+   "gallery": "81bbdc2f-2328-4588-8543-8008b71014dd",
+   "hash": "c92964a59646f8e0"
+  },
+  "assets/icons/tech_gristle.png": {
+   "gallery": "cadb0506-a455-48f0-b8e9-dcabbf6d4a25",
+   "hash": "c67de004c1d56c42"
+  },
+  "assets/icons/tech_ninefingers.png": {
+   "gallery": "8e34fb30-268d-4c91-82e8-2ce2a43e750c",
+   "hash": "99a5b45ec123e5de"
+  },
+  "assets/icons/the_last_word.png": {
+   "gallery": "c5256ca1-0821-43de-bd63-8fda7472d5a2",
+   "hash": "e3b1bca4f560c69c"
+  },
+  "assets/icons/thornwire_bracelet.png": {
+   "gallery": "8d84bc7e-716d-400c-9e74-06e68ca12470",
+   "hash": "f1bdac9323c662aa"
+  },
+  "assets/icons/tide_and_tithe.png": {
+   "gallery": "d25268a3-252a-453b-96c1-947989e7fea4",
+   "hash": "0d7b0d1180cc5476"
+  },
+  "assets/icons/tithe_wax.png": {
+   "gallery": "17790dcd-aee2-42d7-b266-b522466c2ff8",
+   "hash": "110cf9efcd665fcc"
+  },
+  "assets/icons/tollkeeper_pike.png": {
+   "gallery": "fc3271a6-4c78-445a-b6f3-007539c9fcfb",
+   "hash": "73f8c3de78abebf3"
+  },
+  "assets/icons/tollkeepers_coat.png": {
+   "gallery": "e4ee32ac-feb7-4088-9b2c-caaa84422ed3",
+   "hash": "d74e3cfcf6e0e0f1"
+  },
+  "assets/icons/tonic.png": {
+   "gallery": "0e1eea01-e9a8-43aa-9a0b-3b9f624d9854",
+   "hash": "3b2ed4637f9d52ad"
+  },
+  "assets/icons/trait_bookish.png": {
+   "gallery": "139e5551-f64c-4cbc-8d00-9f6fd273979f",
+   "hash": "678bf1005064ff70"
+  },
+  "assets/icons/trait_contract.png": {
+   "gallery": "50acfdb0-7709-4f60-8fa0-608cb810ff5a",
+   "hash": "400b1c6a62814b28"
+  },
+  "assets/icons/trait_coward.png": {
+   "gallery": "c3480574-2829-4216-88d8-a9f473782e24",
+   "hash": "d1b3a4f6d3625b64"
+  },
+  "assets/icons/trait_ex_concord.png": {
+   "gallery": "40f32301-46f3-4cdf-bdf5-d84d432b60c8",
+   "hash": "7ae0ec4b6534b630"
+  },
+  "assets/icons/trait_flirt.png": {
+   "gallery": "454dfc58-5b09-4731-af2a-8d8db8947eb7",
+   "hash": "7e6d62d8ad3f11a0"
+  },
+  "assets/icons/trait_greedy.png": {
+   "gallery": "40661007-e379-409a-85ff-a4ff162728be",
+   "hash": "df058dafc837fdde"
+  },
+  "assets/icons/trait_ink_sick.png": {
+   "gallery": "0ea59a25-87c1-4806-9eb4-9a8d759b470e",
+   "hash": "56fcda8a04b16ddf"
+  },
+  "assets/icons/trait_night_owl.png": {
+   "gallery": "4c7fded0-fa0e-427e-99ec-f52938b8b1e1",
+   "hash": "5e78a954da62902a"
+  },
+  "assets/icons/trait_stubborn.png": {
+   "gallery": "e64f09d7-8664-4c58-b133-b6da84392448",
+   "hash": "158623d51458cf4b"
+  },
+  "assets/icons/trait_unwritten.png": {
+   "gallery": "d8cb2368-1d9f-44f9-a683-b5e8df0a0587",
+   "hash": "538f040fce80c2fe"
+  },
+  "assets/icons/velvet_cord.png": {
+   "gallery": "57e77930-42f1-49ff-9b7d-294d7f5f685a",
+   "hash": "29f7d6a14089425b"
+  },
+  "assets/icons/velvet_guillotine.png": {
+   "gallery": "e08e7912-53c3-4555-aa72-a7b82f8a403b",
+   "hash": "9b99111ff898efda"
+  },
+  "assets/icons/velvet_harness.png": {
+   "gallery": "a632b8a8-0ca5-4095-bc6e-2d44a8d91556",
+   "hash": "aaa21dcb31f894a3"
+  },
+  "assets/icons/vespers_nib.png": {
+   "gallery": "a6789e34-ad0e-4fcc-a5ae-55e381fb3b24",
+   "hash": "daddfd2f24fd7574"
+  },
+  "assets/icons/vigil_knives.png": {
+   "gallery": "6b5ec63f-c02f-4485-acf1-8a00cab376a7",
+   "hash": "107dbaaa516b7f04"
+  },
+  "assets/icons/ward_candle.png": {
+   "gallery": "7ca444e8-1e68-4094-9ed5-7f1a888e0619",
+   "hash": "f078f96d6b5d68ef"
+  },
+  "assets/icons/ward_lampwright.png": {
+   "gallery": "4604585a-c533-4584-9cf5-b55bd45ce595",
+   "hash": "2b32a2b198fac7b0"
+  },
+  "assets/icons/ward_longwatch.png": {
+   "gallery": "f43cecd8-8148-4fe1-a930-b606e14ca2d2",
+   "hash": "6def1939463d596c"
+  },
+  "assets/icons/ward_margins.png": {
+   "gallery": "efca4512-968c-4d6f-bb05-806d4da01e4c",
+   "hash": "21000529b393fd89"
+  },
+  "assets/icons/widows_ribbon.png": {
+   "gallery": "2b0cee8d-9b56-427b-8ce8-8f98f563d89d",
+   "hash": "207434ac9eaa8800"
+  },
+  "assets/icons/wormwood.png": {
+   "gallery": "a53e42d4-5a5f-43ad-b994-72d81c3987e1",
+   "hash": "13ad88068eefe12c"
+  },
+  "assets/icons/wormwood_sachet.png": {
+   "gallery": "4c7f567a-95bd-45b6-b411-b67431aff635",
+   "hash": "ab4a90a1ec980a94"
+  },
+  "assets/icons/wreck_oak.png": {
+   "gallery": "60de2852-d776-4266-ae2d-2a45ace93b4f",
+   "hash": "a8b02dc1264c60e6"
+  },
+  "assets/props/banner.png": {
+   "gallery": "1db89d76-fdad-4176-8d9d-b135a114dee4",
+   "hash": "be9cecc0962d20e7"
+  },
+  "assets/props/barrels.png": {
+   "gallery": "f1c9a32a-5d7b-4fd0-9199-6ffeefb616ce",
+   "hash": "9894f2f325da9fb4"
+  },
+  "assets/props/barrels_v1.png": {
+   "gallery": "b3e4ee40-ec7c-4626-83e5-93a16703fd9b",
+   "hash": "5aa98abfd5ae7a69"
+  },
+  "assets/props/barrels_v2.png": {
+   "gallery": "42ea91d3-a3a7-4c7e-8c90-705f9fa45a43",
+   "hash": "79a5416dfdd127f8"
+  },
+  "assets/props/barrels_v3.png": {
+   "gallery": "10a4da9e-307d-4dd8-9270-6d2d6d5d6e87",
+   "hash": "2e15fb1b7c01eae9"
+  },
+  "assets/props/barricade.png": {
+   "gallery": "69ff301c-352d-48e8-829a-9b956497e75e",
+   "hash": "3c5f21f8ceca13b0"
+  },
+  "assets/props/barricade_v1.png": {
+   "gallery": "4c123a54-a0f5-4e75-89a8-1cb4d6b4fe36",
+   "hash": "6986e1798ae9d463"
+  },
+  "assets/props/barricade_v2.png": {
+   "gallery": "cb1080eb-da89-48d5-ac37-a1915dd1430b",
+   "hash": "d41160963a5ee0a8"
+  },
+  "assets/props/barricade_v3.png": {
+   "gallery": "9a258459-9677-4df3-8a36-13841b8acd92",
+   "hash": "e64a59592c091758"
+  },
+  "assets/props/bench.png": {
+   "gallery": "31d01dee-1bf4-42e5-a7b9-9e8e251db3b6",
+   "hash": "83b9c4b3dd699c6c"
+  },
+  "assets/props/bones.png": {
+   "gallery": "442f42ff-6fae-4782-ba34-034165502a30",
+   "hash": "7e720573e654de9f"
+  },
+  "assets/props/boulder.png": {
+   "gallery": "b8aebba3-cdea-4d1e-b1b9-af70654cf9b7",
+   "hash": "b2ca8f8d3b07d182"
+  },
+  "assets/props/boulder_v1.png": {
+   "gallery": "e1c2ca1c-a4ca-410a-a32f-c199547786b6",
+   "hash": "1153e21ffe6d66e3"
+  },
+  "assets/props/boulder_v2.png": {
+   "gallery": "f37de8c5-7006-4c1c-9dec-087ec6460911",
+   "hash": "08114e66c61bd6c3"
+  },
+  "assets/props/boulder_v3.png": {
+   "gallery": "5a084674-32d4-42b2-a403-8526c85e4c19",
+   "hash": "48b10f16e8e8a6f0"
+  },
+  "assets/props/boulder_v4.png": {
+   "gallery": "b26089c5-8921-463f-9649-e82a8c17a9fe",
+   "hash": "c63721e0a8d0f23e"
+  },
+  "assets/props/bush.png": {
+   "gallery": "c5cbeaba-e948-423d-9ec1-b66b67f6e94e",
+   "hash": "c432d8f74ebf72d6"
+  },
+  "assets/props/bush_v1.png": {
+   "gallery": "e14094f7-c04b-4265-aad5-6ddbed40cb6b",
+   "hash": "c8693704b1d9c3c3"
+  },
+  "assets/props/bush_v2.png": {
+   "gallery": "516e130b-ec68-48e0-a0df-3ebe19a5ceac",
+   "hash": "359816d14430bc53"
+  },
+  "assets/props/cart.png": {
+   "gallery": "c96b272d-5c3d-497b-9591-d4bb7e1490df",
+   "hash": "61ae7d7b7e26b1cc"
+  },
+  "assets/props/command_table.png": {
+   "gallery": "10cc74e1-9293-41fb-9b1e-55d3b0c7cd61",
+   "hash": "d57f69ad056ad154"
+  },
+  "assets/props/crates.png": {
+   "gallery": "a5a5a2d3-ed93-46a5-a479-a63be4f26c0e",
+   "hash": "50da700c2147895a"
+  },
+  "assets/props/crates_v1.png": {
+   "gallery": "ea8f1ba5-6747-41e8-a1b0-0faf4f331101",
+   "hash": "5014a3dfd5892a82"
+  },
+  "assets/props/crates_v2.png": {
+   "gallery": "403d91c0-f362-4007-9905-d9077b4ad488",
+   "hash": "50a4c105ecce3cd1"
+  },
+  "assets/props/dock.png": {
+   "gallery": "37cc39de-562f-443b-8f24-ef8322ff33c0",
+   "hash": "2a497b716eb09056"
+  },
+  "assets/props/dock_v1.png": {
+   "gallery": "5189d9f7-ae16-499b-82c3-fa279a30e4a8",
+   "hash": "b08db0120a028f8e"
+  },
+  "assets/props/dock_v2.png": {
+   "gallery": "1d298882-ba1f-4585-8950-6beb17b0a654",
+   "hash": "4b18772130bf86f0"
+  },
+  "assets/props/dock_v3.png": {
+   "gallery": "2e39763a-dda4-4cbe-b503-80151b6ed851",
+   "hash": "1418d78bf1c227af"
+  },
+  "assets/props/drygrass.png": {
+   "gallery": "2eb2d9f7-1b50-466f-8d78-e768d48a522c",
+   "hash": "37e70fe25d7ff643"
+  },
+  "assets/props/drygrass_v1.png": {
+   "gallery": "c58f8ddc-e3fc-4448-8271-51bb1b264294",
+   "hash": "db99dbed0125872b"
+  },
+  "assets/props/drygrass_v2.png": {
+   "gallery": "5464bc04-6b84-497f-bf8c-cd4cc442eff3",
+   "hash": "a3a31b103d64c0cc"
+  },
+  "assets/props/drygrass_v3.png": {
+   "gallery": "90c5e03e-affc-422c-bc51-673b71b390b6",
+   "hash": "97da1c6f6cbafd34"
+  },
+  "assets/props/drygrass_v4.png": {
+   "gallery": "f611d18e-1598-4ac3-a762-c2236eb44da8",
+   "hash": "d8b76f0aab4bb4c2"
+  },
+  "assets/props/fence.png": {
+   "gallery": "0d113797-8acc-4ecc-abb7-8f527a43bc06",
+   "hash": "dce8f90c7e889bd4"
+  },
+  "assets/props/fence_v1.png": {
+   "gallery": "6061034b-424c-454b-9a27-f9b65e64273a",
+   "hash": "99e8a5a5f1ebb6ed"
+  },
+  "assets/props/fern.png": {
+   "gallery": "62da3f85-56c7-48c5-9892-c60b908e8f33",
+   "hash": "bec23281753ecbb5"
+  },
+  "assets/props/fern_v1.png": {
+   "gallery": "029e42c9-8079-4ec0-aea3-8348ccb52e92",
+   "hash": "2861f2bfac90c026"
+  },
+  "assets/props/fern_v2.png": {
+   "gallery": "90bbee8b-2132-4198-a086-3454e1d0f323",
+   "hash": "37b16e6f762fe5a3"
+  },
+  "assets/props/fern_v3.png": {
+   "gallery": "808d7842-bd78-42f1-a299-86b6d03fa5c5",
+   "hash": "e79b0567f36001a1"
+  },
+  "assets/props/fortree.png": {
+   "gallery": "38e32a63-1161-4b25-87ad-c4dd4ea21051",
+   "hash": "3688ac3ef77999c2"
+  },
+  "assets/props/fortree_v1.png": {
+   "gallery": "a58ab427-0765-4b74-9328-943416a15d6a",
+   "hash": "4c0da4cf3888df1d"
+  },
+  "assets/props/fortree_v2.png": {
+   "gallery": "54bf94d1-1c5c-4e49-8066-251213b0f986",
+   "hash": "09dd3a948345f315"
+  },
+  "assets/props/fortree_v3.png": {
+   "gallery": "837e5821-0815-4303-b1b0-276fd5ed9933",
+   "hash": "0ad500eb4eabe0e8"
+  },
+  "assets/props/fortree_v4.png": {
+   "gallery": "d2679a9b-ffd7-4927-83ee-8da47e8f9a72",
+   "hash": "d5cfc63e93efdac8"
+  },
+  "assets/props/fortree_v5.png": {
+   "gallery": "5c443523-1b0b-40c6-9338-0c3b5774b71a",
+   "hash": "a39775153ac8ca81"
+  },
+  "assets/props/fortree_v6.png": {
+   "gallery": "39350646-5ca1-4b51-9568-58be683f6cf7",
+   "hash": "dfd6a3ca962e919c"
+  },
+  "assets/props/fortree_v7.png": {
+   "gallery": "954cf844-7b49-432b-9c09-99325ccf51b7",
+   "hash": "89948041db966c20"
+  },
+  "assets/props/fountain.png": {
+   "gallery": "78830598-8b18-447d-aa57-4634c4571f6b",
+   "hash": "21d382491eecf507"
+  },
+  "assets/props/fungus.png": {
+   "gallery": "b40797b4-2146-4ed0-bd1d-475c73736dab",
+   "hash": "d36f8c80936200cb"
+  },
+  "assets/props/fungus_v1.png": {
+   "gallery": "763cb50a-9ddb-444a-8f75-a8b17af98c0d",
+   "hash": "c66722f8be92817e"
+  },
+  "assets/props/fungus_v2.png": {
+   "gallery": "102b3f7d-b34e-4b8c-bbb8-ad249fba85c6",
+   "hash": "a4d8be6c447cc08e"
+  },
+  "assets/props/fungus_v3.png": {
+   "gallery": "9469d2a3-ba79-47bf-acdc-5b9a831b34ff",
+   "hash": "8b971a7afe1e3463"
+  },
+  "assets/props/garden.png": {
+   "gallery": "61a68ad6-b761-4ea7-8391-cce424641362",
+   "hash": "91c7bc9f8ddb9c66"
+  },
+  "assets/props/garden_v1.png": {
+   "gallery": "cde6a275-2c32-4b27-bd81-02b18eea1333",
+   "hash": "d1bf2db32e7bd5e1"
+  },
+  "assets/props/garden_v2.png": {
+   "gallery": "b25a0843-f51c-4a6c-9ec8-a292a638d98c",
+   "hash": "f3a9aa808b98056e"
+  },
+  "assets/props/grave.png": {
+   "gallery": "b6621ccd-88a2-424c-b1cc-1881917365bc",
+   "hash": "c74f33bd829b7baa"
+  },
+  "assets/props/grave_v1.png": {
+   "gallery": "3f77fba0-34eb-4006-98ef-484865779812",
+   "hash": "5138ac75989cdae9"
+  },
+  "assets/props/grave_v2.png": {
+   "gallery": "405cab8c-c84d-498b-868f-429e1c7e22dc",
+   "hash": "c7d207da5e25f47f"
+  },
+  "assets/props/house.png": {
+   "gallery": "ef38e28e-f9f3-4007-a44c-8f102c091699",
+   "hash": "341fc8c9d664896d"
+  },
+  "assets/props/house_a.png": {
+   "gallery": "971c65dc-7587-40f1-9d04-b2c297149ed2",
+   "hash": "341fc8c9d664896d"
+  },
+  "assets/props/house_b.png": {
+   "gallery": "4cda33b7-9ad1-415f-a693-7bbe68c1f28e",
+   "hash": "a681abe5d90b876e"
+  },
+  "assets/props/house_c.png": {
+   "gallery": "5987359e-4bd7-4021-8117-132c6240ccf8",
+   "hash": "6d7ca607743c6867"
+  },
+  "assets/props/house_c_v1.png": {
+   "gallery": "9cf11056-8a04-4938-9272-7127f57e2ae0",
+   "hash": "1e87704c39c0cc08"
+  },
+  "assets/props/house_d.png": {
+   "gallery": "cf94072a-fedd-417e-b0e4-073457356400",
+   "hash": "888310866659669b"
+  },
+  "assets/props/house_e.png": {
+   "gallery": "9991ed9f-4717-4984-98b1-be97cab0b6c8",
+   "hash": "58f796f4278ca160"
+  },
+  "assets/props/house_e_v1.png": {
+   "gallery": "dde3c939-a321-41c7-b1ce-429b2b369000",
+   "hash": "ae2a5fce13a9bea5"
+  },
+  "assets/props/house_f.png": {
+   "gallery": "f97b27eb-b53e-4cde-b85d-f1109e4cb99c",
+   "hash": "e7b8f13b5f849eed"
+  },
+  "assets/props/house_g.png": {
+   "gallery": "a4ad925a-c7d1-4edb-b39a-95969abe851e",
+   "hash": "0151a60034a30511"
+  },
+  "assets/props/house_g_v1.png": {
+   "gallery": "59c1692f-3b76-4877-96a5-c48ab735fcae",
+   "hash": "c0bd152022027308"
+  },
+  "assets/props/house_h.png": {
+   "gallery": "b1653a0d-32ee-4af7-abbb-810dfd52cef5",
+   "hash": "dabbeac9c9191c09"
+  },
+  "assets/props/house_v1.png": {
+   "gallery": "70a20d82-572b-4d73-bac7-1e9acef71b91",
+   "hash": "a681abe5d90b876e"
+  },
+  "assets/props/house_v2.png": {
+   "gallery": "0c700149-0b06-49ff-8907-fca66204b205",
+   "hash": "6edb1903d576c31a"
+  },
+  "assets/props/house_v3.png": {
+   "gallery": "beb435fb-5d4e-4c20-bb82-771420cec978",
+   "hash": "6a906fbeaea8ebd2"
+  },
+  "assets/props/house_v4.png": {
+   "gallery": "aef49d9b-02bc-4b15-837f-504435a2dd96",
+   "hash": "ca96270ef8831d57"
+  },
+  "assets/props/inkspring.png": {
+   "gallery": "6d19320b-5a43-48ac-a495-315e60e8bcd5",
+   "hash": "e1d00058b0e937bc"
+  },
+  "assets/props/inkspring_v1.png": {
+   "gallery": "84da2a97-d6b1-40b8-8997-3adcb7940046",
+   "hash": "8c80ca696d447bb8"
+  },
+  "assets/props/inkspring_v2.png": {
+   "gallery": "1c012523-02e6-4708-8ef3-c23a14e6865b",
+   "hash": "1ed7eb16ef077ec9"
+  },
+  "assets/props/inkspring_v3.png": {
+   "gallery": "f2f351ac-f269-4fce-849c-644c7de0df2c",
+   "hash": "f7a5a48ac67a6531"
+  },
+  "assets/props/lamppost.png": {
+   "gallery": "9608e635-d82f-4e30-8bbc-73aedbf872c8",
+   "hash": "f869326f9965c769"
+  },
+  "assets/props/lamppost_v1.png": {
+   "gallery": "780f7549-9e5b-4de4-a57b-68e4deacc3a0",
+   "hash": "c7c47b8d7f0dd563"
+  },
+  "assets/props/lilypad.png": {
+   "gallery": "077c4748-b9c6-42e6-92f7-ba5e7bf1a06f",
+   "hash": "ba6e3336dd09a89d"
+  },
+  "assets/props/lilypad_v1.png": {
+   "gallery": "aa6406ac-7145-4962-97c7-110656d948fd",
+   "hash": "4ce74aa2cb0051ba"
+  },
+  "assets/props/lilypad_v2.png": {
+   "gallery": "4585ba30-687c-4134-bfe7-549c4915ccf9",
+   "hash": "bf05aecb65afeb01"
+  },
+  "assets/props/lilypad_v3.png": {
+   "gallery": "53aaf1d6-b2c8-449b-a88e-a225e1b52d07",
+   "hash": "f3fb2be5f86a3940"
+  },
+  "assets/props/lilypad_v4.png": {
+   "gallery": "d076a688-2699-4d35-a38d-55137e46016f",
+   "hash": "b960c7817d5b6a2c"
+  },
+  "assets/props/log.png": {
+   "gallery": "62a246b5-f6b9-4683-95fb-de91e9494b36",
+   "hash": "39e83ec1ffd4842c"
+  },
+  "assets/props/log_v1.png": {
+   "gallery": "38584184-3061-4e8b-ad7f-b1a242609240",
+   "hash": "9fc34622eaa3a2ca"
+  },
+  "assets/props/log_v2.png": {
+   "gallery": "ab1f16e9-bc40-421d-aefc-486dadac4a3f",
+   "hash": "7b758f62e174400c"
+  },
+  "assets/props/log_v3.png": {
+   "gallery": "80e6b1c7-8fd5-4898-9b17-0b5fb5e632c5",
+   "hash": "9aed1c93de0eae11"
+  },
+  "assets/props/marshstump.png": {
+   "gallery": "9386bcb5-72a0-447f-9d4a-ae94b662939e",
+   "hash": "e135d89e35a09905"
+  },
+  "assets/props/marshstump_v1.png": {
+   "gallery": "aa49b3c2-68e2-405d-a217-3393a9840096",
+   "hash": "de9e6a7ada206b99"
+  },
+  "assets/props/marshstump_v2.png": {
+   "gallery": "8cef8e47-70ce-435c-8962-6a58f804821c",
+   "hash": "f54f48fd58c8b5b6"
+  },
+  "assets/props/marshstump_v3.png": {
+   "gallery": "e7e77557-b6cd-42d9-9532-858e4e4e636d",
+   "hash": "fb1738d22315346b"
+  },
+  "assets/props/marshstump_v4.png": {
+   "gallery": "c58c6756-30fb-4d0b-8746-3283143b42a9",
+   "hash": "8cb27765f5c2bd0e"
+  },
+  "assets/props/milestone.png": {
+   "gallery": "323b640d-d938-4eb6-a529-d1a9b2602a2a",
+   "hash": "b02361e0a6741a08"
+  },
+  "assets/props/milestone_v1.png": {
+   "gallery": "b40ae899-4679-4919-a648-1552e80ff637",
+   "hash": "d785daa3a8d703d1"
+  },
+  "assets/props/milestone_v2.png": {
+   "gallery": "26d6b4eb-d67e-46b7-aa8d-25e3a5b85b26",
+   "hash": "a5374ad27c04f549"
+  },
+  "assets/props/milestone_v3.png": {
+   "gallery": "d8301fd6-1597-4f31-a183-c90bf948ce89",
+   "hash": "848f3250497b1777"
+  },
+  "assets/props/milestone_v4.png": {
+   "gallery": "ee786b5b-02e1-4874-8a9d-234d82ebde68",
+   "hash": "6dc7b80e1c45ff8e"
+  },
+  "assets/props/mill.png": {
+   "gallery": "daada81a-d488-4b56-8803-13f163b3e25c",
+   "hash": "02cf667facea6c7e"
+  },
+  "assets/props/mill_v1.png": {
+   "gallery": "f9c662ec-eae0-49e6-8180-d971123ecb8a",
+   "hash": "4983ede2500f665b"
+  },
+  "assets/props/noticeboard.png": {
+   "gallery": "8731f7b0-e41b-439f-8c7e-6c5803ec9e82",
+   "hash": "2a3cec640755e6a9"
+  },
+  "assets/props/outcrop.png": {
+   "gallery": "ed25585b-9d62-4571-a76e-79549c96294d",
+   "hash": "d8cd5a8ddb0ce2a8"
+  },
+  "assets/props/outcrop_v1.png": {
+   "gallery": "16d32149-9a1d-4c6e-ac7a-b563ab12db0f",
+   "hash": "f47eb03a3c52cdfd"
+  },
+  "assets/props/outcrop_v2.png": {
+   "gallery": "dde02e2b-e8b6-456f-b102-7bbde6b2a090",
+   "hash": "83439e43190e8f90"
+  },
+  "assets/props/outcrop_v3.png": {
+   "gallery": "3e8c75bb-c1a4-40f9-8bd3-b9cfbf828455",
+   "hash": "f40787c1f824e227"
+  },
+  "assets/props/outcrop_v4.png": {
+   "gallery": "f4ca3bdc-6176-458a-b9a9-da58f0299eba",
+   "hash": "635bada00c79ff00"
+  },
+  "assets/props/planks.png": {
+   "gallery": "84da7d4c-21c9-4623-a879-6af840d1b188",
+   "hash": "58cbf04e831e6498"
+  },
+  "assets/props/planks_v1.png": {
+   "gallery": "30db541e-7475-43b7-9db5-8d6067861ec1",
+   "hash": "e341b3d3caee0f42"
+  },
+  "assets/props/planks_v2.png": {
+   "gallery": "32b01941-591a-42d5-a1da-9918bf1b4e7e",
+   "hash": "1a451d5edaeb2e47"
+  },
+  "assets/props/planks_v3.png": {
+   "gallery": "dbe1c76b-5f5c-4156-906e-e94977616797",
+   "hash": "31840b17c7fdd0fc"
+  },
+  "assets/props/pond.png": {
+   "gallery": "757be43b-acc8-4ac0-a7af-d4302d027c95",
+   "hash": "a526791223d8a892"
+  },
+  "assets/props/produce.png": {
+   "gallery": "aca7c65b-9810-4a1d-9582-52838251fc3e",
+   "hash": "ccf96c5ccdcdb4b4"
+  },
+  "assets/props/reeds.png": {
+   "gallery": "5a03d879-973b-4085-9d86-ee555b1d3bee",
+   "hash": "491ec1ca9ab3e7d0"
+  },
+  "assets/props/reeds_v1.png": {
+   "gallery": "ecb6ada7-d1e5-44b1-b2c2-9a3f474ebe41",
+   "hash": "d11e9ca84f7ee760"
+  },
+  "assets/props/reeds_v2.png": {
+   "gallery": "a160267c-28d2-40de-a513-cdf74d556be0",
+   "hash": "3e0fb56637cb6a26"
+  },
+  "assets/props/reeds_v3.png": {
+   "gallery": "a74948ca-5cac-4462-8a9a-c324211254f8",
+   "hash": "efb3ea16ae3ecfb3"
+  },
+  "assets/props/reeds_v4.png": {
+   "gallery": "5ea661ce-15c7-4b52-a1b0-483817a762df",
+   "hash": "4ca95c5c655104f0"
+  },
+  "assets/props/roadlamp.png": {
+   "gallery": "65124acf-b53b-431f-8bd1-b4f349b5749a",
+   "hash": "dd70946fbb5fb712"
+  },
+  "assets/props/roadlamp_v1.png": {
+   "gallery": "f6989c7c-3034-4336-b6fc-bf56b175649e",
+   "hash": "4a3b2af98319ad69"
+  },
+  "assets/props/roadlamp_v2.png": {
+   "gallery": "ab722608-543c-45d1-a7b7-4ee9976662cd",
+   "hash": "a65fe3e83b44a299"
+  },
+  "assets/props/rock.png": {
+   "gallery": "b4cb50db-32e8-4f38-9f7e-3732eb10ef70",
+   "hash": "1723d9cf1a03e23e"
+  },
+  "assets/props/rock_big.png": {
+   "gallery": "b3c7a7c4-2b14-46cd-8665-499f6ae753df",
+   "hash": "752a528c22443b8e"
+  },
+  "assets/props/roots.png": {
+   "gallery": "67355987-7961-4e8f-8928-a15c90501621",
+   "hash": "76b60e36118a2859"
+  },
+  "assets/props/roots_v1.png": {
+   "gallery": "d9e43d86-2f47-441c-b05c-5be6283bf7db",
+   "hash": "d20c0c0ba9d22315"
+  },
+  "assets/props/roots_v2.png": {
+   "gallery": "4c0a578c-7543-4453-9de2-4b993bf16524",
+   "hash": "1fc9293697df91bd"
+  },
+  "assets/props/roots_v3.png": {
+   "gallery": "ee53f983-587b-4e6e-9d8a-2429454aa588",
+   "hash": "7a7f94679727127c"
+  },
+  "assets/props/roots_v4.png": {
+   "gallery": "2190b5ae-7a6b-43da-b4e4-cbb26394886e",
+   "hash": "7862b8f36a08c32e"
+  },
+  "assets/props/seized.png": {
+   "gallery": "4d126335-9d47-437b-8ee6-c986014439f9",
+   "hash": "d1d8bafc3b49b4bf"
+  },
+  "assets/props/seized_v1.png": {
+   "gallery": "6a4f7fa9-c807-4d9a-b6c6-b2d807743877",
+   "hash": "a5164ca0299a1eb0"
+  },
+  "assets/props/seized_v2.png": {
+   "gallery": "c21919d8-069e-46d7-be9a-eda4eee618d8",
+   "hash": "da7a1b4b8087b729"
+  },
+  "assets/props/seized_v3.png": {
+   "gallery": "1d2b5e6a-90f4-497a-a324-8d8493ced5cf",
+   "hash": "3f5f580f295e72d4"
+  },
+  "assets/props/seized_v4.png": {
+   "gallery": "ae283686-6545-455c-8147-d509e4a21194",
+   "hash": "74a38cc3b25f43eb"
+  },
+  "assets/props/shrub.png": {
+   "gallery": "d68adad3-5812-4e9f-bc3b-9cd2b51e2343",
+   "hash": "aa289e2777ac478d"
+  },
+  "assets/props/shrub_v1.png": {
+   "gallery": "9678efe4-652e-45d3-8f41-ee5107b66c76",
+   "hash": "ec0f77d4bec8df1b"
+  },
+  "assets/props/shrub_v2.png": {
+   "gallery": "496c2f2f-f073-43fe-b60c-abdf72dcbadb",
+   "hash": "d368c02a566f4f35"
+  },
+  "assets/props/shrub_v3.png": {
+   "gallery": "3e42d62f-8cde-4217-9757-37d526fce0c7",
+   "hash": "d9b952612f62d8a6"
+  },
+  "assets/props/sign.png": {
+   "gallery": "176ad169-7dcb-4146-9a89-48ec172cbde9",
+   "hash": "8939aef41f5a85b7"
+  },
+  "assets/props/skull.png": {
+   "gallery": "ea2a053a-c4ab-4605-9540-59b42fcbb464",
+   "hash": "8557d9150884e27b"
+  },
+  "assets/props/stall.png": {
+   "gallery": "7e59ada0-2bc7-4f09-a068-9eafb85f24ef",
+   "hash": "801252a9cbdd9249"
+  },
+  "assets/props/stall_v1.png": {
+   "gallery": "c2819581-a607-49ed-87c4-47096de2632e",
+   "hash": "fc0cf42a24074a70"
+  },
+  "assets/props/stores.png": {
+   "gallery": "b5504be5-2599-47c1-8cda-0d01fc72fd15",
+   "hash": "25a6e7afc771a207"
+  },
+  "assets/props/stump.png": {
+   "gallery": "aac3da8b-5249-48e0-b2e3-a9d9a538f5b5",
+   "hash": "dd1c2d3da41f630a"
+  },
+  "assets/props/tavern.png": {
+   "gallery": "dd1544d6-4b86-4dfb-b7d1-2d1b6854ff89",
+   "hash": "b3fe2ed109003572"
+  },
+  "assets/props/taxbanner.png": {
+   "gallery": "a051a368-eea1-43a0-a49e-f57acb868aa3",
+   "hash": "355525e15195b039"
+  },
+  "assets/props/taxbanner_v1.png": {
+   "gallery": "5aaa7133-904a-451b-ac14-83dc732592bd",
+   "hash": "e14862d97f6fe467"
+  },
+  "assets/props/taxbanner_v2.png": {
+   "gallery": "05af42de-892a-4f3b-90a5-135a3b0dff13",
+   "hash": "3ade7f149c8bfc53"
+  },
+  "assets/props/taxbanner_v3.png": {
+   "gallery": "58acab47-131c-4f83-97eb-9582f4686b91",
+   "hash": "1a87875571df3c37"
+  },
+  "assets/props/tollbooth.png": {
+   "gallery": "40f01fb9-f4c0-4d59-ab1e-e40bd623cac0",
+   "hash": "04502d1106ee4d81"
+  },
+  "assets/props/tollbooth_v1.png": {
+   "gallery": "73163f4d-53df-4f39-b2a6-8abfff9c345a",
+   "hash": "8d6fd703725545d1"
+  },
+  "assets/props/totem.png": {
+   "gallery": "e98e9b2c-c0ec-4ac7-9e3c-2a904a98b406",
+   "hash": "5106159ef93c6b5e"
+  },
+  "assets/props/totem_v1.png": {
+   "gallery": "8eeed3f8-c9df-419e-b5b4-3ab0bedc7e55",
+   "hash": "64c7f4d411c23afc"
+  },
+  "assets/props/totem_v2.png": {
+   "gallery": "0ce40bfb-e259-4fcc-89a9-58d518488352",
+   "hash": "8b774ba756b9dd9d"
+  },
+  "assets/props/totem_v3.png": {
+   "gallery": "e2b3f8de-3c41-40b7-8fb7-fa0f08d00a45",
+   "hash": "0d313fd8b93940da"
+  },
+  "assets/props/townhall.png": {
+   "gallery": "c0fb0beb-1d0f-43cd-b61f-35ef131e375c",
+   "hash": "c76ea30a91997a35"
+  },
+  "assets/props/tree.png": {
+   "gallery": "20091946-2691-486e-b741-1202025a759b",
+   "hash": "80c658a2bf1d21d7"
+  },
+  "assets/props/tree_v1.png": {
+   "gallery": "b938317b-6350-48a5-844f-929217b7264d",
+   "hash": "6d64fc4dd11ae7ad"
+  },
+  "assets/props/tree_v2.png": {
+   "gallery": "b2fb7ea5-731d-480e-b92d-4decb48176e3",
+   "hash": "a82b34800f0692fe"
+  },
+  "assets/props/tree_v3.png": {
+   "gallery": "adc7c3fd-d2dd-4041-9234-12002107d468",
+   "hash": "dc3fd3d20ee26679"
+  },
+  "assets/props/wardlamp_1.png": {
+   "gallery": "6b290ace-3be0-441d-9af5-39a3b953c640",
+   "hash": "9323a87e875a8aba"
+  },
+  "assets/props/wardlamp_2.png": {
+   "gallery": "ae04493a-e97a-4a0d-a33d-fcf393752cc7",
+   "hash": "431539a82fa1e97f"
+  },
+  "assets/props/well.png": {
+   "gallery": "e84f86e2-412c-4bce-bce6-04acc605aef2",
+   "hash": "2664834008bff93b"
+  }
+ }
+}
