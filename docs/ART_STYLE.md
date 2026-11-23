@@ -151,6 +151,14 @@ PixelLab fills the canvas whatever the prompt says, so sizes are fixed after gen
 import with all directions given, then animate; see "Figure sizes"). One figure per sprite: groups such as
 the Merrow Three are separate sprites standing together.
 
+## Checking icons and props
+
+`python3 tools/prop_icon_audit.py OUT` checks every icon, prop and building (Chapter 2 placeholders skipped) for
+light gaps in the ink outline, stray pixels, salt-and-pepper noise, 1 px kinks in straight edges, soft alpha,
+off-palette colour and pixel-identical copies, and draws contact sheets at game size and zoomed with each flagged
+pixel marked. Free fixes live in `tools/prop_icon_fixes.json` and are applied by `python3 tools/fix_props_icons.py`
+(outline, dedither, remap, pixels; safe to replay). Glow, flame, steam and motion arcs keep no outline on purpose.
+
 ## Prop scale (Phase 8)
 
 Props are sized against a 30 px person. Tallest allowed (px): barrels 16, a stack of two crates 22, bench 18, grave

@@ -1,0 +1,263 @@
+{
+ "fixes": [
+  {
+   "file": "assets/icons/censer_ladle.png",
+   "op": "outline"
+  },
+  {
+   "file": "assets/icons/nothing_declared.png",
+   "op": "outline"
+  },
+  {
+   "file": "assets/icons/trait_night_owl.png",
+   "op": "outline"
+  },
+  {
+   "file": "assets/icons/second_signature.png",
+   "op": "outline"
+  },
+  {
+   "file": "assets/icons/standing_ovation.png",
+   "op": "outline"
+  },
+  {
+   "file": "assets/icons/status_might.png",
+   "op": "outline"
+  },
+  {
+   "file": "assets/icons/ladle_of_last_rites.png",
+   "op": "outline"
+  },
+  {
+   "file": "assets/icons/saltglass_eye.png",
+   "op": "outline"
+  },
+  {
+   "file": "assets/icons/ink_blot.png",
+   "op": "outline"
+  },
+  {
+   "file": "assets/icons/the_last_word.png",
+   "op": "outline"
+  },
+  {
+   "file": "assets/icons/scald.png",
+   "op": "outline",
+   "exclude": [
+    [
+     0,
+     0,
+     32,
+     12
+    ]
+   ]
+  },
+  {
+   "file": "assets/icons/marrow_broth.png",
+   "op": "outline",
+   "exclude": [
+    [
+     0,
+     0,
+     18,
+     13
+    ]
+   ]
+  },
+  {
+   "file": "assets/icons/mothsilk_shawl.png",
+   "op": "outline"
+  },
+  {
+   "file": "assets/icons/rewrite.png",
+   "op": "outline"
+  },
+  {
+   "file": "assets/icons/status_ward.png",
+   "op": "outline",
+   "exclude": [
+    [
+     11,
+     6,
+     21,
+     22
+    ]
+   ]
+  },
+  {
+   "file": "assets/icons/tech_gristle.png",
+   "op": "outline"
+  },
+  {
+   "file": "assets/props/crates.png",
+   "op": "outline"
+  },
+  {
+   "file": "assets/props/crates_v1.png",
+   "op": "outline"
+  },
+  {
+   "file": "assets/props/crates_v2.png",
+   "op": "outline"
+  },
+  {
+   "file": "assets/props/barrels.png",
+   "op": "outline"
+  },
+  {
+   "file": "assets/props/barrels_v1.png",
+   "op": "outline"
+  },
+  {
+   "file": "assets/props/barrels_v2.png",
+   "op": "outline"
+  },
+  {
+   "file": "assets/props/barrels_v3.png",
+   "op": "outline"
+  },
+  {
+   "file": "assets/props/banner.png",
+   "op": "outline"
+  },
+  {
+   "file": "assets/props/grave.png",
+   "op": "outline"
+  },
+  {
+   "file": "assets/props/grave_v1.png",
+   "op": "outline"
+  },
+  {
+   "file": "assets/props/grave_v2.png",
+   "op": "outline"
+  },
+  {
+   "file": "assets/props/fence.png",
+   "op": "outline"
+  },
+  {
+   "file": "assets/props/drygrass.png",
+   "op": "outline"
+  },
+  {
+   "file": "assets/props/wardlamp_1.png",
+   "op": "outline"
+  },
+  {
+   "file": "assets/props/wardlamp_2.png",
+   "op": "outline"
+  },
+  {
+   "file": "assets/props/stall.png",
+   "op": "outline"
+  },
+  {
+   "file": "assets/props/stall_v1.png",
+   "op": "outline"
+  },
+  {
+   "file": "assets/props/taxbanner.png",
+   "op": "outline"
+  },
+  {
+   "file": "assets/props/taxbanner_v1.png",
+   "op": "outline"
+  },
+  {
+   "file": "assets/props/taxbanner_v2.png",
+   "op": "outline"
+  },
+  {
+   "file": "assets/props/taxbanner_v3.png",
+   "op": "outline"
+  },
+  {
+   "file": "assets/props/milestone.png",
+   "op": "outline"
+  },
+  {
+   "file": "assets/props/milestone_v1.png",
+   "op": "outline"
+  },
+  {
+   "file": "assets/props/bones.png",
+   "op": "outline"
+  },
+  {
+   "file": "assets/props/mill_v1.png",
+   "op": "dedither",
+   "rect": [
+    0,
+    0,
+    90,
+    60
+   ]
+  },
+  {
+   "file": "assets/props/mill_v1.png",
+   "op": "remap",
+   "map": {
+    "#8f8270": "#a07a4e",
+    "#b5a68a": "#c9a97a"
+   },
+   "rect": [
+    0,
+    0,
+    90,
+    60
+   ],
+   "near": {
+    "colours": [
+     "#c9a97a",
+     "#a07a4e",
+     "#e8c65a"
+    ],
+    "min": 3
+   }
+  },
+  {
+   "file": "assets/icons/infirmary.png",
+   "op": "remap",
+   "map": {
+    "#a3243b": "#566b3a",
+    "#85402f": "#3d5130",
+    "#5c2a26": "#2a3a22"
+   }
+  },
+  {
+   "file": "assets/props/house_v3.png",
+   "op": "remap",
+   "map": {
+    "#5c2a26": "#2b3448",
+    "#85402f": "#3f4c66",
+    "#a85d3e": "#5b6b85",
+    "#6b4532": "#2b3448",
+    "#a06a4c": "#5b6b85"
+   },
+   "rect": [
+    0,
+    0,
+    62,
+    48
+   ]
+  },
+  {
+   "file": "assets/props/house_v4.png",
+   "op": "remap",
+   "map": {
+    "#5c2a26": "#2b3448",
+    "#85402f": "#3f4c66",
+    "#a85d3e": "#5b6b85",
+    "#6b4532": "#2b3448",
+    "#a06a4c": "#5b6b85"
+   },
+   "rect": [
+    0,
+    0,
+    62,
+    48
+   ]
+  }
+ ]
+}
