@@ -85,7 +85,18 @@ sheet. Sheets are in `docs/ANIMATION_FEATURES.md`.
 
 ## How Ojon fixes them
 By hand, pixel by pixel: in PixelLab's Pixelorama editor, an animation's frames can be played and edited one
-at a time. Claude does the fixes that can be made by moving or copying existing pixels (`tools/fix_frames.py`).
+at a time. Claude does the fixes that can be made by moving or copying existing pixels (`tools/fix_frames.py`):
+
+| Fault | Op |
+|---|---|
+| A broken idle (steps, turns, frozen arms, faces that melt) | `breathe`: rebuild from the rotation, the upper body sinks a pixel |
+| A body that doesn't breathe while the rest moves | `bob` (`own` keeps a fluttering scarf) |
+| Face or marks that change | `lock`: hold the head band to the rotation |
+| Legs that stand still or cross (front, back and diagonal walks) | `step`: legs from the rotation, each foot lifts in turn; `sink` and `hem` for robes |
+| An item that flares, vanishes, drops or is let go of | `patch`: that rectangle from the rotation or a good frame |
+| Leftover glow pixels | `unglow` |
+| An item without its bottom outline | `outline` |
+| A walk drifting sideways | `center` |
 Anything that needs drawing goes to Ojon (marked "By hand") or to a paid re-animation.
 
 ## Calibration log
