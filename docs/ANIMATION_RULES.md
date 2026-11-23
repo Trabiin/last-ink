@@ -27,7 +27,7 @@ sheet, both zoomed in and at game size.
 | 9 | **Directions match each other.** The same colours, proportions and details appear in every direction. | eye |
 | 10 | **Small repeated details keep their count.** Hair ornaments, buttons and bottles don't go 1, 2, 3 between frames (Gristle's idle facing north-east). | `detail-pops` + eye |
 
-## More things that can go wrong (proposed 2026-11-23, not yet confirmed by Ojon)
+## More things that can go wrong (agreed with Ojon 2026-11-23)
 Collected from the Act 1 audit, the two calibration rounds and common pixel-animation faults.
 
 **Body and motion**
