@@ -5,7 +5,7 @@ Chapter 2 is written before the paid art batch, so its new sprites, portraits, p
 music start life as recoloured copies of art the game already has. Each one lives at the path the final art will
 use, under the same id, so the swap is "drop the new file in": no code or data changes. data/placeholders.json is
 the list; tests/test_placeholders.gd prints it on every run and the release check (tools/release_check.sh, #118)
-fails while it is not empty. The GitHub issue "Chapter 2 art swap" tracks the same list.
+fails while it is not empty. GitHub issue #205 (Chapter 2 art swap) tracks the same list.
 
     python3 tools/make_placeholders.py            # (re)build every stand-in whose final art has not landed
     python3 tools/make_placeholders.py copyist    # only entries whose id contains "copyist"

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Release check (issue #118): fails while the game would ship anything unfinished.
 #   - data/placeholders.json must be empty: every stand-in (recoloured art, borrowed music, missing CGs) has been
-#     replaced by its final file (tools/make_placeholders.py, the "Chapter 2 art swap" issue).
+#     replaced by its final file (tools/make_placeholders.py, issue #205).
 # Add new checks here as the release candidate list in #118 grows. CI runs this on every v* tag
 # (.github/workflows/desktop.yml): it blocks 1.0 and later, and only warns on 0.x playtest builds.
 # Usage: tools/release_check.sh
