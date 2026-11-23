@@ -558,6 +558,9 @@ def apply(fix):
 def main(argv):
     if not argv:
         for fix in json.load(open(os.path.join(HERE, "ai_fixes.json")))["fixes"]:
+            if fix.get("baked"):
+                print("baked    %s/%s  (already in PixelLab and the game; pulls bring it back, so it is not re-run)" % (fix["sprite"], fix["strip"]))
+                continue
             if fix.get("once"):
                 print("skip     %s/%s  (applied once to the generated strip; running it again would add up)" % (fix["sprite"], fix["strip"]))
                 continue

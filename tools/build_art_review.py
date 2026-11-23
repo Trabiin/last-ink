@@ -23,6 +23,7 @@ from PIL import Image
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 A = os.path.join(ROOT, "assets")
 SPRITES = json.load(open(os.path.join(ROOT, "data", "sprites.json")))["sprites"]
+PL_SRC = json.load(open(os.path.join(ROOT, "tools", "pixellab_sources.json")))
 DIRS = ["south", "south-east", "east", "north-east", "north"]
 ROLES = {  # what each sprite is, for grouping on the page
     "hero": ["ash", "bran", "gristle", "ninefingers", "jessamy", "odile", "ottoline", "velvette"],
@@ -95,9 +96,22 @@ def build(out):
         atlas.save(os.path.join(out, "sprites", sid + ".png"), optimize=True)
         role = role_of(sid)
         rot = [im for a, _, im, _ in strips if a == "rot"]
+
+        def src_of(anim):
+            """Where each direction's pixels live: in PixelLab (same pixels as the game, edit there and sync)
+            or only in the game's PNG (built or changed in code; edit the file)."""
+            out = {}
+            for d in layout.get(anim, {}):
+                s_ = PL_SRC["strips"].get("%s/%s_%s" % (sid, anim, d))
+                if s_ and s_["mode"] == "direct":
+                    out[d] = {"where": "pixellab", "char": PL_SRC["characters"].get(s_["character"], {}).get("name", s_["character"]),
+                              "anim": "rotation" if anim == "rot" else s_["animation"]}
+                else:
+                    out[d] = {"where": "game", "file": "assets/sprites/%s/%s_%s.png" % (sid, anim, d)}
+            return out
         units.append({"id": "char-%s/identity" % sid, "doc": "char-" + sid, "cat": "Characters",
                       "group": sid, "role": role, "kind": "identity", "title": "%s: look and proportions" % sid,
-                      "sprite": sid, "portrait": sid if sid in portraits else None,
+                      "sprite": sid, "portrait": sid if sid in portraits else None, "origin": src_of("rot"),
                       "hash": digest(*rot) + (digest(Image.open(os.path.join(A, "portraits", sid + ".png")))
                                               if sid in portraits else "")})
         for anim, a in spec["anims"].items():
@@ -107,6 +121,7 @@ def build(out):
             units.append({"id": "char-%s/%s" % (sid, anim), "doc": "char-" + sid, "cat": "Characters",
                           "group": sid, "role": role, "kind": "anim", "title": "%s: %s" % (sid, anim),
                           "sprite": sid, "anim": anim, "fps": a["fps"], "loop": a["loop"], "frames": a["frames"],
+                          "origin": src_of(anim),
                           "hash": digest(*ims)})
     sprites_meta = {sid: {"size": s["size"], "feet": s["feet"], "role": role_of(sid),
                           "anims": {an: {"fps": a["fps"], "loop": a["loop"], "frames": a["frames"]}
