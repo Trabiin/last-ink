@@ -163,6 +163,12 @@
    "material": "hood",
    "tool": "tools/recolor_sprite.py abeyance hood",
    "why": "sprite hood and back were slate grey, portrait wears a bone-white hood and robe"
+  },
+  {
+   "sprite": "jessamy",
+   "material": "cloak",
+   "tool": "tools/recolor_sprite.py jessamy cloak",
+   "why": "sprite hood and coat were slate blue, portrait wears a dark brown-black hood and coat (Ojon, 2026-11-23)"
   }
  ],
  "hand_edits": [

@@ -62,6 +62,14 @@ Collected from the Act 1 audit, the two calibration rounds and common pixel-anim
 | 25 | **Hurt and KO read.** Hurt is a short, clear recoil that goes back to the idle pose. KO ends lying still on the last frame. | eye |
 | 26 | **Victory and cast poses** stay in character and keep the item in the hand. | eye |
 
+**Added after round 3 (Jessamy, 2026-11-23)**
+| # | Rule | Checked by |
+|---|---|---|
+| 27 | **Matches the portrait.** The main colours (cloak, coat, hair, skin) match the character's portrait. Which hand holds an item may differ (Jessamy's lantern). | eye, per character sheet |
+| 28 | **Walks go forward.** The body moves in the direction it faces; no sideways drift (Jessamy's north walk slid left and back). | `drift` + eye |
+| 29 | **Items keep their outline.** A held item has the same black outline as the body, all round (Jessamy's lantern bottom had none facing south and north). | eye |
+| 30 | **Hidden is not vanished.** An item or glow going behind the body for some frames is normal occlusion, not a fault (Jessamy's walk SE glow). | eye |
+
 ## Character sheets
 Before reviewing a character's animations, write down what makes that character, from the rotation frames
 and the portrait: features, small counted details, items, sides. Then check every animation against the
@@ -70,6 +78,8 @@ sheet. Sheets are in `docs/ANIMATION_FEATURES.md`.
 ## Claude's habits
 - Every checker flag gets a zoom on that exact frame before it can be called OK. In round 2 the checker had
   already flagged both of the directions Claude missed.
+- Zoom on the eyes in every frame of the south, south-east and east views; eyes of 2-4 pixels hide their faults
+  at normal zoom (Jessamy's idle S eye stretched and went black).
 - The checker is a pointer, not a verdict: it can be overruled in either direction (Gristle's walk facing
   north-east was flagged `legs-still` but is fine).
 
@@ -88,3 +98,8 @@ Anything that needs drawing goes to Ojon (marked "By hand") or to a paid re-anim
   the hair ornament count in idle NE and the staff dropped in walk SE (the checker flagged both, but Claude
   dismissed the flags). Too strict on short green flashes in walk E. Ojon: a slow shuffle where the legs
   barely show counts as not walking.
+- 2026-11-23, Jessamy idle and walk (blind, with rules 1-26, the checker and her character sheet): 7 of 10
+  matched. Misses: idle S eyes and lantern outline, walk N sideways drift. Too strict on walk SE (the glow goes
+  behind her). Ojon added portrait consistency (her sprite cloak is slate blue, the portrait's is dark brown)
+  and is fine with the lantern changing hands. Ojon also noticed lines flickering on her right sleeve where it
+  crosses the scarf in idle NE (minor).

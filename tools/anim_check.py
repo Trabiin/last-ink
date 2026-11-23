@@ -17,6 +17,8 @@ legs = the rest down to the feet line):
   new-colour   a colour patch appears in the head that the rotation frame doesn't have (a face on the back
                of the head, a red patch)
   outline      the black outline turns lighter on some frames (the outline takes the cloak colour)
+  drift        walk: the head swings sideways (facing south or north, 1.5+ px on a 44 px canvas) instead of moving forward;
+               the diagonals get 2+ px, east is skipped because sideways is forward there
 """
 import json
 import os
@@ -105,6 +107,19 @@ def head_flicker(fr, band):
     return pops, patches
 
 
+def head_x(fr, band):
+    """Mean x of the head pixels per frame."""
+    y0, y1 = band
+    out = []
+    for f in fr:
+        xs = np.nonzero(f[y0:y1, :, 3] > 0)[1]
+        out.append(float(xs.mean()) if len(xs) else 0.0)
+    return out
+
+
+DRIFT = {"south": 1.5, "north": 1.5, "south-east": 2.0, "north-east": 2.0}
+
+
 def colour_counts(f, band, palette):
     """Counts of head pixels per palette colour (nearest within 24), plus pixels far from every colour."""
     y0, y1 = band
@@ -138,6 +153,11 @@ def check(sid, anim):
         flags = []
         if anim == "walk" and best_legs and m["legs"] < 0.65 * best_legs:
             flags.append(("legs-still", "legs move %.0f px/frame vs %.0f in the liveliest direction" % (m["legs"], best_legs)))
+        if anim == "walk" and d in DRIFT:
+            xs = head_x(fr, b["head"])
+            if max(xs) - min(xs) >= DRIFT[d] * max(1.0, fw / 44.0):
+                flags.append(("drift", "head swings %.1f px sideways (x %s)"
+                              % (max(xs) - min(xs), " ".join("%.1f" % x for x in xs))))
         if anim == "idle" and m["feet"] > 15 and m["feet"] > 1.5 * med_feet:
             flags.append(("idle-walks", "feet move %.0f px/frame vs %.0f in the other idle directions" % (m["feet"], med_feet)))
         if anim == "idle" and med_body and m["body"] < 0.6 * med_body:

@@ -28,10 +28,10 @@ docs/ANIMATION_RULES.md. "His/her right" means the character's own right.
 ## Jessamy Leake (jessamy)
 | What | Detail | Watch for |
 |---|---|---|
-| Hood | Dark slate hood, always up; from behind a plain rounded hood with a soft highlight | Light patches appearing on the back of the hood [6]; the hood changing shape [11] |
+| Hood | Dark brown-black hood (recoloured from slate to match the portrait [27]), always up; from behind a plain rounded hood with a soft highlight | Light patches appearing on the back of the hood [6]; the hood changing shape [11] |
 | Face | Pale face framed by dark hair, dark eyes, small rose mouth | Eyes blinking out, mouth changing colour [5] |
 | Scarf | Crimson-maroon scarf with tails that flutter out behind her (to her right) | Tails should move a little in every idle and walk, not freeze or jump sides [15] |
-| Lantern | Small lantern with a **yellow glow**, held low in her **left** hand. Hidden behind her body facing east | Glow flaring into a big blob, turning white or grey, vanishing for frames, or changing size [8]; swapping hands [17] |
+| Lantern | Small lantern with a **yellow glow**, held low in her **left** hand. Hidden behind her body facing east | Glow flaring into a big blob, turning white or grey, vanishing for frames, or changing size [8]; swapping hands within one animation [17]; missing black outline at the bottom [29] |
 | Straps | Brown leather straps and buckles with knives: across the chest in front, an **X across her back** | Straps flickering orange, the X losing a line [10] |
-| Coat and boots | Long slate coat to the knees, brown boots | Legs hidden by the coat in walks: the steps must still show [1] |
-| Open question | The portrait holds the lantern in her **right** hand; the sprite holds it in her left. The mirrored west views also put it in her right [19, 20] | Decide which is canon |
+| Coat and boots | Long dark brown-black coat [27] to the knees, brown boots | Legs hidden by the coat in walks: the steps must still show [1] |
+| Lantern hand | The portrait holds the lantern in her **right** hand; the sprite holds it in her left, and the mirrored west views in her right [19, 20] | Ojon 2026-11-23: fine either way, don't flag |
