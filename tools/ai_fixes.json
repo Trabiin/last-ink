@@ -303,6 +303,30 @@
    "material": "cloak",
    "tool": "tools/recolor_sprite.py jessamy cloak",
    "why": "sprite hood and coat were slate blue, portrait wears a dark brown-black hood and coat (Ojon, 2026-11-23)"
+  },
+  {
+   "sprite": "ninefingers",
+   "material": "coat",
+   "tool": "tools/recolor_sprite.py ninefingers coat",
+   "why": "sprite coat was grey-blue, portrait wears a dark brown-black leather coat (Ojon, 2026-11-23)"
+  },
+  {
+   "sprite": "ottoline",
+   "material": "vest",
+   "tool": "tools/recolor_sprite.py ottoline vest",
+   "why": "sprite had magenta sleeves over a checked vest; portrait has a dark shirt under a crimson vest (Ojon, 2026-11-23)"
+  },
+  {
+   "sprite": "velvette",
+   "material": "coat",
+   "tool": "tools/recolor_sprite.py velvette coat",
+   "why": "sprite coat was black-navy, portrait wears a brown leather coat (Ojon, 2026-11-23)"
+  },
+  {
+   "sprite": "auditor",
+   "material": "cravat",
+   "tool": "tools/recolor_sprite.py auditor cravat",
+   "why": "sprite chest detail was gold, portrait has a bone-white cravat (Ojon, 2026-11-23)"
   }
  ],
  "hand_edits": [

@@ -39,16 +39,18 @@ Generated with **ChatGPT image generation** (OpenAI). OpenAI's Terms of Use assi
 Every prompt starts with this block, then one paragraph describing the character and ending with their expression. Run each in a new chat, ask for 2:3 portrait.
 
 ```
-Visual novel character portrait for a dark surreal fantasy game, made to be converted into pixel art. Half-body, neutral pose, plain flat light-grey background, no text, no glow or rim light against the background. Anime-influenced illustration with bold clean dark ink outlines and flat cel shading in two or three tones per material, light coming from the top left. Big readable shapes: hair drawn as a few large locks, no thin flyaway strands; no fine fabric texture, grunge, scratches or speckled weathering; no tiny repeated details. Muted palette of charcoal, bone white and rust, with one saturated accent color per character. Erased-paper edges on clothing drawn as a few clean torn shapes, not specks. Portrait 2:3 aspect ratio. Straight-on camera at the character's own eye level, never looking up from below or down from above. Body angled three-quarters toward the viewer's left, framed from the waist up, with empty space above the head and nothing (hair, weapons) cut off by the frame edges. Stylized anime faces with simple cel-shaded skin and clearly drawn eyes, even for older or rugged characters, no realistic skin texture. Same line weight and face style as a cohesive anime character roster.
-```
-
-What changed (2026-11-21, pixel style): portraits are now shrunk to 224x336 pixel art, so the prompt asks for what
-survives that: bold outlines, flat cel shading, large hair locks, top-left light like the world, and no fine texture,
-flyaway strands or background glow (those turned into noise and white specks). The old block, for matching the
-existing portraits when an expression is added for one of them:
-
-```
 Visual novel character portrait for a dark surreal fantasy game. Half-body, neutral pose, plain flat light-grey background, no text. Painterly anime-influenced illustration with clean dark ink linework and soft cel shading. Muted palette of charcoal, bone white and rust, with one saturated accent color per character. Subtle ink-splatter and erased-paper edges on clothing. Portrait 2:3 aspect ratio. Straight-on camera at the character's own eye level, never looking up from below or down from above. Body angled three-quarters toward the viewer's left, framed from the waist up, with empty space above the head and nothing (hair, weapons) cut off by the frame edges. Stylized anime faces with simple cel-shaded skin, even for older or rugged characters, no realistic skin texture. Same line weight and face style as a cohesive anime character roster.
+```
+
+Use this painterly block for every portrait, so new faces sit with the cast. The texture and ink splatter are part of
+the look; `tools/cut_portraits.py` turns the result into 224x336 pixel art.
+
+Rejected (Ojon, 2026-11-23): a flatter "made to be converted into pixel art" block (bold outlines, flat cel shading,
+no texture) was tried for Quill, Odile, Hesper and Verity. It converts more cleanly but reads as cartoony and off-style
+next to the rest of the cast, so don't use it. It is kept here only as a record:
+
+```
+Visual novel character portrait for a dark surreal fantasy game, made to be converted into pixel art. Half-body, neutral pose, plain flat light-grey background, no text, no glow or rim light against the background. Anime-influenced illustration with bold clean dark ink outlines and flat cel shading in two or three tones per material, light coming from the top left. Big readable shapes: hair drawn as a few large locks, no thin flyaway strands; no fine fabric texture, grunge, scratches or speckled weathering; no tiny repeated details. Muted palette of charcoal, bone white and rust, with one saturated accent color per character. Erased-paper edges on clothing drawn as a few clean torn shapes, not specks. Portrait 2:3 aspect ratio. Straight-on camera at the character's own eye level, never looking up from below or down from above. Body angled three-quarters toward the viewer's left, framed from the waist up, with empty space above the head and nothing (hair, weapons) cut off by the frame edges. Stylized anime faces with simple cel-shaded skin and clearly drawn eyes, even for older or rugged characters, no realistic skin texture. Same line weight and face style as a cohesive anime character roster.
 ```
 
 Keep the background plain light grey: the cut-out tool depends on it.
@@ -104,11 +106,20 @@ Every recruit and story speaker has a neutral portrait (Phase 8, plus Clerk Pett
 ## API pipeline (Phase 8)
 
 `tools/openai_image.py OUT.png "prompt" --ref a.png --ref b.png --quality medium` calls gpt-image-2 directly (no
-ChatGPT chat needed). Give it the style block above + "Match the art style, line weight, face style and rendering of
-the two reference portraits exactly, but draw a new character:" + the character paragraph, with the raw Ash and Bran
-portraits (downscaled to 512x768) as references. That keeps new faces on-model with the cast. A 1024x1536 medium
+ChatGPT chat needed). Give it the painterly style block above + "Match the art style of the first two reference
+portraits exactly: the same painterly rendering, gritty weathered textures, worn and stained fabric, fine ink hatching
+and splatter, muted desaturated colours, realistic adult proportions, face style and line weight. Do not make it flat,
+clean, glossy or cartoony. Draw a new character." + the character paragraph, with the full-size raw Ash and Bran
+portraits (`ash-v2.png`, `bran-v2.png` in project files) as references (about $0.072 a call with full-size refs). That keeps new faces on-model with the cast. A 1024x1536 medium
 portrait costs about $0.054; every call is logged in `tools/art_spend.jsonl` with its token usage. The paragraphs used
 are in project files `last-ink/portraits/` next to the raw images.
+
+**The sprite is canon (Ojon, 2026-11-23).** When a portrait and the field sprite disagree, redraw the portrait to
+match the sprite: pass the sprite's south and south-east rotations (scaled up 8x, nearest neighbour, on light
+grey) as a third reference and add "The third reference is only this character's tiny in-game pixel sprite: take
+the design from it (hair, colours, clothing, props and build), but not its pixel look or its big-headed
+proportions." Quill, Odile, Hesper and Verity were redrawn this way (2026-11-23, $0.072 each); briefs in project files `last-ink/portraits/phase8-prompts.json`.
+Colour-only gaps can go the other way with `tools/recolor_sprite.py` (Daro, Ottoline, Velvette, Auditor).
 
 Corporal Daro is non-binary (they/them).
 

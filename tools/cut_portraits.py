@@ -21,10 +21,13 @@ from scipy import ndimage
 TOL = 22  # how far (max channel diff) from the background grey still counts as background
 SIZE = (512, 768)  # painted cut-out
 PIXEL_H = 336  # game portrait height in art pixels (224x336)
-PIXEL_COLOURS = 32
+PIXEL_COLOURS = 24  # 24 since the speckle cleanup (2026-11-23): fewer near-duplicate shades, less noise
 POCKET = 40  # enclosed background blobs bigger than this (in source pixels) are cleared too
 # Characters whose own colours sit close to the background grey (Ilse's pale hair) only lose big pockets.
 POCKET_FOR = {"ilse": 1500}
+# How far colours are pulled onto the game palette (0.4 default). Hesper's olive coat turns brown at 0.4,
+# and her sprite is olive, so hers is pulled less.
+PULL_FOR = {"hesper": 0.12}
 
 
 def cut(path: str, pocket: int = POCKET) -> Image.Image:
@@ -172,7 +175,7 @@ def main():
             os.makedirs(args.painted, exist_ok=True)
             painted.save(os.path.join(args.painted, pid + ".png"), optimize=True)
         a = np.asarray(painted, np.float32) / 255.0
-        rgb, alpha = portrait_style.pixelate(a[..., :3], a[..., 3], pal, PIXEL_H, PIXEL_COLOURS)
+        rgb, alpha = portrait_style.pixelate(a[..., :3], a[..., 3], pal, PIXEL_H, PIXEL_COLOURS, PULL_FOR.get(pid, 0.4))
         portrait_style.save(rgb, alpha, Path(args.dst) / (pid + ".png"))
         print("wrote", pid)
 

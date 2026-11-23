@@ -170,31 +170,38 @@ def ink(rgb, alpha, pal):
     return out, a
 
 
-def pixelate(rgb, alpha, pal, height, k=24):
+def pixelate(rgb, alpha, pal, height, k=24, amt=0.4, sp=6, sr=18, sharp=0.2, tidy=2):
     """Hi-res pixel art: edge-preserving smooth, premultiplied box downscale, per-portrait palette of k
-    colours pulled onto the game palette, singles tidied, 1px ink outline, darkest lines in ink."""
+    colours pulled onto the game palette, singles tidied, 1px ink outline, darkest lines in ink.
+
+    Speckle cleanup (Ojon, 2026-11-23): the painted sources carry AI grunge that turns into pixel noise. A
+    stronger mean-shift smooth (sp, sr), a light sharpen and a tidy pass (a pixel with fewer than `tidy`
+    same-colour neighbours of 8 takes the local majority) calm it without losing the faces."""
     h, w = alpha.shape
     tw = int(round(w * height / h))
-    sm = smooth(rgb, 3, 10)
+    sm = smooth(rgb, sp, sr)
     pm = np.dstack([sm * alpha[..., None], alpha])
     im = Image.fromarray((np.clip(pm, 0, 1) * 255).astype(np.uint8), "RGBA").resize((tw, height), Image.BOX)
     d = np.asarray(im, np.float32) / 255.0
     a = d[..., 3]
     c = d[..., :3] / np.maximum(a[..., None], 1e-4)
     blur = ndimage.gaussian_filter(c, (1.0, 1.0, 0))
-    c = np.clip(c + (c - blur) * 0.5, 0, 1)
+    c = np.clip(c + (c - blur) * sharp, 0, 1)
     solid = a > 0.5
     # thin strands break into loose bits when shrunk: islands under SPECK px (8-connected) go
     lab8, n8 = ndimage.label(solid, np.ones((3, 3)))
     if n8 > 1:
         sizes = ndimage.sum(solid, lab8, range(1, n8 + 1))
         solid &= ~np.isin(lab8, np.nonzero(sizes < SPECK)[0] + 1)
-    idx, cols, lab = quantize(c, solid, pal, k, 0.4)
+    idx, cols, lab = quantize(c, solid, pal, k, amt)
     maj = majority(idx, 3)
     same = np.zeros_like(solid)
     for dy, dx in ((0, 1), (0, -1), (1, 0), (-1, 0)):
         same |= np.roll(idx, (dy, dx), (0, 1)) == idx
     idx = np.where(same, idx, maj)
+    if tidy:
+        cnt = sum((np.roll(idx, (dy, dx), (0, 1)) == idx) for dy in (-1, 0, 1) for dx in (-1, 0, 1)) - 1
+        idx = np.where(cnt >= tidy, idx, maj)
     out = cols[idx]
     out[dark_lines(lab, solid, 8, 18)] = INK
     # 1px ink outline; the bottom edge is where the frame cuts the figure, so no line there
