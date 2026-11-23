@@ -191,10 +191,11 @@ static func control(h: Hero, delta: float) -> void:
 
 
 ## The HUD's one-line reminder of how techs are charged with the current option.
-static func how_to() -> String:
+## `on` picks the device whose button names to show (Prompts.KEYS / PAD); empty follows the last one used.
+static func how_to(on := "") -> String:
 	if Access.toggle_techs():
-		return Loc.t("Attack: %s, press when full: tech, press again: fire") % Prompts.key("attack")
-	return Loc.t("Attack: %s, hold when full: tech") % Prompts.key("attack")
+		return Loc.t("Attack: %s, press when full: tech, press again: fire") % Prompts.key("attack", on)
+	return Loc.t("Attack: %s, hold when full: tech") % Prompts.key("attack", on)
 
 
 ## Moves a player's charge on to every tech its hold time has reached.
