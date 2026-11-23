@@ -151,3 +151,36 @@ static func brush(ci: CanvasItem, at: Vector2, w: float, col: Color) -> void:
 	for i in 3:
 		var y := at.y + i
 		ci.draw_line(Vector2(at.x + rng.randf_range(0, 3), y), Vector2(at.x + w - rng.randf_range(0, 6), y + rng.randf_range(-0.5, 0.5)), Color(col, 0.75 - i * 0.2), 1.0)
+
+
+## Where a sign's lines go (the paper plate shown when standing at a signpost): a paper panel centred
+## on the screen at height y, sized to the text, which wraps so it fits at every text size and screen.
+## Returns {"panel": Rect2, "lines": [[text, Vector2 baseline start, width], ...]}.
+static func sign_layout(font: Font, vs: Vector2, y: float, text: String) -> Dictionary:
+	var max_w := minf(vs.x - 48.0, Access.px(320.0))
+	var lines := []
+	for raw in text.split("\n"):
+		for line in InkMenu.wrap_px(font, raw, Access.fs(10), max_w):
+			lines.append(line)
+	var w := 120.0
+	for line in lines:
+		w = maxf(w, font.get_string_size(line, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(10)).x)
+	var lh := Access.px(16.0)
+	var panel := Rect2(vs.x / 2.0 - (w + 32.0) / 2.0, y - Access.fs(10) - Access.px(8.0), w + 32.0, lh * lines.size() + Access.px(12.0))
+	var out := []
+	var yy := y
+	for line in lines:
+		var lw := font.get_string_size(line, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(10)).x
+		out.append([line, Vector2(roundf((vs.x - lw) / 2.0), roundf(yy)), lw])
+		yy += lh
+	return {"panel": panel, "lines": out}
+
+
+## Draws a sign: dark ink straight on the paper, with no outline (an outline round dark letters on
+## light paper smears them into a blob).
+static func sign(ci: CanvasItem, vs: Vector2, y: float, text: String) -> void:
+	var font := ThemeDB.fallback_font
+	var lay := sign_layout(font, vs, y, text)
+	panel(ci, lay["panel"], "paper")
+	for l in lay["lines"]:
+		ci.draw_string(font, l[1], l[0], HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(10), PAPER_INK)

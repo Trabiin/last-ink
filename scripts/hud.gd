@@ -175,12 +175,7 @@ func _draw() -> void:
 		var a := clampf(banter_t / 0.4, 0.0, 1.0)
 		_text_centered(58.0, banter_text, 10, Color(1, 1, 1, a))
 	if sign_text != "":
-		var lines := sign_text.split("\n")
-		var yy := vs.y * 0.62
-		UiSkin.panel(self, Rect2(vs.x / 2.0 - 124, yy - 18, 248, 16.0 * lines.size() + 14), "paper")
-		for line in lines:
-			_text_centered(yy, line, 10, UiSkin.PAPER_INK)
-			yy += 16.0
+		UiSkin.sign(self, vs, vs.y * 0.62, sign_text)
 	if help_t > 0.0 and not party.touch_active():
 		var a2 := clampf(help_t / 1.0, 0.0, 1.0)
 		# Matches the device in use (issue #23): keys on a keyboard, button names on a pad.

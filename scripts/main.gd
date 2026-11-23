@@ -96,6 +96,7 @@ func _ready() -> void:
 	blank.height = world.y
 	blank.width = world.x
 	add_child(blank)
+	area.blank_edge = blank.edge_x
 	Art.set_blank_x(blank.base_x)
 
 	add_child(entities)

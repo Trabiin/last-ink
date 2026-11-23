@@ -14,6 +14,8 @@ const GROUND_BLEND := preload("res://shaders/ground_blend.gdshader")
 const GRASS := [Vector2i(0, 0), Vector2i(0, 0), Vector2i(0, 0), Vector2i(0, 9), Vector2i(1, 9), Vector2i(0, 10), Vector2i(1, 10), Vector2i(5, 9)]
 const FLOWERS := [Vector2i(0, 8), Vector2i(1, 8), Vector2i(3, 11), Vector2i(2, 12), Vector2i(3, 12)]
 const PROP_CHARS := {"T": "bush", "t": "shrub", "r": "rock", "R": "rock_big", "S": "stump", "o": "pond", "b": "bones", "k": "skull"}
+const WORD_COUNT := 10
+const WORD_LIFE := 7.0  # seconds a drifting word takes to reach the Blank
 const WORDS := ["and then", "was", "the", "almost", "she said", "once", "here lived", "...", "until", "nobody"]
 
 var area_name := ""
@@ -26,6 +28,8 @@ var markers := {}  # id -> Array of tile-centre positions (@mark lines: posts, t
 ## @spot lines (issue #113): named objective spots in tiles, e.g. "@spot ward 50,31 46,22". Missions pick
 ## among them (see MissionTypes.vary), so the same map plays differently from one visit to the next.
 var spots := {}  # id -> Array of Vector2i
+var blank_edge := Callable()  # the Blank's live edge x for a y (main.gd sets Blank.edge_x); else blank_x
+var _words: Node2D = null  # redrawn every frame: the words drift
 var blank_tiles := -1  # set before build() to start the Blank's wall somewhere other than the map's @blank
 var _rows: PackedStringArray = []
 var _signs := {}
@@ -52,6 +56,12 @@ func build(path: String, entities: Node2D) -> void:
 	add_child(words)
 	if blank_x < 1e8:
 		words.draw.connect(_draw_words.bind(words))
+		_words = words
+
+
+func _process(_delta: float) -> void:
+	if _words:
+		_words.queue_redraw()
 
 
 func _parse(path: String) -> void:
@@ -371,12 +381,20 @@ func _build_objects(entities: Node2D) -> void:
 
 
 func _draw_words(canvas: Node2D) -> void:
-	# Near the Blank the grass grows in half-sentences.
-	var rng := RandomNumberGenerator.new()
-	rng.seed = 11
-	var font := ThemeDB.fallback_font
+	# Near the Blank, scraps of the story it ate drift into it and fade: a few words at a time, always
+	# moving and always right at its edge, so they read as the Blank at work and not as stray labels.
+	var t := Time.get_ticks_msec() / 1000.0
 	var h := world_size().y
-	for i in 40:
-		var p := Vector2(rng.randf_range(blank_x - 300.0, blank_x + 20.0), rng.randf_range(20, h - 20))
-		var fade := clampf((p.x - (blank_x - 300.0)) / 300.0, 0.0, 1.0)
-		canvas.draw_string(font, p, Loc.t(WORDS[rng.randi() % WORDS.size()]), HORIZONTAL_ALIGNMENT_LEFT, -1, 6, Color(0.2, 0.2, 0.22, 0.12 + 0.4 * fade))
+	var font := ThemeDB.fallback_font
+	for i in WORD_COUNT:
+		var cycle := t / WORD_LIFE + float(i) / WORD_COUNT
+		var n := floori(cycle)
+		var k := cycle - n  # 0..1 through this word's life
+		var rng := RandomNumberGenerator.new()
+		rng.seed = hash([i, n])
+		var y := rng.randf_range(20.0, h - 20.0)
+		var edge: float = blank_edge.call(y) if blank_edge.is_valid() else blank_x
+		var word := Loc.t(WORDS[rng.randi() % WORDS.size()])
+		var w := font.get_string_size(word, HORIZONTAL_ALIGNMENT_LEFT, -1, 6).x
+		var x := edge - w - 2.0 - rng.randf_range(6.0, 30.0) * (1.0 - k)  # ends touching the edge
+		canvas.draw_string(font, Vector2(roundf(x), roundf(y)), word, HORIZONTAL_ALIGNMENT_LEFT, -1, 6, Color(0.06, 0.05, 0.09, sin(k * PI) * 0.7))

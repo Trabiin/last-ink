@@ -161,12 +161,7 @@ func _draw() -> void:
 			_centered(y, line, 10, Color(1, 1, 1, a))
 			y += 13.0
 	if sign_text != "":
-		var sl := sign_text.split("\n")
-		var yy := vs.y * 0.3
-		UiSkin.panel(self, Rect2(vs.x / 2.0 - 120, yy - 18, 240, 16.0 * sl.size() + 12), "paper")
-		for line in sl:
-			_centered(yy, line, 10, UiSkin.PAPER_INK, false)
-			yy += 16.0
+		UiSkin.sign(self, vs, vs.y * 0.3, sign_text)
 	if toast_t > 0.0:
 		var a2 := clampf(toast_t / 0.5, 0.0, 1.0)
 		_centered(64, toast_text, 13, Color(1, 0.95, 0.85, a2))

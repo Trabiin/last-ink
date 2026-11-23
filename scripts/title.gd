@@ -25,6 +25,7 @@ func _ready() -> void:
 	menu.dim = 0.0
 	menu.panel_alpha = 0.62
 	menu.top = 0.42
+	menu.min_top = 0.34  # at large text sizes the list scrolls rather than cover the logo and tagline
 	add_child(menu)
 	var latest := Saves.latest_slot()
 	var items := []
