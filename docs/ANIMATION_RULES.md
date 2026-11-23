@@ -10,8 +10,8 @@ sheet, both zoomed in and at game size.
    from a dog or a Nibbler. It doesn't need to be perfect, but it has to be believable both zoomed in and at game size.
 2. **Then go through the frames for details.**
 3. **Tolerance:** a one-pixel slip or a short flash that doesn't show at game size is OK, unless it is
-   in the eyes, the mouth or a held item. Details that make up a feature
-   (eyes are often just 2-4 pixels) are not: one drifting pixel there can make the whole eye vanish.
+   in the eyes, the mouth or a held item. Eyes are often just 2-4 pixels, so one drifting pixel there can make
+   the whole eye vanish.
 
 ## Rules
 | # | Rule | Checked by |
