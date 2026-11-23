@@ -124,8 +124,7 @@ No trademark or store conflict. Handles are still open:
 5. Domain and handles: check lastink.com / lastinkgame.com at any registrar, and @lastinkgame on X, Bluesky,
    TikTok, YouTube. Buying a domain (~$10 a year) is optional and Ojon's call.
 
-**Verdict on Last Inkwarden:** no legal issue (different title, no registered mark, and our name is the shorter,
-older-in-our-repo one), so we keep "Last Ink". It only affects search: our store pages should show our own key
+**Verdict on Last Inkwarden:** no legal issue (different title and genre, no registered mark on either side), so we keep "Last Ink". It only affects search: our store pages should show our own key
 art and tagline prominently, and a subtitle later (e.g. "Last Ink: ...") is an option if confusion ever shows up.
 
 If any of those turns up a game or a class 9/41 mark called "Last Ink", tell Claude and we'll pick a fallback
