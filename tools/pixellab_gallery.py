@@ -91,8 +91,10 @@ def pull(m):
         png_rgba(prev).save(full)
         m["items"][path]["hash"] = sha(path)
         save(m)
-        a = np.array(png_rgba(data))
-        print("pulled   %s (%d px differ)" % (path, int((np.array(png_rgba(prev)) != a).any(-1).sum())))
+        a, b = np.array(png_rgba(data)).astype(int), np.array(png_rgba(prev)).astype(int)
+        va, vb = a[..., 3] > 0, b[..., 3] > 0  # count visible changes only (clear pixels can hold any RGB)
+        diff = (va != vb) | (va & vb & (a != b).any(-1))
+        print("pulled   %s (%d px differ)" % (path, int(diff.sum())))
         pulled += 1
     print("%d pulled, %d conflicts" % (pulled, conflicts))
     return 0
