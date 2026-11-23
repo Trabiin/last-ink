@@ -12,6 +12,7 @@ var help_t := 14.0
 func _ready() -> void:
 	set_anchors_preset(Control.PRESET_FULL_RECT)
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
+	process_mode = Node.PROCESS_MODE_ALWAYS
 	# The control hints show once (first mission of a save); after that only on F1, so no text sits on screen.
 	if Dialogue.is_seen("hint:mission"):
 		help_t = 0.0
@@ -30,8 +31,11 @@ func say(text: String, duration := 3.5) -> void:
 
 
 func _process(delta: float) -> void:
-	banter_t = maxf(banter_t - delta, 0.0)
-	help_t = maxf(help_t - delta, 0.0)
+	# Redraws while paused too (a conversation or menu opening must clear the old picture), but the
+	# timers only run in play, so the control hints wait until the opening talk is over.
+	if not get_tree().paused:
+		banter_t = maxf(banter_t - delta, 0.0)
+		help_t = maxf(help_t - delta, 0.0)
 	queue_redraw()
 
 
@@ -94,6 +98,8 @@ func _draw_ability_bar(hero: Hero, vs: Vector2) -> void:
 func _draw() -> void:
 	if party == null:
 		return
+	if party.dialogue_box and party.dialogue_box.visible:
+		return  # conversations have the screen to themselves (their title sits where the objective does), like in town
 	var vs := size_px()
 	# Party panels, bottom-left
 	var x := 8.0
@@ -178,15 +184,18 @@ func _draw() -> void:
 	if help_t > 0.0 and not party.touch_active():
 		var a2 := clampf(help_t / 1.0, 0.0, 1.0)
 		# Matches the device in use (issue #23): keys on a keyboard, button names on a pad.
+		# Touch names no keys (you tap instead), but this list only shows while the touch buttons are
+		# hidden, i.e. a keyboard is in play: so a last tap (a touchscreen laptop) still gets key names.
 		var pad := Prompts.pad()
-		var abil := "%s %s %s %s" % [Prompts.key("ability_1"), Prompts.key("ability_2"), Prompts.key("ability_3"), Prompts.key("ability_4")]
+		var dev := Prompts.PAD if pad else Prompts.KEYS
+		var abil := "%s %s %s %s" % [Prompts.key("ability_1", dev), Prompts.key("ability_2", dev), Prompts.key("ability_3", dev), Prompts.key("ability_4", dev)]
 		var lines_h := [
 			tr("Move: ") + (tr("left stick / D-pad") if pad else tr("WASD / arrows")),
-			Techs.how_to(),
-			tr("Swap hero: ") + Prompts.key("swap"),
-			tr("Pause: ") + Prompts.key("pause"),
-			tr("Abilities: ") + abil,
-			tr("Quick menu: ") + Prompts.key("quick_menu"),
+			Techs.how_to(dev),
+			tr("Swap hero: ") + Prompts.key("swap", dev),
+			tr("Pause: ") + Prompts.key("pause", dev),
+			tr("Abilities: ") + abil.strip_edges(),
+			tr("Quick menu: ") + Prompts.key("quick_menu", dev),
 			"" if pad else tr("F1: show or hide this"),
 		]
 		for li in lines_h.size():

@@ -128,6 +128,10 @@ func _ready() -> void:
 	build_doll()
 	collision_layer = 2
 	number_color = Color("ff6b6b")
+	# Missions often open on a conversation, which pauses the tree before _process ever runs, so the
+	# body would keep the Puny doll until the talk ended. Pick the art (and its first frame) right away:
+	# deferred, because whoever spawned us sets hero_id / the "id" meta after add_child.
+	_update_frame.call_deferred()
 
 
 func _physics_process(delta: float) -> void:
