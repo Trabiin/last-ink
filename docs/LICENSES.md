@@ -15,10 +15,10 @@ found; anything marked **Ojon** needs a decision or a check only Ojon can make (
 | CC0 art and audio | All 4 sources confirmed CC0 on their OpenGameArt pages | None |
 | Fonts (OFL 1.1) | Fine for commercial games; licence text must travel with the font | Done: texts in THIRD_PARTY_LICENSES.md, shipped with every build |
 | Godot Engine (MIT) | Notice must be included in the game or its docs | Done: credits row + full notices in THIRD_PARTY_LICENSES.md, shipped next to desktop and web builds. In-game full text: see "Open items" |
-| PixelLab | Terms (updated 2026-10-30): we own the output, commercial use allowed, **no difference between free trial, subscription and API** | Ash's base character came from free-trial gens; terms cover it. **Ojon:** screenshot the pricing page's free-trial card for the records (see below) |
+| PixelLab | Terms (updated 2026-10-30): we own the output, commercial use allowed, **no difference between free trial, subscription and API** | Ash's base character came from free-trial gens; terms cover it, and the pricing page's free-trial card says so too (screenshot saved 2026-11-23) |
 | OpenAI images | Output is assigned to us; commercial use allowed; we must not claim AI output is human-made | Disclosure is #164's job; nothing to replace |
 | Code-made audio and FX | Ours | None |
-| Name "Last Ink" | No game or game trademark with this exact name found in web searches | **Ojon:** run the free official searches below (Steam, EUIPO/TMview, USPTO, domains) before the store page |
+| Name "Last Ink" | No trademark found on TMview (EU, US, UK and 70+ offices) or the Benelux register (2026-11-23); no game found in web searches | **Ojon:** Steam, itch.io and handles still to check before the store page |
 
 Nothing in `assets/` has unclear terms, so nothing has to be replaced or regenerated.
 
@@ -72,10 +72,10 @@ Because the terms give ownership and commercial rights for all output with no ti
 and **does not need regenerating**. Redoing it would cost about $0.30 but would change Ash's approved look and
 every animation, so we recommend keeping it.
 
-**Ojon (2 minutes, free):** open pixellab.ai's pricing section in a browser and screenshot the free-trial card.
-A third-party summary (respawnstack.com, 2026-10-22) reports the card says "Use generated images commercially"
-with a "***" footnote; we could not load the card (it renders in the browser only), so the footnote is unread.
-Save the screenshot in project files `last-ink/legal/` so we have proof of the terms on the day.
+**Confirmed on the pricing page (Ojon's screenshot, 2026-11-23):** the Free trial card lists "License: Use
+generated images commercially***", the same line as Tier 1, and the footnote reads: "***Use generations
+commercially in your games and other projects. The user owns the rights to the generations with the exception
+of using them to train models." Screenshot kept in project files `last-ink/legal/pixellab-pricing-2026-11-23.png`.
 
 ## 3. OpenAI image generation
 
@@ -109,18 +109,18 @@ blocked from this environment, so these need a quick manual pass, see below).
 | Steam | No game called "Last Ink" in search results |
 | itch.io | No game called "Last Ink". Nearest: **"Last Inkwarden"** by JoyerH (a small itch.io game; page could not be opened to see details). Different name, but close enough that the store search should be checked |
 | Other games | Nothing with this exact title. Similar but distinct: *Inked* (2018), *INK* (indie platformer) and *Ink* (board game), *The Last Tinker*, *The Last Night* |
-| US trademarks (Justia index of USPTO) | No "LAST INK" mark found. Nearest marks are unrelated ink/printing names (LIVING INK, LIVE INK, ETERNAL INK, THE LAST INCH) |
-| EU trademarks | Not checked (EUIPO/TMview blocked here) |
+| US trademarks (Justia index of USPTO, 2026-11-21) | No "LAST INK" mark found. Nearest marks are unrelated ink/printing names (LIVING INK, LIVE INK, ETERNAL INK, THE LAST INCH) |
+| TMview, all offices incl. EUIPO, US, UK (Ojon, 2026-11-23) | No "Last Ink" mark. 33 fuzzy matches, none the same name; the nearest game marks are THE LAST TINKER (EU/UK/US, classes 9 and 41) and LASTLINK (US 41, DE 9), both clearly different. Export in project files `last-ink/legal/tmview-last-ink-2026-11-23.xlsx` |
+| Benelux register (BOIP, Ojon, 2026-11-23) | 0 results for "last ink" (BX, EU and international filters on). Screenshot `last-ink/legal/boip-search-2026-11-23.png` |
 | Domains and handles | Not checked (lookups blocked here). Fallbacks if `lastink.com` is taken: `lastinkgame.com`, `playlastink.com`; handle `@lastinkgame` |
 
-So far the name looks free for a game. A web search can miss a registered mark or a small store page, so:
+No trademark conflict. Store pages and handles are still open:
 
 **Ojon, before the Steam store page (#151), about 10 minutes, all free:**
 1. Steam: search "Last Ink" on store.steampowered.com and on SteamDB (catches unreleased apps).
 2. itch.io: search "Last Ink", and open joyerh.itch.io/last-inkwarden to see what it is.
-3. EU + national marks: search the word "last ink" on TMview (tmdn.org/tmview), classes 9 (game software) and
-   41 (entertainment). Also the Benelux register (boip.int) if you are in the Netherlands.
-4. US marks: search "last ink" on tmsearch.uspto.gov, same classes.
+3. ~~EU + national marks on TMview and the Benelux register~~ Done 2026-11-23: nothing.
+4. ~~US marks~~ Covered by the TMview search (it includes the USPTO).
 5. Domain and handles: check lastink.com / lastinkgame.com at any registrar, and @lastinkgame on X, Bluesky,
    TikTok, YouTube. Buying a domain (~$10 a year) is optional and Ojon's call.
 
