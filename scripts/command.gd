@@ -372,7 +372,9 @@ func _on_menu(id: String) -> void:
 			SurveyView.popup(self).closed.connect(func(): menu.visible = true)
 		"options":
 			menu.visible = false
-			OptionsView.popup(self).closed.connect(func(): menu.visible = true)
+			OptionsView.popup(self).closed.connect(func():
+				menu.visible = true
+				_bake())  # map markings may have changed (issue #192)
 		"save", "load":
 			slot_mode = id
 			menu.visible = false
@@ -531,7 +533,7 @@ func _follow(i: int, centre := false) -> void:
 
 
 func _process_camera(delta: float) -> void:
-	var k := 1.0 - exp(-delta * 9.0)
+	var k := Access.ease_k(delta, 9.0)  # reduced camera motion jumps instead of sweeping (issue #192)
 	zoom = lerpf(zoom, zoom_to, k)
 	cam = cam.lerp(cam_to, k)
 	if absf(zoom - zoom_to) < 0.002:
@@ -638,6 +640,7 @@ func _bake() -> void:
 	var wash := []
 	var fray := []
 	var erased := []
+	var hatch := Access.map_symbols  # Unravelling land is hatched, not only greyer (issue #192)
 	for p in territory.provinces:
 		open.append(Empire.province_open(p))
 		wash.append(owner_color(p["owner"]))
@@ -699,6 +702,9 @@ func _bake() -> void:
 						col = LAND_PARCH.lerp(oc, 0.62 + gg * 0.12)
 						var grey := col.get_luminance()
 						col = col.lerp(Color(grey, grey, grey), fr * 0.6)
+				if hatch and fr >= UNRAVEL and not is_white and (x + y) % 4 == 0:
+					col = MARK_INK.lerp(Color(col, 1.0), 0.45)
+					col.a = 0.6 if painted_tex else 1.0
 				if f & 1:
 					col = border
 					is_white = false
@@ -1225,7 +1231,7 @@ func _draw_paint(c: CanvasItem) -> void:
 		c.draw_texture_rect(painted_tex, wr, false)
 	if fog_tex:
 		# Two layers of the same mist, drifting against each other, so the fog billows.
-		var drift := Vector2(sin(t * 0.13), cos(t * 0.09)) * 2.5 * zoom
+		var drift := Vector2.ZERO if Access.reduce_motion else Vector2(sin(t * 0.13), cos(t * 0.09)) * 2.5 * zoom
 		c.draw_texture_rect(fog_tex, Rect2(wr.position + drift, wr.size), false, Color(1, 1, 1, 0.75))
 		c.draw_texture_rect(fog_tex, Rect2(wr.position - drift * 0.7 + Vector2(0, zoom), wr.size), false, Color(1, 1, 1, 0.55))
 
@@ -1519,7 +1525,10 @@ func _draw_labels() -> void:
 			continue
 		if overview and p["index"] != selected and p["index"] != hovered and Empire.surge.get("id", "") != p["id"] \
 				and MissionTypes.for_province(p["id"]).filter(func(m): return m["type"] != "defense").is_empty():
-			_cv.draw_circle(pos + Vector2(0, -9), 2.0, Color("15111b"))
+			if Access.map_symbols:
+				_owner_mark(_cv, p["owner"], pos + Vector2(0, -9), 3.0)
+			else:
+				_cv.draw_circle(pos + Vector2(0, -9), 2.0, Color("15111b"))
 			continue
 		var col := Color("f3efe4")
 		if p["owner"] == "erased":
@@ -1533,9 +1542,13 @@ func _draw_labels() -> void:
 			# Your flag on the rest of your land.
 			_cv.draw_line(pos + Vector2(-1, -6), pos + Vector2(-1, -16), Color("15111b"), 1.0)
 			_cv.draw_colored_polygon(PackedVector2Array([pos + Vector2(-1, -16), pos + Vector2(5, -14), pos + Vector2(-1, -12)]), owner_color("you").lightened(0.2))
+		elif Access.map_symbols:
+			_owner_mark(_cv, p["owner"], pos + Vector2(0, -9), 3.0)
 		else:
 			_cv.draw_circle(pos + Vector2(0, -9), 2.0, Color("15111b"))
 		_text_c(pos + Vector2(0, 2), p["name"], fsize, col, 0 if p["owner"] == "erased" else 4)
+		if Access.map_symbols and p["owner"] != "erased":
+			_fray_chip(pos + Vector2(font.get_string_size(p["name"], HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(fsize)).x / 2.0 + 3.0, 2.0), int(p["fray"]))
 		if Empire.surge.get("id", "") == p["id"]:
 			# A gathering surge: a pulsing red ring and a countdown.
 			var pulse := 0.5 + 0.5 * sin(t * 5.0)
@@ -1624,11 +1637,8 @@ func _draw_legend() -> void:
 	var x := MAP_ORIGIN.x + 4
 	var y := MAP_ORIGIN.y + MAP_VIEW.y - 8
 	for k in ["you", "free", "concord", "coven", "guild"]:
-		_cv.draw_rect(Rect2(x, y - 6, 6, 6), owner_color(k))
-		_cv.draw_rect(Rect2(x, y - 6, 6, 6), BORDER_COLOR, false, 1.0)
 		var label: String = {"you": tr("Yours"), "free": tr("Unclaimed"), "concord": tr("Concord"), "coven": tr("Coven"), "guild": tr("Guild")}[k]
-		_text(Vector2(x + 9, y), label, 8, Color(0.85, 0.83, 0.78), 3)
-		x += 13 + font.get_string_size(label, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(8)).x + 6
+		x = _legend_entry(x, y, k, label)
 
 
 func _draw_panel() -> void:
@@ -1647,6 +1657,8 @@ func _draw_panel() -> void:
 	y += 13
 	var owner: String = p["owner"]
 	_cv.draw_rect(Rect2(x, y - 7, 7, 7), owner_color(owner))
+	if Access.map_symbols:
+		_owner_mark(_cv, owner, Vector2(x + 3.5, y - 3.5), 2.2)
 	_text(Vector2(x + 11, y), owner_name(owner), 9, Color(0.8, 0.78, 0.74))
 	if owner in Empire.faction_ids():
 		var tier := Empire.tier_of(owner)
@@ -1659,7 +1671,10 @@ func _draw_panel() -> void:
 	var fray := int(p["fray"])
 	var state := tr("Safe") if fray < 25 else (tr("Fraying") if fray < 60 else (tr("Unravelling") if fray < 100 else tr("Erased")))
 	_text(Vector2(x, y), tr("Fray"), 9, Color(0.7, 0.68, 0.7))
-	_text(Vector2(x + 30, y), "%d / 100   %s" % [fray, state], 9, Color("f3efe4") if fray < 60 else Color("ff9b8a"))
+	var ftext := "%d / 100   %s" % [fray, state]
+	_text(Vector2(x + 30, y), ftext, 9, Color("f3efe4") if fray < 60 else Color("ff9b8a"))
+	if Access.map_symbols and owner != "erased":  # the same box the map shows by the name, so its look is learned here
+		_fray_chip(Vector2(x + 36 + font.get_string_size(ftext, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(9)).x, y), fray)
 	y += 5
 	_cv.draw_rect(Rect2(x, y, w, 5), Color(0.15, 0.13, 0.17))
 	_cv.draw_rect(Rect2(x, y, w * fray / 100.0, 5), Color(0.85, 0.84, 0.8).lerp(PAPER, fray / 100.0))
@@ -1759,3 +1774,82 @@ func _draw_panel() -> void:
 	else:
 		var note := tr("No missions here right now")
 		_text_c(Vector2(r.get_center().x, r.position.y + 16), note, 8, Color(0.45, 0.44, 0.47))
+
+
+# ---------------------------------------------------------------- map markings without colour (issue #192)
+
+const MARK_INK := Color("15111b")
+const UNRAVEL := 0.6  # Fray from which a province counts as Unravelling (and is hatched on the map)
+## Each owner's shape on the map, the legend and the panel, so ownership never rests on colour alone.
+## Yours keeps its flag (and the capital its tower). A faction without an entry takes the next spare shape.
+const OWNER_MARKS := {"free": "ring", "erased": "cross", "concord": "square", "coven": "triangle", "guild": "diamond"}
+const SPARE_MARKS := ["hex", "bar", "dot"]
+
+
+func _owner_mark(ci: CanvasItem, owner: String, c: Vector2, r: float, col := MARK_INK) -> void:
+	var shape: String = OWNER_MARKS.get(owner, "")
+	if owner == "you":
+		shape = "flag"
+	elif shape == "":
+		var ids: Array = Empire.faction_ids()
+		shape = SPARE_MARKS[posmod(ids.find(owner), SPARE_MARKS.size())]
+	match shape:
+		"flag":
+			ci.draw_line(c + Vector2(-r * 0.6, r), c + Vector2(-r * 0.6, -r), col, 1.0)
+			ci.draw_colored_polygon(PackedVector2Array([c + Vector2(-r * 0.6, -r), c + Vector2(r, -r * 0.4), c + Vector2(-r * 0.6, r * 0.2)]), col)
+		"ring":
+			ci.draw_arc(c, r * 0.8, 0, TAU, 12, col, 1.0)
+		"cross":
+			ci.draw_line(c + Vector2(-r, -r) * 0.7, c + Vector2(r, r) * 0.7, col, 1.0)
+			ci.draw_line(c + Vector2(r, -r) * 0.7, c + Vector2(-r, r) * 0.7, col, 1.0)
+		"square":
+			ci.draw_rect(Rect2(c - Vector2(r, r) * 0.75, Vector2(r, r) * 1.5), col)
+		"triangle":
+			ci.draw_colored_polygon(PackedVector2Array([c + Vector2(0, -r), c + Vector2(r, r * 0.8), c + Vector2(-r, r * 0.8)]), col)
+		"diamond":
+			ci.draw_colored_polygon(PackedVector2Array([c + Vector2(0, -r), c + Vector2(r, 0), c + Vector2(0, r), c + Vector2(-r, 0)]), col)
+		"hex":
+			var pts := PackedVector2Array()
+			for i in 6:
+				pts.append(c + Vector2.RIGHT.rotated(TAU * i / 6.0) * r)
+			ci.draw_colored_polygon(pts, col)
+		"bar":
+			ci.draw_rect(Rect2(c - Vector2(r, r * 0.4), Vector2(r * 2.0, r * 0.8)), col)
+		_:
+			ci.draw_circle(c, r * 0.7, col)
+
+
+## The Fray number in a little box after a province's name (left edge at at.x, baseline at.y). Safe land
+## gets a plain box, Fraying a double top rule, Unravelling a hatched box, so the state reads without the
+## red text too. Returns the box's right edge.
+func _fray_chip(at: Vector2, fray: int) -> float:
+	var s := str(fray)
+	var tw := font.get_string_size(s, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(7)).x
+	var h := Access.px(8.0)
+	var r := Rect2(at.x, at.y - h + 1.0, tw + 4.0, h)
+	_cv.draw_rect(r, Color(0.96, 0.93, 0.86, 0.9))
+	if fray >= int(UNRAVEL * 100.0):
+		for i in range(0, int(r.size.x + r.size.y), 3):
+			var a := r.position + Vector2(minf(i, r.size.x), maxf(0.0, i - r.size.x))
+			var b := r.position + Vector2(maxf(0.0, i - r.size.y), minf(i, r.size.y))
+			_cv.draw_line(a, b, Color(MARK_INK, 0.3), 1.0)
+	_cv.draw_rect(r, MARK_INK, false, 1.0)
+	if fray >= 25 and fray < int(UNRAVEL * 100.0):
+		_cv.draw_line(r.position + Vector2(0, 1.5), r.position + Vector2(r.size.x, 1.5), MARK_INK, 1.0)
+	_cv.draw_string(font, Vector2(r.position.x + 2.0, at.y - 0.5), s, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(7), MARK_INK)
+	return r.end.x
+
+
+## One owner in the legend: its colour swatch (with its shape on it when map markings are on) and its
+## name. Returns where the next entry starts.
+func _legend_entry(x: float, y: float, owner: String, label: String) -> float:
+	var marks := Access.map_symbols
+	var sw := 8.0 if marks else 6.0
+	_cv.draw_rect(Rect2(x, y - sw, sw, sw), owner_color(owner))
+	_cv.draw_rect(Rect2(x, y - sw, sw, sw), BORDER_COLOR, false, 1.0)
+	if marks:
+		_owner_mark(_cv, owner, Vector2(x + sw / 2.0, y - sw / 2.0), 2.4)
+	_text(Vector2(x + sw + 3, y), label, 8, Color(0.85, 0.83, 0.78), 3)
+	return x + sw + 9 + font.get_string_size(label, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(8)).x + 4
+
+

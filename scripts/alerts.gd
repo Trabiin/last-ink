@@ -110,7 +110,18 @@ func add(text: String, warning: bool, target: Dictionary) -> void:
 		alerts.pop_front()
 	var audio := get_node_or_null("/root/Audio")  # music and SFX (issue #20), when it is there
 	if audio and audio.has_method("sfx"):
-		audio.sfx("alert")
+		audio.sfx("alert", 1.0, 0.0, _caption(text, warning))
+
+
+## The caption for an alert's bell (issue #192): what kind of news it is, in a few words.
+func _caption(text: String, warning: bool) -> String:
+	if text.contains("gathering against"):
+		return tr("Warning bell: a Blank surge is coming")
+	if text.contains("surged into"):
+		return tr("Warning bell: the Blank surged")
+	if text.contains("has been erased"):
+		return tr("Warning bell: land erased")
+	return tr("Warning bell") if warning else tr("Bell: news")
 
 
 ## A typed Empire signal right after a notice: point that notice at its screen.

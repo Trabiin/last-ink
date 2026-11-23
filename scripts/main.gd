@@ -4,6 +4,8 @@ extends Node2D
 
 const HeroScript := preload("res://scripts/hero.gd")
 const EnemyScript := preload("res://scripts/enemy.gd")
+const RECOVER_CLEAR := 150.0  # px: no enemy this close to the leader... (recover assist, issue #192)
+const RECOVER_WAIT := 3.0  # ...for this many seconds, and the party heals
 const PropScript := preload("res://scripts/prop.gd")
 const BlankScript := preload("res://scripts/blank.gd")
 const HudScript := preload("res://scripts/hud.gd")
@@ -55,6 +57,10 @@ var levels_gained := {}  # hero id -> level reached during this mission, for the
 var skills_gained: Array = []  # "Ash: Quill-knife 3 (Ellipsis)" lines for the results screen (issue #24)
 var quick_menu: QuickMenu  # quick_menu.gd: items, abilities, party, equip with time slowed (issue #6)
 var quick_open := false  # heroes read this: the menu has the controls while it is up
+var skipping := false  # "Skip this fight" (Assists, issue #192): the story's talks play, then the results
+var _skip_talks: Array = []
+var _calm_t := 0.0  # seconds with no enemy near the leader (the recover assist)
+var _recover_acc := 0.0
 
 
 func _ready() -> void:
@@ -219,6 +225,8 @@ func play_talk(talk_id: String) -> void:
 
 func _on_dialogue_finished(_id: String) -> void:
 	get_tree().paused = false
+	if skipping and not ending:
+		_next_skip_talk()
 
 
 func _build_walls() -> void:
@@ -451,14 +459,59 @@ func _pause_items() -> Array:
 		{"id": "save", "label": tr("Save game")},
 		{"id": "load", "label": tr("Load game"), "enabled": Saves.latest_slot() != "", "note": tr("(no saves yet)")},
 		{"id": "retreat", "label": tr("Retreat to Hollowmark"), "detail": tr("end the mission, keep what you found")},
+	] + _skip_items() + [
 		{"id": "restart", "label": tr("Restart mission")},
 		{"id": "options", "label": tr("Options")},
 		{"id": "title", "label": tr("Quit to title")},
 	]
 
 
+## "Skip this fight" in story missions, when the assist is on (issue #192).
+func _skip_items() -> Array:
+	if not can_skip():
+		return []
+	return [{"id": "skip", "label": tr("Skip this fight"), "detail": tr("the story's conversations still play")}]
+
+
+func can_skip() -> bool:
+	Assists.load_settings()
+	return Assists.skip_fights and bool(mission.get("story", false)) and not ending and not game_over and not skipping
+
+
+## Skips the fight: any conversation the fight would have played and has not yet (a boss's opening,
+## turn and last words) plays now, then the mission ends as won, with the full rewards.
+func skip_fight() -> void:
+	if not can_skip():
+		return
+	skipping = true
+	set_paused(false)
+	_skip_talks = []
+	var inner = objective.inner
+	if inner != null and inner.has_method("_talk_id"):
+		for part in ["intro", "phase2", "outro"]:
+			var tid: String = inner._talk_id(part)
+			if not Dialogue.is_seen("talk:" + tid):
+				_skip_talks.append(tid)
+	_next_skip_talk()
+
+
+func _next_skip_talk() -> void:
+	while not _skip_talks.is_empty():
+		var tid: String = _skip_talks.pop_front()
+		if dialogue_box.play(tid):
+			quick_menu.close()
+			get_tree().paused = true
+			touch.release_all()
+			return
+	ending = true
+	hud.say(tr("Fight skipped."), 2.0)
+	get_tree().create_timer(0.8).timeout.connect(_show_results.bind("success"))
+
+
 func _on_pause_choice(id: String) -> void:
 	match id:
+		"skip":
+			skip_fight()
 		"resume", "cancel":
 			set_paused(false)
 		"save", "load":
@@ -638,6 +691,7 @@ func _process(delta: float) -> void:
 
 	if camera and leader:
 		camera.global_position = leader.global_position + Vector2(0, -10)
+		camera.position_smoothing_speed = Access.follow_speed(7.0)  # reduce camera motion (issue #192)
 		shake_amount = maxf(shake_amount - 20.0 * delta, 0.0)
 		camera.offset = Vector2(randf_range(-1, 1), randf_range(-1, 1)) * shake_amount
 
@@ -652,6 +706,7 @@ func _process(delta: float) -> void:
 	_update_mission(delta)
 	_update_blank_contact(delta)
 	_update_revive(delta)
+	_update_recover(delta)
 	_update_respawn(delta)
 	_update_banter(delta)
 	_update_signs()
@@ -695,6 +750,8 @@ func _show_results(outcome: String) -> void:
 ## XP, level-ups and gear found, for the results screen (issue #15).
 func _progress_lines(r: Dictionary, outcome: String) -> void:
 	var lines: Array = r.get("lines", [])
+	if skipping and outcome == "success":
+		lines.append(tr("Fight skipped."))
 	if outcome == "success":
 		var xp := Progress.mission_xp(mission)
 		_award_xp(xp)
@@ -761,6 +818,30 @@ func _update_revive(delta: float) -> void:
 				hud.say(tr("%s is back on their feet.") % hero.hero_name, 2.5)
 		else:
 			hero.revive_progress = maxf(hero.revive_progress - delta, 0.0)
+
+
+## The recover assist (issue #192): a few seconds with no enemy near the leader and the living heroes'
+## health fills back up, a quarter of it a second.
+func _update_recover(delta: float) -> void:
+	if not Assists.recover or leader == null or leader.dead or ending or game_over:
+		_calm_t = 0.0
+		return
+	var near := false
+	for e in get_tree().get_nodes_in_group("enemies"):
+		if (e as Node2D).global_position.distance_to(leader.global_position) < RECOVER_CLEAR:
+			near = true
+			break
+	_calm_t = 0.0 if near else _calm_t + delta
+	if _calm_t < RECOVER_WAIT:
+		return
+	_recover_acc += delta * 0.25
+	if _recover_acc < 0.05:
+		return
+	for h in heroes:
+		var hero: Hero = h
+		if not hero.dead and hero.hp < hero.max_hp:
+			hero.hp = mini(hero.max_hp, hero.hp + maxi(1, roundi(hero.max_hp * _recover_acc)))
+	_recover_acc = 0.0
 
 
 func _update_respawn(delta: float) -> void:

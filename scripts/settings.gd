@@ -21,10 +21,11 @@ const DIFFICULTY_INFO := [
 const DIFFICULTY_MULT := [[0.5, 1.25], [1.0, 1.0], [1.4, 0.85]]
 const SHAKES := ["Off", "Low", "Full"]
 const SHAKE_MULT := [0.0, 0.45, 1.0]
-const BUSES := ["Master", "Music", "SFX"]
+const BUSES := ["Master", "Music", "SFX", "UI", "Voice"]  # UI and Voice: issue #192
 
-## Gameplay actions the player may rebind. Pause and the menu keys stay fixed so nobody can lock
-## themselves out of the options screen.
+## Every action the player may rebind (issue #192: all of them, menu keys too), in the order the Controls
+## page lists them. Menu keys and pause keep a fallback nobody can rebind away (LOCKED), so the options
+## screen can always be reached and left: the arrow keys, Enter, Escape, the d-pad, A, B and Start.
 const REMAPPABLE := [
 	["move_up", "Move up"], ["move_down", "Move down"], ["move_left", "Move left"], ["move_right", "Move right"],
 	["attack", "Attack / charge tech"], ["swap", "Swap hero"], ["quick_menu", "Quick menu"],
@@ -32,6 +33,59 @@ const REMAPPABLE := [
 	["alert_go", "Go to alert / goal"],  # only if that action exists (issue #22)
 	["journal", "Journal"],  # quest log and codex (issue #114)
 	["armory", "Forge & Market"],  # issue #112
+	["roster", "Roster"], ["buildings", "Buildings"], ["govern", "Governors"], ["expeditions", "Expeditions"],
+	["research", "Research"], ["diplomacy", "Diplomacy"], ["bonds", "Bonds"], ["newcomers", "Newcomers"],
+	["gear", "Party gear"], ["ledger", "Daily ledger"],
+	["clock_slower", "Clock slower"], ["clock_faster", "Clock faster"],
+	["clock_speed_0", "Clock: pause"], ["clock_speed_1", "Clock: 1x"], ["clock_speed_2", "Clock: 2x"], ["clock_speed_3", "Clock: 4x"],
+	["map_zoom_in", "Map zoom in"], ["map_zoom_out", "Map zoom out"], ["map_zoom_toggle", "Map: whole / regions"],
+	["map_pan_up", "Map pan up"], ["map_pan_down", "Map pan down"], ["map_pan_left", "Map pan left"], ["map_pan_right", "Map pan right"],
+	["ui_up", "Menu up"], ["ui_down", "Menu down"], ["ui_left", "Menu left"], ["ui_right", "Menu right"],
+	["ui_accept", "Confirm"], ["ui_cancel", "Back / cancel"], ["pause", "Pause menu"],
+	["dialogue_log", "Dialogue log"],  # made by DialogueLog.ensure_action (issue #34)
+]
+
+## Where an action is used, for the Controls page's headings and for clashes: two actions only swap keys
+## when both can be pressed in the same place (see clash()).
+##   move   moving: town, missions, the Command Table   hero  Attack: town (talk) and missions
+##   field  missions only                               manage  town and the Command Table
+##   menu   menus, conversations and pause
+const GROUPS := {
+	"move_up": "move", "move_down": "move", "move_left": "move", "move_right": "move", "attack": "hero",
+	"swap": "field", "quick_menu": "field", "ability_1": "field", "ability_2": "field", "ability_3": "field", "ability_4": "field",
+	"ui_up": "menu", "ui_down": "menu", "ui_left": "menu", "ui_right": "menu", "ui_accept": "menu", "ui_cancel": "menu",
+	"pause": "menu", "dialogue_log": "menu",
+}
+const GROUP_TITLES := {"move": "Moving and fighting", "manage": "Town and Command Table", "menu": "Menus and conversations"}
+
+## Keys and pad inputs that never leave these actions, whatever the player binds: the way back.
+const LOCKED_KEYS := {
+	"ui_up": [KEY_UP], "ui_down": [KEY_DOWN], "ui_left": [KEY_LEFT], "ui_right": [KEY_RIGHT],
+	"ui_accept": [KEY_ENTER, KEY_KP_ENTER], "ui_cancel": [KEY_ESCAPE], "pause": [KEY_ESCAPE],
+}
+const LOCKED_PAD := {
+	"ui_up": [JOY_BUTTON_DPAD_UP], "ui_down": [JOY_BUTTON_DPAD_DOWN], "ui_left": [JOY_BUTTON_DPAD_LEFT],
+	"ui_right": [JOY_BUTTON_DPAD_RIGHT], "ui_accept": [JOY_BUTTON_A], "ui_cancel": [JOY_BUTTON_B], "pause": [JOY_BUTTON_START],
+}
+
+## One-handed keyboard layouts (issue #192): everything needed in a fight and in menus under one hand.
+## The rest stays as it is (and can still be picked with the mouse). Applied over the defaults.
+const LAYOUTS := ["Default", "One hand (left)", "One hand (right)"]
+const LAYOUT_INFO := [
+	"Keys as designed: move with WASD or the arrows, attack with J.",
+	"Move with WASD, attack and confirm with Space, swap with Tab, the quick menu on C, abilities on 1 to 4, back with Q, the log on the key above Tab.",
+	"Move with the arrows, attack and confirm with Enter, swap with Shift, the quick menu on /, abilities on , . ; ' and back with Backspace.",
+]
+const LAYOUT_KEYS := [
+	{},
+	{"move_up": KEY_W, "move_down": KEY_S, "move_left": KEY_A, "move_right": KEY_D, "attack": KEY_SPACE, "swap": KEY_TAB,
+		"quick_menu": KEY_C, "ability_1": KEY_1, "ability_2": KEY_2, "ability_3": KEY_3, "ability_4": KEY_4,
+		"ui_up": KEY_W, "ui_down": KEY_S, "ui_left": KEY_A, "ui_right": KEY_D,
+		"ui_accept": KEY_SPACE, "ui_cancel": KEY_Q, "dialogue_log": KEY_QUOTELEFT},
+	{"move_up": KEY_UP, "move_down": KEY_DOWN, "move_left": KEY_LEFT, "move_right": KEY_RIGHT, "attack": KEY_ENTER,
+		"swap": KEY_SHIFT, "quick_menu": KEY_SLASH, "ability_1": KEY_COMMA, "ability_2": KEY_PERIOD,
+		"ability_3": KEY_SEMICOLON, "ability_4": KEY_APOSTROPHE, "ui_accept": KEY_ENTER, "ui_cancel": KEY_BACKSPACE,
+		"dialogue_log": KEY_BACKSLASH, "pause": KEY_P},
 ]
 
 ## Scene effects (docs/ART_STYLE.md "Sitting in the world"), each a 0-100 slider on the options screen's
@@ -53,8 +107,9 @@ static var battle_speed_i := 2
 static var difficulty := 1
 static var shake_i := 2
 static var tips := true  # first-visit explainers and first-time tips (issue #115); the story's unlocks always play
-static var volumes := {"Master": 80, "Music": 70, "SFX": 80}  # percent, steps of 10
+static var volumes := {"Master": 80, "Music": 70, "SFX": 80, "UI": 70, "Voice": 90}  # percent, steps of 10
 static var bindings := {}  # "<action>" -> {"key": physical keycode} and/or {"pad": {"b": button} | {"a": axis, "v": sign}}
+static var layout := 0  # LAYOUTS: the keyboard layout the bindings started from (issue #192)
 
 ## Set by the mission scene so battle speed only ever touches fights (the Command clock and town
 ## run on real time). slowed = the quick menu has time crawling at 10%.
@@ -84,6 +139,7 @@ static func load_settings() -> void:
 		fx[f[0]] = clampi(int(cfg.get_value("fx", f[0], f[2])), 0, 100)
 	var b = cfg.get_value("controls", "bindings", {})
 	bindings = b if typeof(b) == TYPE_DICTIONARY else {}
+	layout = clampi(int(cfg.get_value("controls", "layout", layout)), 0, LAYOUTS.size() - 1)
 
 
 static func save() -> void:
@@ -96,6 +152,7 @@ static func save() -> void:
 	for bus in BUSES:
 		cfg.set_value("volume", bus, volumes[bus])
 	cfg.set_value("controls", "bindings", bindings)
+	cfg.set_value("controls", "layout", layout)
 	for f in FX:
 		cfg.set_value("fx", f[0], fx_value(f[0]))
 	cfg.save(PATH)
@@ -159,11 +216,13 @@ static func refresh_time_scale(slow := 0.1) -> void:
 ## Scales a hit by difficulty before armour and shields see it (Actor.take_hit).
 static func difficulty_damage(target: Node, amount: int) -> int:
 	load_settings()
-	if difficulty == 1 or amount <= 0:
+	if amount <= 0:
 		return amount
 	var m: Array = DIFFICULTY_MULT[difficulty]
-	if target is Hero:
-		return maxi(1, roundi(amount * float(m[0])))
+	if target is Hero:  # the difficulty, then the damage-taken assist (issue #192)
+		return Assists.hero_damage(amount if difficulty == 1 else maxi(1, roundi(amount * float(m[0]))))
+	if difficulty == 1:
+		return amount
 	if target is Enemy:
 		return maxi(1, roundi(amount * float(m[1])))
 	return amount
@@ -198,6 +257,7 @@ static func apply_audio() -> void:
 ## Remembers the bindings Controls defined, then lays the saved ones on top.
 static func apply_bindings() -> void:
 	load_settings()
+	DialogueLog.ensure_action()  # so the log key can be rebound before any conversation made it
 	if _defaults.is_empty():
 		for a in REMAPPABLE:
 			var id: String = a[0]
@@ -207,14 +267,67 @@ static func apply_bindings() -> void:
 		var id: String = a[0]
 		var d: Dictionary = _defaults.get(id, {})
 		var b: Dictionary = bindings.get(id, {})
-		_set_key(id, int(b.get("key", d.get("key", -1))))
-		_set_pad(id, b.get("pad", d.get("pad", {})))
+		# Untouched actions keep their events in Controls' order (the prompts show the first one).
+		var key := int(b.get("key", d.get("key", -1)))
+		if b.has("key") or _primary_key(id) != key:
+			_set_key(id, key)
+		var pad: Dictionary = b.get("pad", d.get("pad", {}))
+		if b.has("pad") or _primary_pad(id) != pad:
+			_set_pad(id, pad)
 
 
 static func reset_bindings() -> void:
 	bindings = {}
+	layout = 0
 	apply_bindings()
 	save()
+
+
+## Starts the bindings over from a keyboard layout (LAYOUTS). Gamepad bindings are kept.
+static func apply_layout(i: int) -> void:
+	load_settings()
+	layout = clampi(i, 0, LAYOUTS.size() - 1)
+	for id in bindings.keys():
+		(bindings[id] as Dictionary).erase("key")
+	apply_bindings()  # every key back to its default first
+	var keys: Dictionary = LAYOUT_KEYS[layout]
+	for id in keys:
+		if InputMap.has_action(id):
+			_store(id, "key", int(keys[id]))
+			_set_key(id, int(keys[id]))
+	save()
+
+
+## Can a and b be pressed in the same place, so that one key for both would do two things at once?
+## Moving and Attack are used in town and in missions; mission keys and town/table keys never meet;
+## menu keys only clash with other menu keys (Confirm shares J with Attack on purpose).
+static func clash(a: String, b: String) -> bool:
+	var ga := group_of(a)
+	var gb := group_of(b)
+	if ga == gb:
+		return true
+	if ga == "menu" or gb == "menu":
+		return false
+	return ga in ["move", "hero"] or gb in ["move", "hero"]
+
+
+static func group_of(id: String) -> String:
+	return GROUPS.get(id, "manage")
+
+
+## The heading a row of the Controls page starts, or "" (the first action of each group in REMAPPABLE).
+static func group_title(id: String) -> String:
+	var g := group_of(id)
+	g = "move" if g in ["hero", "field"] else g
+	for a in REMAPPABLE:
+		var other: String = a[0]
+		if not InputMap.has_action(other):
+			continue
+		var og := group_of(other)
+		og = "move" if og in ["hero", "field"] else og
+		if og == g:
+			return Loc.t(GROUP_TITLES[g]) if other == id else ""
+	return ""
 
 
 static func action_label(id: String) -> String:
@@ -224,14 +337,15 @@ static func action_label(id: String) -> String:
 	return id
 
 
-## Binds a key (physical keycode) to an action. If another rebindable action already uses that
-## key as its main key, the two swap so nothing ends up with two jobs. Returns the swapped action.
+## Binds a key (physical keycode) to an action. If another rebindable action that can be pressed in the
+## same place (clash) already uses that key as its main key, the two swap so nothing ends up with two
+## jobs. Returns the swapped action.
 static func bind_key(id: String, keycode: int) -> String:
 	var swapped := ""
 	var old := _primary_key(id)
 	for a in REMAPPABLE:
 		var other: String = a[0]
-		if other != id and _primary_key(other) == keycode:
+		if other != id and clash(id, other) and _primary_key(other) == keycode:
 			_store(other, "key", old)
 			_set_key(other, old)
 			swapped = other
@@ -247,7 +361,7 @@ static func bind_pad(id: String, pad: Dictionary) -> String:
 	var old := _primary_pad(id)
 	for a in REMAPPABLE:
 		var other: String = a[0]
-		if other != id and _primary_pad(other) == pad:
+		if other != id and clash(id, other) and _primary_pad(other) == pad:
 			_store(other, "pad", old)
 			_set_pad(other, old)
 			swapped = other
@@ -299,12 +413,30 @@ static func _store(id: String, kind: String, value) -> void:
 	bindings[id] = b
 
 
+## Godot's own ui_* keys carry a keycode, ours a physical keycode.
+static func _code(ev: InputEventKey) -> int:
+	return int(ev.physical_keycode) if ev.physical_keycode != 0 else int(ev.keycode)
+
+
+static func _locked_key(id: String, ev: InputEvent) -> bool:
+	return ev is InputEventKey and _code(ev) in LOCKED_KEYS.get(id, [])
+
+
+static func _locked_pad(id: String, ev: InputEvent) -> bool:
+	if ev is InputEventJoypadButton:
+		return int(ev.button_index) in LOCKED_PAD.get(id, [])
+	# The menu directions keep the left stick as well as the d-pad.
+	return ev is InputEventJoypadMotion and id in ["ui_up", "ui_down", "ui_left", "ui_right"] \
+		and int(ev.axis) in [JOY_AXIS_LEFT_X, JOY_AXIS_LEFT_Y]
+
+
+## The key the Controls page shows and a rebind replaces: the first one that is not a locked fallback.
 static func _primary_key(id: String) -> int:
 	if not InputMap.has_action(id):
 		return -1
 	for ev in InputMap.action_get_events(id):
-		if ev is InputEventKey:
-			return int(ev.physical_keycode)
+		if ev is InputEventKey and not _locked_key(id, ev):
+			return _code(ev)
 	return -1
 
 
@@ -312,6 +444,8 @@ static func _primary_pad(id: String) -> Dictionary:
 	if not InputMap.has_action(id):
 		return {}
 	for ev in InputMap.action_get_events(id):
+		if _locked_pad(id, ev):
+			continue
 		if ev is InputEventJoypadButton:
 			return {"b": int(ev.button_index)}
 		if ev is InputEventJoypadMotion:
@@ -319,29 +453,51 @@ static func _primary_pad(id: String) -> Dictionary:
 	return {}
 
 
-## Replaces the action's first key (alternates like the arrow keys stay).
+## The locked fallback keys of an action as text ("Up", "Enter"): shown beside the binding.
+static func locked_text(id: String) -> String:
+	var names := []
+	for k in LOCKED_KEYS.get(id, []):
+		if k != KEY_KP_ENTER:
+			names.append(OS.get_keycode_string(k))
+	return " / ".join(names)
+
+
+## The same for the locked gamepad fallback ("D-pad up", "A").
+static func locked_pad_text(id: String) -> String:
+	var names := []
+	for b in LOCKED_PAD.get(id, []):
+		names.append(pad_text({"b": b}))
+	return " / ".join(names)
+
+
+## Replaces the action's first key that is not a locked fallback (alternates like the arrow keys stay).
+## keycode -1 takes the key away (it went to another action in a swap and nothing came back).
 static func _set_key(id: String, keycode: int) -> void:
-	if keycode < 0 or not InputMap.has_action(id):
+	if not InputMap.has_action(id):
 		return
 	var events := InputMap.action_get_events(id)
 	var ev := InputEventKey.new()
 	ev.physical_keycode = keycode as Key
 	for i in events.size():
-		if events[i] is InputEventKey:
+		if events[i] is InputEventKey and not _locked_key(id, events[i]):
 			InputMap.action_erase_event(id, events[i])
 			break
+	if keycode < 0 or keycode in LOCKED_KEYS.get(id, []):
+		return  # binding the fallback itself: it is already there
 	InputMap.action_add_event(id, ev)
 	_move_key_first(id, ev)
 
 
-## Replaces the action's first gamepad input (button or axis), keeping the rest.
+## Replaces the action's first gamepad input (button or axis) that is not a locked fallback, keeping the rest.
 static func _set_pad(id: String, pad: Dictionary) -> void:
-	if pad.is_empty() or not InputMap.has_action(id):
+	if not InputMap.has_action(id):
 		return
 	for ev in InputMap.action_get_events(id):
-		if ev is InputEventJoypadButton or ev is InputEventJoypadMotion:
+		if (ev is InputEventJoypadButton or ev is InputEventJoypadMotion) and not _locked_pad(id, ev):
 			InputMap.action_erase_event(id, ev)
 			break
+	if pad.is_empty() or (pad.has("b") and int(pad["b"]) in LOCKED_PAD.get(id, [])):
+		return
 	var nev: InputEvent
 	if pad.has("b"):
 		var jb := InputEventJoypadButton.new()

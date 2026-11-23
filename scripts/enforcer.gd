@@ -65,6 +65,7 @@ func _on_hit() -> void:
 func _physics_process(delta: float) -> void:
 	if dying_t >= 0.0:
 		return
+	delta *= Assists.pace()  # enemy speed assist (issue #192): timers run slower, _slide() moves slower
 	anim_t += delta
 	flash_t = maxf(flash_t - delta, 0.0)
 	state_t -= delta
@@ -108,7 +109,7 @@ func _physics_process(delta: float) -> void:
 
 	velocity = dir * move_speed + knockback
 	knockback = knockback.move_toward(Vector2.ZERO, 900.0 * delta)
-	move_and_slide()
+	_slide()
 
 
 func _slam() -> void:

@@ -80,6 +80,7 @@ func _ready() -> void:
 func _physics_process(delta: float) -> void:
 	if dying_t >= 0.0:
 		return
+	delta *= Assists.pace()  # enemy speed assist (issue #192): timers run slower, _slide() moves slower
 	anim_t += delta
 	flash_t = max(flash_t - delta, 0.0)
 	state_t -= delta
@@ -126,7 +127,7 @@ func _physics_process(delta: float) -> void:
 				_set_state(State.LUNGE, LUNGE_TIME)
 		State.LUNGE:
 			velocity = lunge_dir * LUNGE_SPEED + knockback
-			move_and_slide()
+			_slide()
 			_check_lunge_hits()
 			if state_t <= 0.0:
 				_set_state(State.RECOVER, 0.7)
@@ -138,8 +139,19 @@ func _physics_process(delta: float) -> void:
 
 	velocity = dir * move_speed + knockback
 	knockback = knockback.move_toward(Vector2.ZERO, 700.0 * delta)
-	move_and_slide()
+	_slide()
 	queue_redraw()
+
+
+## move_and_slide() at the enemy speed assist's pace. Every enemy moves through this.
+func _slide() -> void:
+	var pace := Assists.pace()
+	if pace >= 1.0:
+		move_and_slide()
+		return
+	velocity *= pace
+	move_and_slide()
+	velocity /= pace  # what the slide did to it (walls), back at full scale for the enemy's own logic
 
 
 func _set_state(s: int, t: float) -> void:

@@ -76,7 +76,8 @@ func test_number_and_day_formatting() -> void:
 ## Portuguese, Italian, Polish, Czech...), so those can be added without new fonts.
 func test_fonts_cover_accented_latin() -> void:
 	var chars := "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÑÒÓÔÕÖØÙÚÛÜÝàáâãäåæçèéêëìíîïñòóôõöøùúûüýÿßŒœ¿¡«»„“”‘’–—…ĄąĆćĘęŁłŃńŚśŹźŻżČčĎďĚěŇňŘřŠšŤťŮůŽž"
-	for path in ["res://assets/fonts/Jersey10-Regular.ttf", "res://assets/fonts/Jacquard12-Regular.ttf"]:
+	for path in ["res://assets/fonts/Jersey10-Regular.ttf", "res://assets/fonts/Jacquard12-Regular.ttf",
+			"res://assets/fonts/AtkinsonHyperlegible-Regular.ttf", "res://assets/fonts/AtkinsonHyperlegible-Bold.ttf"]:  # + the readable font (#192)
 		var f: Font = load(path)
 		var missing := ""
 		for c in chars:

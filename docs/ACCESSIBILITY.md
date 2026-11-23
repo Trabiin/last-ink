@@ -1,6 +1,7 @@
 # Accessibility
 
-Issue #34 (first pass); what is still open is in #192.
+Issue #34 (first pass) and #192 (part 2: readable font, map markings, camera motion, rebinding every
+action, assists, captions).
 
 ## What the player gets
 
@@ -17,6 +18,30 @@ the most important ones, shown before the title menu and the prologue):
 | Stick deadzone | 5-60% for movement and map panning (menus never go below 50%). |
 | Auto-advance dialogue | Off, Slow, Normal, Fast. |
 | Dialogue log | Everything said this session: Backspace / gamepad Back / mouse wheel up / "Log" in any conversation, or from this page. |
+| Font | Pixel (Jersey 10, headings Jacquard 12) or Readable: Atkinson Hyperlegible everywhere, headings included (the title logo stays, it is art). Applies at once. |
+| Map markings | Shapes and numbers (default): on the Command Table every owner has a shape (yours a flag, unclaimed a ring, the Concord a square, the Coven a triangle, the Guild a diamond, erased land a cross) on the map, the legend and the panel; every province shows its Fray in a box after its name (plain when Safe, a double top rule when Fraying, hatched when Unravelling) and Unravelling land is hatched on the map. Colour only: the old washes. |
+| Captions | Important sounds as text near the bottom of the screen: warning and alarm bells (saying what they are about, e.g. a Blank surge coming), a hero falling, fanfares, level-ups, the Blank's hum (with an arrow towards it). |
+| Camera motion | Full or Reduced: the camera sticks to the hero instead of gliding after them, the Command Table's map jumps instead of sweeping, the fog stops drifting. |
+
+**Options > Assists** (right under Difficulty), each its own switch, saved per device in `[assists]`:
+
+| Assist | What it does |
+|---|---|
+| Damage taken | 100%, 75%, 50% or 25% of the damage the party takes, on top of the difficulty. |
+| Enemy speed | Normal, Slower (85%) or Slowest (70%): enemies move, wind up, attack and throw at that pace. The party is unaffected. |
+| Heal between fights | Three seconds with no enemy near the leader and the living heroes heal a quarter of their health a second. |
+| Skip story fights | Story missions get "Skip this fight" in the pause menu: any conversation the fight would have played (a boss's opening, turn and last words) plays, then the mission is won with the full rewards. |
+| Blank pressure | Auto (gentle on Story difficulty), Gentle or Full. Gentle takes 40% off each province's daily Fray growth (shown as its own line in the province panel) and surges hit at 60%. |
+
+Assists never lock anything: no ending, reward, scene or achievement checks them, and no text judges them.
+
+**Options > Controls**: every action can be rebound (keyboard key and gamepad input), grouped as Moving and
+fighting, Town and Command Table, Menus and conversations; menu keys too. The arrow keys, Enter, Escape, the
+d-pad, A, B and Start always keep working in menus and for pause, whatever is bound, so nobody can lock
+themselves out (shown next to those bindings). Two actions only swap keys when both can be pressed in the
+same place (`Settings.clash`): mission keys and town/table keys share the gamepad freely. Keyboard layouts:
+Default, One hand (left: WASD, Space, Tab, C, 1-4, Q) and One hand (right: arrows, Enter, Shift, /, , . ; ').
+Menu sounds have their own volume; a Voice volume appears once recorded speech ships (`assets/audio/voice/`).
 
 Text speed and screen shake are repeated on the page. Settings live per device in `user://settings.cfg`,
 section `[access]`.
@@ -34,5 +59,31 @@ section `[access]`.
   `Access.calm(a)` for bright glows, `Access.pulse(t, speed)` for pulsing. `Fx.burst` already calms itself.
 - **Anything that shows spoken lines** calls `DialogueLog.track(self, line, kind)` every frame while the
   line is up, skips its own input while `DialogueLog.is_open()`, and opens the log on `DialogueLog.asked()`.
+- **Fonts**: draw with `ThemeDB.fallback_font` (body) and `UiSkin.TITLE_FONT` (headings), never a .ttf, so
+  the readable font reaches it. Don't read `UiSkin.TITLE_FONT.base_font` directly in code: GDScript folds
+  `CONST.property` at compile time; go through a variable.
+- **Map**: anything new on the Command Table that tells owners or states apart by colour also gets a shape or
+  a number while `Access.map_symbols` is on. A new faction gets the next spare shape automatically; give it its
+  own in `command.gd` `OWNER_MARKS`.
+- **Enemies**: a new enemy script multiplies its `_physics_process` delta by `Assists.pace()` (after the dying
+  check) and moves with `_slide()` instead of `move_and_slide()`, so the enemy speed assist reaches it.
+- **Input**: a new input action goes into `Settings.REMAPPABLE` (and `GROUPS` unless it is a town/table key);
+  `tests/test_access2.gd` fails on any action the Controls page doesn't list.
+- **Sounds**: an effect that carries information gets an entry in `Audio.CAPTIONS`, or pass the caption as the
+  fourth argument of `Audio.sfx` when the same sound means different things.
+- **Cameras** that follow something use `Access.follow_speed()`, smoothed pans and zooms `Access.ease_k()`.
 - Check a new screen at Largest: `ACCESS_SHOTS=/tmp/a11y TEXT_SIZE=2 xvfb-run -a godot --audio-driver Dummy --path . -s tests/run.gd -- access_shots`
-  (add it to `tests/test_access_shots.gd`).
+  (add it to `tests/test_access_shots.gd`). Add `FONT=1` for the readable font.
+
+## Checked
+
+- Colour-blind simulation (protanopia, deuteranopia, tritanopia; Machado 2009) of the Command Table, the
+  mission HUD and the danger markers: owners and Fray read by shape and number, HP and Ink bars carry their
+  percentages, danger zones read by their hatching and outline.
+
+## Still open (issue #192)
+
+- Every screen reachable by keyboard, gamepad, mouse and touch with visible focus (audit after #144).
+- Largest text polish (title tagline, conversation heading over the objective; the Command Table legend
+  meets "Next to fall" at Largest) after the final UI pass (#144).
+- The Game Accessibility Guidelines review and Steam accessibility tags (#151).
