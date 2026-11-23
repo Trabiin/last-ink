@@ -433,7 +433,11 @@ func close() -> void:
 
 
 func _input(event: InputEvent) -> void:
-	if not visible or Engine.get_process_frames() == _opened_frame:
+	if not visible:
+		return
+	if Prompts.touch_to_mouse(self, event):  # taps reach the buttons and text boxes too
+		return
+	if Engine.get_process_frames() == _opened_frame:
 		return
 	var typing := get_viewport().gui_get_focus_owner() in [text_box, contact_box]
 	var esc: bool = event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_ESCAPE
