@@ -7,6 +7,9 @@ const Scan := preload("res://tools/loc_scan.gd")
 
 ## No player-facing literal in scripts/ skips tr() / Loc.t(). Fix: wrap it, move it to a const that is
 ## translated where shown, or end the line with "# no-tr" if players never see it.
+## Data files the game never loads or shows (tools and tests read them), so nothing in them is translated.
+const DEV_ONLY := ["placeholders.json"]  # the art batch's to-do list (issue #28)
+
 func test_script_text_is_wrapped() -> void:
 	var scan := Scan.new()
 	var bad := 0
@@ -25,7 +28,7 @@ func test_script_text_is_wrapped() -> void:
 func test_data_text_keys_are_known() -> void:
 	var scan := Scan.new()
 	for f in DirAccess.get_files_at("res://data/"):
-		if not f.ends_with(".json"):
+		if not f.ends_with(".json") or f in DEV_ONLY:
 			continue
 		var parsed = JSON.parse_string(FileAccess.get_file_as_string("res://data/" + f))
 		for u in scan.data_unkeyed(f, parsed):

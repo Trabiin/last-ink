@@ -11,11 +11,23 @@ extends MissionObjectives
 ## campaign, so retrying after a wipe goes straight back into the fight (from the autosave made
 ## at the arena entrance; there are no autosaves mid-fight).
 
+## Per boss: script, the bar's name and title, phase2_title (the bar after the phase change), phase_say (HUD line
+## at the phase change), approach / done (HUD goal lines before and after), phase2_at (HP share), and the adds
+## called in during phase 2 (an enemy kind, how many at most, how often).
 const BOSSES := {
 	"auditor": {
 		"script": preload("res://scripts/auditor.gd"),
-		"name": "THE AUDITOR", "title": "Concord Office of Corrections",
-		"adds": "nibbler", "adds_max": 3, "adds_every": 13.0,
+		"name": "THE AUDITOR", "title": "Concord Office of Corrections", "phase2_title": "Final Notice",
+		"phase_say": "FINAL NOTICE. He is not holding back any more.",
+		"approach": "Face the Auditor at the tollgate", "done": "The Auditor is struck out",
+		"phase2_at": 0.5, "adds": "nibbler", "adds_max": 3, "adds_every": 13.0, "plural": "the Auditor",
+	},
+	"abbot": {  # Chapter 2 (issue #28)
+		"script": preload("res://scripts/abbot.gd"),
+		"name": "THE ABBOT", "title": "Who Copied Himself", "phase2_title": "The Second Copy",
+		"phase_say": "He is copying himself faster now. Watch for the hands that drip ink.",
+		"approach": "Find the Abbot in the cloister garth", "done": "The Abbot's copies are blank paper",
+		"phase2_at": 0.5, "adds": "penitent", "adds_max": 3, "adds_every": 15.0, "plural": "the Abbot",
 	},
 }
 const WAKE_RANGE := 150.0
@@ -37,6 +49,7 @@ func setup(p_obj: Dictionary, p_main) -> void:
 	main.respawn_t = 1e9  # no Nibbler stream from the (absent) Blank in a boss arena
 	var spots: Array = main.area.markers.get("boss", [])
 	boss = info["script"].new()
+	boss.set_meta("kind", id if BOSSES.has(id) else "auditor")  # Journal, loot tables and codex know it by this
 	boss.position = spots[0] if not spots.is_empty() else Vector2(main.world.x / 2.0, 96.0)
 	boss.facing = Vector2.DOWN
 	main.entities.add_child(boss)
@@ -102,7 +115,7 @@ func update(delta: float) -> void:
 
 
 func _on_phase(_p: int) -> void:
-	main.hud.say(tr("FINAL NOTICE. He is not holding back any more."), 3.0)
+	main.hud.say(tr(str(info["phase_say"])), 3.0)
 	Audio.sfx("burst", 0.6)
 	adds_t = 1.2
 	if not Dialogue.is_seen("talk:" + _talk_id("phase2")):
@@ -111,7 +124,7 @@ func _on_phase(_p: int) -> void:
 
 ## A few clerks join in phase 2, from the edges of the arena.
 func _call_adds() -> void:
-	var count: int = main.get_tree().get_nodes_in_group("enemies").filter(func(e): return e != boss).size()
+	var count: int = main.get_tree().get_nodes_in_group("enemies").filter(func(e): return e != boss and e.get("is_copy") != true).size()
 	var want: int = int(info["adds_max"]) - count
 	for i in mini(want, 2):
 		var x: float = 40.0 if randf() < 0.5 else main.world.x - 40.0
@@ -136,10 +149,10 @@ func fail_text() -> String:
 func text() -> String:
 	match stage:
 		"approach":
-			return tr("Face the Auditor at the tollgate")
+			return tr(str(info["approach"]))
 		"fight":
 			return str(obj.get("label", tr("Strike out the Auditor")))
-	return tr("The Auditor is struck out")
+	return tr(str(info["done"]))
 
 
 func target_pos():
@@ -190,9 +203,9 @@ class BossBar extends Control:
 			phase = fight.boss.phase
 		draw_rect(Rect2(x, y + 1, w * lag, 5), Color(1, 1, 1, 0.7 * a))
 		draw_rect(Rect2(x, y + 1, w * r, 5), Color("d2463c" if phase == 1 else "8a1f2a", a))
-		var px := x + w * Auditor.PHASE2_AT  # where Final Notice starts
+		var px := x + w * float(fight.info.get("phase2_at", 0.5))  # where phase 2 starts
 		draw_line(Vector2(px, y - 1), Vector2(px, y + 8), Color(0.96, 0.92, 0.82, 0.8 * a), 1.0)
-		var sub: String = fight.info["title"] if phase == 1 else tr("Final Notice")
+		var sub: String = fight.info["title"] if phase == 1 else tr(str(fight.info["phase2_title"]))
 		var sw := f.get_string_size(sub, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(7)).x
 		draw_string_outline(f, Vector2(x + w - sw, y - 4), sub, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(7), 2, Color(0, 0, 0, 0.8 * a))
 		draw_string(f, Vector2(x + w - sw, y - 4), sub, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(7), Color(0.8, 0.76, 0.68, a) if phase == 1 else Color("ff8a7a", a))

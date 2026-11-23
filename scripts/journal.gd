@@ -85,7 +85,7 @@ static func _state() -> Dictionary:
 
 # ---------------------------------------------------------------- recording
 
-## The enemy kind an actor counts as (data/enemies.json kinds, plus "auditor").
+## The enemy kind an actor counts as (data/enemies.json kinds, plus the bosses in BossFight.BOSSES).
 static func kind_of(e: Node) -> String:
 	if e.has_meta("kind"):
 		return str(e.get_meta("kind"))
@@ -387,8 +387,8 @@ static func faction_quests() -> Array:
 				steps.append(Loc.t("%s is your envoy: %+d a day.") % [Empire.short_name(env), rate])
 			if f.get("deals", {}).has("gift"):
 				steps.append(Loc.t("A gift (%s) buys standing faster.") % f["deals"]["gift"].get("name", "gift"))
-		if fid == "concord" and Empire.trouble_text() != "":
-			steps.append(Empire.trouble_text())
+		if Empire.trouble_text(fid) != "":
+			steps.append(Empire.trouble_text(fid))
 			row["state"] = "blocked"
 		row["next"] = " ".join(steps)
 		out.append(row)

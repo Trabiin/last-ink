@@ -7,6 +7,7 @@ extends RefCounted
 ##   spitter  - scripts/spitter.gd: keeps its distance, swells, spits a slow glob
 ##   moth     - scripts/moth.gd: Gutterwoods letter-moths, in packs; circle, flash, dive
 ##   enforcer - scripts/enforcer.gd: Concord heavy; front shield, slow ground-slam with a red ring
+##   copyist  - scripts/copyist.gd: Chapter 2 scribe-monk; keeps its distance, copies strips of floor out
 ## A kind can reuse another's behaviour with its own art: "script" names the behaviour (a key of
 ## SCRIPTS), "sprite" the sprite set (data/sprites.json). The marsh reedling spits like a Spitter;
 ## the mill scarecrow and the Guild sellsword chase and lunge like a Nibbler.
@@ -16,6 +17,7 @@ const SCRIPTS := {
 	"spitter": preload("res://scripts/spitter.gd"),
 	"moth": preload("res://scripts/moth.gd"),
 	"enforcer": preload("res://scripts/enforcer.gd"),
+	"copyist": preload("res://scripts/copyist.gd"),
 }
 
 static var _data := {}

@@ -55,7 +55,9 @@ SIZE = {"fortree": (3, 4), "tree": (3, 4), "fungus": (2, 2), "log": (2, 2), "fer
         "mill": (6, 6), "tollbooth": (6, 6), "fence": (3, 2), "crates": (2, 2), "barrels": (2, 2),
         "house_a": (6, 6), "house_b": (6, 6), "house_c": (6, 6), "house_d": (6, 6), "house_e": (7, 6),
         "house_f": (6, 6), "house_g": (6, 6), "house_h": (6, 6), "stall": (4, 4), "garden": (3, 2),
-        "fountain": (3, 3), "produce": (3, 2)}
+        "fountain": (3, 3), "produce": (3, 2),
+        # Chapter 2 (issue #28): the Abbey's lands
+        "yew": (3, 4), "pine": (3, 4), "ruin": (2, 2), "candles": (1, 2), "chapel": (6, 6), "grave": (1, 2)}
 
 BIOMES = {
     # The Frayed Meadow's own layout "a" is hand-made (maps/frayed_meadow.txt); b and c are generated.
@@ -144,6 +146,45 @@ BIOMES = {
         "landmarks": [("W", (32, 26)), ("V", (28, 28)), ("V", (40, 28)), ("G", (20, 29)), ("G", (46, 34)),
                       ("B", (44, 30)), ("H", (56, 27)), ("H", (38, 36)), ("A", (24, 34)), ("A", (52, 28))],
         "groves": [("F", 3, 6, 7), ("Z", 4, 4, 6), ("P", 2, 4, 4)],
+    },
+    # Chapter 2 (issue #28): Saint Ledger's Abbey region. Ground sets and the new props are tracked placeholders
+    # (data/placeholders.json) until the art batch replaces them under the same ids.
+    "abbey": {
+        "name": "Saint Ledger's Abbey", "mood": "grade=0.88,0.88,0.98 mist=1.3 motes=1.0,0.92,0.7", "ground": "abbey", "seed": 83,
+        "sign": "SAINT LEDGER'S ABBEY|Silence in the cloister.|Silence everywhere else, too.",
+        "props": {"Y": "yew", "G": "grave", "C": "candles", "U": "ruin", "P": "boulder", "N": "fern", "Z": "drygrass"},
+        "border": ["Y", "U", "Y"],
+        "scatter": [("G", 0.03, 0.65), ("N", 0.03, 0.4), ("Z", 0.03, 0.3), ("U", 0.015, 0.5), ("Y", 0.02, 0.6),
+                    ("P", 0.008, 0.3)],
+        "path_r": 1.4,
+        # Landmarks: an old graveyard round a votive stand, a fallen arch, a yew over three graves.
+        "landmarks": [("C", (30, 20)), ("G", (27, 18)), ("G", (33, 18)), ("G", (27, 23)), ("G", (33, 23)),
+                      ("U", (42, 40)), ("U", (45, 41)), ("Y", (22, 40)), ("G", (20, 42)), ("G", (25, 42)), ("C", (48, 26))],
+        "groves": [("G", 4, 4, 7), ("Y", 3, 5, 5), ("U", 2, 4, 4)],
+    },
+    "lakeshore": {
+        "name": "The Lake Road", "mood": "grade=0.92,0.94,1.0 mist=1.7 motes=1.0,0.9,0.7", "ground": "lakeshore", "seed": 89,
+        "sign": "THE LAKE ROAD|Candleford 2 mi.|Mind the wax on the boards.",
+        "props": {"D": "reeds", "M": "marshstump", "Y": "lilypad", "K": "planks", "J": "dock", "X": "crates",
+                  "B": "barrels", "F": "tree", "C": "candles", "Z": "drygrass"},
+        "border": ["F", "D"],
+        "scatter": [("D", 0.06, 0.35), ("Y", 0.03, 0.5), ("F", 0.03, 0.55), ("Z", 0.03, 0.3), ("M", 0.012, 0.3)],
+        "path_r": 1.5, "patches": (7, 0.62),
+        # Landmarks: a wax jetty (docks, crates, barrels), votive candles on the shore road.
+        "landmarks": [("J", (36, 33)), ("J", (42, 35)), ("X", (38, 29)), ("B", (41, 28)), ("K", (30, 36)),
+                      ("C", (26, 30)), ("C", (48, 30))],
+        "groves": [("D", 5, 5, 8), ("F", 2, 6, 6), ("Y", 3, 4, 5)],
+    },
+    "scarth": {
+        "name": "Scarth Pass", "mood": "grade=0.9,0.95,1.04 mist=0.9 motes=0.9,0.95,1.0", "ground": "mountain", "seed": 97,
+        "sign": "SCARTH PASS|Pilgrims' hostel 1 mi.|Road east: closed (white).",
+        "props": {"I": "pine", "P": "boulder", "Q": "outcrop", "U": "ruin", "Z": "drygrass", "A": "roadlamp"},
+        "border": ["I", "Q", "P"],
+        "scatter": [("I", 0.05, 0.55), ("Z", 0.05, 0.3), ("P", 0.03, 0.45), ("Q", 0.025, 0.55), ("U", 0.006, 0.3)],
+        "path_r": 1.3, "patches": (6, 0.72),
+        # Landmarks: a ruined wayside shrine, lamps along the pilgrims' road.
+        "landmarks": [("U", (38, 22)), ("U", (41, 23)), ("A", (22, 30)), ("A", (36, 30)), ("A", (48, 28))],
+        "groves": [("I", 6, 6, 10), ("Q", 3, 4, 5), ("P", 3, 5, 6)],
     },
 }
 
@@ -475,3 +516,6 @@ if __name__ == "__main__":
     if not only or "personal" in only:
         import make_personal  # the hand-placed set pieces of the personal missions (issue #113)
         make_personal.build_all(build, BIOMES)
+    if not only or "chapter2" in only:
+        import make_chapter2  # Chapter 2's story maps (issue #28)
+        make_chapter2.build_all(build, BIOMES)

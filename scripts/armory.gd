@@ -218,8 +218,8 @@ static func sources(id: String) -> Array:
 
 
 static func _kind_plural(kind: String) -> String:
-	if kind == "auditor":
-		return Loc.t("the Auditor")
+	if BossFight.BOSSES.has(kind):
+		return Loc.t(str(BossFight.BOSSES[kind]["plural"]))
 	return str(EnemyKinds.kind(kind).get("plural", kind.capitalize()))
 
 

@@ -256,6 +256,16 @@ jobs:
             exit 1
           fi
 
+      - name: Release check (no placeholder art left, issue #118)
+        run: |
+          v="${{ needs.linux-macos.outputs.version }}"
+          if ! tools/release_check.sh; then
+            case "$v" in
+              0.*) echo "::warning::Playtest build $v still ships placeholder art (data/placeholders.json)." ;;
+              *) exit 1 ;;
+            esac
+          fi
+
       - uses: actions/download-artifact@v4
         with:
           pattern: LastInk-*

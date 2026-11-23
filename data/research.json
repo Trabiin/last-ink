@@ -1,10 +1,11 @@
 {
-	"_comment": "The research tree, studied in the Scriptorium. Each branch is a short chain: a node needs the one before it (needs) and sometimes a Scriptorium level (scriptorium). cost is paid once, when you first start the node (Insight, sometimes Ink); days is study time at 100% pace (researchers' Lore speeds it up, see Empire.research_pace). effect is the one-line promise shown on the screen; the numbers themselves live in scripts/empire.gd (search for the node id) so the text and the game stay in step.",
+	"_comment": "The research tree, studied in the Scriptorium. Each branch is a short chain: a node needs the one before it (needs), sometimes a Scriptorium level (scriptorium), and for chapter branches a point in the story (when: Story.meets conditions, issue #28). cost is paid once, when you first start the node (Insight, sometimes Ink); days is study time at 100% pace (researchers' Lore speeds it up, see Empire.research_pace). effect is the one-line promise shown on the screen; the numbers themselves live in scripts/empire.gd (search for the node id) so the text and the game stay in step.",
 	"branches": [
 		{"id": "wardcraft", "name": "Wardcraft", "blurb": "Holding the line against the Blank."},
 		{"id": "logistics", "name": "Logistics", "blurb": "Feeding people and moving them about."},
 		{"id": "inkcraft", "name": "Inkcraft", "blurb": "What Ink can do, in the works and in a fight."},
-		{"id": "arms", "name": "Arms", "blurb": "Better kit for the party."}
+		{"id": "arms", "name": "Arms", "blurb": "Better kit for the party."},
+		{"id": "abbey", "name": "The Abbey's Learning", "blurb": "What the brothers of Saint Ledger's know, once they will tell you."}
 	],
 	"nodes": [
 		{
@@ -66,6 +67,9 @@
 			"id": "arms_steel", "branch": "arms", "name": "Inked Steel", "cost": {"insight": 28, "ink": 4}, "days": 4, "needs": ["arms_leather"], "scriptorium": 2,
 			"effect": "Missions: +3 more damage and the attack gauge refills 20% faster",
 			"blurb": "Steel quenched in ink instead of water. It comes out black and slightly too eager."
-		}
+		},
+		{"id": "bell_wards", "branch": "abbey", "name": "Bell Wards", "cost": {"insight": 18}, "days": 3, "when": {"cleared": ["ch2_hall"]}, "effect": "Surges hit for 3 less Fray", "blurb": "The Abbey's bells were cast with the hours written into the bronze. Rung one at a time, the right hour at the right moment, they make the Blank lose its place."},
+		{"id": "second_copy", "branch": "abbey", "name": "The Second Copy", "cost": {"insight": 26, "ink": 2}, "days": 4, "needs": ["bell_wards"], "when": {"cleared": ["ch2_crypt"]}, "effect": "Reclaims cost 1 less Ink and bring a province back at Fray 45, not 60", "blurb": "How the monks meant to write the world back if the capital's Ledger burned. It works better on land that was there yesterday."},
+		{"id": "tally_of_names", "branch": "abbey", "name": "The Tally of Names", "cost": {"insight": 34}, "days": 5, "needs": ["second_copy"], "scriptorium": 2, "when": {"cleared": ["ch2_abbot"]}, "effect": "Every province you hold with a governor: Fray -1 a day", "blurb": "Sister Osyth's method: count everyone, by name, and say the number out loud each night. It is very hard to erase something that is being counted."}
 	]
 }

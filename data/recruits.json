@@ -177,6 +177,86 @@
 			"welcome": "Ottoline used to keep my door. Now she keeps yours. We'll get on famously, you and I, until one of us gets bored.",
 			"quips": ["Fauvette duelled a bandit chief for the road toll and bowed to the survivors. They applauded.", "Fauvette came back from the expedition with three secrets, two love letters and nobody's purse but her own. She says."],
 			"lines": ["Every duel is a performance. The trick is making sure the other one doesn't know it's their last.", "I hear things in my dressing room. You'd be amazed what people tell a woman with a sword at their throat. And what they tell her without one.", "Ottoline thinks I'm reckless. I think the volunteers knew what they signed. It was printed on the ticket."]
+		},
+		{
+			"id": "osyth", "name": "Sister Osyth", "title": "crypt-keeper", "tier": "recruit", "start": false,
+			"stats": {"might": 2, "craft": 4, "lore": 8, "charm": 2, "grit": 8}, "traits": ["stubborn", "night_owl"],
+			"blurb": "Kept the crypts under Saint Ledger's for forty years and counted the dead in them, notch by notch, on a board she carries everywhere: eleven thousand four hundred and six. The Concord says the hill was always empty. She has never agreed.",
+			"post": "graveyard", "look": {"outfit": "mage", "colors": {"skin": "dcc0a8", "cloth": "3a3e3a", "leather": "2a2c28", "boots": "1e1e1c", "trim": "6a7a5a"}},
+			"join": {"type": "story", "mission": "ch2_crypt"},
+			"hire": {},
+			"rumour": "Sister Hild says the old crypt-keeper is still down under the Bonefield Cloister, counting. Somebody would have to go and fetch her.",
+			"pitch": "You found me, so you can count. Good. I'll keep your dead in order if you keep your living out of my way.",
+			"welcome": "Where do you bury people here? Show me. Then show me the book where you write them down.",
+			"quips": [
+				"Osyth counted the dead on the road and the living in the camp. The numbers came out level, which she did not like.",
+				"Osyth came back with three new notches on her board and wouldn't say whose they were."
+			],
+			"lines": [
+				"Eleven thousand four hundred and six. I check it every night. It never goes down.",
+				"Your gravedigger's quick. Too quick. I've had a word.",
+				"Hild still owes me a candle. Tell her I've added interest."
+			]
+		},
+		{
+			"id": "cuthbert", "name": "Brother Cuthbert", "title": "bell-ringer", "tier": "recruit", "start": false,
+			"stats": {"might": 7, "craft": 5, "lore": 3, "charm": 4, "grit": 6}, "traits": ["stubborn"],
+			"blurb": "Rang Saint Ledger's tenor bell for twenty years, which took his hearing and gave him shoulders like a dray horse. When the Abbot ordered every hour rung at once, he walked out to the pilgrims' hostel at Scarth Pass and has been shouting at pilgrims since.",
+			"post": "hall", "look": {"outfit": "warrior", "colors": {"skin": "d8b090", "cloth": "5a4028", "leather": "3a2a1a", "boots": "2a2018", "trim": "a08a5a"}},
+			"join": {"type": "claim", "province": "quillpine"},
+			"hire": {"gilt": 20},
+			"rumour": "A deaf monk keeps the pilgrims' hostel at Scarth Pass and rings a hand-bell at anything that moves. Claim the Pass and he will hear about you, eventually.",
+			"pitch": "WHAT? Oh. A job. Twenty Gilt and a bell. Any bell. I'm not fussy. I CAN'T HEAR FUSSY.",
+			"welcome": "Where's your bell? No bell? We'll find one. A town needs a bell, or how does the white know you're awake?",
+			"quips": [
+				"Cuthbert rang a cowbell at the Blank's edge all night. Nothing came near the camp. Nothing slept, either.",
+				"Cuthbert carried the heaviest pack and didn't hear a word of complaint all trip. Literally."
+			],
+			"lines": [
+				"THE BLANK HATES BELLS. I've seen it flinch. Or I think I have. I couldn't hear it flinch.",
+				"Twenty years on the tenor. Do you know what Compline sounds like from inside the bell? Neither do I. Not any more.",
+				"Father Abbot told me to ring every hour at once. I said no. He said it louder. I didn't hear him. That's how I left."
+			]
+		},
+		{
+			"id": "nell", "name": "Nell Tapper", "title": "chandler", "tier": "recruit", "start": false,
+			"stats": {"might": 4, "craft": 8, "lore": 3, "charm": 5, "grit": 6}, "traits": ["greedy"],
+			"blurb": "Runs the chandlery at Candleford and, since the reeve ran off with the strongbox, the town. Makes every candle the Abbey burns and has been paid late for every one of them. Has opinions about monks, Erasers and anyone who leaves a door open in a draught.",
+			"post": "market", "look": {"outfit": "archer", "colors": {"skin": "e0b898", "cloth": "7a4a2a", "leather": "5a3a22", "boots": "2a2018", "trim": "e8d8b0"}},
+			"join": {"type": "claim", "province": "candlemere"},
+			"hire": {"gilt": 25},
+			"rumour": "Candleford's chandler has run the lake town since the reeve fled. Hold Candleford and she might come and see what else needs lighting.",
+			"pitch": "You kept them coats off my jetty, so I owe you. Twenty-five Gilt and I'll keep Hollowmark's lamps lit cheaper than anyone. I'll still charge you, mind.",
+			"welcome": "Right. Who's in charge of your lamp oil? Nobody? Then I am.",
+			"quips": [
+				"Nell made a dozen candles out of camp tallow and sold eleven of them to the rest of the squad.",
+				"Nell lit the camp so bright the Blank kept its distance. She billed everyone for the light."
+			],
+			"lines": [
+				"Monks burn two hundred candles a night and pay at Michaelmas. Which Michaelmas, they won't say.",
+				"Them in white burned two months of wax on my jetty. I've a list. Names, where I could get them.",
+				"Wax remembers. Every candle's got a bit of the last one in it. Like towns, that."
+			]
+		},
+		{
+			"id": "alcuin", "name": "Brother Alcuin", "title": "Eraser defector", "tier": "recruit", "start": false,
+			"stats": {"might": 3, "craft": 4, "lore": 7, "charm": 5, "grit": 3}, "traits": ["bookish", "ink_sick"],
+			"blurb": "A novice who read one unedited page too many, ran off to the Erasers and spent a season reading drafts aloud by the pyres. Then they burned a children's primer and he came back. Still wears the white coat, with the Reader's sleeve torn off, because he says he has not earned the habit back yet.",
+			"post": "stores", "look": {"outfit": "mage", "colors": {"skin": "e8d0b8", "cloth": "d8d2c4", "leather": "4a3a2a", "boots": "2a2420", "trim": "8a6a4a"}},
+			"join": {"type": "standing", "faction": "abbey", "tier": "friendly"},
+			"hire": {},
+			"rumour": "A young brother who ran off to the Erasers has come back to the Abbey's gate and is sitting outside it. Win the Abbey's friendship and they might send him your way.",
+			"pitch": "I know where the Readers camp, what they read and where Verity tells them to stand. I'd like to be useful to somebody who isn't burning anything.",
+			"welcome": "Thank you. I'll take the coat off when I've earned it. Not before.",
+			"quips": [
+				"Alcuin spotted a Reader's chalk mark on the road and steered the squad round it. He wouldn't say what it meant.",
+				"Alcuin read the expedition orders aloud by the fire out of habit, then went very quiet for the rest of the night."
+			],
+			"lines": [
+				"The drafts are real. That's the worst of it. Everything they read out actually happened.",
+				"First Reader Askew taught me to read old hands. Then she taught me to burn them. I kept the first lesson.",
+				"Verity came to a reading once. She knew everyone's name. She was kind. I think that's why it worked."
+			]
 		}
 	]
 }

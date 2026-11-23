@@ -106,8 +106,18 @@ static func list_for_province(pid: String) -> Array:
 	var repeat := []
 	for m in all():
 		if m.get("province", "") == pid and offered(m):
-			(story if m.get("story", false) else repeat).append(m if m.get("story", false) else _varied(m))
+			(story if m.get("story", false) else repeat).append(_gated(m) if m.get("story", false) else _varied(m))
 	return story + MissionTypes.for_province(pid) + repeat
+
+
+## A story mission with "gate" conditions is on the map as soon as it is offered, but locked with the first
+## missing condition as its blocker (issue #28: "put a governor in Candleford", "needs Neutral standing").
+static func _gated(m: Dictionary) -> Dictionary:
+	if not m.has("gate"):
+		return m
+	var g := m.duplicate()
+	g["blocker"] = Story.blocker(m["gate"])
+	return g
 
 
 ## A repeatable mission (a patrol) laid out fresh from its province's map pool each day (#113), so the tenth
@@ -199,8 +209,42 @@ static func _effect_lines(m: Dictionary, outcome: String, stats: Dictionary) -> 
 	var lines := []
 	if str(stats.get("fail", "")) != "":
 		lines.append(str(stats["fail"]))
+	if outcome == "success" and not cleared(str(m.get("id", ""))):
+		lines.append_array(story_effects(m, true))
 	if m.get("effects", false):
 		lines.append_array(MissionTypes.apply(m, outcome, true))
+	return lines
+
+
+## A story mission's lasting effects on its first success (issue #28), from its "on_success":
+##   grant: [province ids]   the province raises your flag (it still wants a governor)
+##   join: [recruit ids]     that person joins the roster straight from the mission
+##   standing: {faction: n}  standing changes with those factions
+## dry_run only describes them, for the results screen. Returns the lines either way.
+static func story_effects(m: Dictionary, dry_run := false) -> Array:
+	var lines := []
+	var fx: Dictionary = m.get("on_success", {})
+	for pid in fx.get("grant", []):
+		var p := Empire.territory().find(str(pid))
+		if p.is_empty() or p.get("owner", "") == "you":
+			continue
+		lines.append(Loc.t("%s raises your flag. It needs a governor.") % p["name"])
+		if not dry_run:
+			p["owner"] = "you"
+			Empire.notice.emit(Loc.t("%s is yours. Put a governor in it from the Command Table.") % p["name"], false)
+	for rid in fx.get("join", []):
+		if Empire.recruits.has(str(rid)) or Empire.recruit(str(rid)).is_empty():
+			continue
+		lines.append(Loc.t("%s joins your roster.") % Empire.recruit(str(rid)).get("name", rid))
+		if not dry_run:
+			Empire.join_now(str(rid))
+	var st: Dictionary = fx.get("standing", {})
+	for fid in st:
+		if Empire.faction(fid).is_empty():
+			continue
+		lines.append(Loc.t("%s standing %+d.") % [Empire.faction(fid).get("short", fid), int(st[fid])])
+		if not dry_run:
+			Empire.change_standing(fid, int(st[fid]), str(m.get("name", "")), true)
 	return lines
 
 
@@ -211,6 +255,7 @@ static func apply(result: Dictionary) -> void:
 		if not Armory.bank(k, int(pay[k])):  # materials and field items go to the town stores (issue #112)
 			Empire.gain(k, int(pay[k]))
 	if result["outcome"] == "success" and not cleared(result["mission"]):
+		story_effects(result.get("mission_dict", {}))  # before it counts as cleared: effects pay once
 		Empire.missions_cleared.append(result["mission"])
 	var p := Empire.territory().find(result.get("province_id", ""))
 	if not p.is_empty() and p["owner"] != "erased" and int(result["fray"]) != 0:

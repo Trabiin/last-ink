@@ -38,7 +38,12 @@
 		"reedling": {"chance": 0.22, "most": 2, "table": {"oak_gall": 3, "blank_pith": 1}},
 		"scarecrow": {"chance": 0.22, "most": 2, "table": {"scrap_iron": 2, "moth_silk": 1}},
 		"sellsword": {"chance": 0.28, "most": 2, "table": {"scrap_iron": 2, "lamp_brass": 2}},
-		"auditor": {"chance": 1.0, "most": 4, "table": {"tithe_wax": 2, "blank_pith": 2}}
+		"auditor": {"chance": 1.0, "most": 4, "table": {"tithe_wax": 2, "blank_pith": 2}},
+		"penitent": {"chance": 0.24, "most": 2, "table": {"blank_pith": 2, "relic_silver": 1}},
+		"copyist": {"chance": 0.3, "most": 2, "table": {"bell_bronze": 2, "blank_pith": 1}},
+		"reader": {"chance": 0.32, "most": 2, "table": {"relic_silver": 2, "tithe_wax": 1}},
+		"whitewasher": {"chance": 0.28, "most": 2, "table": {"bell_bronze": 2, "oak_gall": 1}},
+		"abbot": {"chance": 1.0, "most": 5, "table": {"relic_silver": 2, "bell_bronze": 2}}
 	},
 	"regions": {
 		"marches": {"chance": 0.12, "most": 1, "table": {"blank_pith": 2, "scrap_iron": 2, "oak_gall": 1}},

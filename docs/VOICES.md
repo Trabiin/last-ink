@@ -422,6 +422,21 @@ Each gets one note of colour. Concord officials are the funniest when they're co
 | Marguerite Penhallow (`penhallow`) | Odile, thirty years harder. High-office English, no contractions. Shortest sentences in the game. "Audit. Me." |
 | Augustin Sallow (`sallow`) | Impresario patter, applause cues, "darling" (borrowed from his star), Causeway French laid on thick and slightly wrong. Blames "the commissions". |
 
+### Chapter 2 people (Saint Ledger's and the Erasers)
+Abbey people share Hild's church English (4.2), each at a different pitch. The Erasers speak like Verity's
+readers: educated, sincere, unhurried.
+
+| Who | Note |
+|---|---|
+| Brother Odo (`odo`) | The Abbey's walking messenger. Plain, patient, quietly funny about disaster ("sent me back with a receipt"). No Latin; he is a lay brother. |
+| Prioress Ebba (`ebba`) | Dry, exact, very tired. No contractions in authority, short orders, then one plain human line. Calls Ash "keeper" or "passer-by". |
+| Abbot Wulfstan (`wulfstan`) | Liturgical and certain. "Fidelity", "the Rule", "the Office". Royal "we" when he copies himself. Never raises his voice until the Second Copy. |
+| First Reader Askew (`askew`) | Warm, unhurried, sincere. Reads a name before every fire and means it. Calls people "sweet". Never sneers. |
+| Sister Osyth (`osyth`) | Crypt-keeper. Counts out loud ("Eleven thousand four hundred and five"). Blunt, contracted, no Latin. Cares about the count more than about you, and says so. |
+| Nell Tapper (`nell`) | Candleford chandler. Brisk town speech, short sentences, money and draughts. Lists her jobs and the wages she isn't paid. |
+| Brother Cuthbert (`cuthbert`) | Deaf bell-ringer: capitals when he mishears ("WHAT? Oh. A job."). Big, gentle, literal. |
+| Brother Alcuin (`alcuin`) | Returned Eraser novice. Earnest, guilty, bookish; quotes the drafts and then argues with them. |
+
 ### Not built yet
 Seeds for chapters #28 to #32; flesh these out into full sheets when the character is written.
 

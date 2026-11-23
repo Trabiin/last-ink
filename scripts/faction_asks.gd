@@ -1,6 +1,7 @@
 class_name FactionAsks
 extends RefCounted
-## Faction asks (issue #131): favours the Guild, the Coven and the Concord ask of you.
+## Faction asks (issue #131): favours the factions ask of you (the Guild, the Coven, the Concord, and from Chapter 2 the
+## Abbey and the Erasers, issue #28).
 ##
 ## Each faction you know of makes one request at a time (data/factions.json "asks", rules in
 ## "ask_rules"). It arrives at dawn as a notice that goes to Diplomacy (F), where you accept or
@@ -580,8 +581,8 @@ static func _fail(fid: String, why: String) -> void:
 		Empire.res["gilt"] -= g
 		if g > 0:
 			bits.append(Loc.t("they took %d Gilt") % g)
-	if f.get("trouble", false) and fid == "concord":
-		Empire.next_trouble_day = mini(Empire.next_trouble_day, Empire.day + 1)
+	if f.get("trouble", false) and not Empire.faction(fid).get("trouble", {}).is_empty():
+		Empire._set_trouble_day(fid, mini(Empire.trouble_day(fid), Empire.day + 1))
 		bits.append(Loc.t("expect trouble at dawn"))
 	if f.has("hex"):
 		for pid in near_home(fid):
@@ -623,7 +624,7 @@ static func _pay(fid: String, a: Dictionary) -> String:
 			"intel":
 				Empire.intel_until = maxi(Empire.intel_until, Empire.day + days)
 			"truce":
-				Empire.next_trouble_day = maxi(Empire.next_trouble_day, Empire.day + days)
+				Empire._set_trouble_day(fid, maxi(Empire.trouble_day(fid), Empire.day + days))
 			"ward":
 				for pid in near_home(fid):
 					_effect("ward", fid, pid, int(b.get("per_day", -1)), days)
@@ -679,7 +680,7 @@ static func boon_text(fid: String, b: Dictionary) -> String:
 		"intel":
 			return Loc.t("+1 day of surge warning for %d days") % days
 		"truce":
-			return Loc.t("no Concord trouble for %d days") % days
+			return Loc.t("no %s trouble for %d days") % [Empire.faction(fid).get("short", fid), days]
 		"ward":
 			return Loc.t("your land by the %s's home frays %d less a day for %d days") % [Empire.faction(fid).get("short", fid), absi(int(b.get("per_day", -1))), days]
 	return ""
@@ -713,7 +714,7 @@ static func fail_text(a: Dictionary) -> String:
 	if int(f.get("fine", 0)) > 0:
 		bits.append(Loc.t("they take %d Gilt") % int(f["fine"]))
 	if f.get("trouble", false):
-		bits.append(Loc.t("Concord trouble at the next dawn"))
+		bits.append(Loc.t("%s trouble at the next dawn") % Empire.faction(str(a.get("faction", "concord"))).get("short", Loc.t("Concord")))
 	if f.has("hex"):
 		bits.append(Loc.t("a hex: +%d Fray a day for %d days on your land by their home") % [int(f["hex"].get("per_day", 2)), int(f["hex"].get("days", 3))])
 	return ", ".join(bits) if not bits.is_empty() else Loc.t("nothing but their opinion of you")

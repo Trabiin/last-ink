@@ -1636,8 +1636,12 @@ func _draw_region_panel(r: Dictionary, x: float, w: float) -> void:
 func _draw_legend() -> void:
 	var x := MAP_ORIGIN.x + 4
 	var y := MAP_ORIGIN.y + MAP_VIEW.y - 8
-	for k in ["you", "free", "concord", "coven", "guild"]:
-		var label: String = {"you": tr("Yours"), "free": tr("Unclaimed"), "concord": tr("Concord"), "coven": tr("Coven"), "guild": tr("Guild")}[k]
+	var keys := ["you", "free"]
+	for fid in Empire.faction_ids():  # factions whose home is on the open map (Chapter 2 adds the Abbey, the Erasers)
+		if Journal.faction_known(fid):
+			keys.append(fid)
+	for k in keys:
+		var label: String = tr("Yours") if k == "you" else (tr("Unclaimed") if k == "free" else str(Empire.faction(k).get("short", k)))
 		x = _legend_entry(x, y, k, label)
 
 
@@ -1782,7 +1786,7 @@ const MARK_INK := Color("15111b")
 const UNRAVEL := 0.6  # Fray from which a province counts as Unravelling (and is hatched on the map)
 ## Each owner's shape on the map, the legend and the panel, so ownership never rests on colour alone.
 ## Yours keeps its flag (and the capital its tower). A faction without an entry takes the next spare shape.
-const OWNER_MARKS := {"free": "ring", "erased": "cross", "concord": "square", "coven": "triangle", "guild": "diamond"}
+const OWNER_MARKS := {"free": "ring", "erased": "cross", "concord": "square", "coven": "triangle", "guild": "diamond", "abbey": "hex", "erasers": "bar"}
 const SPARE_MARKS := ["hex", "bar", "dot"]
 
 

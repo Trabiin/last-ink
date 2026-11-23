@@ -27,6 +27,20 @@
 				"cache": {"supplies": [4, 7], "insight": [1, 2], "ink": [0, 1], "moth_silk": [1, 2], "oak_gall": [1, 2]},
 				"quiet": -4, "loud": -10, "rival": {},
 				"brief": "The Coven leaves its stores in the woods under guard of things it raised from old letters. Lift at least %d of the %d caches before the witches notice the woods have gone quiet."
+			},
+			"abbey": {
+				"name": "Abbey undercroft",
+				"guards": {"penitent": 2, "copyist": 1}, "per_cache": 1,
+				"cache": {"gilt": [6, 10], "ink": [1, 2], "insight": [1, 2], "relic_silver": [1, 2], "bell_bronze": [0, 2]},
+				"quiet": -4, "loud": -10, "rival": {"erasers": 2},
+				"brief": "The Abbey keeps its plate and its spare bell-metal in the undercroft, and the brothers the Blank got to still keep watch over it. Bring up at least %d of the %d chests before the house wakes."
+			},
+			"erasers": {
+				"name": "Eraser book-pyres",
+				"guards": {"reader": 2, "whitewasher": 2}, "per_cache": 2,
+				"cache": {"gilt": [8, 14], "insight": [2, 3], "ink": [0, 2], "relic_silver": [1, 2], "tithe_wax": [0, 1]},
+				"quiet": -3, "loud": -8, "rival": {"abbey": 3, "concord": 1},
+				"brief": "The Erasers stack what they have looted from the Abbey's outhouses on pyres, to burn at their next reading. Pull at least %d of the %d piles out before the Readers come back with their tapers."
 			}
 		}
 	},

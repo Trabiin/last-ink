@@ -24,8 +24,7 @@ static func migrate(save: Dictionary) -> Dictionary:
 	return save
 
 
+## The factions this step knew (frozen: factions added later schedule their first ask themselves, at the
+## first dawn they are on the open map, issue #28).
 static func _faction_ids() -> Array:
-	var d = JSON.parse_string(FileAccess.get_file_as_string("res://data/factions.json"))
-	if typeof(d) != TYPE_DICTIONARY:
-		return []
-	return (d.get("factions", []) as Array).map(func(f): return str(f.get("id", "")))
+	return ["guild", "coven", "concord"]

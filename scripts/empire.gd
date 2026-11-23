@@ -31,6 +31,7 @@ const SURGE_WARNING_DAYS := 2
 const SURGE_GAP := [3, 5]  # days between surges
 
 const RESOURCES := ["gilt", "supplies", "ink"]
+const ABBEY_RESEARCH := 0.15  # a Friendly Abbey's perk: research pace (issue #28)
 const RES_NAMES := {"gilt": "Gilt", "supplies": "Supplies", "ink": "Ink", "renown": "Renown", "insight": "Insight"}
 const START := {"gilt": 120, "supplies": 40, "ink": 5, "renown": 0, "insight": 0}
 const UPKEEP_SUPPLIES := 1  # per recruit per day
@@ -104,6 +105,7 @@ var pacts := []
 var deal_ready := {}
 var intel_until := 0
 var next_trouble_day := 5
+var trouble_days := {}  # faction id -> next dawn it makes trouble (every faction with trouble but the Concord)
 var diplo_log := []
 var faction_data := {}  # id -> Dictionary from data/factions.json, in file order
 var tier_data := []
@@ -193,6 +195,7 @@ func reset() -> void:
 	deal_ready = {}
 	intel_until = 0
 	next_trouble_day = 5
+	trouble_days = {}
 	diplo_log = []
 	_load_bond_data()
 	bonds = {}
@@ -301,7 +304,7 @@ func _settle() -> void:
 	var net := daily_net()
 	for k in RESOURCES:
 		res[k] += net[k]
-	res["insight"] = int(res.get("insight", 0)) + int(current_effect("scriptorium").get("insight", 0)) + bond_perk_total("insight")
+	res["insight"] = int(res.get("insight", 0)) + int(current_effect("scriptorium").get("insight", 0)) + bond_perk_total("insight") + eraser_insight()
 	hungry = res["supplies"] < 0
 	if hungry:
 		res["supplies"] = 0
@@ -351,6 +354,8 @@ func fray_sources(p: Dictionary, gov := "-") -> Array:
 			out.append([tr("Tended by your people"), FRAY_TENDED])
 		if has_research("ward_margins"):
 			out.append([tr("Margin wards (research)"), -1])
+		if has_research("tally_of_names") and gov != "":
+			out.append([tr("The Tally of Names (research)"), -1])
 		if p["id"] == "hollowmark":
 			for pk in bond_perks_with("fray_home"):
 				out.append([tr("%s (%s's bond)") % [pk["name"], short_name(pk["id"])], -int(pk["effect"]["fray_home"])])
@@ -461,9 +466,9 @@ func _update_surge() -> void:
 			notice.emit(tr("The Blank is gathering against %s. Surge in %d days.") % [target["name"], next_surge_day - day], target["owner"] == "you")
 
 
-## How hard a surge hits. The Long Watch takes the edge off.
+## How hard a surge hits. The Long Watch and the Abbey's Bell Wards take the edge off.
 func surge_fray() -> int:
-	return Assists.surge_fray(SURGE_FRAY - (4 if has_research("ward_longwatch") else 0))
+	return Assists.surge_fray(SURGE_FRAY - (4 if has_research("ward_longwatch") else 0) - (3 if has_research("bell_wards") else 0))
 
 
 func surge_days_left() -> int:
@@ -1221,6 +1226,9 @@ func research_pace() -> Dictionary:
 	if lv > 1:
 		pace += (lv - 1) * RESEARCH_PER_LEVEL
 		why.append(tr("Scriptorium level %d: +%d%%") % [lv, int(round((lv - 1) * RESEARCH_PER_LEVEL * 100))])
+	if has_perk("abbey") and _faction_on_map("abbey"):  # the brothers copy your notes (issue #28)
+		pace += ABBEY_RESEARCH
+		why.append(tr("The Abbey copies your notes (Friendly): +%d%%") % int(round(ABBEY_RESEARCH * 100)))
 	for pk in bond_perks_with("research_pace"):
 		pace += float(pk["effect"]["research_pace"])
 		why.append(tr("%s (%s's bond): +%d%%") % [pk["name"], short_name(pk["id"]), int(round(float(pk["effect"]["research_pace"]) * 100))])
@@ -1267,6 +1275,8 @@ func _research_lock(id: String) -> String:
 	var lv := int(n.get("scriptorium", 1))
 	if level_of("scriptorium") < lv:
 		return tr("needs the Scriptorium") + (tr(" at level %d") % lv if lv > 1 else "")
+	if n.has("when"):  # chapter branches open with the story (issue #28)
+		return Story.blocker(n["when"])
 	return ""
 
 
@@ -1686,6 +1696,13 @@ func _diplomacy_ledger(lines: Array) -> void:
 			lines.append(line)
 	if has_perk("concord"):
 		lines.append({"label": tr("Concord: Tithe Road tolls go easy"), "gilt": 2, "supplies": 0, "ink": 0, "note": tr("Friendly")})
+	if eraser_insight() > 0:
+		lines.append({"label": tr("Erasers: drafts from the readings"), "gilt": 0, "supplies": 0, "ink": 0, "note": tr("+%d Insight") % eraser_insight()})
+
+
+## Insight a day the Erasers' drafts bring in once they are Friendly (issue #28).
+func eraser_insight() -> int:
+	return 1 if has_perk("erasers") and _faction_on_map("erasers") else 0
 
 
 ## Dawn: standing drifts, the Concord makes trouble.
@@ -1704,19 +1721,27 @@ func _advance_diplomacy() -> void:
 
 
 func _concord_trouble() -> void:
-	var fa := faction("concord")
-	var tr: Dictionary = fa.get("trouble", {})
-	if tr.is_empty():
+	for fid in faction_ids():
+		_faction_trouble(fid)
+
+
+## Dawn: a faction with "trouble" (data/factions.json) that is Hostile or Wary acts against you every few days:
+## the Concord's fines and writs, the Erasers' burnings (issue #28). Only factions whose land is on the open map.
+func _faction_trouble(fid: String) -> void:
+	var fa := faction(fid)
+	var tr_d: Dictionary = fa.get("trouble", {})
+	if tr_d.is_empty() or not _faction_on_map(fid):
 		return
-	var tier := tier_of("concord")
+	var tier := tier_of(fid)
+	var next := trouble_day(fid)
 	if not tier in ["hostile", "wary"]:
-		next_trouble_day = maxi(next_trouble_day, day + int(tr["hostile_gap"][0]))
+		_set_trouble_day(fid, maxi(next, day + int(tr_d["hostile_gap"][0])))
 		return
-	if day < next_trouble_day:
+	if day < next:
 		return
-	var gap: Array = tr["hostile_gap"] if tier == "hostile" else tr["wary_gap"]
-	next_trouble_day = day + rng.randi_range(int(gap[0]), int(gap[1]))
-	var pool: Array = tr["events"].filter(func(e): return tier in e["tiers"])
+	var gap: Array = tr_d["hostile_gap"] if tier == "hostile" else tr_d["wary_gap"]
+	_set_trouble_day(fid, day + rng.randi_range(int(gap[0]), int(gap[1])))
+	var pool: Array = tr_d["events"].filter(func(e): return tier in e["tiers"])
 	if pool.is_empty():
 		return
 	var e: Dictionary = pool[rng.randi_range(0, pool.size() - 1)]
@@ -1737,18 +1762,52 @@ func _concord_trouble() -> void:
 			var p: Dictionary = yours[rng.randi_range(0, yours.size() - 1)]
 			p["fray"] = mini(int(p["fray"]) + int(e["fray"]), 100)
 			text = e["text"] % [p["name"], int(e["fray"])]
-	diplo_log.push_front({"day": day, "faction": "concord", "text": text, "change": 0, "trouble": true})
+		"spill":  # Ink poured away
+			var k := mini(_roll_amount(e["ink"]), int(res["ink"]))
+			res["ink"] -= k
+			text = e["text"] % k
+		"burn":  # notes burned: the running study loses ground, or Insight if nothing is being studied
+			if research_active != "" and float(research_progress.get(research_active, 0.0)) > 0.0:
+				var lost := float(e.get("study", 1.0))
+				research_progress[research_active] = maxf(float(research_progress[research_active]) - lost, 0.0)
+				text = e["text"] % research_node(research_active).get("name", research_active)
+			else:
+				var ins := mini(_roll_amount(e["insight"]), int(res.get("insight", 0)))
+				res["insight"] = int(res.get("insight", 0)) - ins
+				text = str(e.get("text_insight", e["text"])) % ins
+	diplo_log.push_front({"day": day, "faction": fid, "text": text, "change": 0, "trouble": true})
 	if diplo_log.size() > DIPLO_LOG_KEPT:
 		diplo_log.resize(DIPLO_LOG_KEPT)
 	notice.emit(text, true)
 
 
+## Whether a faction's home is on the open map (a faction in a fogged region does nothing yet).
+func _faction_on_map(fid: String) -> bool:
+	var p := territory().find(str(faction(fid).get("province", "")))
+	return p.is_empty() or province_open(p)
+
+
+## The next dawn this faction can make trouble. The Concord's day is saved on its own (next_trouble_day, from
+## before other factions could); everyone else's is in trouble_days.
+func trouble_day(fid: String) -> int:
+	if fid == "concord":
+		return next_trouble_day
+	return int(trouble_days.get(fid, day + int(faction(fid).get("trouble", {}).get("hostile_gap", [5])[0])))
+
+
+func _set_trouble_day(fid: String, d: int) -> void:
+	if fid == "concord":
+		next_trouble_day = d
+	else:
+		trouble_days[fid] = d
+
+
 ## "The Concord will make trouble in about 3 days" for the screen, or "".
-func trouble_text() -> String:
-	if not tier_of("concord") in ["hostile", "wary"]:
+func trouble_text(fid := "concord") -> String:
+	if faction(fid).get("trouble", {}).is_empty() or not _faction_on_map(fid) or not tier_of(fid) in ["hostile", "wary"]:
 		return ""
-	var d := next_trouble_day - day
-	return tr("Expect Concord trouble %s.") % (tr("at dawn") if d <= 1 else tr("in about %d days") % d)
+	var d := trouble_day(fid) - day
+	return tr("Expect %s trouble %s.") % [faction(fid).get("short", fid), tr("at dawn") if d <= 1 else tr("in about %d days") % d]
 
 
 # ---------------------------------------------------------------- buildings and construction
@@ -2053,7 +2112,7 @@ func to_dict() -> Dictionary:
 		"research_done": research_done, "research_progress": research_progress, "research_active": research_active,
 		"research_paid": research_paid,
 		"standing": standing, "pacts": pacts, "deal_ready": deal_ready, "intel_until": intel_until,
-		"next_trouble_day": next_trouble_day, "diplo_log": diplo_log,
+		"next_trouble_day": next_trouble_day, "trouble_days": trouble_days, "diplo_log": diplo_log,
 		"bonds": bonds,
 		"relations": relations,
 		"visitors": visitors,
@@ -2160,6 +2219,10 @@ func from_dict(d: Dictionary) -> void:
 		deal_ready[k] = int(saved_dr[k])
 	intel_until = int(d.get("intel_until", 0))
 	next_trouble_day = int(d.get("next_trouble_day", day + 5))
+	var saved_td: Dictionary = d.get("trouble_days", {})
+	for fid in saved_td:
+		if faction_data.has(fid):
+			trouble_days[fid] = int(saved_td[fid])
 	for mid in d.get("missions_cleared", []):
 		if not mid in missions_cleared:
 			missions_cleared.append(str(mid))
@@ -2640,6 +2703,8 @@ func hook_text(id: String) -> String:
 			return tr("Reach bond rank %d with %s%s.") % [int(h.get("rank", 1)), short_name(h.get("who", "")), Prompts.tag("bonds")]
 		"rescue":
 			return tr("Send a squad on \"%s\" from the Guildhall%s.") % [job(h.get("job", "")).get("name", "?"), Prompts.tag("expeditions")]
+		"story":
+			return tr("Found in the story mission \"%s\".") % Missions.find(h.get("mission", "")).get("name", "?")
 	return ""
 
 
@@ -2687,6 +2752,11 @@ func hook_progress(id: String) -> Array:
 				return [tr("A squad is on its way."), true]
 			var why := job_blocker(jid)
 			return [(tr("Can't send yet: %s.") % why) if why != "" else tr("On the Guildhall board now."), why == ""]
+		"story":
+			var sm := Missions.find(h.get("mission", ""))
+			if Missions.offered(sm):
+				return [tr("On the territory map now."), true]
+			return [tr("The story is not there yet."), false]
 	return ["", false]
 
 
@@ -2707,6 +2777,15 @@ func hire(id: String) -> bool:
 	recruits[id] = {"role": "idle", "target": "", "injured": 0}
 	notice.emit(tr("%s joins your roster. Give them a job%s.") % [recruit(id)["name"], Prompts.tag("roster")], false)
 	return true
+
+
+## Someone the story brings in (join type "story", issue #28): on the roster at once, no gate, no fee.
+func join_now(id: String) -> void:
+	if recruits.has(id) or recruit(id).is_empty():
+		return
+	visitors.erase(id)
+	recruits[id] = {"role": "idle", "target": "", "injured": 0}
+	notice.emit(tr("%s joins your roster. Give them a job%s.") % [recruit(id)["name"], Prompts.tag("roster")], false)
 
 
 ## Checked every frame (cheap): anyone whose hook was just met turns up at the gate.

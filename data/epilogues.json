@@ -88,6 +88,22 @@
 			{"when": {"pair": {"with": "odile", "state": "truce"}}, "text": "Dunmore Vellacott paid off his last debt, the one on his left heel, five years after it was all over. Odile Penhallow stamped it PAID, in red. He has had the stamp tattooed over every single entry, and wears short sleeves now, in all weathers."},
 			{"text": "Dunmore Vellacott kept working the forge and paying his debts down, a forearm a year. He has started tattooing the paid ones with little flowers. He says he's nearly a garden."}
 		],
+		"osyth": [
+			{"when": {"lost": true}, "text": "Sister Osyth went into the white with her board on its string. The squad that came back said she was counting out loud the whole way in. The last number they heard was a new one."},
+			{"text": "Sister Osyth finished her count, then started again from one, to check. The Abbey carved the total over the Founders' Door: eleven thousand four hundred and six. She had them chisel it twice, because the first mason rounded."}
+		],
+		"nell": [
+			{"when": {"lost": true}, "text": "Nell Tapper went out with a lantern into the white and did not come back. Candleford still keeps a candle in every window all night. Now everyone knows who for."},
+			{"text": "Nell Tapper still runs Candleford and the chandlery, still two jobs, now with wages. The Abbey pays on time. She keeps the receipt for the first payment framed over the counter, next to the one for the five barges she was never paid for."}
+		],
+		"cuthbert": [
+			{"when": {"lost": true}, "text": "Brother Cuthbert walked into the white ringing his hand-bell. They heard it for a long time afterwards. Some pilgrims at Scarth Pass say they still do, on clear nights, on the hour."},
+			{"text": "Brother Cuthbert went back up to Saint Ledger's and rang the tenor bell, one hour at a time, for the rest of his life. He never heard a note of it. He said he could feel when it was right, in his teeth."}
+		],
+		"alcuin": [
+			{"when": {"lost": true}, "text": "Brother Alcuin went into the white still wearing the Eraser coat with one sleeve. He told the squad he had read enough drafts to know where it ended. He did not come back to say if he was right."},
+			{"text": "Brother Alcuin sewed the sleeve back on in the end, and then took the coat off. He keeps the Abbey's new library, where the unedited drafts sit on the shelves next to the Ledger, both open, and anyone may read either."}
+		],
 		"biscuits": [
 			{"when": {"lost": true}, "text": "Mr. Biscuits went into the white barking and was not seen again. Sometimes, on still nights at the edge of the Blank, there is a sound like someone very far off saying \"walkies\". The Coven leaves a biscuit out, just in case."},
 			{"text": "Mr. Biscuits went back to the Coven with a medal on his collar and a reputation. Whether he is a dog that walks like a man or a man under a very old curse remains unsolved. He has stopped caring. He has a very good basket."}
