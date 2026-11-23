@@ -47,3 +47,15 @@
 {"t": "2026-11-23T17:37:13Z", "phase": "regen", "tool": "pixellab", "what": "regen gristle/attack attack r2 south-east", "usd": 0.01085, "job": "d6054cfd-c0c1-4a81-ac88-63c1d1861fd7", "status": "completed"}
 {"t": "2026-11-23T17:38:40Z", "phase": "regen", "tool": "pixellab", "what": "regen ash/tech tech r3 north-east", "usd": 0.0097, "job": "e03c7533-4325-42eb-ace5-92674c800d20", "status": "completed"}
 {"t": "2026-11-23T17:39:13Z", "phase": "regen", "tool": "pixellab", "what": "regen gristle/attack attack r3 south-east", "usd": 0.00815, "job": "5cb30a77-d2e0-4836-8b22-e16d251c1cf2", "status": "completed"}
+{"t": "2026-11-23T17:59:44Z", "phase": "regen", "tool": "pixellab", "what": "regen bran/cast cast r5a north-east", "usd": 0.01024, "job": "d19ef854-0e2f-433c-a4bc-78cf6d2e0bda", "status": "completed"}
+{"t": "2026-11-23T18:00:24Z", "phase": "regen", "tool": "pixellab", "what": "regen bran/cast cast r5b north-east", "usd": 0.00805, "job": "f0df7b8f-f3c7-4fa2-95f9-726d5c3e4fca", "status": "completed"}
+{"t": "2026-11-23T18:01:05Z", "phase": "regen", "tool": "pixellab", "what": "regen ash/tech tech r5a south,south-east,north-east", "usd": 0.00863, "job": "7f015112-af28-4f5b-b802-36c75cee2270", "status": "completed"}
+{"t": "2026-11-23T18:01:11Z", "phase": "regen", "tool": "pixellab", "what": "regen ash/tech tech r5a south,south-east,north-east", "usd": 0.00892, "job": "e2548e52-30fe-480b-9c62-f0b079ee1f48", "status": "completed"}
+{"t": "2026-11-23T18:01:12Z", "phase": "regen", "tool": "pixellab", "what": "regen ash/tech tech r5a south,south-east,north-east", "usd": 0.00908, "job": "b1a024cc-f032-4106-b74d-da9f737534ae", "status": "completed"}
+{"t": "2026-11-23T18:02:07Z", "phase": "regen", "tool": "pixellab", "what": "regen ash/tech tech r5b south,south-east,north-east", "usd": 0.00948, "job": "cdeb9915-bb98-492b-abb8-18d6bb344798", "status": "completed"}
+{"t": "2026-11-23T18:02:13Z", "phase": "regen", "tool": "pixellab", "what": "regen ash/tech tech r5b south,south-east,north-east", "usd": 0.01069, "job": "4a226a66-0c6e-47ab-b994-424e6321a578", "status": "completed"}
+{"t": "2026-11-23T18:02:13Z", "phase": "regen", "tool": "pixellab", "what": "regen ash/tech tech r5b south,south-east,north-east", "usd": 0.01065, "job": "de2474a3-5a34-4b39-9586-e655fbfe1485", "status": "completed"}
+{"t": "2026-11-23T18:03:11Z", "phase": "regen", "tool": "pixellab", "what": "regen gristle/tech tech r5a east", "usd": 0.01085, "job": "94ae9adb-b35c-45af-ae7d-1da6a67f9ef1", "status": "completed"}
+{"t": "2026-11-23T18:04:09Z", "phase": "regen", "tool": "pixellab", "what": "regen gristle/tech tech r5b east", "usd": 0.01071, "job": "76f52a44-36c6-41e7-8262-afd947753f7a", "status": "completed"}
+{"t": "2026-11-23T18:04:48Z", "phase": "regen", "tool": "pixellab", "what": "regen jessamy/cast cast r5a east", "usd": 0.00861, "job": "54626333-44c2-4ce3-ba81-592165b76ece", "status": "completed"}
+{"t": "2026-11-23T18:07:00Z", "phase": "regen", "tool": "pixellab", "what": "regen jessamy/cast cast r5b east", "usd": 0.00814, "job": "cc41e9f2-2321-412a-9307-cee0a96c3a1d", "status": "completed"}
