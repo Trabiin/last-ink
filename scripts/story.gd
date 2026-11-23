@@ -52,6 +52,8 @@ static func command_on() -> bool:
 ##   seen: [talk ids]   conversations played     joined: [ids]        recruits on the roster
 ##   renown: n          at least n Renown        held: n              at least n provinces held
 ##   owns: [ids]        provinces you hold       day: n               on day n or later
+##   governs: [ids]     provinces you hold with a governor posted (issue #28)
+##   standing: {faction id: tier}   at least that standing tier with each faction (issue #28)
 static func meets(c: Dictionary) -> bool:
 	return blocker(c) == ""
 
@@ -80,6 +82,16 @@ static func blocker(c: Dictionary) -> String:
 	for pid in c.get("owns", []):
 		if Empire.territory().find(pid).get("owner", "") != "you":
 			return Loc.t("take %s first") % Empire.territory().find(pid).get("name", pid)
+	for pid in c.get("governs", []):
+		var gp := Empire.territory().find(pid)
+		if gp.get("owner", "") != "you":
+			return Loc.t("take %s first") % gp.get("name", pid)
+		if Empire.governor_of(pid) == "":
+			return Loc.t("put a governor in %s") % gp.get("name", pid)
+	var want: Dictionary = c.get("standing", {})
+	for fid in want:
+		if not Empire.at_least(fid, str(want[fid])):
+			return Loc.t("needs %s standing with the %s") % [Empire.tier_name(str(want[fid])), Empire.faction(fid).get("short", fid)]
 	if Empire.day < int(c.get("day", 0)):
 		return Loc.t("not before day %d") % int(c["day"])
 	return ""

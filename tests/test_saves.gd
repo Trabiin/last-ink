@@ -315,3 +315,20 @@ func test_old_names_in_history_are_renamed() -> void:
 	Empire.from_dict(r["data"]["empire"])
 	check_eq(Empire.short_name("hesper"), "Hetty", "the recruit shows the new name")
 	check_eq(Empire.short_name("quill"), "Quill", "Edwin \"Quill\" Pask goes by Quill")
+
+
+## Issue #28: Chapter 2's factions get their land in old saves, and a campaign past the End of Act 1 sees the
+## Abbey region open.
+func test_chapter2_lands_and_region() -> void:
+	var r: Dictionary = Saves.parse(_fixture_text("20261125_chapter2__table_day42_after_act1.json"))
+	if not check_eq(r["status"], Saves.GOOD, "save from before Chapter 2 reads"):
+		return
+	var e: Dictionary = r["data"]["empire"]
+	check("abbey" in e["regions"], "the Abbey region opens for a campaign past act1_end")
+	Empire.from_dict(e)
+	check_eq(Empire.territory().find("abbey")["owner"], "abbey", "Saint Ledger's belongs to the Abbey")
+	check_eq(Empire.territory().find("ossuary")["owner"], "erasers", "the Bonefield belongs to the Erasers")
+	check_eq(Empire.tier_of("abbey"), "wary", "the Abbey starts Wary")
+	check_eq(Empire.tier_of("erasers"), "hostile", "the Erasers start Hostile")
+	var want := "ch2_bells" if Story.held() >= 6 else ""
+	check_eq(Story.next_beat().get("talk", ""), want, "Chapter 2's first beat waits for six provinces (%d held)" % Story.held())

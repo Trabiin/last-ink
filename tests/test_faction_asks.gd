@@ -97,6 +97,8 @@ func test_offers_arrive_one_per_faction() -> void:
 	for i in 12:
 		_dawn()
 	for fid in Empire.faction_ids():
+		if not Journal.faction_known(fid):  # a faction under the fog never asks (the Abbey and Erasers before Chapter 2)
+			continue
 		var st: Dictionary = FactionAsks.state()
 		check(st["offers"].has(fid) or st["active"].has(fid) or int(st["next"].get(fid, 0)) > Empire.day,
 			"%s never asked anything in 12 days" % fid)

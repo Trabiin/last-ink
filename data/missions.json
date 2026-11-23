@@ -1,5 +1,5 @@
 {
-	"_comment": "Missions launched from the territory map (issue #5). province: where the map offers it. map: text map in maps/. story: true = plays once. after: only offered once that mission is cleared. needs: story conditions (scripts/story.gd Story.meets, issue #18). intro: a talk played when the mission starts (first time only). objective: {kind, ...} read by scripts/objective.gd (kills: count). rewards: paid on success (gilt, supplies, ink, renown, insight). fray: change to the province's Fray on success (negative pushes the Blank back). enemies: optional spawn weights that replace the province roster in data/enemies.json (#16). loot: per-kill chance [0-1] and amount range of what the party picks up on the way; retreating keeps it, being wiped out loses it.",
+	"_comment": "Missions launched from the territory map (issue #5). province: where the map offers it. map: text map in maps/. story: true = plays once. after: only offered once that mission is cleared. needs: story conditions (scripts/story.gd Story.meets, issue #18). intro: a talk played when the mission starts (first time only). objective: {kind, ...} read by scripts/objective.gd (kills: count). rewards: paid on success (gilt, supplies, ink, renown, insight). fray: change to the province's Fray on success (negative pushes the Blank back). enemies: optional spawn weights that replace the province roster in data/enemies.json (#16). gate (issue #28): story conditions that keep a story mission on the map but locked, with the first missing one shown as the reason. on_success (issue #28): story effects on the first win: grant (provinces that become yours), join (recruits who join on the spot), standing ({faction: change}). loot: per-kill chance [0-1] and amount range of what the party picks up on the way; retreating keeps it, being wiped out loses it.",
 	"missions": [
 		{
 			"id": "meadow_prologue", "name": "Prologue: Spat Out", "province": "meadow", "story": true,
@@ -95,6 +95,149 @@
 			"rewards": {"gilt": 150, "supplies": 30, "ink": 6, "renown": 5, "insight": 4},
 			"xp": 60,
 			"loot": {}
+		},
+		{
+			"id": "ch2_candleford", "name": "Chapter 2: The Wax Barges", "province": "candlemere", "story": true,
+			"needs": {"seen": ["ch2_bells"]},
+			"map": "res://maps/ch2_candleford.txt",
+			"brief": "The Erasers are burning the wax barges at Candleford, the lake town that makes Saint Ledger's candles. Get down to the jetty and keep the last barge afloat. Nobody holds Candleford yet: save it and it is yours.",
+			"objective": {"kind": "script", "label": "Find the chandler", "steps": [
+				{"do": "talk", "talk": "ch2_candleford_intro"},
+				{"do": "goto", "at": "jetty", "label": "Get down to the wax jetty",
+					"banter": [["bran", "White fire. No heat off it. That ain't right."]]},
+				{"do": "clear", "at": "jetty", "label": "Drive the Erasers off the jetty", "spawn": {"reader": 2, "whitewasher": 1}, "count": 3,
+					"elite": {"kind": "reader", "name": "Reader Grice, keeper of the list", "hp": 3.0, "damage": 1.3},
+					"banter": [["bran", "They're readin' names at us. While they swing."]],
+					"done_banter": [["bran", "One boat left. Let's keep it."]]},
+				{"do": "goto", "at": "barge", "label": "Reach the last barge"},
+				{"do": "hold", "at": "barge", "seconds": 40, "label": "Keep the Erasers' tapers off the last barge",
+					"spawn": {"reader": 2, "whitewasher": 2, "penitent": 1}, "every": 4.5, "first": 1.5,
+					"protect": {"name": "the last wax barge", "hp": 220},
+					"say": "The Erasers want the last barge. Stand between them and the wax.",
+					"fail": "The last barge went up in white fire. Candleford will make candles for nobody this winter."},
+				{"do": "talk", "talk": "ch2_candleford_outro"},
+				{"do": "exit", "label": "Walk back up through the town"}
+			]},
+			"enemies": {"reader": 2, "whitewasher": 2, "penitent": 1},
+			"rewards": {"gilt": 90, "supplies": 20, "renown": 2},
+			"on_success": {"grant": ["candlemere"]},
+			"xp": 50,
+			"fray": -6,
+			"loot": {"gilt": [0.4, 1, 3], "supplies": [0.2, 1, 2], "ink": [0.05, 1, 1]}
+		},
+		{
+			"id": "ch2_hall", "name": "Chapter 2: The Copying Hall", "province": "abbey", "story": true,
+			"after": "ch2_candleford",
+			"gate": {"governs": ["candlemere"]},
+			"map": "res://maps/ch2_hall.txt",
+			"brief": "Prioress Ebba will let you into Saint Ledger's now that Candleford has someone in charge. Things that used to be brothers do penance in the cloister walk. Get through to the copying hall and light the candles at its three lecterns, so the copyists can see what they are writing.",
+			"objective": {"kind": "script", "label": "Meet the Prioress at the gate", "steps": [
+				{"do": "talk", "talk": "ch2_hall_intro"},
+				{"do": "goto", "at": "walk", "label": "Walk the cloister",
+					"banter": [["gristle", "Candles in every niche and still dark. Takes effort, that does."]]},
+				{"do": "clear", "at": "walk", "label": "Put the penitents to rest", "spawn": {"penitent": 2, "copyist": 1}, "count": 4,
+					"say": "Penitents wipe off what they touch. Keep your distance from their hands.",
+					"done_banter": [["bran", "They was monks. Now they ain't. Let's not stop and think about it."]]},
+				{"do": "goto", "at": "hall", "label": "Into the copying hall"},
+				{"do": "use", "at": ["lectern_w", "lectern_n", "lectern_e"], "seconds": 4, "work_label": "LECTERN CANDLES", "label": "Light the candles at the three lecterns",
+					"spawn": {"copyist": 2, "penitent": 2}, "every": 5.0, "first": 2.0,
+					"say": "Copyists strike a strip of floor out of the world. Step off the dotted line."},
+				{"do": "talk", "talk": "ch2_hall_abbot"},
+				{"do": "exit", "label": "Out the way you came, with the Prioress"}
+			]},
+			"enemies": {"penitent": 3, "copyist": 2},
+			"rewards": {"gilt": 60, "ink": 3, "insight": 3, "renown": 2},
+			"on_success": {"standing": {"abbey": 10}},
+			"xp": 55,
+			"fray": -6,
+			"loot": {"gilt": [0.35, 1, 2], "ink": [0.08, 1, 1]}
+		},
+		{
+			"id": "ch2_crypt", "name": "Chapter 2: The Crypts", "province": "ossuary", "story": true,
+			"after": "ch2_hall",
+			"map": "res://maps/ch2_crypt.txt",
+			"brief": "The Erasers took the Bonefield Cloister a month ago and sealed its crypt-keeper, Sister Osyth, underground. Break their camp, go down the crypt stair and bring her out. The Ledger says the hill was always empty.",
+			"objective": {"kind": "script", "label": "Climb to the Erasers' camp", "steps": [
+				{"do": "talk", "talk": "ch2_crypt_intro"},
+				{"do": "goto", "at": "camp", "label": "Climb to the Erasers' camp"},
+				{"do": "clear", "at": "camp", "label": "Break the Erasers' camp", "spawn": {"reader": 2, "whitewasher": 1}, "count": 4,
+					"elite": {"kind": "reader", "name": "Hask, Askew's taper-bearer", "hp": 3.5, "damage": 1.4},
+					"banter": [["ninefingers", "Readers up front, washers behind. Same drill as a tithe line. Go."]],
+					"done_banter": [["ninefingers", "Askew's gone. Left the tents. Didn't leave the fire."]]},
+				{"do": "goto", "at": "chapel", "label": "Through the charnel chapel"},
+				{"do": "clear", "at": "chapel", "label": "Clear the chapel", "spawn": {"whitewasher": 1, "penitent": 2}, "count": 3},
+				{"do": "goto", "at": "stair", "label": "Down the crypt stair",
+					"banter": [["bran", "Steps go down further than the hill goes up. I'm only sayin'."]]},
+				{"do": "goto", "at": "ossuary", "label": "Find the crypt-keeper"},
+				{"do": "clear", "at": "ossuary", "label": "Clear the ossuary", "spawn": {"penitent": 2, "copyist": 1}, "count": 4},
+				{"do": "talk", "talk": "ch2_osyth"},
+				{"do": "hold", "at": "door", "seconds": 35, "label": "Hold the stair while Osyth opens the Founders' Door",
+					"spawn": {"penitent": 3, "reader": 1, "copyist": 1}, "every": 4.0, "first": 1.5,
+					"protect": {"name": "Sister Osyth", "hp": 180},
+					"fail": "The crypt took Sister Osyth before she reached the last row."},
+				{"do": "goto", "at": "chamber", "label": "Through the Founders' Door"},
+				{"do": "talk", "talk": "ch2_verity"},
+				{"do": "exit", "label": "Bring Sister Osyth up into the light"}
+			]},
+			"enemies": {"reader": 2, "whitewasher": 1, "penitent": 2, "copyist": 1},
+			"rewards": {"supplies": 25, "ink": 4, "renown": 3},
+			"on_success": {"join": ["osyth"], "standing": {"erasers": -5}},
+			"xp": 60,
+			"fray": -8,
+			"loot": {"gilt": [0.3, 1, 2], "supplies": [0.2, 1, 2], "ink": [0.08, 1, 1]}
+		},
+		{
+			"id": "ch2_abbot", "name": "Boss: The Abbot Who Copied Himself", "province": "abbey", "story": true,
+			"after": "ch2_crypt",
+			"gate": {"standing": {"abbey": "neutral"}},
+			"map": "res://maps/abbey_cloister.txt",
+			"brief": "Abbot Wulfstan has locked the copying hall and copied himself, several times. Only one of him is real: his hands drip ink. Hit the copies and they tear, but they come back. Watch his crozier, the dotted lines, and the ring of light when he illuminates.",
+			"objective": {"kind": "boss", "boss": "abbot", "label": "Find the real Abbot"},
+			"enemies": {"penitent": 1},
+			"rewards": {"gilt": 200, "supplies": 40, "ink": 8, "renown": 6, "insight": 6},
+			"on_success": {"standing": {"abbey": 25, "erasers": -10}},
+			"xp": 90,
+			"loot": {}
+		},
+		{
+			"id": "candlemere_patrol", "name": "Patrol: Candleford", "province": "candlemere",
+			"after": "ch2_candleford",
+			"map": "res://maps/lakeshore.txt",
+			"brief": "White coats still row out at night to the barges. Walk the lake shore and see who is carrying a taper.",
+			"objective": {"kind": "kills", "count": 14, "label": "Clear the area"},
+			"rewards": {"gilt": 22, "supplies": 10},
+			"fray": -4,
+			"loot": {"gilt": [0.3, 1, 2], "supplies": [0.15, 1, 2], "ink": [0.04, 1, 1]}
+		},
+		{
+			"id": "abbey_patrol", "name": "Patrol: Saint Ledger's", "province": "abbey",
+			"after": "ch2_hall",
+			"map": "res://maps/abbey.txt",
+			"brief": "The Prioress asks for the abbey lands to be walked. Penitents wander out of the cloister and into the orchards.",
+			"objective": {"kind": "kills", "count": 14, "label": "Clear the area"},
+			"rewards": {"gilt": 18, "ink": 1},
+			"fray": -4,
+			"loot": {"gilt": [0.3, 1, 2], "ink": [0.06, 1, 1]}
+		},
+		{
+			"id": "ossuary_patrol", "name": "Patrol: The Bonefield", "province": "ossuary",
+			"after": "ch2_crypt",
+			"map": "res://maps/abbey_c.txt",
+			"brief": "The Erasers left, but their fires did not all go out. Walk the hill and stamp out what is still burning.",
+			"objective": {"kind": "kills", "count": 15, "label": "Clear the area"},
+			"rewards": {"supplies": 14, "ink": 1},
+			"fray": -5,
+			"loot": {"gilt": [0.25, 1, 2], "supplies": [0.15, 1, 2], "ink": [0.06, 1, 1]}
+		},
+		{
+			"id": "quillpine_patrol", "name": "Patrol: Scarth Pass", "province": "quillpine",
+			"after": "ch2_candleford",
+			"map": "res://maps/scarth.txt",
+			"brief": "Pilgrims, bandits and penitents share the pass road. Walk it and keep the pines clear.",
+			"objective": {"kind": "kills", "count": 15, "label": "Clear the area"},
+			"rewards": {"gilt": 24, "supplies": 8},
+			"fray": -4,
+			"loot": {"gilt": [0.3, 1, 3], "supplies": [0.15, 1, 2], "ink": [0.04, 1, 1]}
 		}
 	]
 }

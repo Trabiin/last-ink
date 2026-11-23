@@ -89,7 +89,7 @@ func test_opening_a_region() -> void:
 	Empire.res["gilt"] = 500
 	Empire.res["supplies"] = 100
 	check_eq(Empire.claim_blocker("candlemere"), "", "claimable from Old Mill Crossing")
-	check(Empire.claim_blocker("abbey").contains("never hand it over"), "Concord land past its one ceded province stays theirs")
+	check(Empire.claim_blocker("abbey") != "", "the Abbey's own land cannot simply be claimed (issue #28: it is the Abbey's home)")
 	var f0 := int(_p("ossuary")["fray"])
 	Empire.day += 1
 	Empire._advance_blank()
@@ -146,7 +146,8 @@ func test_mission_maps_come_from_the_biome_pool() -> void:
 	check(MissionTypes.map_for("gutterwoods") in woods, "woods: %s" % MissionTypes.map_for("gutterwoods"))
 	var meadow := ["res://maps/frayed_meadow.txt", "res://maps/meadow_b.txt", "res://maps/meadow_c.txt"]
 	check(MissionTypes.map_for("whitewater") in meadow, "meadow: %s" % MissionTypes.map_for("whitewater"))
-	check_eq(MissionTypes.map_for("abbey"), MissionTypes.MAP, "an empty pool falls back to the meadow")
+	check_eq(MissionTypes.map_for("lighthouse"), MissionTypes.MAP, "an empty pool falls back to the meadow")
+	check(MissionTypes.map_for("abbey") in ["res://maps/abbey.txt", "res://maps/abbey_b.txt", "res://maps/abbey_c.txt"], "the Abbey has its own layouts (issue #28)")
 
 
 func test_command_table_camera_and_fog() -> void:

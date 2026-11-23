@@ -119,6 +119,16 @@
 			}
 		},
 		{
+			"id": "ask_abbey_tally", "name": "Copy the names under the Bonefield", "kind": "Survey", "province": "abbey", "ask": "abbey_tally",
+			"blurb": "An Abbey request (Diplomacy). Copy Sister Osyth's tally of the people buried under the Bonefield onto vellum, in the Abbey's copying hall, before the Erasers burn the cloister. Eleven thousand names. Lore and a steady hand.",
+			"days": 3, "rations": 1, "stats": {"lore": 1.0, "craft": 0.5, "grit": 0.5}, "target": 26, "danger": 1, "cooldown": 1,
+			"reward": {"insight": [2, 3]},
+			"text": {
+				"success": ["{a} read the names off the tally-board and {b} wrote them down, one a line, for three days. On the last night the whole hall stood up for the last name. It was a child's.", "{lead} came back with ink to the wrists and a list of names they keep saying under their breath. The Prioress has the vellum under lock and key."],
+				"fail": ["{a} lost count somewhere in the four thousands and had to start the page again. Then again. The Abbey sent them home before they started on the walls.", "{lead} could not make the names stay on the vellum: they faded as fast as they were written. Sister Osyth says the hill is not ready to be read yet."]
+			}
+		},
+		{
 			"id": "ask_concord_census", "name": "Sit for the Concord census", "kind": "Survey", "province": "tithe", "ask": "concord_census",
 			"blurb": "A Concord request (Diplomacy). Two responsible persons are to present themselves at the Tithe Road customs house to be counted. Bring your own ink. Charm helps. Knowing the forms helps more.",
 			"days": 2, "rations": 1, "stats": {"charm": 1.0, "lore": 1.0}, "target": 24, "danger": 1, "cooldown": 1,

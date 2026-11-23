@@ -75,7 +75,7 @@ func test_every_material_has_a_source_a_use_and_an_icon() -> void:
 		check(_icon(k), "%s has an icon" % k)
 	var md := Armory.mats_data()
 	for kind in md.get("enemies", {}):
-		check(kind == "auditor" or not EnemyKinds.kind(kind).is_empty(), "drop table for a real enemy (%s)" % kind)
+		check(BossFight.BOSSES.has(kind) or not EnemyKinds.kind(kind).is_empty(), "drop table for a real enemy (%s)" % kind)
 		for k in md["enemies"][kind].get("table", {}):
 			check(Armory.is_mat(k), "%s drops a real material (%s)" % [kind, k])
 

@@ -1,5 +1,5 @@
 {
-	"_comment": "Diplomacy (key F). standing runs -100 (hostile) to +100 (allied); start = day 1. tiers: the lowest standing for each tier. respects: the stat an envoy needs to impress them (7+ = +1 a day, 3 or less = -1). drift: standing change a day with no envoy, and floor = how low that drift alone can push it. Deals: gift (any standing, +standing for coin), intel (Neutral+), trade (Friendly+, a pact paying every day while standing stays above trade_breaks), aid (Friendly+, while a surge gathers against your land: it lands at half), cede (Allied: they hand over their province, which needs a governor). Every deal except trade needs an envoy posted. cooldown in days. perk: what Friendly standing does on its own. react: standing change when you claim land next to theirs, when land next to theirs is erased, or when you light a Wardlamp next to theirs. Expeditions can move standing too (data/expeditions.json \"standing\"). trouble: what a hostile faction does to you (Concord only in the MVP).",
+	"_comment": "Diplomacy (key F). standing runs -100 (hostile) to +100 (allied); start = day 1. tiers: the lowest standing for each tier. respects: the stat an envoy needs to impress them (7+ = +1 a day, 3 or less = -1). drift: standing change a day with no envoy, and floor = how low that drift alone can push it. Deals: gift (any standing, +standing for coin), intel (Neutral+), trade (Friendly+, a pact paying every day while standing stays above trade_breaks), aid (Friendly+, while a surge gathers against your land: it lands at half), cede (Allied: they hand over their province, which needs a governor). Every deal except trade needs an envoy posted. cooldown in days. perk: what Friendly standing does on its own. react: standing change when you claim land next to theirs, when land next to theirs is erased, or when you light a Wardlamp next to theirs. Expeditions can move standing too (data/expeditions.json \"standing\"). trouble: what a Hostile or Wary faction does to you every few days (the Concord; the Erasers from Chapter 2, which add the kinds burn (study or Insight lost) and spill (Ink lost); issue #28). color / ui_color: map and screen colours for factions added after Act 1.",
 	"tiers": [
 		{"id": "hostile", "name": "Hostile", "min": -100},
 		{"id": "wary", "name": "Wary", "min": -39},
@@ -183,6 +183,101 @@
 						"text": "Concord tax-riders seize %d Supplies on the road from %s."},
 					{"kind": "writ", "fray": 6, "tiers": ["hostile"],
 						"text": "A Concord Erasure writ is read aloud in %s. Nobody believes it, but everyone remembers it. Fray +%d."}
+				]
+			}
+		},
+		{
+			"id": "abbey", "name": "The Abbey of Saint Ledger", "short": "Abbey", "province": "abbey",
+			"start": -14, "respects": "lore", "drift": 0, "floor": -100, "color": "8a3a34", "ui_color": "d98a7a",
+			"wants": "The world written back, line by line. Lately, just a night's sleep.",
+			"blurb": "The monks of Saint Ledger's have copied the Great Ledger by hand for three hundred years, so the world could be written back if the capital's copy burned. Their Abbot has them copying day and night now, and the pages come out blank. They are proud, poor, frightened, and owe the Concord everything.",
+			"envoy_title": "Guest of the house",
+			"react": {"claim_near": -3, "erased_near": -8, "lamp_near": 3, "why_claim": "Another flag on the Abbey's lands", "why_erased": "The Blank ate land beside the Abbey", "why_lamp": "A Wardlamp lit beside the Abbey"},
+			"perk": {"text": "The brothers copy your notes: research goes 15% faster"},
+			"deals": {
+				"gift": {"name": "Send candles and lamp oil", "cost": {"gilt": 25, "supplies": 6}, "standing": 8, "cooldown": 2,
+					"text": "A cart of Candleford wax and oil goes up the hill. The brothers can copy past Compline again."},
+				"intel": {"name": "Ask the bell-watch", "cost": {"supplies": 6}, "cooldown": 4, "insight": 5, "warning_days": 5,
+					"text": "From the bell tower the brothers see the white move a day before anyone else. +1 day of surge warning for a few days."},
+				"trade": {"name": "Buy from the scriptorium", "cost": {"gilt": 40}, "daily": {"ink": 1, "gilt": 2},
+					"text": "The Abbey sells you ink and copied charters at dawn, and pays a tithe on what it sells through Hollowmark."},
+				"aid": {"name": "Ring the bells for the line", "standing": -15,
+					"text": "The Abbey rings its great bells against the coming surge. The Blank hates the sound: it lands at half strength."},
+				"cede": {"name": "Ask for the Abbey grounds", "standing": -35,
+					"text": "The Prioress signs the Abbey's lands into your keeping, on the understanding that the brothers keep their cells, their bells and their thumb."}
+			},
+			"asks": [
+				{"id": "abbey_candles", "name": "Keep the copying hall in candles", "tier": "hostile", "below": "friendly", "kind": "deliver",
+					"cost": {"supplies": 12, "gilt": 15}, "days": 5, "repeat": 9, "refuse": -3,
+					"text": "Brother Odo, writing for the Prioress. The hall burns two hundred candles a night and the Erasers have burned the barges again. Send wax and oil up the lake road within five days, and we will remember who kept the lamps lit.",
+					"reward": {"standing": 10, "insight": 3},
+					"fail": {"standing": -6},
+					"done_text": "The candles arrive. Brother Odo sends a copied psalter in thanks, with a note that every page has words on it, he checked.",
+					"fail_text": "The hall went dark for three nights. The brothers copied by feel. Nobody at the Abbey has said your name since, which for monks is saying a great deal."},
+				{"id": "abbey_bellmetal", "name": "Bring back the bell-metal", "tier": "wary", "kind": "raid", "target": "erasers",
+					"days": 8, "repeat": 12, "refuse": -3,
+					"text": "The Erasers took the cracked tenor bell from the Bonefield chapel and mean to melt it for a pyre-pan. A bell is a bell, even cracked. Go onto their ground and take back what you can carry.",
+					"reward": {"standing": 12, "gilt": 20, "mats": {"bell_bronze": 2}},
+					"fail": {"standing": -5},
+					"done_text": "Two hundredweight of bell-bronze comes back up the hill on a cart. The founders say it can be recast. The Prioress says nothing, but she sends the founders to you first.",
+					"fail_text": "The bell went into the pyre-pan. You could hear it crack from the Abbey, the brothers say."},
+				{"id": "abbey_tally", "name": "Copy the names under the hill", "tier": "neutral", "kind": "expedition", "job": "ask_abbey_tally",
+					"days": 7, "repeat": 0, "refuse": -4,
+					"text": "Sister Osyth's tally is the only record of the people under the Bonefield. The Prioress wants it copied onto vellum before the Erasers burn the cloister to the ground. Send two who can read and keep a steady hand.",
+					"reward": {"standing": 14, "insight": 5, "recruit": "alcuin"},
+					"fail": {"standing": -6},
+					"done_text": "Eleven thousand names, copied fair, in a house of God. And a young brother in an Eraser's coat came to watch them do it, and asked if he could come home with them.",
+					"fail_text": "Nobody came to copy the names. The Prioress has set the novices to it, and they are slow, and the Erasers are not."},
+				{"id": "abbey_lamp", "name": "Light a lamp on the lake road", "tier": "neutral", "kind": "lamp",
+					"days": 10, "repeat": 0, "refuse": -2,
+					"text": "The lake road between Candleford and the Abbey is dark from Vespers to Lauds and the white comes up it at night. A Wardlamp on your side of it would let the brothers walk to market without saying their prayers twice.",
+					"reward": {"standing": 9, "ink": 2, "boon": {"kind": "ward", "per_day": -1, "days": 5}},
+					"fail": {"standing": -4},
+					"done_text": "The lamp burns all night. The brothers walk the lake road in pairs now, singing, which they say is for the Blank and which is mostly for them.",
+					"fail_text": "No lamp. Brother Odo walked the lake road after dark anyway and came back with white on his sleeve."}
+			]
+		},
+		{
+			"id": "erasers", "name": "The Erasers", "short": "Erasers", "province": "ossuary",
+			"start": -62, "respects": "lore", "drift": -1, "floor": -90, "color": "c8c2b4", "ui_color": "e8e2d6",
+			"wants": "The Ledger burned, the Concord forgotten, and the clean page Verity promised them.",
+			"blurb": "Verity Hale's followers: archivists, clerks and struck-out families who have read the Concord's unedited drafts and want every ledger burned. They wear white coats, carry tapers, and read aloud the names of the towns the Concord wrote out before they set the fire. They think you are pushing the white back for the wrong side.",
+			"envoy_title": "Listener at the readings",
+			"drift_why": "You push the white back. To the Erasers, that is taking the Concord's side",
+			"react": {"claim_near": -5, "erased_near": 4, "lamp_near": -4, "why_claim": "More land held against the clean page", "why_erased": "The white took land beside the Bonefield, as they prayed it would", "why_lamp": "A Wardlamp lit against the white"},
+			"perk": {"text": "The Readers leave you be: no Eraser trouble, and the drafts they share bring in 1 Insight a day"},
+			"deals": {
+				"gift": {"name": "Hand over a Concord ledger", "cost": {"gilt": 20, "ink": 2}, "standing": 7, "cooldown": 3,
+					"text": "A Concord tax-ledger, unburned, left on the Bonefield wall. By morning it is ash and the Readers know who left it."},
+				"intel": {"name": "Sit through a reading", "cost": {"supplies": 5}, "cooldown": 4, "insight": 6, "warning_days": 5,
+					"text": "You listen to the Readers read the drafts aloud by the pyre. Most of it is names. Some of it is where Verity means to aim the white next: +1 day of surge warning for a few days."}
+			},
+			"asks": [
+				{"id": "erasers_ledger", "name": "Give up the tithe-rolls", "tier": "hostile", "below": "neutral", "kind": "deliver",
+					"cost": {"gilt": 20, "ink": 3}, "days": 5, "repeat": 10, "refuse": -2,
+					"text": "First Reader Askew, to the person in charge at Hollowmark. Your tax office kept the Marches' tithe-rolls. Somebody has them. Hand them to the Bonefield to be read and burned, and the Readers will pass your towns by for a while.",
+					"reward": {"standing": 9, "boon": {"kind": "truce", "days": 7}},
+					"fail": {"standing": -4, "trouble": true},
+					"done_text": "The tithe-rolls burn on the Bonefield wall. The Readers read every name aloud before the fire takes it. It takes all night.",
+					"fail_text": "The First Reader writes that she is disappointed, which for an archivist means she has opened a file on you."},
+				{"id": "erasers_no_abbey", "name": "Send nothing up the hill", "tier": "wary", "kind": "shun", "rival": "abbey", "rival_hit": -5,
+					"days": 8, "repeat": 14, "refuse": -3,
+					"text": "The Abbey copies the lie that buried the Bonefield. Every candle you send up that hill keeps the lie going one more night. Hold no pact with them for eight days and the Readers will believe you have read the page.",
+					"reward": {"standing": 12, "insight": 4},
+					"fail": {"standing": -7, "trouble": true},
+					"done_text": "Eight days, and not a cart up the lake road. The Readers leave a burned page on the Hollowmark well: a name, and 'thank you' under it.",
+					"fail_text": "You traded with the Abbey while promising us. The First Reader adds your name to a list. She does not say which list."}
+			],
+			"trouble": {
+				"hostile_gap": [4, 6], "wary_gap": [7, 10],
+				"events": [
+					{"kind": "burn", "study": 1.5, "insight": [3, 6], "tiers": ["hostile", "wary"],
+						"text": "Readers slip into Hollowmark by night and burn the Scriptorium's notes on %s. They leave the ash in a neat pile, labelled.",
+						"text_insight": "Readers slip into Hollowmark by night and burn a crate of drafts: %d Insight's worth of notes. The ash is labelled."},
+					{"kind": "spill", "ink": [2, 4], "tiers": ["hostile", "wary"],
+						"text": "Somebody has poured %d Ink into the well and painted the rim white. A taper is propped against it, still burning."},
+					{"kind": "writ", "fray": 5, "tiers": ["hostile"],
+						"text": "Readers stand in the square at %s and read the unedited drafts aloud all night. By morning half the town believes the white is a mercy. Fray +%d."}
 				]
 			}
 		}

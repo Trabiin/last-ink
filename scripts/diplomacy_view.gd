@@ -24,6 +24,14 @@ const FACTION_COLORS := {"guild": Color("c98a74"), "coven": Color("7fb0a4"), "co
 const TIER_COLORS := {"hostile": Color("ff7b6b"), "wary": Color("e8a86a"), "neutral": Color("c9c3b6"),
 	"friendly": Color("9fd18b"), "allied": Color("7fd6c2")}
 
+## A faction's colour: the three Act 1 factions above, anyone newer from its "color" in data/factions.json.
+static func _fcolor(fid: String) -> Color:
+	if FACTION_COLORS.has(fid):
+		return FACTION_COLORS[fid]
+	var c := str(Empire.faction(fid).get("ui_color", Empire.faction(fid).get("color", "")))
+	return Color(c) if c != "" else TEXT
+
+
 var page := "list"  # "list" or "envoy" (picking who to send)
 var sel := 0
 var pick_faction := ""
@@ -310,7 +318,11 @@ func _draw() -> void:
 
 func _draw_list(vs: Vector2) -> void:
 	_text(Vector2(8, 20), tr("Diplomacy"), 15, Color("f3efe4"))
-	var trouble := Empire.trouble_text()
+	var troubles := []
+	for tf in Empire.faction_ids():
+		if Journal.faction_known(tf) and Empire.trouble_text(tf) != "":
+			troubles.append(Empire.trouble_text(tf))
+	var trouble := " ".join(troubles)
 	var sub := tr("Post an envoy to win standing each day. Deals unlock as standing rises.")
 	if Empire.intel_until > Empire.day:
 		sub = tr("Fresh intel: +1 day of surge warning for %d more day%s.") % [Empire.intel_until - Empire.day, "" if Empire.intel_until - Empire.day == 1 else "s"]
@@ -427,11 +439,11 @@ func _draw_list(vs: Vector2) -> void:
 func _draw_head(fid: String, fa: Dictionary, y: float) -> void:
 	var v := Empire.standing_of(fid)
 	var tier := Empire.tier_of(fid)
-	draw_rect(Rect2(8, y, 3, HEAD_H - 6), FACTION_COLORS.get(fid, TEXT))
+	draw_rect(Rect2(8, y, 3, HEAD_H - 6), _fcolor(fid))
 	var fx := 15.0
 	if UiSkin.draw_icon(self, fid, Rect2(14, y - 1, 12, 12)):
 		fx = 29.0
-	_text(Vector2(fx, y + 9), fa["name"], 10, FACTION_COLORS.get(fid, TEXT))
+	_text(Vector2(fx, y + 9), fa["name"], 10, _fcolor(fid))
 	_text_r(Vector2(8 + LIST_W, y + 9), "%s %+d" % [Empire.tier_name(tier), v], 9, TIER_COLORS[tier])
 	var rate := Empire.standing_rate(fid)
 	_standing_bar(Rect2(15, y + 13, LIST_W - 70, 4), v)
@@ -454,7 +466,7 @@ func _draw_details(vs: Vector2) -> void:
 	var w := vs.x - x - 10
 	var top := 38.0
 	draw_rect(Rect2(x - 8, top, w + 16, vs.y - top - 24), Color(0.08, 0.07, 0.1))
-	draw_rect(Rect2(x - 8, top, 3, vs.y - top - 24), FACTION_COLORS.get(fid, TEXT))
+	draw_rect(Rect2(x - 8, top, 3, vs.y - top - 24), _fcolor(fid))
 	var y := top + 14
 	if r["kind"] == "deal":
 		var k: String = r["id"]
@@ -557,7 +569,7 @@ func _draw_ask(r: Dictionary, fid: String, x: float, y: float, w: float) -> floa
 
 func _draw_picker(vs: Vector2) -> void:
 	var fa := Empire.faction(pick_faction)
-	_text(Vector2(8, 20), tr("Envoy to %s") % fa["name"], 13, FACTION_COLORS.get(pick_faction, TEXT))
+	_text(Vector2(8, 20), tr("Envoy to %s") % fa["name"], 13, _fcolor(pick_faction))
 	_text(Vector2(8, 34), tr("They respect %s. Charm always helps. The envoy lives with them, away from Hollowmark.") % Loc.t(Empire.STAT_NAMES[fa["respects"]]), 8, GOLD)
 	var y := 44.0
 	for i in _rows.size():
@@ -595,7 +607,7 @@ func _draw_picker(vs: Vector2) -> void:
 	var w := vs.x - x - 10
 	var top := 44.0
 	draw_rect(Rect2(x - 8, top, w + 16, vs.y - top - 24), Color(0.08, 0.07, 0.1))
-	draw_rect(Rect2(x - 8, top, 3, vs.y - top - 24), FACTION_COLORS.get(pick_faction, TEXT))
+	draw_rect(Rect2(x - 8, top, 3, vs.y - top - 24), _fcolor(pick_faction))
 	var yy := top + 14
 	var env := "" if r["kind"] == "recall" else String(r["id"])
 	if env == "":

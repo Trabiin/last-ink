@@ -1623,10 +1623,14 @@ func _draw_region_panel(r: Dictionary, x: float, w: float) -> void:
 func _draw_legend() -> void:
 	var x := MAP_ORIGIN.x + 4
 	var y := MAP_ORIGIN.y + MAP_VIEW.y - 8
-	for k in ["you", "free", "concord", "coven", "guild"]:
+	var keys := ["you", "free"]
+	for fid in Empire.faction_ids():  # factions whose home is on the open map (Chapter 2 adds the Abbey, the Erasers)
+		if Journal.faction_known(fid):
+			keys.append(fid)
+	for k in keys:
 		_cv.draw_rect(Rect2(x, y - 6, 6, 6), owner_color(k))
 		_cv.draw_rect(Rect2(x, y - 6, 6, 6), BORDER_COLOR, false, 1.0)
-		var label: String = {"you": tr("Yours"), "free": tr("Unclaimed"), "concord": tr("Concord"), "coven": tr("Coven"), "guild": tr("Guild")}[k]
+		var label: String = tr("Yours") if k == "you" else (tr("Unclaimed") if k == "free" else str(Empire.faction(k).get("short", k)))
 		_text(Vector2(x + 9, y), label, 8, Color(0.85, 0.83, 0.78), 3)
 		x += 13 + font.get_string_size(label, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(8)).x + 6
 

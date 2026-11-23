@@ -30,7 +30,7 @@ const TEXT_KEYS := [
 	"likes_text", "dislikes_text", "locked", "card", "tip", "notice", "mood", "habits", "weakness",
 	"work_label", "shop_name", "shop_blurb", "intro_text", "prompt", "options", "labels",
 	"welcome_title", "ai_short", "heading", "more", "outro", "body", "caption", "subtitle",
-	"question", "answer", "note", "message",
+	"question", "answer", "note", "message", "say", "text_insight",
 ]
 ## Keys holding spoken lines: [speaker, text] / [speaker, text, expression] (only the text is
 ## translated), lists of those, or plain strings (help topics speak in plain strings).

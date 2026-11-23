@@ -5,7 +5,11 @@
 		"governor": {"name": "Governor Thale", "color": "c9a54a", "colors": {"skin": "e8c8b0", "cloth": "6a2a2a", "trim": "e0c060", "hair": "c8c0b0"}},
 		"warden": {"name": "Concord Warden", "color": "7a8aa0", "colors": {"skin": "d0a888", "cloth": "3a4658", "trim": "a0a8b8", "hair": "2a2a2a"}},
 		"captain": {"name": "Tithe-Captain Morrow", "color": "a04a3a", "colors": {"skin": "c89878", "cloth": "5a2a22", "trim": "d0b070", "hair": "3a2a1a"}},
-		"letter": {"name": "A letter", "stage": "letter", "color": "e8e2d0", "colors": {"skin": "f1d9c6", "cloth": "ece6d6", "trim": "6a3a8a", "hair": "d9d2c0"}}
+		"letter": {"name": "A letter", "stage": "letter", "color": "e8e2d0", "colors": {"skin": "f1d9c6", "cloth": "ece6d6", "trim": "6a3a8a", "hair": "d9d2c0"}},
+		"odo": {"name": "Brother Odo", "color": "8a6a4a", "colors": {"skin": "d8b494", "cloth": "5a4632", "trim": "a08a5a", "hair": "4a3a2a"}},
+		"wulfstan": {"name": "Abbot Wulfstan", "color": "8a3a34", "colors": {"skin": "e0c8b0", "cloth": "1e1a1e", "trim": "c9a54a", "hair": "d8d4cc"}},
+		"ebba": {"name": "Prioress Ebba", "color": "a05a4a", "colors": {"skin": "e0c0a4", "cloth": "2a2628", "trim": "d8d0c0", "hair": "6a5a4a"}},
+		"askew": {"name": "First Reader Askew", "color": "d8d2c4", "colors": {"skin": "e8ccb0", "cloth": "e8e4d8", "trim": "a08a5a", "hair": "8a6a4a"}}
 	},
 	"talks": {
 		"ch1_arrest": {"title": "Chapter 1  ·  No Such Person", "lines": [
@@ -84,7 +88,158 @@
 			["letter", "'Please stop pushing the white back. It is only trying to help. Fondly, and with regret for what comes next: V. Hale.'"],
 			["quill", "She has lovely handwriting. I'd like to set it on fire.", "angry"],
 			["bran", "Polite letters are the worst kind. Means they already decided.", "sad"],
-			["", "Outside, the Blank hums against the edges of the map. Hollowmark holds. For now, that is enough."]
+			["", "Outside, the Blank hums against the edges of the map. Hollowmark holds. For now, that is enough."],
+			["", "That night every bell in the north begins to ring at once, and does not stop. By morning the fog over Saint Ledger's has lifted, as if something up there wants to be found."]
+		]},
+		"ch2_bells": {"title": "Chapter 2  ·  The Copying Monks", "lines": [
+			["", "The bells have rung for three days. Every hour, all at once, from the hills in the north. The dogs of Hollowmark have stopped barking back."],
+			["", "On the fourth morning a monk walks in at the south gate in sandals worn down to string. He asks for whoever is in charge. Everyone points at you, then looks embarrassed."],
+			["odo", "Brother Odo, of Saint Ledger's. I was sent to the Concord for help. The Concord sent me back with a receipt."],
+			["odo", "So I came to the person the Concord is most annoyed with. Brother Cellarer said that was practical. Brother Cellarer is blank now. Or dead. We are not sure which."],
+			["quill", "Saint Ledger's keeps the second copy of the Ledger. Every name, every deed, every debt. If the capital's copy burned, the monks would write the world back."],
+			["odo", "We would. We are trying. The Abbot has us copying day and night. He has every hour rung at once, so that no brother sleeps through his turn."],
+			["odo", "And the pages come out blank. We write, and the ink sinks into the paper and does not come back up. Some brothers have started copying the blank pages. Very carefully."],
+			["bran", "So the monks have gone mad and the bells won't shut up. What's that to us?"],
+			["odo", "Candleford makes our candles. Without candles we copy in the dark. And the Erasers are burning the wax barges on the lake."],
+			["ninefingers", "Erasers. White coats, tapers. Read the names out before they light a fire. Verity's lot. Saw one burn a tithe barn once. Read every name off the door first. Very polite."],
+			["odo", "They say the Abbey's books are lies, and they may be right. But if the books burn, the brothers who are still written in them go too."],
+			["quill", "Candleford is free land on the lake. Nobody has claimed it. Save the barges and the town will owe you. Towns that owe you are my favourite kind of town."],
+			["bran", "Monks pay late. Write that down, Quill."],
+			["quill", "Filed, as it were."]
+		]},
+		"ch2_candleford_intro": {"title": "Candleford", "lines": [
+			["", "Candleford smells of tallow and smoke. Out on the lake a barge is burning with a clean white flame that gives off no heat at all."],
+			["nell", "You! Are you the Abbey's? No, you've got boots on. Good. Get down to the jetty before they light the last one."],
+			["nell", "Nell Tapper. I make the candles. I also run the town, since the reeve ran off with the strongbox. Two jobs. No wages."],
+			["bran", "Who's lightin' 'em?"],
+			["nell", "White coats. They read out a list of names at every barge and then set it going. Whose names, I asked. Ones you never heard of, they said. That's the point, they said."]
+		]},
+		"ch2_candleford_outro": {"title": "The Last Barge", "lines": [
+			["", "The last barge rocks at the jetty, scorched down one side, its wax sweating in the sun. Out on the lake the white flames go out one at a time."],
+			["nell", "One barge. One out of six. The Abbey will say I owe them five."],
+			["nell", "Right. You saved it, so you get a say. Whoever holds Candleford, I'll keep the wicks coming. Put somebody sensible in the reeve's chair and the Abbey gets its wax."],
+			["", "Pinned to a jetty post with a taper is a list of names in a careful hand. At the bottom it says: 'Read at Candleford, for those the Ledger forgot. Askew, First Reader.'"],
+			["bran", "Nice writin'. I hate 'em already."]
+		]},
+		"ch2_candleford_after": {"title": "Wax for the Abbey", "lines": [
+			["", "A wax barge reaches Saint Ledger's, and for one night the Abbey's windows are lit. The bells keep ringing. Brother Odo comes back down the north road with a letter sealed in red."],
+			["odo", "From Prioress Ebba. The Abbot does not write letters any more. He says letters are copies, and copies are his business."],
+			["quill", "Ahem. 'Saint Ledger's thanks Candleford's new keeper for the wax. The Abbey will receive the keeper once Candleford is properly governed, and not before. We do not deal with towns run by passers-by.'"],
+			["bran", "Passers-by. We saved their candles."],
+			["ninefingers", "Fair, though. Town with no governor is a town with nobody to blame. Put a name in the chair."],
+			["quill", "Post a governor in Candleford from the Governors screen. The Prioress wants someone to blame, and frankly so do I."]
+		]},
+		"ch2_hall_ready": {"title": "An Invitation", "lines": [
+			["odo", "Your governor sent the Prioress a list of the Abbey's unpaid candle bills. She was furious. Then she invited you."],
+			["odo", "Come to the Abbey, she says. Come armed. The cloister walk is not safe after dark, and it is always dark now."],
+			["gristle", "Monks asking for visitors to come armed. Lovely, that is. I'll bring the good bottles, shall I?", "smug"]
+		]},
+		"ch2_hall_intro": {"title": "Saint Ledger's", "lines": [
+			["", "The Abbey gate stands open. Candles burn in every niche of the cloister walk, and between them the stone is going white in patches, like damp."],
+			["ebba", "You are the passer-by. I am Prioress Ebba. I keep the house while the Abbot keeps the books."],
+			["ebba", "The copying hall is through the walk. Three lecterns, forty brothers who will not stop writing, and things in the walk that used to be brothers."],
+			["ebba", "Light the candles at the lecterns and the copyists will see what they write. Perhaps then they will notice it is nothing."],
+			["bran", "And the things in the walk?"],
+			["ebba", "They do penance. With their hands. Do not let them touch your face. They wipe off what they touch."]
+		]},
+		"ch2_hall_abbot": {"title": "The Copying Hall", "lines": [
+			["", "The candles catch. In the copying hall forty monks sit at forty desks, writing fast. Every page in front of them is blank. Every page stacked behind them is blank. Nobody looks up."],
+			["", "At the head of the hall a tall old man in a black habit dips a quill and writes on the air. Where he writes, the air goes white."],
+			["wulfstan", "Prioress. You have let in a draught."],
+			["ebba", "Father Abbot, this is the keeper of Candleford. They brought the wax."],
+			["wulfstan", "Good. Then they may copy. Sit. There is a desk. There is always a desk."],
+			["wulfstan", "The capital's Ledger is going. Did they tell you? Page by page. When it is gone, ours is the world. So we copy. We copy the copy. We copy ourselves, if we must."],
+			["bran", "Your pages are blank, mate."],
+			["wulfstan", "Then the world is blank, and we shall copy that faithfully too. Fidelity is the whole of the Rule."],
+			["", "He turns back to the air. The Prioress takes your arm and walks you out, quickly, without looking at the desks."],
+			["ebba", "He wrote the first new hymn this house had sung in a hundred years. Now he writes the hours on the air and calls it the Office."],
+			["ebba", "Someone may know why the ink will not hold. Sister Osyth kept the crypts under the Bonefield Cloister. The Erasers took the Bonefield a month ago. Nobody has heard from her since."],
+			["ebba", "Bring her out and the Abbey will owe you. I do not say that lightly. We owe the Concord already, and look where it got us."]
+		]},
+		"ch2_hall_after": {"title": "Taxed as Pasture", "lines": [
+			["quill", "I looked up the Bonefield Cloister in my old Concord books. Per the Ledger, the hill was always empty. No cloister, no graves. Taxed as pasture."],
+			["quill", "Which is odd, because there is a cloister on it. I have a drawing."],
+			["ninefingers", "Erasers hold it. Camp at the top, fires going day and night. Form E-1: enemy dug in. Form E-2: enemy smug about it."],
+			["bran", "Dig an old nun out from under an Eraser camp. That's hazard pay, that is. On the bill."]
+		]},
+		"ch2_hild": {"title": "Sister Hild", "lines": [
+			["abeyance", "Oh. You've been to the Abbey. You smell of it. Beeswax and wet stone and the Abbot's ink, which is made with something I never asked about."],
+			["abeyance", "I left because the page started writing back. The Abbot used to say a scribe's hand belongs to the Rule. Mine kept wandering off."],
+			["abeyance", "The voices have been louder since you said the word Bonefield. Hundreds of them. Very polite. They keep asking who is counting them."],
+			["abeyance", "Sister Osyth counted them, I think. She still is, probably. Do bring her back. She was horrible to me for six years, God keep her, and I miss her."]
+		]},
+		"ch2_crypt_intro": {"title": "The Bonefield", "lines": [
+			["", "The Bonefield Cloister sits on a bald hill. The Erasers have pitched white tents in the ruined garth, and a book-pyre burns in front of the chapel without any smoke."],
+			["askew", "Visitors. Welcome. I am Askew, First Reader. You are the one the Blank gave back, and you have come to stop us burning things. That's sweet."],
+			["askew", "Before you start, will you hear a name? We read them before every fire. Hollin Marsh, aged six, struck out for her father's debts. There. Now somebody has said it."],
+			["ninefingers", "Heard that list before. Doesn't make your fire any less of a fire."],
+			["askew", "No. But it makes it an honest one. Readers! The Unwritten wants to argue."]
+		]},
+		"ch2_osyth": {"title": "The Crypt-Keeper", "lines": [
+			["", "The ossuary is lined floor to ceiling with skulls in neat rows. Every row has a chalk number. An old nun with a board on a string is chalking the next one."],
+			["osyth", "Eleven thousand four hundred and four. Don't jog my elbow."],
+			["osyth", "You'll be the noise upstairs. Took you long enough. The Erasers sealed me in a month back, and the Blank's been at the bottom rows since."],
+			["osyth", "Eleven thousand four hundred and five. The Concord says this hill was always empty. I've been counting the empty for forty years."],
+			["bran", "Time to go, Sister."],
+			["osyth", "Not till I've counted the last of them. They're behind the Founders' Door. Hold the stair while I open it, and keep your feet off the numbers."]
+		]},
+		"ch2_verity": {"title": "The Unedited Page", "lines": [
+			["", "Behind the Founders' Door is a small chamber with one stone shelf. On it sits a single skull, smaller than the others. A woman in a pale archivist's coat sits on the floor beside it, reading."],
+			["verity", "Hello again. Please don't hit anything. The ceiling is very old and I am very tired."],
+			["osyth", "Eleven thousand four hundred and six. That's all of them."],
+			["verity", "Thank you, Sister. You are the only person who has ever got the number right. The Concord's own drafts say eleven thousand. They rounded."],
+			["verity", "I brought you something. I thought you should see it before you decide whose side the Abbey is on."],
+			["", "She holds out a page. Unlike every page in the copying hall, this one is full: columns of names in an old clerk's hand, and across the top a heading struck through with one neat line."],
+			["verity", "The Bonefield Rising. Three hundred years ago this valley refused a tithe. The Concord answered. Afterwards it struck the valley out of the Ledger, and the monks built their Abbey on top and copied a Ledger that said the hill was always empty."],
+			["verity", "Every page they have copied since rests on this one. That is why the ink will not hold, I should think. It is sitting on eleven thousand people it was told to forget."],
+			["ninefingers", "Ink doesn't care about history. You're telling stories."],
+			["verity", "I am reading drafts. It is my profession. It was."],
+			["bran", "So what d'you want? You ain't come all the way down 'ere for a chat."],
+			["verity", "I wanted you to know what you are defending when you defend their books. That is all. I do not want to fight you. I rather like you. It is going to make next year very difficult."],
+			["", "She stands and brushes off her coat. Then she looks past you at the dark corner of the chamber and tilts her head, as if someone there had said something she did not quite catch."],
+			["verity", "Yes. In a moment."],
+			["", "She walks into the wall. For a breath the wall is white, and then it is a wall again."],
+			["osyth", "She left the count alone. Good. I'd have had words."]
+		]},
+		"ch2_verity_after": {"title": "Several Abbots", "lines": [
+			["osyth", "Your table's crooked. I'll see to it. First, the Abbot."],
+			["osyth", "I told the Prioress what's under the Bonefield. She went white. Then she went to tell the Abbot, and he locked the copying hall and started copying himself."],
+			["quill", "Copying himself. In what sense?"],
+			["osyth", "In the sense that there's four Abbots in the hall now, all writing. One's real. The others are very good copies."],
+			["ninefingers", "Put down the real one and the copies stop. Standard."],
+			["osyth", "The Prioress won't let outsiders near her Abbot till the Abbey trusts you. Earn it. Gifts, trade, whatever they ask for. Then come back with a sharp stick."],
+			["quill", "The Abbey's standing is on the Diplomacy screen. Monks, it turns out, respond to money and to candles in roughly equal measure."]
+		]},
+		"abbot_intro": {"title": "The Abbot Who Copied Himself", "lines": [
+			["", "The copying hall has emptied into the cloister garth. The forty desks stand in the wet grass. Among the yews, men in black habits walk in step, each with a crozier, each writing on the air."],
+			["ebba", "Father Wulfstan. Father. Please. It is Ebba."],
+			["wulfstan", "Prioress. Which of us are you speaking to? We are all the Abbot. I made certain. If the first copy fails, there is the second."],
+			["wulfstan", "The Bonefield. Yes. The sister told you. I knew. Every abbot knows. We copy the empty hill so that it stays empty. That is the Office."],
+			["wulfstan", "And now the ink will not hold. So I shall hold it. Faithfully. Forever. Several of me."],
+			["bran", "Only one of 'em bleeds. The rest is paper."],
+			["ebba", "Watch his hands. The real one's hands are always inky. He never in his life wrote clean."]
+		]},
+		"abbot_phase2": {"title": "The Second Copy", "lines": [
+			["", "The Abbot staggers. Ink runs out of his sleeves onto the grass. Around the garth every copy stops, turns, and looks at him at once."],
+			["wulfstan", "Half. You have struck out half of me. Then the other half shall be copied twice as carefully."],
+			["ebba", "He is calling the penitents in from the walk. And mind the gold leaf: when he illuminates, get well back."]
+		]},
+		"abbot_outro": {"title": "Blank Paper", "lines": [
+			["", "The copies crumple one after another, until the garth is littered with blank sheets the shape of an old man. The real Abbot kneels among them with one sheet held to his chest."],
+			["wulfstan", "I copied it so carefully. Every hill. Every empty hill."],
+			["ebba", "I know, Father."],
+			["wulfstan", "Prioress. Count them for me. Someone should."],
+			["", "He does not get up again. The bells stop. After a while one of them starts again, on the hour, alone."]
+		]},
+		"ch2_end": {"title": "The House Keeps Silence", "lines": [
+			["", "Saint Ledger's bells ring the hours one at a time again. In the copying hall the brothers have stopped writing. Some of them are asleep at their desks for the first time in a month."],
+			["ebba", "We buried him by the Founders' Door, with the eleven thousand. He would have hated that. He would also have understood it."],
+			["ebba", "The Abbey will not copy the Ledger any more. We are going to copy Sister Osyth's board instead. All of it, with the heading put back."],
+			["osyth", "Took three hundred years. Spelling had better be right."],
+			["ebba", "The Concord will call this treason. The Erasers will call it too little. Both of them are right. The Abbey's door is open to you, keeper. Mind the draught."],
+			["bran", "Monks owe us. Monks pay late. Still. It's a start."],
+			["", "That night a letter lies on the Command Table, weighed down with a smooth white stone. It says only: 'Thank you for counting them. Fondly, V.'"],
+			["", "Under her name, in a different ink, someone has drawn a single black bar."]
 		]}
 	},
 	"beats": [
@@ -97,8 +252,20 @@
 			"card": ["New story mission: The Concord Answers", "Meet the tithe column at Old Mill Crossing (territory map)."]},
 		{"talk": "act1_concord_after", "when": {"cleared": ["act1_concord"]},
 			"card": ["New story mission: The Auditor", "Stop him on the Tithe Road before he strikes out Hollowmark."]},
-		{"talk": "act1_end", "when": {"cleared": ["auditor_duel"]},
-			"card": ["Act 1 complete: The Unregistered Town", "Verity Hale has made her offer. Until she makes her move, the Marches are yours to hold. New goals are under Story in the pause menu."]}
+		{"talk": "act1_end", "when": {"cleared": ["auditor_duel"]}, "then": "open_region:abbey",
+			"card": ["Act 1 complete: The Unregistered Town", "Verity Hale has made her offer. The fog has lifted over Saint Ledger's Abbey, in the north. Hold six provinces and the north will send for you."]},
+		{"talk": "ch2_bells", "when": {"seen": ["act1_end"], "held": 6},
+			"card": ["Chapter 2: The Copying Monks", "New story mission: The Wax Barges. Candleford, on the lake in the north (territory map)."]},
+		{"talk": "ch2_candleford_after", "when": {"cleared": ["ch2_candleford"]}},
+		{"talk": "ch2_hall_ready", "when": {"cleared": ["ch2_candleford"], "governs": ["candlemere"]},
+			"card": ["New story mission: The Copying Hall", "Saint Ledger's Abbey (territory map). Prioress Ebba will meet you at the gate."]},
+		{"talk": "ch2_hall_after", "when": {"cleared": ["ch2_hall"]},
+			"card": ["New story mission: The Crypts", "The Bonefield Cloister, held by the Erasers (territory map). Find Sister Osyth."]},
+		{"talk": "ch2_hild", "when": {"seen": ["ch2_hall_after"], "joined": ["abeyance"]}},
+		{"talk": "ch2_verity_after", "when": {"cleared": ["ch2_crypt"]},
+			"card": ["New story mission: The Abbot Who Copied Himself", "Saint Ledger's Abbey. The Prioress opens the hall once the Abbey is at least Neutral with you (Diplomacy)."]},
+		{"talk": "ch2_end", "when": {"cleared": ["ch2_abbot"]},
+			"card": ["Chapter 2 complete: The Copying Monks", "The Abbey's door is open and the Erasers know your name. The north is yours to hold until the Causeway calls. New goals are in the journal."]}
 	],
 	"goals": [
 		{"text": "Escape the tax office", "chapter": "ch1", "hint": "Get past the wardens and out through the front door", "done": {"cleared": ["ch1_breakout"]}, "show": {"active": true}},
@@ -108,7 +275,16 @@
 		{"text": "The Concord Answers: break the tithe column", "chapter": "act1", "hint": "story mission at Old Mill Crossing", "done": {"cleared": ["act1_concord"]}, "show": {"seen": ["act1_writ"]}},
 		{"text": "The Auditor: stop him on the Tithe Road", "chapter": "act1", "hint": "story mission at Tithe Road", "done": {"cleared": ["auditor_duel"]}, "show": {"seen": ["act1_concord_after"]}},
 		{"text": "Take Whitewater back from the Blank", "chapter": "act1", "hint": "Reclaim mission on the territory map, then claim it with a governor", "done": {"owns": ["whitewater"]}, "show": {"seen": ["act1_end"]}},
-		{"text": "Hold six provinces", "chapter": "act1", "hint": "claim free neighbours from the Command Table", "done": {"held": 6}, "show": {"seen": ["act1_end"]}},
-		{"text": "Win a seventh province by treaty", "chapter": "act1", "hint": "a faction that likes you enough will cede land (Diplomacy{tag:diplomacy})", "done": {"held": 7}, "show": {"seen": ["act1_end"]}}
+		{"text": "Hold six provinces", "chapter": "act1", "hint": "claim free neighbours from the Command Table. Chapter 2 begins once you do", "done": {"held": 6}, "show": {"seen": ["act1_end"]}},
+		{"text": "Win a seventh province by treaty", "chapter": "act1", "hint": "a faction that likes you enough will cede land (Diplomacy{tag:diplomacy})", "done": {"held": 7}, "show": {"seen": ["act1_end"]}},
+		{"text": "The Wax Barges: save Candleford's last barge", "chapter": "ch2", "hint": "story mission at Candleford, in the north", "done": {"cleared": ["ch2_candleford"]}, "show": {"seen": ["ch2_bells"]}},
+		{"text": "Put a governor in Candleford", "chapter": "ch2", "hint": "Governors{tag:govern}: the Prioress only deals with a town someone runs", "done": {"governs": ["candlemere"]}, "show": {"seen": ["ch2_candleford_after"]}},
+		{"text": "The Copying Hall: light the lecterns", "chapter": "ch2", "hint": "story mission at Saint Ledger's Abbey", "done": {"cleared": ["ch2_hall"]}, "show": {"seen": ["ch2_hall_ready"]}},
+		{"text": "The Crypts: bring Sister Osyth out of the Bonefield", "chapter": "ch2", "hint": "story mission at the Bonefield Cloister", "done": {"cleared": ["ch2_crypt"]}, "show": {"seen": ["ch2_hall_after"]}},
+		{"text": "Win Neutral standing with the Abbey", "chapter": "ch2", "hint": "gifts, trade and the Abbey's asks in Diplomacy{tag:diplomacy}", "done": {"standing": {"abbey": "neutral"}}, "show": {"seen": ["ch2_verity_after"]}},
+		{"text": "The Abbot Who Copied Himself", "chapter": "ch2", "hint": "story mission at Saint Ledger's Abbey", "done": {"cleared": ["ch2_abbot"]}, "show": {"seen": ["ch2_verity_after"]}},
+		{"text": "Win the Abbey's friendship", "chapter": "ch2", "hint": "a Friendly Abbey speeds up research, and a lost brother waits at its gate", "done": {"standing": {"abbey": "friendly"}}, "show": {"seen": ["ch2_end"]}},
+		{"text": "Hold Scarth Pass", "chapter": "ch2", "hint": "claim it from the Command Table once a neighbour is yours", "done": {"owns": ["quillpine"]}, "show": {"seen": ["ch2_end"]}},
+		{"text": "Hold nine provinces", "chapter": "ch2", "hint": "claim, reclaim or win land by treaty", "done": {"held": 9}, "show": {"seen": ["ch2_end"]}}
 	]
 }

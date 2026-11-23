@@ -130,6 +130,10 @@ func test_recruits() -> void:
 				check(int(j.get("amount", 0)) > 0, "%s: renown amount" % w)
 			"bond":
 				check(D["bonds.json"]["cast"].has(j.get("who", "")), "%s: bond with %s, who has no bond" % [w, j.get("who")])
+			"story":  # issue #28: joins when a story mission is won (its on_success join names them)
+				var sm: Array = D["missions.json"]["missions"].filter(func(m): return m.get("id", "") == j.get("mission", ""))
+				check(sm.size() == 1, "%s: story mission %s missing" % [w, j.get("mission")])
+				check(sm.size() == 1 and id in sm[0].get("on_success", {}).get("join", []), "%s: %s does not bring them in (on_success join)" % [w, j.get("mission")])
 			var other:
 				check(false, "%s: unknown join type %s" % [w, other])
 		_res_keys(w + " hire", r.get("hire", {}))

@@ -37,9 +37,9 @@
 		"marsh": {"name": "Whispering marsh", "maps": ["saltreed", "saltreed_b", "saltreed_c"]},
 		"river": {"name": "River crossing", "maps": ["gallows", "gallows_b", "gallows_c"]},
 		"road": {"name": "Concord road", "maps": ["tithe_road", "tithe_road_b", "tithe_road_c"]},
-		"abbey": {"name": "Abbey grounds", "maps": []},
-		"lakeshore": {"name": "Lakeshore", "maps": []},
-		"mountain": {"name": "Mountain pass", "maps": []},
+		"abbey": {"name": "Abbey grounds", "maps": ["abbey", "abbey_b", "abbey_c"]},
+		"lakeshore": {"name": "Lakeshore", "maps": ["lakeshore", "lakeshore_b", "lakeshore_c"]},
+		"mountain": {"name": "Mountain pass", "maps": ["scarth", "scarth_b", "scarth_c"]},
 		"causeway": {"name": "Bridge-city", "maps": []},
 		"coast": {"name": "Unfinished coast", "maps": []},
 		"capital": {"name": "Capital streets", "maps": []}
@@ -107,14 +107,14 @@
 		},
 		{
 			"id": "abbey", "name": "Saint Ledger's Abbey", "region": "abbey", "biome": "abbey", "pos": [0.677, 0.127], "weight": 1.05,
-			"owner": "concord", "fray": 18, "output": {"ink": 2, "gilt": 3}, "sites": ["Copying hall", "Bell tower"],
+			"owner": "abbey", "fray": 18, "output": {"ink": 2, "gilt": 3}, "sites": ["Copying hall", "Bell tower"],
 			"favors": "lore", "favors_why": "The monks only answer someone who can quote the Ledger back at them.",
 			"blurb": "Monks copy the Ledger by hand, forever, in blood. Lately the pages come out blank."
 		},
 		{
 			"id": "ossuary", "name": "Bonefield Cloister", "region": "abbey", "biome": "abbey", "pos": [0.765, 0.161], "weight": 1.05,
-			"owner": "free", "fray": 30, "output": {"ink": 1, "supplies": 3}, "sites": ["Charnel chapel"],
-			"favors": "grit", "favors_why": "The ground is soft here, and the monks do not dig. Steady nerves only.", "claim": {"gilt": 80, "supplies": 16},
+			"owner": "erasers", "fray": 30, "output": {"ink": 1, "supplies": 3}, "sites": ["Charnel chapel", "Eraser camp"],
+			"favors": "grit", "favors_why": "The ground is soft here, and the monks do not dig. Steady nerves only.",
 			"blurb": "An outlying cloister on ground the Ledger says was always empty. The ground disagrees."
 		},
 		{

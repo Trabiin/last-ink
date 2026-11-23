@@ -2,7 +2,7 @@ extends Control
 ## Research screen (the Scriptorium). Opened with T, from the menus, the Research button on the
 ## Command Table, or by walking up to the Scriptorium in town.
 ##
-## One plain list (Up/Down, Enter, Esc; mouse and touch tap): four branches of three nodes.
+## One plain list (Up/Down, Enter, Esc; mouse and touch tap): a branch of three nodes each for the four Hollowmark branches and every chapter branch.
 ## Enter on a node starts studying it (paying its cost the first time), Enter on the node being
 ## studied sets it aside. Study runs on the Command clock; researchers' Lore sets the pace.
 
@@ -18,7 +18,7 @@ const INSIGHT := Color("d7b8f0")
 const ROW_H := 15.0
 const HEAD_H := 13.0
 const LIST_W := 318.0
-const BRANCH_COLORS := {"wardcraft": Color("e8c66a"), "logistics": Color("b7c98a"), "inkcraft": Color("8fa7e8"), "arms": Color("e89a8a")}
+const BRANCH_COLORS := {"wardcraft": Color("e8c66a"), "logistics": Color("b7c98a"), "inkcraft": Color("8fa7e8"), "arms": Color("e89a8a"), "abbey": Color("d98a7a")}
 
 var sel := 0
 var closed_frame := -1

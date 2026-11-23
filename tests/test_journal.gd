@@ -83,7 +83,7 @@ func test_journal_data_is_complete_and_well_formed() -> void:
 			check(not Empire.faction(e["faction"]).is_empty(), w + ": no faction " + str(e["faction"]))
 			linked["faction"][e["faction"]] = true
 		if e.has("enemy"):
-			check(kinds.has(e["enemy"]) or e["enemy"] == "auditor", w + ": no enemy kind " + str(e["enemy"]))
+			check(kinds.has(e["enemy"]) or BossFight.BOSSES.has(e["enemy"]), w + ": no enemy kind " + str(e["enemy"]))
 			check(str(e.get("habits", "")) != "" and str(e.get("weakness", "")) != "", w + ": habits and weakness")
 			linked["enemy"][e["enemy"]] = true
 		if e.has("ink"):
@@ -177,7 +177,8 @@ func test_quest_log_personal_factions_and_open_missions() -> void:
 	check_eq(g["state"], "done", "done once it is done")
 	# Factions: what each wants next.
 	var fq := Journal.faction_quests()
-	check_eq(fq.size(), Empire.faction_ids().size(), "one row per known faction")
+	check_eq(fq.size(), Empire.faction_ids().filter(func(f): return Journal.faction_known(f)).size(), "one row per known faction")
+	check(not fq.any(func(x): return x["id"] == "faction_abbey"), "the Abbey is not listed while its region is under the fog")
 	for f in fq:
 		check(f["next"] != "" and f["target"].get("view", "") == "diplomacy", "%s: next step and Diplomacy" % f["title"])
 	Empire.standing["concord"] = -60
@@ -274,8 +275,9 @@ func test_old_saves_get_a_journal() -> void:
 	Empire.from_dict(r["data"]["empire"])
 	var aud: Dictionary = Journal.codex_in("enemies").filter(func(x): return x["id"] == "enemy_auditor")[0]
 	check(aud["unlocked"] and aud["paras"].any(func(p): return p.begins_with("Weakness: Step sideways")), "the Auditor's page is open, weakness and all")
-	check_eq(Journal.current_chapter().get("id", ""), "act1", "the history knows it is Act 1")
-	check(Journal.chapter_done(Journal.current_chapter()), "and that Act 1 is finished")
+	check_eq(Journal.current_chapter().get("id", ""), "ch2", "past the End of Act 1, the history is on Chapter 2 (issue #28)")
+	var act1: Array = Journal.data()["chapters"].filter(func(c): return c["id"] == "act1")
+	check(act1.size() == 1 and Journal.chapter_done(act1[0]), "and knows Act 1 is finished")
 
 
 # ------------------------------------------------------------------ the screen

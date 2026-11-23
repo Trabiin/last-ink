@@ -35,6 +35,16 @@ const BLANK_GAP := 5  # ...but never closer than this to anything the mission ne
 static var _data := {}
 
 
+
+## What a Reclaim costs and leaves behind. The Abbey's Second Copy (research, issue #28) writes it back cheaper
+## and stronger.
+static func reclaim_ink() -> int:
+	return RECLAIM_INK - (1 if Empire.has_research("second_copy") else 0)
+
+
+static func reclaim_fray() -> int:
+	return RECLAIM_FRAY - (15 if Empire.has_research("second_copy") else 0)
+
 static func data() -> Dictionary:
 	if _data.is_empty():
 		var parsed = Loc.load_json(DATA)
@@ -162,14 +172,14 @@ static func reclaim(p: Dictionary) -> Dictionary:
 		reachable = reachable or t.provinces[n]["owner"] != "erased"
 	if not reachable:
 		blocker = Loc.t("nothing standing borders it: reclaim a neighbour first")
-	elif int(Empire.res.get("ink", 0)) < RECLAIM_INK:
-		blocker = Loc.t("needs %d Ink to rewrite (you have %d)") % [RECLAIM_INK, int(Empire.res.get("ink", 0))]
+	elif int(Empire.res.get("ink", 0)) < reclaim_ink():
+		blocker = Loc.t("needs %d Ink to rewrite (you have %d)") % [reclaim_ink(), int(Empire.res.get("ink", 0))]
 	var m := {
 		"id": "reclaim_" + p["id"], "type": "reclaim", "effects": true, "province": p["id"],
 		"name": Loc.t("Reclaim %s") % p["name"], "threat": 3,
 		"brief": Loc.t("Push into the white and break the Blot that holds %s. It spits Nibblers while it lives. Win, and %d Ink rewrites the land: it comes back unclaimed at %d Fray.") \
-			% [p["name"], RECLAIM_INK, RECLAIM_FRAY],
-		"cost_text": Loc.t("%d Ink on success") % RECLAIM_INK,
+			% [p["name"], reclaim_ink(), reclaim_fray()],
+		"cost_text": Loc.t("%d Ink on success") % reclaim_ink(),
 		"rewards": {"renown": 2},
 		"blocker": blocker,
 	}
@@ -367,12 +377,12 @@ static func apply(m: Dictionary, outcome: String, dry := false) -> Array:
 				lines.append(Loc.t("The surge still lands on %s in %d day%s.") % [p["name"], Empire.surge_days_left(), "" if Empire.surge_days_left() == 1 else "s"])
 		"reclaim":
 			if won and p["owner"] == "erased":
-				lines.append(Loc.t("%d Ink rewrites %s: back on the map, unclaimed, Fray %d.") % [RECLAIM_INK, p["name"], RECLAIM_FRAY])
+				lines.append(Loc.t("%d Ink rewrites %s: back on the map, unclaimed, Fray %d.") % [reclaim_ink(), p["name"], reclaim_fray()])
 				lines.append(Loc.t("Claim it from the Command Table with a governor%s.") % Prompts.tag("govern"))
 				if not dry:
-					Empire.res["ink"] = maxi(int(Empire.res.get("ink", 0)) - RECLAIM_INK, 0)
+					Empire.res["ink"] = maxi(int(Empire.res.get("ink", 0)) - reclaim_ink(), 0)
 					p["owner"] = "free"
-					p["fray"] = RECLAIM_FRAY
+					p["fray"] = reclaim_fray()
 					p["scar"] = 0
 					Empire.notice.emit(Loc.t("%s has been reclaimed from the Blank.") % p["name"], false)
 			elif not won:
