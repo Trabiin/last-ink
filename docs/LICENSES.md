@@ -14,11 +14,11 @@ found; anything marked **Ojon** needs a decision or a check only Ojon can make (
 |---|---|---|
 | CC0 art and audio | All 4 sources confirmed CC0 on their OpenGameArt pages | None |
 | Fonts (OFL 1.1) | Fine for commercial games; licence text must travel with the font | Done: texts in THIRD_PARTY_LICENSES.md, shipped with every build |
-| Godot Engine (MIT) | Notice must be included in the game or its docs | Done: credits row + full notices in THIRD_PARTY_LICENSES.md, shipped next to desktop and web builds. In-game full text: see "Open items" |
+| Godot Engine (MIT) | Notice must be included in the game or its docs | Done: credits row and full MIT notice in-game, full notices in THIRD_PARTY_LICENSES.md shipped with every build |
 | PixelLab | Terms (updated 2026-10-30): we own the output, commercial use allowed, **no difference between free trial, subscription and API** | Ash's base character came from free-trial gens; terms cover it, and the pricing page's free-trial card says so too (screenshot saved 2026-11-23) |
 | OpenAI images | Output is assigned to us; commercial use allowed; we must not claim AI output is human-made | Disclosure is #164's job; nothing to replace |
 | Code-made audio and FX | Ours | None |
-| Name "Last Ink" | No trademark (TMview, BOIP) and no game called "Last Ink" on Steam or itch.io (2026-11-23). Nearest: *Last Inkwarden*, a free itch.io beta with a similar ink/erased-history theme | Keep the name. Handles still to check (optional) |
+| Name "Last Ink" | No trademark (TMview, BOIP) and no game called "Last Ink" on Steam or itch.io (2026-11-23). Nearest: *Last Inkwarden*, a free itch.io beta with a similar ink/erased-history theme | Keep the name. lastink.com, lastinkgame.com and @lastinkgame are all free (2026-11-23); registering is Ojon's call |
 
 Nothing in `assets/` has unclear terms, so nothing has to be replaced or regenerated.
 
@@ -112,17 +112,17 @@ blocked from this environment, so these need a quick manual pass, see below).
 | US trademarks (Justia index of USPTO, 2026-11-21) | No "LAST INK" mark found. Nearest marks are unrelated ink/printing names (LIVING INK, LIVE INK, ETERNAL INK, THE LAST INCH) |
 | TMview, all offices incl. EUIPO, US, UK (Ojon, 2026-11-23) | No "Last Ink" mark. 33 fuzzy matches, none the same name; the nearest game marks are THE LAST TINKER (EU/UK/US, classes 9 and 41) and LASTLINK (US 41, DE 9), both clearly different. Export in project files `last-ink/legal/tmview-last-ink-2026-11-23.xlsx` |
 | Benelux register (BOIP, Ojon, 2026-11-23) | 0 results for "last ink" (BX, EU and international filters on). Screenshot `last-ink/legal/boip-search-2026-11-23.png` |
-| Domains and handles | Not checked (lookups blocked here). Fallbacks if `lastink.com` is taken: `lastinkgame.com`, `playlastink.com`; handle `@lastinkgame` |
+| Domains and handles (Ojon, 2026-11-23) | `lastink.com` and `lastinkgame.com` both free; `@lastinkgame` free on X, Bluesky, TikTok and YouTube. Not registered yet |
 
-No trademark or store conflict. Handles are still open:
+No trademark, store, domain or handle conflict. All checks done:
 
 **Ojon, before the Steam store page (#151), about 10 minutes, all free:**
 1. ~~Steam~~ Done 2026-11-23: nothing called Last Ink.
 2. ~~itch.io~~ Done 2026-11-23: nearest is Last Inkwarden (see table).
 3. ~~EU + national marks on TMview and the Benelux register~~ Done 2026-11-23: nothing.
 4. ~~US marks~~ Covered by the TMview search (it includes the USPTO).
-5. Domain and handles: check lastink.com / lastinkgame.com at any registrar, and @lastinkgame on X, Bluesky,
-   TikTok, YouTube. Buying a domain (~$10 a year) is optional and Ojon's call.
+5. ~~Domain and handles~~ Done 2026-11-23: all free. Registering the domain (~$10 a year) and claiming the
+   handles before the store page goes up is optional and Ojon's call; nothing was bought.
 
 **Verdict on Last Inkwarden:** no legal issue (different title and genre, no registered mark on either side), so we keep "Last Ink". It only affects search: our store pages should show our own key
 art and tagline prominently, and a subtitle later (e.g. "Last Ink: ...") is an option if confusion ever shows up.
@@ -133,10 +133,9 @@ one class at the EUIPO) and not needed to sell on Steam.
 
 ## 6. Open items
 
-- **In-game licence text (web build):** the Credits screen lists Godot (MIT) and the asset licences; the full
-  texts ship as `THIRD_PARTY_LICENSES.md` next to desktop builds and the web build, and inside the game pack.
-  Showing the full text in-game (Godot's `Engine.get_license_text()` plus this file) belongs in the Credits
-  screen, which #164 is editing now; follow-up after that merges.
+- ~~In-game licence text~~ Done: Title > Credits ends with Godot's full MIT notice (`Engine.get_license_text()`,
+  `scripts/title.gd` `licence_lines()`) and points to `THIRD_PARTY_LICENSES.md`, which ships next to desktop
+  builds and the web build and inside the game pack. Credit rows now wrap too.
 - macOS: the Godot-exported .app zip has no room for loose files; the licences are inside the pack and listed
   in Credits. Revisit when the macOS build gets a proper installer or Steam depot (#150).
 - EULA: Steam's default Subscriber Agreement is enough; no custom EULA needed for now. itch.io has no EULA
