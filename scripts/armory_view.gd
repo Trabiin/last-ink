@@ -7,7 +7,8 @@ extends Control
 ## the benches), Market (the rotating stalls, and selling spare materials), Satchel (what goes out on
 ## every mission, the town stores behind it, and Tobble's supplies cart), Materials (what you have,
 ## where it comes from and what it makes). Up/Down choose, Enter acts, Left/Right change how many of
-## an item is packed, Tab switches tabs, Esc or M closes. Mouse and touch: tap a row, tap again to act.
+## an item is packed, Q / E (LB / RB) switch tabs as the glyphs beside the tab row show (TabStrip), Esc or M
+## closes. Mouse and touch: tap a row, tap again to act.
 
 signal closed
 
@@ -35,7 +36,7 @@ var flash_t := 0.0
 var font: Font
 var rows: Array = []
 var _row_rects: Array = []  # [rect, row index]
-var _tab_rects := {}
+var _strip := TabStrip.new()  # the tab row with its switch keys either side
 var _minus_rects := {}  # row index -> rect (Satchel tab)
 var _plus_rects := {}
 
@@ -240,8 +241,9 @@ func _process(delta: float) -> void:
 	if Input.is_action_just_pressed("ui_cancel") or Input.is_action_just_pressed("pause") or Input.is_action_just_pressed("armory"):
 		close()
 		return
-	if Input.is_action_just_pressed("swap"):
-		_set_tab(TABS[(TABS.find(tab) + 1) % TABS.size()])
+	var d := TabStrip.pressed()
+	if d != 0:
+		_set_tab(TABS[posmod(TABS.find(tab) + d, TABS.size())])
 		return
 	if up:
 		_move(-1)
@@ -271,10 +273,10 @@ func _gui_input(event: InputEvent) -> void:
 	if _close_rect().has_point(p):
 		close()
 		return
-	for t in _tab_rects:
-		if (_tab_rects[t] as Rect2).has_point(p):
-			_set_tab(t)
-			return
+	var ti := _strip.hit(p)
+	if ti >= 0:
+		_set_tab(TABS[ti])
+		return
 	for i in _minus_rects:
 		if (_minus_rects[i] as Rect2).has_point(p):
 			sel = i
@@ -332,16 +334,10 @@ func _draw() -> void:
 	UiSkin.panel(self, cr, "button")
 	_text(cr.position + Vector2(9, 12), tr("Close"), 9, Color(0.75, 0.72, 0.7))
 	_text(Vector2(8, 20), tr("Forge & Market"), 15, PAPER)
-	_tab_rects.clear()
-	var tx := 128.0
-	for t in TABS:
-		var label: String = Loc.t(TAB_NAMES[t])
-		var w := font.get_string_size(label, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(9)).x + 14
-		var r := Rect2(tx, 8, w, 15)
-		_tab_rects[t] = r
-		_box(r, tab == t)
-		_text(r.position + Vector2(7, 11), label, 9, GOLD if tab == t else SOFT)
-		tx += w + 4
+	_strip.labels = TABS.map(func(t): return Loc.t(TAB_NAMES[t]))
+	_strip.current = TABS.find(tab)
+	var title_w := font.get_string_size(tr("Forge & Market"), HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(15)).x
+	var tx := _strip.draw(self, font, Vector2(maxf(128.0, 8.0 + title_w + 10.0), 7), 9)
 	UiSkin.draw_icon(self, "gilt", Rect2(tx + 8, 9, 12, 12))
 	_text(Vector2(tx + 23, 19), "%d" % int(Empire.res.get("gilt", 0)), 9, GOLD)
 	_text(Vector2(8, 38), _status_line(), 8, SOFT, vs.x - 16)
@@ -358,12 +354,12 @@ func _draw() -> void:
 func _help() -> String:
 	match tab:
 		"satchel":
-			return Prompts.help([["updown", "item"], ["leftright", tr("pack fewer / more")], ["ui_accept", tr("buy from Tobble")], ["swap", "tab"], [["ui_cancel", "armory"], "close"]], tr("Tap - and + to pack, tap an item twice to buy it from Tobble"))
+			return Prompts.help([["updown", "item"], ["leftright", tr("pack fewer / more")], ["ui_accept", tr("buy from Tobble")], [["ui_cancel", "armory"], "close"]], tr("Tap - and + to pack, tap an item twice to buy it from Tobble"))
 		"materials":
-			return Prompts.help([["updown", "material"], ["swap", "tab"], [["ui_cancel", "armory"], "close"]], tr("Tap a material"))
+			return Prompts.help([["updown", "material"], [["ui_cancel", "armory"], "close"]], tr("Tap a material"))
 		"market":
-			return Prompts.help([["updown", "choose"], ["ui_accept", tr("buy / sell one")], ["swap", "tab"], [["ui_cancel", "armory"], "close"]], tr("Tap a stall twice to buy one"))
-	return Prompts.help([["updown", "choose"], ["ui_accept", tr("forge it")], ["swap", "tab"], [["ui_cancel", "armory"], "close"]], tr("Tap a recipe twice to forge it"))
+			return Prompts.help([["updown", "choose"], ["ui_accept", tr("buy / sell one")], [["ui_cancel", "armory"], "close"]], tr("Tap a stall twice to buy one"))
+	return Prompts.help([["updown", "choose"], ["ui_accept", tr("forge it")], [["ui_cancel", "armory"], "close"]], tr("Tap a recipe twice to forge it"))
 
 
 func _status_line() -> String:

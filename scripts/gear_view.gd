@@ -7,8 +7,8 @@ extends Control
 ## Equip tab: Left/Right picks the hero, Up/Down the slot, Enter opens the list of spare gear
 ## for that slot (Up/Down, Enter puts it on, Esc goes back). Skills tab: Left/Right the hero, Up/Down
 ## a tech, Enter makes it the one the hero always charges (again: back to choosing by hold length).
-## Shop tab: Up/Down, Enter buys or sells. Tab switches tabs. Mouse and touch: tap to select, tap
-## again to act.
+## Shop tab: Up/Down, Enter buys or sells. Q / E (LB / RB) switch tabs, shown beside the tab row (TabStrip).
+## Mouse and touch: tap to select, tap again to act.
 
 signal closed
 
@@ -42,7 +42,7 @@ var _hero_rects: Array = []
 var _slot_rects: Array = []
 var _pick_rects: Array = []
 var _shop_rects: Array = []
-var _tab_rects := {}
+var _strip := TabStrip.new()  # the tab row with its switch keys either side
 var _tree: SkillTreeView = null  # the skill tree screen (issue #25) while it is open over this one
 var _tree_closed := -1
 
@@ -119,9 +119,10 @@ func _process(delta: float) -> void:
 	var left := Input.is_action_just_pressed("move_left") or Input.is_action_just_pressed("ui_left")
 	var right := Input.is_action_just_pressed("move_right") or Input.is_action_just_pressed("ui_right")
 	var back := Input.is_action_just_pressed("ui_cancel") or Input.is_action_just_pressed("pause")
-	if Input.is_action_just_pressed("swap") and not picking:
+	var d := TabStrip.pressed()
+	if d != 0:
 		var tabs := _tabs()
-		_set_tab(tabs[(tabs.find(tab) + 1) % tabs.size()])
+		_set_tab(tabs[posmod(tabs.find(tab) + d, tabs.size())])
 		return
 	if tab == "skills":
 		if left:
@@ -197,6 +198,14 @@ func _open_tree() -> void:
 	add_child(_tree)
 	_tree.party = party
 	_tree.open(where, _hero_id())
+	# The tree keeps this screen's tab row on top, so it reads as one of the tabs and Q / E carry on past it.
+	_strip_update()
+	_tree.tabs = _strip
+	_tree.tab_picked.connect(func(i: int):
+		var t: String = _tabs()[i]
+		_tree.close()
+		if t != "tree":
+			_set_tab(t))
 	_tree.closed.connect(func():
 		var back := _tree.hero_id()
 		_tree.queue_free()
@@ -302,10 +311,10 @@ func _gui_input(event: InputEvent) -> void:
 		if _close_rect().has_point(p):
 			close()
 			return
-		for t in _tab_rects:
-			if (_tab_rects[t] as Rect2).has_point(p):
-				_set_tab(t)
-				return
+		var ti := _strip.hit(p)
+		if ti >= 0:
+			_set_tab(_tabs()[ti])
+			return
 		for i in _hero_rects.size():
 			if tab == "skills" and (_hero_rects[i] as Rect2).has_point(p):
 				hero_i = i
@@ -387,18 +396,9 @@ func _draw() -> void:
 	UiSkin.panel(self, cr, "button")
 	_text(cr.position + Vector2(9, 12), tr("Close"), 9, Color(0.75, 0.72, 0.7))
 	_text(Vector2(8, 20), tr("Party gear"), 15, PAPER)
-	# Tabs
-	_tab_rects.clear()
-	var tx := 100.0
-	for t in _tabs():
-		var label: String = {"equip": tr("Equip"), "skills": tr("Skills"), "tree": _tree_label()}.get(t, Progress.data().get("shop_name", tr("Shop")))
-		var w := font.get_string_size(label, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(9)).x + 14
-		var r := Rect2(tx, 8, w, 15)
-		_tab_rects[t] = r
-		_box(r, tab == t)
-		_text(r.position + Vector2(7, 11), label, 9, GOLD if tab == t else SOFT)
-		tx += w + 4
-	_text(Vector2(tx + 8, 19), tr("Gilt: %d") % int(Empire.res.get("gilt", 0)), 9, GOLD)
+	_strip_update()
+	var tx := _strip.draw(self, font, Vector2(100, 7), 9)
+	_text(Vector2(tx + 10, 19), tr("Gilt: %d") % int(Empire.res.get("gilt", 0)), 9, GOLD)
 	_hero_rects.clear()
 	_slot_rects.clear()
 	_pick_rects.clear()
@@ -409,23 +409,30 @@ func _draw() -> void:
 		return
 	if tab == "skills":
 		_draw_skills(vs)
-		_text(Vector2(8, vs.y - 8), Prompts.help([["leftright", "hero"], ["updown", "tech"], ["ui_accept", tr("always charge it")], ["swap", "tab"], [["ui_cancel", "gear"], "close"]], tr("Tap a hero, tap a tech twice to always charge it")), 7, Color(0.5, 0.48, 0.52))
+		_text(Vector2(8, vs.y - 8), Prompts.help([["leftright", "hero"], ["updown", "tech"], ["ui_accept", tr("always charge it")], [["ui_cancel", "gear"], "close"]], tr("Tap a hero, tap a tech twice to always charge it")), 7, Color(0.5, 0.48, 0.52))
 	elif tab == "equip":
 		_draw_equip(vs)
 		var help := Prompts.help([["leftright", "hero"], ["updown", "slot"], ["ui_accept", "change"], [["ui_cancel", "gear"], "close"]], tr("Tap a hero, tap a slot twice to change it"))
 		if picking:
 			help = Prompts.help([["updown", "choose"], ["ui_accept", tr("put it on")], ["ui_cancel", "back"]], tr("Tap gear twice to put it on"))
-		if not picking:
-			help += "   " + Prompts.help([["swap", "skills"]], tr("Tap the Skills tab"))
 		_text(Vector2(8, vs.y - 8), help, 7, Color(0.5, 0.48, 0.52))
 	else:
 		_draw_shop(vs)
-		_text(Vector2(8, vs.y - 8), Prompts.help([["updown", "choose"], ["ui_accept", tr("buy / sell")], ["swap", "tab"], [["ui_cancel", "gear"], "close"]], tr("Tap an item twice to buy or sell")), 7, Color(0.5, 0.48, 0.52))
+		_text(Vector2(8, vs.y - 8), Prompts.help([["updown", "choose"], ["ui_accept", tr("buy / sell")], [["ui_cancel", "gear"], "close"]], tr("Tap an item twice to buy or sell")), 7, Color(0.5, 0.48, 0.52))
 	if flash_t > 0.0:
 		var a := clampf(flash_t / 0.4, 0.0, 1.0)
 		var fw := font.get_string_size(flash, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(9)).x
 		draw_rect(Rect2(vs.x - fw - 18, vs.y - 21, fw + 12, 15), Color(0.1, 0.08, 0.06, 0.95 * a))
 		_text(Vector2(vs.x - fw - 12, vs.y - 10), flash, 9, Color(1, 0.9, 0.7, a))
+
+
+## The tab row's labels and the tab on show.
+func _strip_update() -> void:
+	var labels := []
+	for t in _tabs():
+		labels.append({"equip": tr("Equip"), "skills": tr("Skills"), "tree": _tree_label()}.get(t, Progress.data().get("shop_name", tr("Shop"))))
+	_strip.labels = labels
+	_strip.current = maxi(_tabs().find("tree" if _tree != null else tab), 0)  # the tree is open over this screen
 
 
 ## "Tree", or "Tree (2)" when that many heroes have a node they could learn right now.

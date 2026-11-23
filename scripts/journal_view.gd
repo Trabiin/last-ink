@@ -2,7 +2,8 @@ extends Control
 ## The journal screen (issue #114). I (rebindable) in town and at the Command Table, "Journal" in the
 ## menus, and in the mission pause menu. What it shows comes from scripts/journal.gd.
 ##
-## Four tabs: Quests, People, Codex, History. Q / E, LB / RB or a tap switch tabs. Up / Down picks a
+## Four tabs: Quests, People, Codex, History. Q / E, LB / RB (shown beside the tabs, TabStrip) or a tap
+## switch tabs. Up / Down picks a
 ## row on the left; the right side is a torn ledger page with the details. Right (or Enter on most
 ## rows) moves to the page, where Up / Down scrolls; Left or Esc comes back. Enter on a quest is
 ## "show on map". The mouse wheel scrolls whichever side it is over. Esc or I closes.
@@ -50,7 +51,7 @@ var flash_t := 0.0
 var font: Font
 var _rows: Array = []  # rows of the current tab: {"head": text} or {"kind", ...}
 var _row_rects: Array = []  # [rect, row index]
-var _tab_rects: Array = []
+var _strip := TabStrip.new()  # the tab row with its switch keys either side
 var _go_rect := Rect2()
 var _filter_rect := Rect2()
 var _rule_base := 0.0
@@ -191,8 +192,9 @@ func _process(delta: float) -> void:
 			row["new"] = false
 	if Engine.get_process_frames() == opened_frame:
 		return
-	if _just("clock_slower") or _just("clock_faster"):
-		_switch(-1 if _just("clock_slower") else 1)
+	var d := TabStrip.pressed()
+	if d != 0:
+		_switch(d)
 		return
 	var up := _just("move_up") or _just("ui_up")
 	var down := _just("move_down") or _just("ui_down")
@@ -222,17 +224,6 @@ func _process(delta: float) -> void:
 
 func _just(action: String) -> bool:
 	return InputMap.has_action(action) and Input.is_action_just_pressed(action)
-
-
-func _unhandled_key_input(event: InputEvent) -> void:
-	if not visible or not event is InputEventKey or not event.pressed or event.echo:
-		return
-	if event.physical_keycode == KEY_Q:
-		_switch(-1)
-		get_viewport().set_input_as_handled()
-	elif event.physical_keycode == KEY_E:
-		_switch(1)
-		get_viewport().set_input_as_handled()
 
 
 ## Enter on a row: quests go to the map, the history filter cycles, anything else opens its page.
@@ -298,13 +289,13 @@ func _gui_input(event: InputEvent) -> void:
 	if _close_rect().has_point(event.position):
 		close()
 		return
-	for i in _tab_rects.size():
-		if (_tab_rects[i] as Rect2).has_point(event.position):
-			if i != tab:
-				tab = i
-				focus = 0
-				_rebuild()
-			return
+	var ti := _strip.hit(event.position)
+	if ti >= 0:
+		if ti != tab:
+			tab = ti
+			focus = 0
+			_rebuild()
+		return
 	if _go_rect.has_area() and _go_rect.has_point(event.position):
 		_go(_row().get("target", {}))
 		return
@@ -362,25 +353,20 @@ func _draw() -> void:
 	var vs := size
 	UiSkin.screen(self, vs)
 	_row_rects.clear()
-	_tab_rects.clear()
 	_go_rect = Rect2()
 	_filter_rect = Rect2()
 	_text(Vector2(10, 20), tr("Journal"), 18, Color("f3e3c3"), -1, UiSkin.TITLE_FONT)
-	var x := 86.0
 	var unread := Journal.unread_count()
+	var labels := []
 	for i in TABS.size():
 		var label: String = Loc.t(TAB_NAMES[TABS[i]])
 		if TABS[i] == "codex" and unread > 0:
 			label += tr(" (%d new)") % unread
-		var w := _tw(label, BODY) + 18
-		var r := Rect2(x, 6, w, 16)
-		_tab_rects.append(r)
-		UiSkin.panel(self, r, "button", Color(1.25, 1.15, 0.95) if i == tab else Color(0.75, 0.72, 0.7))
-		_text(r.position + Vector2(9, 12), label, BODY, GOLD if i == tab else SOFT)
-		x += w + 6
-	var pk := Prompts.any_key(["clock_slower"])
-	if not Prompts.touch():
-		_text(Vector2(x + 2, 18), (tr("%s/%s tabs") % [pk, Prompts.any_key(["clock_faster"])]) if Prompts.pad() else tr("Q/E tabs"), 8, DIM)
+		labels.append(label)
+	_strip.labels = labels
+	_strip.current = tab
+	var title_font: Font = UiSkin.TITLE_FONT
+	_strip.draw(self, font, Vector2(maxf(86.0, 10.0 + _tw(tr("Journal"), 18, title_font) + 10.0), 6), BODY)
 	var cr := _close_rect()
 	UiSkin.panel(self, cr, "button")
 	_text(cr.position + Vector2(9, 12), tr("Close"), 9, Color(0.75, 0.72, 0.7))
