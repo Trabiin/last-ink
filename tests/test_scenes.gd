@@ -158,6 +158,37 @@ func test_defense_mission() -> void:
 	check(Empire.surge.is_empty() or Empire.surge.get("id", "") != "meadow", "surge broken")
 
 
+## Ojon: the party used to arrive at a half-eaten wardstone. The surge now waits for them to reach it.
+func test_defense_waits_for_the_party() -> void:
+	_campaign()
+	var p: Dictionary = Empire.territory().find("meadow")
+	Empire.surge = {"id": "meadow", "day": Empire.day + 2}
+	var m := MissionTypes.defense(p)
+	Missions.launch(m)
+	var main := await wait_scene(MAIN)
+	if main == null:
+		return
+	await frames(10)
+	var o: MissionObjectives = main.objective.inner
+	if not check(o != null and o.kind == "defense", "defense objective running"):
+		return
+	check(o.grace > 0.0, "the surge waits at the start (%.1f s)" % o.grace)
+	var clock := o.time_left
+	o.update(5.0)
+	check_eq(o.time_left, clock, "the hold clock does not run while the party walks over")
+	check(main.get_tree().get_nodes_in_group("enemies").filter(func(e): return e.get("goal") == o.ward).is_empty(), "no Nibbler goes for the stone yet")
+	check_eq(o.ward.hp, o.ward.max_hp, "the stone is whole when the party arrives")
+	main.leader.global_position = o.ward.position + Vector2(-40, 0)
+	o.update(0.1)
+	check_eq(o.grace, 0.0, "reaching the stone starts the surge")
+	o.update(3.0)
+	check(o.time_left < clock, "the hold clock runs once the surge comes")
+	main._show_results("retreat")
+	await frames(3)
+	main._on_results_confirmed()
+	await wait_scene(HUB)
+
+
 func test_reclaim_mission() -> void:
 	_campaign()
 	Empire.res["ink"] = 20
