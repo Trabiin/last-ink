@@ -28,7 +28,7 @@ static var map_override := ""  # tools/shot.gd map=<name>: show another town lay
 const TITLE_SCENE := "res://scenes/title.tscn"
 const AUTOSAVE_EVERY := 60.0
 const TALK_RANGE := 26.0
-const TABLE_SIZE := Vector2(46, 26)  # the Command Table's footprint (collision and the "use" area)
+const TABLE_SIZE := Vector2(46, 26)  # the Command Table's "use" area (its collision is data/footprints.json)
 var table_art: Texture2D = preload("res://assets/props/command_table.png")
 const LAMP_FLAME_Y := 10.0  # lantern centre, from the top of the Wardlamp sprite
 ## What staff say about their building when you talk to them, before what it is doing right now.
@@ -66,7 +66,8 @@ var chapter_card  # chapter_card.gd: "Chapter 1 complete" and friends (issue #18
 var story_beat := {}  # the story beat whose talk is playing (data/story.json beats)
 var banter  # banter.gd: people calling out as Ash walks past
 var sites := {}  # building id -> building_site.gd on its plot
-var lamp: Node2D  # Hollowmark's own Wardlamp, drawn once it is lit
+var lamp: StaticBody2D  # Hollowmark's own Wardlamp, drawn once it is lit (solid once built)
+var _lamp_key := ""  # which footprint the Wardlamp has: "wardlamp_<level>", or ""
 var menu: InkMenu
 var slot_menu: InkMenu
 var slot_mode := ""
@@ -256,12 +257,7 @@ func _build_table() -> void:
 	table_body = StaticBody2D.new()
 	table_body.collision_layer = 1
 	table_body.position = table_pos
-	var shape := RectangleShape2D.new()
-	shape.size = Vector2(TABLE_SIZE.x, 14)
-	var col := CollisionShape2D.new()
-	col.shape = shape
-	col.position = Vector2(0, -7)
-	table_body.add_child(col)
+	Footprints.attach(table_body, Footprints.poly("props", "command_table"))
 	table_body.draw.connect(_draw_table)
 	entities.add_child(table_body)
 
@@ -281,7 +277,8 @@ func _build_sites() -> void:
 		sites[id] = site
 	var lamp_spots: Array = area.markers.get("lamp", [])
 	if not lamp_spots.is_empty():
-		lamp = Node2D.new()
+		lamp = StaticBody2D.new()
+		lamp.collision_layer = 1
 		lamp.position = lamp_spots[0]
 		lamp.draw.connect(_draw_lamp)
 		entities.add_child(lamp)
@@ -378,9 +375,11 @@ func _spawn_townsfolk() -> void:
 	if not SpriteSet.has_art("folk_man"):
 		return
 	var blockers: Array = []  # [position, radius]
+	var walls: Array = []  # [origin, footprint polygon]: townsfolk have no collision, so they keep off these
 	for p in area.props:
-		var fp: Vector2i = p.footprint(p.kind)
-		blockers.append([p.position + Vector2(0, -fp.y * 4.0), maxf(fp.x, fp.y) * 8.0 + 8.0])
+		var pts: PackedVector2Array = p.collision_poly
+		if pts.size() >= 3:
+			walls.append([p.position, pts])
 	for id in sites:
 		blockers.append([sites[id].position + Vector2(0, -36), 52.0])
 	blockers.append([table_pos, 34.0])
@@ -398,6 +397,9 @@ func _spawn_townsfolk() -> void:
 				if c.distance_to(b[0]) < b[1]:
 					ok = false
 					break
+			for w in walls:
+				if ok and Footprints.covers(w[1], w[0], c, 10.0):
+					ok = false
 			if ok:
 				free[Vector2i(x, y)] = true
 	var keys := free.keys()
@@ -814,6 +816,7 @@ func _process(delta: float) -> void:
 	table_body.queue_redraw()
 	if lamp:
 		lamp.queue_redraw()
+		_refresh_lamp_footprint()
 
 	var frame := Engine.get_process_frames()
 	var screen_open: bool = roster_view.visible or buildings_view.visible or expedition_view.visible or research_view.visible \
@@ -890,6 +893,22 @@ func _draw_table() -> void:
 	c.draw_texture(table_art, Vector2(-tw / 2.0, -th + 3.0))
 	if target.get("kind", "") == "table":
 		c.draw_rect(Rect2(-tw / 2.0 - 2.0, -th + 1.0, tw + 4.0, th + 4.0), Color("ffd166"), false, 1.0)
+
+
+## The Wardlamp is solid once it stands (its post while it goes up, then the level's footprint).
+func _refresh_lamp_footprint() -> void:
+	var lv := int(Empire.lamps.get("hollowmark", 0))
+	var key := "wardlamp_%d" % clampi(lv, 1, 2) if lv > 0 or Empire.lamp_jobs.has("hollowmark") else ""
+	if key == _lamp_key:
+		return
+	_lamp_key = key
+	for c in lamp.get_children():
+		if c is CollisionShape2D:
+			c.queue_free()
+	if key != "":
+		var pts := Footprints.poly("props", key)
+		Footprints.attach(lamp, pts)
+		Footprints.eject(lamp, pts)
 
 
 ## Hollowmark's Wardlamp: an iron post with an ink-blue flame, brighter at level 2.

@@ -269,6 +269,13 @@ static func set_lamp(lights: Array, energy: float) -> void:
 
 
 ## A footprint that blocks lamp light: a box at the owner's base, `size` = (width, depth).
+## A light occluder for a collision footprint (scripts/footprints.gd): a low box along its front, as wide as the
+## walls, so lamp light stops at the building without darkening its own lit front face.
+static func add_footprint_occluder(owner: Node2D, pts: PackedVector2Array) -> LightOccluder2D:
+	var r := Footprints.bounds(pts)
+	return add_occluder(owner, Vector2(r.size.x * 0.9, clampf(r.size.y * 0.35, 4.0, 20.0)))
+
+
 static func add_occluder(owner: Node2D, size: Vector2) -> LightOccluder2D:
 	var o := LightOccluder2D.new()
 	var poly := OccluderPolygon2D.new()

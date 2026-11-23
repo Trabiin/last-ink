@@ -152,3 +152,23 @@ the Merrow Three are separate sprites standing together.
 Props are sized against a 30 px person. Tallest allowed (px): barrels 16, a stack of two crates 22, bench 18, grave
 20, sign 22, boulder 30, cart 26, banner 34, fountain 36, well 40, lamppost 46, stall 56. A hedge shrub may be 24 (it tiles into a wall; smaller leaves gaps). A door is at least
 22 px tall. A hedge or wall is never one sprite repeated: mix variants, or use a tile edge.
+
+## Collision footprints (buildings and props)
+
+Everything solid stands on a **footprint**: the ground under it as a convex polygon, in `data/footprints.json`, read
+by `scripts/footprints.gd`. Footprints are traced from the art by `tools/footprints.py`, so they follow the walls an
+angled building shows and reach back as far as its roof hides Ash. That makes a building feel like a building: solid
+from every side, and from behind you stop at the back wall (hidden by the roof, drawn behind it by the Y-sorted
+layer) instead of walking into the roof and standing against the front face.
+
+When art lands or changes:
+
+1. Add the kind to `data/footprints.json` (`{}` for something solid, `{"walk": true}` for grass you walk through).
+2. Run `python3 tools/footprints.py` (variants of a different shape get their own entry automatically).
+3. Look at `python3 tools/footprint_sheet.py /tmp/fp.png <kind>`: Ash behind (hidden), beside (touching the wall)
+   and in front (on the doorstep). Tune with the hand fields `d` (depth), `clip` (leave out a hanging sign or a gate
+   arm) or `inset`; their meaning is in the script's header.
+4. `tests/test_footprints.gd` fails if anything placed on a map has no footprint, if art changed size since it was
+   traced, if a footprint can be walked through from N/S/E/W, or if a map's spawns, spots or posts get walled off.
+
+`tools/shot.gd ... collisions=1` draws every collision shape in a screenshot.
