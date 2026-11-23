@@ -3,11 +3,15 @@
 
     python3 tools/pixellab_gallery.py          # check: which files are new or changed since the last push
     python3 tools/pixellab_gallery.py push     # add new files to the gallery, replace changed ones (free)
+    python3 tools/pixellab_gallery.py pull     # bring edits made in PixelLab into the game files (free)
 
 Each file gets its own gallery image named "Last Ink | <set> | <name>" (type "Last Ink" in the gallery search to
 see them all, or "Last Ink | icon" for one set). tools/pixellab_gallery.json maps file -> gallery id + hash of what was
 pushed, so a later push replaces the same gallery image (POST /save-to-asset gallery:<id>, which returns the old
 pixels; backups go to BACKUP when given). Chapter 2 placeholders are skipped (data/placeholders.json).
+Pull: the API has no way to read a gallery image, but saving returns the pixels it replaced. So pull saves the game
+version, and where PixelLab held something else it writes that straight back and stores it in the game file (the
+gallery image is only briefly swapped). A file changed on both sides since the last push is left alone and reported.
 The PixelLab API has no folders: the name prefix is how the set stays findable.
 
 Rule: after any repo change to an icon, prop or building PNG, run `push`, the same as pixellab_sync.py for sprites.
@@ -61,8 +65,43 @@ def post(body):
     return r.json()
 
 
+def png_rgba(data):
+    import io
+    from PIL import Image
+    return Image.open(io.BytesIO(data)).convert("RGBA")
+
+
+def pull(m):
+    import numpy as np
+    pulled = conflicts = 0
+    for path, it in m["items"].items():
+        full = os.path.join(ROOT, path)
+        data = open(full, "rb").read()
+        r = post({"target": "gallery:" + it["gallery"], "image": {"base64": base64.b64encode(data).decode()}})
+        if r["action"] == "unchanged":
+            continue
+        prev = r["previous_frames"][0]
+        prev = base64.b64decode(prev["base64"] if isinstance(prev, dict) else prev)
+        post({"target": "gallery:" + it["gallery"], "image": {"base64": base64.b64encode(prev).decode()}})
+        if sha(path) != it["hash"]:
+            print("conflict %s: changed in the game and in PixelLab; PixelLab copy kept there, game file untouched"
+                  % path)
+            conflicts += 1
+            continue
+        png_rgba(prev).save(full)
+        m["items"][path]["hash"] = sha(path)
+        save(m)
+        a = np.array(png_rgba(data))
+        print("pulled   %s (%d px differ)" % (path, int((np.array(png_rgba(prev)) != a).any(-1).sum())))
+        pulled += 1
+    print("%d pulled, %d conflicts" % (pulled, conflicts))
+    return 0
+
+
 def main(argv):
     m = load()
+    if argv and argv[0] == "pull":
+        return pull(m)
     todo = []
     for s, n, path in files():
         cur = m["items"].get(path)
