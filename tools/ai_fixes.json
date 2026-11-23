@@ -207,8 +207,6 @@
   {"op": "ends", "sprite": "ash", "strip": "hurt_south", "why": "hurt didn't return to the idle pose"},
   {"op": "ends", "sprite": "ash", "strip": "hurt_east", "why": "hurt didn't return to the idle pose (face went dark on the last frame)"},
   {"op": "ends", "sprite": "ash", "strip": "hurt_north", "why": "hurt didn't return to the idle pose"},
-  {"op": "erase", "sprite": "bran", "strip": "attack_north", "colour": [214, 205, 186], "tol": 60, "loose": true, "why": "beige swoosh arc drawn into the sprite; the game draws its own"},
-  {"op": "despeck", "sprite": "bran", "strip": "attack_north", "size": 4, "why": "swoosh remnants"},
   {"op": "erase", "sprite": "bran", "strip": "cast_south", "colour": [137, 199, 246], "tol": 40, "loose": false, "why": "spell effect drawn into the sprite; the game draws its own"},
   {"op": "erase", "sprite": "bran", "strip": "cast_south", "colour": [189, 231, 255], "tol": 40, "loose": false, "why": "spell effect drawn into the sprite; the game draws its own"},
   {"op": "erase", "sprite": "bran", "strip": "cast_south", "colour": [123, 151, 176], "tol": 40, "loose": false, "why": "spell effect drawn into the sprite; the game draws its own"},
@@ -226,7 +224,6 @@
   {"op": "despeck", "sprite": "bran", "strip": "cast_south-east", "size": 4, "why": "specks left by the erased effect"},
   {"op": "despeck", "sprite": "bran", "strip": "cast_east", "size": 4, "why": "specks left by the erased effect"},
   {"op": "despeck", "sprite": "bran", "strip": "cast_north-east", "size": 4, "why": "specks left by the erased effect"},
-  {"op": "remap", "sprite": "bran", "strip": "attack_east", "pairs": [[[77, 233, 132], [18, 20, 31]], [[89, 255, 194], [100, 108, 116]]], "why": "eye turned bright green on frames 2-6"},
   {"op": "erase", "sprite": "bran", "strip": "victory_south", "colour": [214, 205, 186], "tol": 60, "loose": true, "why": "axe head dissolved into beige wisps on frames 5-6"},
   {"op": "patch", "sprite": "bran", "strip": "victory_south", "rect": [5, 8, 13, 16], "src": 4, "only": [5], "clear": [2, 4, 13, 16], "why": "axe head missing on frame 5; held from frame 4"},
   {"op": "patch", "sprite": "bran", "strip": "hurt_north", "rect": [15, 4, 29, 16], "only": [2, 3, 4], "why": "head turned to face the camera on frames 2-4 (should show the back of his head)"},
@@ -272,7 +269,12 @@
   {"op": "patch", "sprite": "jessamy", "strip": "tech_north-east", "rect": [14, 3, 30, 17], "only": [3, 4, 5, 6, 7, 8], "why": "face turned to the camera with staring eyes on frames 3-8; hood held from the rotation"},
   {"op": "patch", "sprite": "ash", "strip": "idle_east", "rect": [25, 23, 31, 29], "src": 4, "only": [1, 2, 3], "why": "sword bent upwards and short on frames 1-3; the straight blade of frame 4 held (Ojon)"},
   {"op": "patch", "sprite": "bran", "strip": "hurt_north", "rect": [0, 0, 0, 0], "clear": [0, 10, 8, 19], "still": true, "only": [2, 3, 4], "why": "a stray dagger appeared beside his left hand on frames 2-4 (Ojon)"},
-  {"op": "despeck", "sprite": "bran", "strip": "victory_south", "size": 4, "why": "stray pixels left from the erased wisps (Ojon)"}
+  {"op": "despeck", "sprite": "bran", "strip": "victory_south", "size": 4, "why": "stray pixels left from the erased wisps (Ojon)"},
+  {"op": "despeck", "sprite": "bran", "strip": "attack_south", "why": "loose specks on the regenerated attack (2026-11-23)"},
+  {"op": "despeck", "sprite": "bran", "strip": "attack_south-east", "why": "loose specks on the regenerated attack (2026-11-23)"},
+  {"op": "despeck", "sprite": "bran", "strip": "attack_east", "why": "loose specks on the regenerated attack (2026-11-23)"},
+  {"op": "despeck", "sprite": "bran", "strip": "attack_north-east", "why": "loose specks on the regenerated attack (2026-11-23)"},
+  {"op": "despeck", "sprite": "bran", "strip": "attack_north", "why": "loose specks on the regenerated attack (2026-11-23)"}
  ],
  "recolors": [
   {
