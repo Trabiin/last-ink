@@ -155,6 +155,7 @@ static func brush(ci: CanvasItem, at: Vector2, w: float, col: Color) -> void:
 
 ## Where a sign's lines go (the paper plate shown when standing at a signpost): a paper panel centred
 ## on the screen at height y, sized to the text, which wraps so it fits at every text size and screen.
+## ~~text~~ is painted out (a struck-through old word, like a town's old population).
 ## Returns {"panel": Rect2, "lines": [[text, Vector2 baseline start, width], ...]}.
 static func sign_layout(font: Font, vs: Vector2, y: float, text: String) -> Dictionary:
 	var max_w := minf(vs.x - 48.0, Access.px(320.0))
@@ -164,23 +165,33 @@ static func sign_layout(font: Font, vs: Vector2, y: float, text: String) -> Dict
 			lines.append(line)
 	var w := 120.0
 	for line in lines:
-		w = maxf(w, font.get_string_size(line, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(10)).x)
+		w = maxf(w, font.get_string_size(line.replace("~~", ""), HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(10)).x)
 	var lh := Access.px(16.0)
 	var panel := Rect2(vs.x / 2.0 - (w + 32.0) / 2.0, y - Access.fs(10) - Access.px(8.0), w + 32.0, lh * lines.size() + Access.px(12.0))
 	var out := []
 	var yy := y
 	for line in lines:
-		var lw := font.get_string_size(line, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(10)).x
+		var lw := font.get_string_size(line.replace("~~", ""), HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(10)).x
 		out.append([line, Vector2(roundf((vs.x - lw) / 2.0), roundf(yy)), lw])
 		yy += lh
 	return {"panel": panel, "lines": out}
 
 
 ## Draws a sign: dark ink straight on the paper, with no outline (an outline round dark letters on
-## light paper smears them into a blob).
+## light paper smears them into a blob). ~~struck~~ parts get a painted line through them.
 static func sign(ci: CanvasItem, vs: Vector2, y: float, text: String) -> void:
 	var font := ThemeDB.fallback_font
 	var lay := sign_layout(font, vs, y, text)
 	panel(ci, lay["panel"], "paper")
 	for l in lay["lines"]:
-		ci.draw_string(font, l[1], l[0], HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(10), PAPER_INK)
+		var at: Vector2 = l[1]
+		var parts: PackedStringArray = str(l[0]).split("~~")
+		for i in parts.size():
+			var pw := font.get_string_size(parts[i], HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(10)).x
+			if i % 2 == 1:  # painted out: faded ink with a thin red line through it, still readable
+				ci.draw_string(font, at, parts[i], HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(10), Color(PAPER_INK, 0.7))
+				var mid := roundf(at.y - Access.fs(10) * 0.3)
+				ci.draw_rect(Rect2(at.x - 1.0, mid, pw + 2.0, maxf(1.0, roundf(Access.fs(10) * 0.1))), Color("8a2a20"))
+			else:
+				ci.draw_string(font, at, parts[i], HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(10), PAPER_INK)
+			at.x += pw
