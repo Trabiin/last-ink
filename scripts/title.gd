@@ -114,10 +114,23 @@ func _offer_report() -> void:
 		{"id": "logs", "label": tr("Download the logs") if OS.has_feature("web") else tr("Open log folder")},
 		{"id": "later", "label": tr("Not now")},
 		{"id": "mute", "label": tr("Don't ask again"), "detail": tr("until the next update")},
-	], what + tr(" A report with the log from then helps fix it."))
+	], what + tr(" A report with the log from then helps fix it.") + _first_error(prev))
 	menu.visible = false
 	Diag.previous = {}  # asked once per launch
 	offer.chosen.connect(_on_offer.bind(offer, prev))
+
+
+## The first error line from the last session, short enough for one line on the offer, so a player
+## who writes in can quote what broke.
+static func _first_error(prev: Dictionary) -> String:
+	var samples: Array = prev.get("samples", [])
+	if samples.is_empty():
+		return ""
+	var line := str(samples[0]).strip_edges()
+	line = RegEx.create_from_string("^(USER |SCRIPT )*(ERROR|SCRIPT ERROR):\\s*").sub(line, "")
+	if line.length() > 90:
+		line = line.left(87) + "..."
+	return "\n" + TranslationServer.translate("First error: ") + line
 
 
 func _on_offer(id: String, offer: InkMenu, prev: Dictionary) -> void:

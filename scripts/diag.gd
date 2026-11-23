@@ -166,11 +166,14 @@ func previous_engine_log() -> String:
 static func count_problems(text: String) -> Dictionary:
 	var err := RegEx.create_from_string(ERROR_RE)
 	var warn := RegEx.create_from_string(WARNING_RE)
+	var cont := RegEx.create_from_string("^\\s*(ERROR|WARNING):\\s+(at:|GDScript backtrace)")
 	var out := {"errors": 0, "warnings": 0, "samples": []}
 	for line in text.split("\n"):
 		if line.begins_with(EXIT_LINE):
 			break
 		if NOISE.any(func(n): return n in line):
+			continue
+		if cont.search(line):  # "ERROR:    at: ..." written by older builds from the browser console: part of the error above
 			continue
 		if err.search(line):
 			out["errors"] += 1
@@ -305,17 +308,34 @@ func _drain_web_console() -> void:
 	var rows = JSON.parse_string(raw)
 	if typeof(rows) != TYPE_ARRAY:
 		return
-	var lines := []
+	var got := console_lines(rows)
+	errors += int(got["errors"])
+	warnings += int(got["warnings"])
+	_append(got["lines"])
+
+
+## Browser console rows ([level, text]) as log lines. Godot prints one engine error as several console
+## lines (the message, then "at: ..." and backtrace lines); only the message counts as an error, the rest
+## is kept indented under it.
+static func console_lines(rows: Array) -> Dictionary:
+	var out := {"lines": [], "errors": 0, "warnings": 0}
+	var err_re := RegEx.create_from_string(ERROR_RE)
+	var warn_re := RegEx.create_from_string(WARNING_RE)
+	var more_re := RegEx.create_from_string("^(at:|GDScript backtrace|\\[\\d+\\])")
 	for r in rows:
+		if typeof(r) != TYPE_ARRAY or r.size() < 2:
+			continue
 		var text := str(r[1]).strip_edges()
+		if text == "":
+			continue
+		if more_re.search(text):
+			out["lines"].append("   " + text)
+			continue
 		var is_err: bool = r[0] == "error"
-		var tagged := RegEx.create_from_string(ERROR_RE if is_err else WARNING_RE).search(text) != null
-		if is_err:
-			errors += 1
-		else:
-			warnings += 1
-		lines.append(text if tagged else ("ERROR: " if is_err else "WARNING: ") + text)  # no-tr: developer log
-	_append(lines)
+		var tagged := (err_re if is_err else warn_re).search(text) != null
+		out["errors" if is_err else "warnings"] += 1
+		out["lines"].append(text if tagged else ("ERROR: " if is_err else "WARNING: ") + text)  # no-tr: developer log
+	return out
 
 
 ## Appends to session.log. Opened and closed each time: the web build saves user:// to the browser
