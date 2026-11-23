@@ -18,7 +18,7 @@ func _ready() -> void:
 
 func _physics_process(delta: float) -> void:
 	t += delta
-	var step := speed * delta
+	var step := speed * delta * Assists.pace()  # enemy speed assist (issue #192)
 	position += dir * step
 	range_left -= step
 	for h in get_tree().get_nodes_in_group("heroes"):

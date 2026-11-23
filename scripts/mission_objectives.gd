@@ -206,7 +206,7 @@ func _open_cache(c: Cache) -> void:
 	Fx.damage_number(main.entities, c.position + Vector2(0, -30), txt if txt != "" else Loc.t("empty"), Color("ffe7a3"))
 	if taken == need:
 		main.hud.say(tr("That's enough. Get back to where you came in (or grab more first)."), 3.5)
-		Audio.sfx("alert")
+		Audio.sfx("alert", 1.0, 0.0, tr("Chime: enough loot"))
 	if kind == "raid":
 		_raise(float(obj.get("alarm_open", 14.0)))
 
@@ -220,7 +220,7 @@ func _raise(amount: float) -> void:
 		time_left = minf(time_left, float(obj.get("alarm_cap", 45.0)))
 		reinforce_t = 1.5
 		main.hud.say(tr("The alarm is up! The garrison is coming. Grab what you can and run."), 3.5)
-		Audio.sfx("alert")
+		Audio.sfx("alert", 1.0, 0.0, tr("Alarm bell: the garrison is coming"))
 
 
 func _update_raid(delta: float) -> void:

@@ -16,7 +16,7 @@ func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	visible = false
 	_label = Label.new()
-	_label.add_theme_font_size_override("font_size", 10)
+	_label.add_theme_font_size_override("font_size", Access.fs(10))
 	_label.add_theme_color_override("font_color", Color(0.95, 0.95, 0.9))
 	_label.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.9))
 	_label.add_theme_constant_override("outline_size", 3)
@@ -31,6 +31,7 @@ func _ready() -> void:
 func _input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed and not event.echo and (event as InputEventKey).keycode == KEY:
 		visible = not visible
+		_label.add_theme_font_size_override("font_size", Access.fs(10))  # text size option (#192)
 		_times.clear()
 		_last_us = 0
 		get_viewport().set_input_as_handled()

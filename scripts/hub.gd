@@ -806,6 +806,7 @@ func _process(delta: float) -> void:
 		autosave_t = AUTOSAVE_EVERY
 		autosave()
 	camera.global_position = leader.global_position + Vector2(0, -10)
+	camera.position_smoothing_speed = Access.follow_speed(7.0)  # reduce camera motion (issue #192)
 	# People turn to look at Ash when Ash comes close.
 	for id in npcs:
 		var npc: Hero = npcs[id]

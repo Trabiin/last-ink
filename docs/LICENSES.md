@@ -32,7 +32,7 @@ Every folder under `assets/` traced to its source (2026-11-21, after PR #174):
 | `assets/source/puny/`, `assets/characters/` | Shade, Puny Characters (fallback paper doll) | CC0 (checked) |
 | `assets/audio/music/` | Juhani Junkala, JRPG Music Packs #1 to #5 | CC0 (all 5 pack pages checked) |
 | `assets/audio/sfx/` | Juhani Junkala, 512 Sound Effects (8-bit style) | CC0 (checked) |
-| `assets/fonts/` | Jersey 10, Jacquard 12 (The Soft Type Project, via Google Fonts) | SIL OFL 1.1 |
+| `assets/fonts/` | Jersey 10, Jacquard 12 (The Soft Type Project, via Google Fonts); Atkinson Hyperlegible (Braille Institute, via Google Fonts, the readable font option #192) | SIL OFL 1.1 |
 | `assets/sprites/`, `assets/tiles/` (art pass), `assets/props/`, `assets/buildings/`, `assets/icons/`, `assets/ui/button.png`, `assets/ui/panel_*.png` | PixelLab, generated for this project (logged in `tools/art_spend*.jsonl`) | Ours under PixelLab's terms (section 2) |
 | `assets/portraits/` | OpenAI image generation (ChatGPT and API), pixelated by `tools/cut_portraits.py` | Ours under OpenAI's terms (section 3) |
 | `assets/ui/title_keyart.jpg`, `assets/ui/map_painted.jpg`, `assets/map/land_mask.png` | OpenAI image API (`tools/openai_image.py`); mask traced from the map in code | Ours under OpenAI's terms |

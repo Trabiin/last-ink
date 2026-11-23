@@ -37,6 +37,7 @@ func _ready() -> void:
 func _physics_process(delta: float) -> void:
 	if dying_t >= 0.0:
 		return
+	delta *= Assists.pace()  # enemy speed assist (issue #192): timers run slower, _slide() moves slower
 	anim_t += delta
 	flash_t = maxf(flash_t - delta, 0.0)
 	state_t -= delta
@@ -63,7 +64,7 @@ func _physics_process(delta: float) -> void:
 				_set_state(State.LUNGE, DIVE_TIME)
 		State.LUNGE:
 			velocity = lunge_dir * DIVE_SPEED + knockback
-			move_and_slide()
+			_slide()
 			for h in get_tree().get_nodes_in_group("heroes"):
 				var hero := h as Hero
 				if hero and not hero.dead and not hit_this_lunge.has(hero) and hero.global_position.distance_to(global_position) < radius + hero.radius + 4.0:
@@ -102,7 +103,7 @@ func _physics_process(delta: float) -> void:
 
 	velocity = dir * move_speed + knockback
 	knockback = knockback.move_toward(Vector2.ZERO, 500.0 * delta)
-	move_and_slide()
+	_slide()
 
 
 func _on_hit() -> void:

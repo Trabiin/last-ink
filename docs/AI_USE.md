@@ -147,7 +147,7 @@ no AI model involved. **CC0 / OFL** = made by human artists, free licence.
 | `assets/characters/` | Puny Characters by Shade (CC0), split into paper-doll layers by `tools/import_art.py`. Only a fallback for figures without a sprite set. | CC0 | Recoloured per figure by `shaders/palette_swap.gdshader`. |
 | `assets/source/` | Untouched CC0 originals: Puny Characters (Shade), Zelda-like tilesets (ArMM1998). | CC0 | None. |
 | `assets/audio/` | Music: JRPG Music Packs 1 to 5; sound effects: 512 Sound Effects (8-bit style). Both by Juhani Junkala (SubspaceAudio), CC0. | CC0 | Re-encoded (Ogg Vorbis music, mono 22 kHz WAV effects). |
-| `assets/fonts/` | Jersey 10 and Jacquard 12 by Sarah Cadigan-Fried (The Soft Type Project). | OFL | None. |
+| `assets/fonts/` | Jersey 10 and Jacquard 12 by Sarah Cadigan-Fried (The Soft Type Project); Atkinson Hyperlegible by the Braille Institute. | OFL | None. |
 | Synthesized sounds | The Blank's hum (`scripts/audio.gd`) and the charged-tech sounds (`scripts/techs.gd`). | Code | Made at runtime from fixed recipes; no AI model. |
 | Effects | Lighting, cast shadows, clouds, mist, vignette, weapon trails, the Blank's edge, ink motes (`shaders/`, `scripts/ambience.gd`, `scripts/art.gd`). | Code | No AI model. |
 | `maps/` | Text map layouts written for the project; biome maps produced by `tools/make_biomes.py` (rule-based, not a generative model). | Code | Hand-tuned spots and lines. |

@@ -371,6 +371,12 @@ func fray_sources(p: Dictionary, gov := "-") -> Array:
 		out.append([tr("Nobody holds it"), FRAY_UNHELD])
 	out.append_array(FactionAsks.fray_sources(p))
 	out.append_array(BlankPlans.sources(p, gov if owner == "you" else "-"))
+	var total := 0
+	for src in out:
+		total += int(src[1])
+	var gentle := Assists.fray_source(total)  # Blank pressure assist (issue #192)
+	if not gentle.is_empty():
+		out.append(gentle)
 	return out
 
 
@@ -462,7 +468,7 @@ func _update_surge() -> void:
 
 ## How hard a surge hits. The Long Watch and the Abbey's Bell Wards take the edge off.
 func surge_fray() -> int:
-	return SURGE_FRAY - (4 if has_research("ward_longwatch") else 0) - (3 if has_research("bell_wards") else 0)
+	return Assists.surge_fray(SURGE_FRAY - (4 if has_research("ward_longwatch") else 0) - (3 if has_research("bell_wards") else 0))
 
 
 func surge_days_left() -> int:
