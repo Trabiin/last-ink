@@ -128,7 +128,9 @@ def main(argv):
             r = post({"target": "gallery:" + m["items"][path]["gallery"], "image": {"base64": img}})
             if backup and r.get("previous_frames"):
                 os.makedirs(backup, exist_ok=True)
-                open(os.path.join(backup, n + ".png"), "wb").write(base64.b64decode(r["previous_frames"][0]))
+                pf = r["previous_frames"][0]
+                open(os.path.join(backup, n + ".png"), "wb").write(
+                    base64.b64decode(pf["base64"] if isinstance(pf, dict) else pf))
         gid = r["target"].split(":", 1)[1]
         m["items"][path] = {"gallery": gid, "hash": h}
         save(m)
