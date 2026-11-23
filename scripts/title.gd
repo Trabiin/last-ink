@@ -374,7 +374,7 @@ func _draw_key_art(vs: Vector2) -> void:
 
 func _draw_logo(vs: Vector2) -> void:
 	var font := ThemeDB.fallback_font
-	var logo_font: Font = UiSkin.TITLE_FONT  # the heading face, as on every screen title
+	var logo_font: Font = Access.PIXEL_HEADING  # the logo is art: Jacquard 12 even with the readable font (#192)
 	var logo := tr("Last Ink")  # blackletter capitals are hard to read, so title case
 	var fs := 72
 	var w := logo_font.get_string_size(logo, HORIZONTAL_ALIGNMENT_LEFT, -1, fs).x

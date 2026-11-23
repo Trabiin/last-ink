@@ -9,8 +9,14 @@ extends Node
 ## Other code that may run before this autoload exists can call it safely with
 ##   var a := get_node_or_null("/root/Audio"); if a: a.sfx("alert")
 ##
-## Buses: music plays on "Music", effects on "SFX" (both children of Master). The Options
-## screen (#14) owns their volume sliders; this script only creates the buses if missing.
+## Buses: music plays on "Music", effects on "SFX", menu sounds on "UI" and spoken sounds on "Voice"
+## (all children of Master, issue #192). The Options screen (#14) owns their volume sliders; this script
+## only creates the buses if missing.
+##
+## Captions (issue #192, Options > Accessibility): important sounds also show as a line of text in a box
+## near the bottom of the screen, with an arrow when the sound comes from somewhere: a warning bell, a
+## hero falling, the Blank's hum. CAPTIONS lists which effects get one; Audio.sfx(id, pitch, db, caption)
+## can give a more precise text, and Audio.caption(text) shows one with no sound.
 ##
 ## Browsers block sound until the page gets a click, key or touch, so on the web build
 ## nothing plays until the first input. The Blank hums (a code-made drone) when the party
@@ -49,6 +55,23 @@ const SFX := {
 	"pause_out": {"db": -6.0},
 }
 
+## Effects that are not "SFX": menu sounds have their own volume, and so does speech.
+const BUS_OF := {"ui_move": "UI", "ui_ok": "UI", "ui_back": "UI", "pause_in": "UI", "pause_out": "UI", "error": "UI", "talk": "Voice"}  # no-tr: audio buses
+const BUSES := ["Music", "SFX", "UI", "Voice"]  # no-tr: audio buses
+const VOICE_DIR := "res://assets/audio/voice/"
+
+## Sounds that carry information get a caption when captions are on. Hits, swings and menu clicks
+## don't: what they say is already on screen.
+const CAPTIONS := {
+	"alert": "Warning bell",
+	"hero_down": "A hero falls",
+	"fanfare": "Fanfare",
+	"levelup": "Level-up chime",
+	"portal": "A portal hums",
+}
+const CAPTION_TIME := 3.0
+const MAX_CAPTIONS := 3
+
 var unlocked := false  # true once the browser allows sound (always true off the web)
 var track := ""  # the track that is playing (or fading in)
 var _music: Array[AudioStreamPlayer] = []
@@ -60,10 +83,14 @@ var _streams := {}
 var _last_play := {}
 var _hum: AudioStreamPlayer
 var _hum_level := 0.0
+var _hum_dir := Vector2.RIGHT  # where the hum comes from, for its caption
 var _check_t := 0.0
 var _last_scene: Node = null
 var _blots: Array = []
 var _last_ms := 0
+var captions: Array = []  # [{"key", "text", "t", "dir": Vector2}], newest last
+var _caption_view: Control
+var _caption_shown := false
 
 
 func _ready() -> void:
@@ -87,12 +114,18 @@ func _ready() -> void:
 	_hum.volume_db = -80.0
 	add_child(_hum)
 	_last_ms = Time.get_ticks_msec()
+	var layer := CanvasLayer.new()
+	layer.layer = 15  # over the HUD and menus, under the options screen
+	add_child(layer)
+	_caption_view = CaptionView.new()
+	_caption_view.audio = self
+	layer.add_child(_caption_view)
 
 
 ## Creates the "Music" and "SFX" buses under Master if they don't exist yet. Safe to call twice;
 ## the Options screen does the same check.
 static func ensure_buses() -> void:
-	for bus_name in ["Music", "SFX"]:  # no-tr: audio bus
+	for bus_name in BUSES:
 		if AudioServer.get_bus_index(bus_name) == -1:
 			AudioServer.add_bus()
 			var idx := AudioServer.bus_count - 1
@@ -115,6 +148,7 @@ func _process(_delta: float) -> void:
 	var now := Time.get_ticks_msec()
 	var dt := minf((now - _last_ms) / 1000.0, 0.1)
 	_last_ms = now
+	_update_captions(dt)
 	if not unlocked:
 		return
 	_check_t -= dt
@@ -219,7 +253,10 @@ func _update_fade(dt: float) -> void:
 # ---------------------------------------------------------------- effects
 
 ## Plays a one-shot effect. pitch: 1.0 = as recorded; each effect also gets a small random spread.
-func sfx(id: String, pitch := 1.0, db := 0.0) -> void:
+## cap: the caption to show with it ("" = the effect's own from CAPTIONS, "-" = none).
+func sfx(id: String, pitch := 1.0, db := 0.0, cap := "") -> void:
+	if cap != "-" and (cap != "" or CAPTIONS.has(id)):
+		caption(cap if cap != "" else Loc.t(CAPTIONS[id]), Vector2.ZERO, id)  # shown even when the browser keeps sound off
 	if not unlocked:
 		return
 	var cfg: Dictionary = SFX.get(id, {})
@@ -234,6 +271,7 @@ func sfx(id: String, pitch := 1.0, db := 0.0) -> void:
 	_next_voice = (_next_voice + 1) % _voices.size()
 	var spread := float(cfg.get("spread", 0.0))
 	v.stream = stream
+	v.bus = BUS_OF.get(id, "SFX")  # no-tr: audio bus
 	v.pitch_scale = maxf(0.1, pitch * (1.0 + randf_range(-spread, spread)))
 	v.volume_db = SFX_DB + float(cfg.get("db", 0.0)) + db
 	v.play()
@@ -255,6 +293,77 @@ func hit(is_hero: bool, fatal: bool) -> void:
 			sfx("hit", 0.8)
 	else:
 		sfx("hurt" if is_hero else "hit")
+
+
+## Is there any recorded speech yet? (the Voice volume slider only shows once there is)
+func has_voice() -> bool:
+	return DirAccess.dir_exists_absolute(VOICE_DIR) and not DirAccess.get_files_at(VOICE_DIR).is_empty()
+
+
+# ---------------------------------------------------------------- captions
+
+## Shows a caption (when the option is on). dir: where the sound comes from on screen (Vector2.ZERO for
+## nowhere in particular). A caption with the same key replaces the old one and starts its time again.
+func caption(text: String, dir := Vector2.ZERO, key := "") -> void:
+	if not Access.captions or text == "":
+		return
+	if key == "":
+		key = text
+	captions = captions.filter(func(c): return c["key"] != key)
+	captions.append({"key": key, "text": text, "t": CAPTION_TIME, "dir": dir})
+	while captions.size() > MAX_CAPTIONS:
+		captions.pop_front()
+
+
+func _update_captions(dt: float) -> void:
+	if captions.is_empty():
+		if _caption_shown:
+			_caption_shown = false
+			_caption_view.queue_redraw()  # clear the last one off the screen
+		return
+	_caption_shown = true
+	for c in captions:
+		c["t"] = float(c["t"]) - dt
+	captions = captions.filter(func(c): return float(c["t"]) > 0.0)
+	_caption_view.queue_redraw()
+
+
+## Draws the captions: a dark box per line, bottom centre, above the HUD and the dialogue box's top edge.
+class CaptionView extends Control:
+	var audio
+
+	func _ready() -> void:
+		set_anchors_preset(Control.PRESET_FULL_RECT)
+		mouse_filter = Control.MOUSE_FILTER_IGNORE
+
+	func _draw() -> void:
+		if audio == null or audio.captions.is_empty():
+			return
+		var vs := get_viewport_rect().size
+		var font := ThemeDB.fallback_font
+		var line_h := Access.px(15.0)
+		var y: float = vs.y * 0.62 - line_h * (audio.captions.size() - 1)
+		for c in audio.captions:
+			var a := clampf(float(c["t"]) / 0.4, 0.0, 1.0)
+			var s := "[%s]" % c["text"]
+			var tw := font.get_string_size(s, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(10)).x
+			var dir: Vector2 = c["dir"]
+			var arrow := 12.0 if dir != Vector2.ZERO else 0.0
+			var w := tw + 16.0 + arrow * 2.0
+			var r := Rect2((vs.x - w) / 2.0, y - line_h + 3.0, w, line_h)
+			draw_rect(r, Color(0.02, 0.02, 0.03, 0.85 * a))
+			draw_rect(r, Color(1, 1, 1, 0.25 * a), false, 1.0)
+			draw_string(font, Vector2(r.position.x + 8.0 + arrow, y - 1.0), s, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(10), Color(1, 1, 1, a))
+			if dir != Vector2.ZERO:
+				# An arrow on the side the sound comes from (left or right), tilted up or down.
+				var d := dir.normalized()
+				var side := r.end.x - 9.0 if d.x >= 0.0 else r.position.x + 9.0
+				var c0 := Vector2(side, r.get_center().y)
+				var tip := c0 + d * 4.5
+				var back := c0 - d * 3.5
+				var n := Vector2(-d.y, d.x) * 3.5
+				draw_colored_polygon(PackedVector2Array([tip, back + n, back - n]), Color("ffd166", a))
+			y += line_h
 
 
 # ---------------------------------------------------------------- the Blank's hum
@@ -281,9 +390,13 @@ func _update_hum(dt: float) -> void:
 			var blank = scene.get("blank")
 			if blank != null and is_instance_valid(blank) and blank.has_method("edge_x"):
 				near = maxf(blank.edge_x(pos.y) - pos.x, 0.0)
+				_hum_dir = Vector2.RIGHT  # the Blank's wall is always east
 			for b in _blots:
 				if is_instance_valid(b):
-					near = minf(near, (b as Node2D).global_position.distance_to(pos))
+					var d := (b as Node2D).global_position.distance_to(pos)
+					if d < near:
+						near = d
+						_hum_dir = ((b as Node2D).global_position - pos).normalized()
 			target = clampf(1.0 - near / HUM_RANGE, 0.0, 1.0)
 	_hum_level = move_toward(_hum_level, target, dt * 1.5)
 	if _hum_level <= 0.01:
@@ -293,6 +406,8 @@ func _update_hum(dt: float) -> void:
 	if not _hum.playing:
 		_hum.play()
 	_hum.volume_db = linear_to_db(_hum_level) - 6.0
+	if _hum_level > 0.15:
+		caption(Loc.t("The Blank hums") if _hum_level < 0.6 else Loc.t("The Blank hums, loud"), _hum_dir, "hum")
 	_hum.pitch_scale = 1.0 + _hum_level * 0.08
 
 

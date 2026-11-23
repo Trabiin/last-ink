@@ -13,6 +13,10 @@ extends RefCounted
 ##   Access.flash(col)     the colour a hit flash should use (pure white, or a soft tint when reducing flashing)
 ##   Access.strobe(t, hz)  on/off blinking that stays on when reducing flashing
 ##   Access.calm(a)        alpha of a bright burst or glow (lowered when reducing flashing)
+##
+## Part 2 (issue #192): a readable font (Atkinson Hyperlegible for the body and heading faces), owner
+## symbols and Fray numbers on the Command Table, reduced camera motion and captions for sound cues.
+## Assists that change the game itself (damage taken, enemy pace...) live in Assists.
 
 const SECTION := "access"
 
@@ -45,6 +49,10 @@ static var hold_attack := false
 static var deadzone := DEADZONE_DEFAULT
 static var auto_advance := 0
 static var first_boot_done := false
+static var readable_font := false
+static var map_symbols := true
+static var reduce_motion := false
+static var captions := false
 
 static var _loaded := false
 
@@ -63,6 +71,10 @@ static func load_settings() -> void:
 	hold_attack = bool(cfg.get_value(SECTION, "hold_attack", hold_attack))
 	deadzone = clampi(int(cfg.get_value(SECTION, "deadzone", deadzone)), DEADZONE_MIN, DEADZONE_MAX)
 	auto_advance = clampi(int(cfg.get_value(SECTION, "auto_advance", auto_advance)), 0, AUTO_ADVANCE.size() - 1)
+	readable_font = bool(cfg.get_value(SECTION, "readable_font", readable_font))
+	map_symbols = bool(cfg.get_value(SECTION, "map_symbols", map_symbols))
+	reduce_motion = bool(cfg.get_value(SECTION, "reduce_motion", reduce_motion))
+	captions = bool(cfg.get_value(SECTION, "captions", captions))
 	# Testers who played before this page existed see it once too: it only asks, never resets anything.
 	first_boot_done = bool(cfg.get_value(SECTION, "first_boot_done", false))
 
@@ -79,6 +91,10 @@ static func save() -> void:
 	cfg.set_value(SECTION, "deadzone", deadzone)
 	cfg.set_value(SECTION, "auto_advance", auto_advance)
 	cfg.set_value(SECTION, "first_boot_done", first_boot_done)
+	cfg.set_value(SECTION, "readable_font", readable_font)
+	cfg.set_value(SECTION, "map_symbols", map_symbols)
+	cfg.set_value(SECTION, "reduce_motion", reduce_motion)
+	cfg.set_value(SECTION, "captions", captions)
 	cfg.save(Settings.PATH)
 
 
@@ -92,14 +108,19 @@ static func reset() -> void:
 	hold_attack = false
 	deadzone = DEADZONE_DEFAULT
 	auto_advance = 0
+	readable_font = false
+	map_symbols = true
+	reduce_motion = false
+	captions = false
 	apply()
 	save()
 
 
-## Puts the options that live in the engine in place (the stick deadzone). Settings.apply_all() calls it.
+## Puts the options that live in the engine in place (the stick deadzone, the font). Settings.apply_all() calls it.
 static func apply() -> void:
 	load_settings()
 	apply_deadzone()
+	apply_font()
 
 
 ## Should the title screen show the first-boot settings page?
@@ -126,6 +147,10 @@ static func text_scale() -> float:
 static func fs(size: int) -> int:
 	if not _loaded:
 		load_settings()
+	if readable_font:
+		# Atkinson's letters stand taller and wider than Jersey's at the same size: this keeps the readable
+		# font at the pixel font's height, so layouts keep fitting and Text size still does the growing.
+		return maxi(7, roundi(size * TEXT_SCALE[text_size] * READABLE_SCALE))
 	if text_size == 0:
 		return size
 	return maxi(size, roundi(size * TEXT_SCALE[text_size]))
@@ -147,6 +172,56 @@ static func fit(font: Font, s: String, size: int, w: float) -> String:
 	while s.length() > 1 and font.get_string_size(s + "...", HORIZONTAL_ALIGNMENT_LEFT, -1, size).x > w:
 		s = s.left(s.length() - 1)
 	return s.strip_edges() + "..."
+
+
+# ---------------------------------------------------------------- readable font
+
+## The two faces every text in the game is drawn with: the project font (body.tres, the theme's custom
+## font and so ThemeDB.fallback_font) and UiSkin.TITLE_FONT (heading.tres). Both are FontVariations, so
+## swapping their base font changes every label and draw_string at once, with no code at the call sites.
+const BODY_FONT := preload("res://assets/fonts/body.tres")
+const HEADING_FONT := preload("res://assets/fonts/heading.tres")
+const PIXEL_BODY := preload("res://assets/fonts/Jersey10-Regular.ttf")
+const PIXEL_HEADING := preload("res://assets/fonts/Jacquard12-Regular.ttf")
+const READABLE_BODY := preload("res://assets/fonts/AtkinsonHyperlegible-Regular.ttf")
+const READABLE_HEADING := preload("res://assets/fonts/AtkinsonHyperlegible-Bold.ttf")
+const READABLE_SCALE := 0.86  # see fs()
+const FONT_INFO := [
+	"The game's pixel lettering (Jersey 10, headings in Jacquard 12).",
+	"Atkinson Hyperlegible everywhere, headings too: plain, open letter shapes made for low vision.",
+]
+
+
+static func apply_font() -> void:
+	load_settings()
+	var body: Font = READABLE_BODY if readable_font else PIXEL_BODY
+	var head: Font = READABLE_HEADING if readable_font else PIXEL_HEADING
+	var body_var: FontVariation = BODY_FONT
+	var head_var: FontVariation = HEADING_FONT
+	if body_var.base_font != body:
+		body_var.base_font = body
+	if head_var.base_font != head:
+		head_var.base_font = head
+	# Labels and other Controls cache their shaped text; tell them the theme changed.
+	var tree := Engine.get_main_loop() as SceneTree
+	if tree and tree.root:
+		tree.root.propagate_notification(Control.NOTIFICATION_THEME_CHANGED)
+
+
+# ---------------------------------------------------------------- camera
+
+## How quickly cameras that follow someone catch up: snappier with reduced camera motion, so the view
+## never drifts or sweeps after the hero.
+static func follow_speed(normal: float) -> float:
+	load_settings()
+	return maxf(normal, 14.0) if reduce_motion else normal
+
+
+## The share of the way a smoothed camera (the Command Table's pan and zoom) moves this frame:
+## reduced camera motion jumps straight there instead of sweeping across the map.
+static func ease_k(delta: float, speed: float) -> float:
+	load_settings()
+	return 1.0 if reduce_motion else 1.0 - exp(-delta * speed)
 
 
 # ---------------------------------------------------------------- flashing

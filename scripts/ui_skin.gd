@@ -15,7 +15,8 @@ const TEX := {
 const MARGIN := {"ledger": 14, "paper": 9, "button": 6}
 ## Clean frames stretch; the torn paper edge repeats so it stays ragged.
 const TILED := ["paper"]
-const TITLE_FONT := preload("res://assets/fonts/Jacquard12-Regular.ttf")
+## A FontVariation over Jacquard 12; the readable font option (Access) swaps its base for Atkinson Hyperlegible Bold.
+const TITLE_FONT := preload("res://assets/fonts/heading.tres")
 const PAPER_INK := Color("2a2019")  # text colour on paper
 const PAGE_INK := Color("2a2019")  # dialogue text on the torn ledger page (UiSkin.page)
 const PAGE_INK_SOFT := Color("5a4a3c")  # narration on the page

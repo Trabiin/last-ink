@@ -2,8 +2,9 @@ extends "res://tests/test_case.gd"
 ## Screenshots of every main screen at a chosen text size (issue #34), to check that nothing clips or
 ## overflows at Large and Largest. Does nothing in the normal test run. Under a display (not --headless):
 ##   ACCESS_SHOTS=/tmp/a11y TEXT_SIZE=2 xvfb-run -a godot --audio-driver Dummy --path . -s tests/run.gd -- access_shots
-## TEXT_SIZE is 0 (Normal), 1 (Large) or 2 (Largest). The danger markers, the first-start page, the
-## Accessibility page, a conversation, the dialogue log and a bond scene are included.
+## TEXT_SIZE is 0 (Normal), 1 (Large) or 2 (Largest); FONT=1 uses the readable font (issue #192). The
+## danger markers, the first-start page, the Accessibility, Assists and Controls pages, a conversation,
+## the dialogue log, a bond scene, the map without colour and captions are included.
 
 const HUB := "res://scenes/hub.tscn"
 const COMMAND := "res://scenes/command.tscn"
@@ -25,6 +26,9 @@ func after_each() -> void:
 	if shots != "":
 		Access.text_size = 0
 		Access.danger_patterns = true
+		Access.readable_font = false
+		Access.captions = false
+		Access.apply_font()
 
 
 func _shot(name: String) -> void:
@@ -39,6 +43,9 @@ func test_screens() -> void:
 		return
 	Access.load_settings()
 	Access.text_size = clampi(int(OS.get_environment("TEXT_SIZE")), 0, Access.TEXT_SIZES.size() - 1)
+	Access.readable_font = OS.get_environment("FONT") == "1"
+	Access.map_symbols = true
+	Access.apply_font()
 	var Empire := autoload("Empire")
 	autoload("Saves").pending = {}
 	Empire.reset()
@@ -91,7 +98,18 @@ func test_screens() -> void:
 	opts.page = "access"
 	opts._rebuild()
 	await _shot("27_options_access")
+	opts.page = "assists"
+	opts._rebuild()
+	await _shot("27b_options_assists")
+	opts.page = "controls"
+	opts.sel = 0
+	opts._rebuild()
+	await _shot("27c_options_controls")
+	opts.sel = opts._rows.size() - 6
+	await _shot("27d_options_controls_menus")
 	opts.queue_free()
+	cmd.selected = cmd.territory.find("oldmill").get("index", 0)
+	await _shot("27e_command_marks")
 	var help := HelpView.popup(cmd)
 	await _shot("28_help")
 	help.queue_free()
@@ -106,6 +124,12 @@ func test_screens() -> void:
 	var main := await wait_scene(MAIN)
 	await frames(30)
 	await _shot("30_mission")
+	Access.captions = true
+	autoload("Audio").sfx("hero_down")
+	autoload("Audio").caption("The Blank hums", Vector2.RIGHT, "hum")
+	await _shot("30b_captions")
+	autoload("Audio").captions = []
+	Access.captions = false
 	main.open_quick_menu()
 	await _shot("31_quick_menu")
 	main.quick_menu.close()

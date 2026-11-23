@@ -114,6 +114,10 @@ character with every direction given (`direction_images`, almost free), then ani
 - **Fonts.** Body text is Jersey 10 (set as the project's custom theme font, so `ThemeDB.fallback_font` is it
   everywhere); titles and headings use Jacquard 12 (`UiSkin.TITLE_FONT`). Both are pixel fonts under the OFL:
   antialiasing, hinting and subpixel positioning are off in their import settings so they stay crisp.
+  The project font is `assets/fonts/body.tres` and the heading face `assets/fonts/heading.tres`: FontVariations
+  whose base font Options > Accessibility > Font swaps for Atkinson Hyperlegible (antialiased, sized down by
+  `Access.READABLE_SCALE` in `Access.fs`) (issue #192). Draw text with `ThemeDB.fallback_font` and
+  `UiSkin.TITLE_FONT`, never a .ttf directly, or the option misses it. The title logo is art and keeps Jacquard.
 - **Frames.** `scripts/ui_skin.gd` (`UiSkin.panel(canvas, rect, kind, tint)`) draws 9-slice frames from
   `assets/ui/`: `ledger` (dark ink-blue panel, brass corners: HUD plates, menus, dialogue box, banter),
   `button` (leather and brass: ability slots, town buttons, name tags, tinted with the speaker's colour) and

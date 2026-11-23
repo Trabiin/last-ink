@@ -20,7 +20,7 @@ const W := 440.0
 const ROW_H := 22.0
 const ROW_H_CONTROLS := 17.0  # the Controls page has more rows
 
-var page := "main"  # "main", "controls", "fx", "display", "access" or "first" (the first-start page, issue #34)
+var page := "main"  # "main", "controls", "fx", "display", "access", "assists" (issue #192) or "first" (the first-start page, issue #34)
 var sel := 0
 var listening := ""  # action id waiting for a new key/button
 var note := ""
@@ -28,7 +28,7 @@ var note_t := 0.0
 var _listen_frame := -1
 var _opened_frame := -1
 var _t := 0.0
-var _rows: Array = []  # {"id", "label", "value", "detail", "kind": "cycle"|"slider"|"open"|"bind"|"button"}
+var _rows: Array = []  # {"id", "label", "value", "detail", "kind": "cycle"|"slider"|"open"|"bind"|"button"|"header"}
 var _row_rects: Array = []
 var _left_rects: Array = []
 var _right_rects: Array = []
@@ -82,6 +82,8 @@ func _rebuild() -> void:
 			"detail": tr("How fast fights run. The Command clock is not affected.")})
 		_rows.append({"id": "difficulty", "kind": "cycle", "label": tr("Difficulty"), "value": Loc.t(Settings.DIFFICULTIES[Settings.difficulty]),
 			"detail": Loc.t(Settings.DIFFICULTY_INFO[Settings.difficulty]) + tr("  Change it any time.")})
+		_rows.append({"id": "assists_page", "kind": "open", "label": tr("Assists"), "value": tr("some on") if Assists.any_on() else tr("damage, enemy speed, skipping"),
+			"detail": tr("Take less damage, slow enemies down, heal between fights, skip story fights, calm the Blank.")})
 		_rows.append({"id": "text_speed", "kind": "cycle", "label": tr("Text speed"), "value": Dialogue.speed_name(),
 			"detail": tr("Typewriter speed in conversations%s.") % ((tr(" (%s changes it there too)") % Prompts.key("swap")) if Prompts.key("swap") != "" else "")})
 		_rows.append({"id": "shake", "kind": "cycle", "label": tr("Screen shake"), "value": Loc.t(Settings.SHAKES[Settings.shake_i]),
@@ -93,13 +95,16 @@ func _rebuild() -> void:
 		_rows.append({"id": "tips", "kind": "cycle", "label": tr("Tips"), "value": tr("On") if Settings.tips_enabled() else tr("Off"),
 			"detail": tr("The cast explains each screen the first time it opens and speaks up when something new happens. Everything is also under Help in the menu.")})
 		for bus in Settings.BUSES:
-			var label: String = {"Master": tr("Master volume"), "Music": tr("Music volume"), "SFX": tr("Sound effects volume")}[bus]
+			if bus == "Voice" and not _has_voice():
+				continue  # no recorded speech yet: nothing for the slider to change
+			var label: String = {"Master": tr("Master volume"), "Music": tr("Music volume"), "SFX": tr("Sound effects volume"),
+				"UI": tr("Menu sounds volume"), "Voice": tr("Voice volume")}[bus]
 			_rows.append({"id": "vol:" + bus, "kind": "slider", "label": label, "value": "%d%%" % Settings.volumes[bus],
 				"level": Settings.volumes[bus], "detail": ""})
-		_rows.append({"id": "access_page", "kind": "open", "label": tr("Accessibility"), "value": tr("text size, flashing, techs, sticks"),
-			"detail": tr("Bigger text, calmer effects, danger markers, toggle instead of hold, stick deadzone, dialogue log.")})
+		_rows.append({"id": "access_page", "kind": "open", "label": tr("Accessibility"), "value": tr("text, font, flashing, captions"),
+			"detail": tr("Bigger text, a plainer font, calmer effects, danger and map markers, captions, less camera motion, toggle instead of hold, stick deadzone, dialogue log.")})
 		_rows.append({"id": "controls", "kind": "open", "label": tr("Controls"), "value": tr("remap keys and buttons"),
-			"detail": ""})
+			"detail": tr("Every key and gamepad button, menus included, and one-handed keyboard layouts.")})
 		_rows.append({"id": "fx_page", "kind": "open", "label": tr("Visual effects"), "value": tr("shadows, clouds, mist, lamps"),
 			"detail": ""})
 		_rows.append({"id": "display_page", "kind": "open", "label": tr("Display"),
@@ -113,6 +118,8 @@ func _rebuild() -> void:
 		_display_rows()
 	elif page == "access":
 		_access_rows(false)
+	elif page == "assists":
+		_assist_rows()
 	elif page == "first":
 		_access_rows(true)
 	elif page == "fx":
@@ -123,14 +130,65 @@ func _rebuild() -> void:
 		_rows.append({"id": "fx_reset", "kind": "button", "label": tr("Reset effects"), "value": "", "detail": ""})
 		_rows.append({"id": "fx_back", "kind": "button", "label": tr("Back"), "value": "", "detail": ""})
 	else:
+		_rows.append({"id": "layout", "kind": "cycle", "label": tr("Keyboard layout"), "value": Loc.t(Settings.LAYOUTS[Settings.layout]),
+			"detail": Loc.t(Settings.LAYOUT_INFO[Settings.layout])})
 		for a in Settings.REMAPPABLE:
 			var id: String = a[0]
 			if not InputMap.has_action(id):
 				continue
-			_rows.append({"id": id, "kind": "bind", "label": a[1], "key": Settings.key_name(id), "pad": Settings.pad_name(id)})
+			var head := Settings.group_title(id)
+			if head != "":
+				_rows.append({"id": "head:" + id, "kind": "header", "label": head})
+			var key := Settings.key_name(id)
+			var locked := Settings.locked_text(id)
+			if locked != "":
+				key = locked if key == "-" else "%s, %s" % [key, locked]
+			var pad := Settings.pad_name(id)
+			var locked_pad := Settings.locked_pad_text(id)
+			if locked_pad != "":
+				pad = locked_pad if pad == "-" else "%s, %s" % [pad, locked_pad]
+			_rows.append({"id": id, "kind": "bind", "label": Loc.t(a[1]), "key": key, "pad": pad,
+				"detail": tr("%s always works here too, so you can't lock yourself out.") % (" / ".join([locked, locked_pad])) if locked != "" else ""})
 		_rows.append({"id": "reset", "kind": "button", "label": tr("Reset to defaults"), "value": "", "detail": ""})
 		_rows.append({"id": "controls_back", "kind": "button", "label": tr("Back"), "value": "", "detail": ""})
 	sel = clampi(sel, 0, _rows.size() - 1)
+	if _rows[sel]["kind"] == "header":
+		_move_sel(1)
+
+
+## The Assists page (issue #192): what the fight asks of you, each on its own switch, next to difficulty.
+func _assist_rows() -> void:
+	var S := Assists
+	S.load_settings()
+	_rows.append({"id": "difficulty", "kind": "cycle", "label": tr("Difficulty"), "value": Loc.t(Settings.DIFFICULTIES[Settings.difficulty]),
+		"detail": Loc.t(Settings.DIFFICULTY_INFO[Settings.difficulty])})
+	_rows.append({"id": "as:damage", "kind": "cycle", "label": tr("Damage taken"), "value": "%d%%" % S.DAMAGE[S.damage_i],
+		"detail": tr("How much damage your party takes, on top of the difficulty.")})
+	_rows.append({"id": "as:pace", "kind": "cycle", "label": tr("Enemy speed"), "value": Loc.t(S.PACE_NAMES[S.pace_i]),
+		"detail": tr("Enemies move, wind up and attack at %d%% speed. Your party is unaffected.") % roundi(S.PACE[S.pace_i] * 100.0)})
+	_rows.append({"id": "as:recover", "kind": "cycle", "label": tr("Heal between fights"), "value": tr("On") if S.recover else tr("Off"),
+		"detail": tr("A few seconds with no enemy near and your party's health fills back up.")})
+	_rows.append({"id": "as:skip", "kind": "cycle", "label": tr("Skip story fights"), "value": tr("On") if S.skip_fights else tr("Off"),
+		"detail": tr("Story missions get Skip this fight in the pause menu. Their conversations still play and the rewards are the same.")})
+	_rows.append({"id": "as:blank", "kind": "cycle", "label": tr("Blank pressure"), "value": Loc.t(S.BLANK[S.blank_i]),
+		"detail": Loc.t(S.BLANK_INFO[S.blank_i]) + tr(" On the Command Table.")})
+	_rows.append({"id": "as:reset", "kind": "button", "label": tr("Reset assists"), "value": "",
+		"detail": tr("Assists never lock anything: every ending, reward and scene stays open.")})
+	_rows.append({"id": "assists_back", "kind": "button", "label": tr("Back"), "value": "",
+		"detail": tr("Assists never lock anything: every ending, reward and scene stays open.")})
+
+
+## Moves the highlight by dir, over the Controls page's headings.
+func _move_sel(dir: int) -> void:
+	for i in _rows.size():
+		sel = posmod(sel + dir, _rows.size())
+		if _rows[sel]["kind"] != "header":
+			return
+
+
+func _has_voice() -> bool:
+	var a := get_node_or_null("/root/Audio")
+	return a != null and a.has_method("has_voice") and a.has_voice()
 
 
 ## The Accessibility page (issue #34), and the short version the title screen shows the first time the
@@ -140,6 +198,8 @@ func _access_rows(first: bool) -> void:
 	A.load_settings()
 	_rows.append({"id": "a:text", "kind": "cycle", "label": tr("Text size"), "value": Loc.t(A.TEXT_SIZES[A.text_size]),
 		"detail": Loc.t(A.TEXT_INFO[A.text_size])})
+	_rows.append({"id": "a:font", "kind": "cycle", "label": tr("Font"), "value": tr("Readable") if A.readable_font else tr("Pixel"),
+		"detail": Loc.t(A.FONT_INFO[1 if A.readable_font else 0])})
 	_rows.append({"id": "a:flash", "kind": "cycle", "label": tr("Reduce flashing"), "value": tr("On") if A.reduce_flashing else tr("Off"),
 		"detail": tr("Softens hit flashes, blinking, bright bursts and the Blank's flicker.") if A.reduce_flashing
 			else tr("On: hit flashes, blinking tells, bright bursts and the Blank's flicker are softened or held still.")})
@@ -149,6 +209,12 @@ func _access_rows(first: bool) -> void:
 	_rows.append({"id": "a:danger", "kind": "cycle", "label": tr("Danger markers"), "value": tr("Patterned") if A.danger_patterns else tr("Colour only"),
 		"detail": tr("Where an attack will land is striped and outlined, and wind-ups show a warning sign, so nothing relies on red alone.") if A.danger_patterns
 			else tr("Danger zones are a red wash only.")})
+	if not first:
+		_rows.append({"id": "a:map", "kind": "cycle", "label": tr("Map markings"), "value": tr("Shapes and numbers") if A.map_symbols else tr("Colour only"),
+			"detail": tr("On the Command Table every owner has a shape, each province shows its Fray as a number and Unravelling land is hatched.") if A.map_symbols
+				else tr("Owners and Fray show as colours on the map only.")})
+	_rows.append({"id": "a:captions", "kind": "cycle", "label": tr("Captions"), "value": tr("On") if A.captions else tr("Off"),
+		"detail": tr("Important sounds show as text: warning bells, a hero falling, the Blank's hum (with an arrow to where it comes from).")})
 	_rows.append({"id": "a:tech", "kind": "cycle", "label": tr("Charged techs"), "value": Loc.t(A.TECH_MODES[A.tech_mode]),
 		"detail": Loc.t(A.TECH_INFO[A.tech_mode])})
 	if first:
@@ -166,8 +232,11 @@ func _access_rows(first: bool) -> void:
 		"detail": tr("Typewriter speed in conversations.")})
 	_rows.append({"id": "shake", "kind": "cycle", "label": tr("Screen shake"), "value": Loc.t(Settings.SHAKES[Settings.shake_i]),
 		"detail": tr("Camera shake on heavy hits and techs.")})
+	_rows.append({"id": "a:motion", "kind": "cycle", "label": tr("Camera motion"), "value": tr("Reduced") if A.reduce_motion else tr("Full"),
+		"detail": tr("The camera sticks to your hero instead of gliding after them, and the map jumps instead of sweeping. The fog stops drifting.") if A.reduce_motion
+			else tr("Reduced: the camera sticks to your hero, the map jumps instead of sweeping and the fog holds still.")})
 	_rows.append({"id": "dialogue_log", "kind": "open", "label": tr("Dialogue log"), "value": tr("everything said so far"),
-		"detail": tr("Also on %s while a conversation is open.") % Prompts.key("journal") if Prompts.key("journal") != "" else ""})
+		"detail": tr("Also on %s while a conversation is open.") % Prompts.key("dialogue_log") if Prompts.key("dialogue_log") != "" else ""})
 	_rows.append({"id": "a:reset", "kind": "button", "label": tr("Reset accessibility"), "value": "", "detail": ""})
 	_rows.append({"id": "access_back", "kind": "button", "label": tr("Back"), "value": "", "detail": ""})
 
@@ -212,6 +281,15 @@ func _step(i: int, step: int) -> void:
 		return
 	if id.begins_with("a:"):
 		_step_access(id.substr(2), step)
+		_rebuild()
+		return
+	if id.begins_with("as:"):
+		_step_assist(id.substr(3), step)
+		_rebuild()
+		return
+	if id == "layout":
+		Settings.apply_layout(clampi(Settings.layout + step, 0, Settings.LAYOUTS.size() - 1))
+		_say(tr("Keyboard layout: %s") % Loc.t(Settings.LAYOUTS[Settings.layout]))
 		_rebuild()
 		return
 	match id:
@@ -263,7 +341,32 @@ func _step_access(what: String, step: int) -> void:
 			A.apply_deadzone()
 		"auto":
 			A.auto_advance = clampi(A.auto_advance + step, 0, A.AUTO_ADVANCE.size() - 1)
+		"font":
+			A.readable_font = step > 0
+			A.apply_font()
+		"map":
+			A.map_symbols = step < 0  # left = Shapes and numbers, right = Colour only, in the order shown
+		"motion":
+			A.reduce_motion = step > 0
+		"captions":
+			A.captions = step > 0
 	A.save()
+
+
+func _step_assist(what: String, step: int) -> void:
+	var S := Assists
+	match what:
+		"damage":
+			S.damage_i = clampi(S.damage_i + step, 0, S.DAMAGE.size() - 1)
+		"pace":
+			S.pace_i = clampi(S.pace_i + step, 0, S.PACE.size() - 1)
+		"recover":
+			S.recover = step > 0
+		"skip":
+			S.skip_fights = step > 0
+		"blank":
+			S.blank_i = clampi(S.blank_i + step, 0, S.BLANK.size() - 1)
+	S.save()
 
 
 ## Text speed stays where Dialogue has always kept it (user://settings.cfg, [dialogue]).
@@ -299,7 +402,7 @@ func _activate(i: int) -> void:
 			if r["id"] == "dialogue_log":
 				DialogueLog.popup(get_parent())
 				return
-			page = {"fx_page": "fx", "display_page": "display", "access_page": "access"}.get(r["id"], "controls")
+			page = {"fx_page": "fx", "display_page": "display", "access_page": "access", "assists_page": "assists"}.get(r["id"], "controls")
 			sel = 0
 			_rebuild()
 		"bind":
@@ -309,8 +412,12 @@ func _activate(i: int) -> void:
 			match r["id"]:
 				"back":
 					close()
-				"controls_back", "fx_back", "display_back", "access_back":
+				"controls_back", "fx_back", "display_back", "access_back", "assists_back":
 					_back()
+				"as:reset":
+					Assists.reset()
+					_say(tr("Assists are back to the defaults."))
+					_rebuild()
 				"start":
 					Access.finish_first_boot()
 					close()
@@ -351,6 +458,16 @@ func _value_index(id: String) -> int:
 		"a:tech": return Access.tech_mode
 		"a:hold": return 1 if Access.hold_attack else 0
 		"a:auto": return Access.auto_advance
+		"a:font": return 1 if Access.readable_font else 0
+		"a:map": return 0 if Access.map_symbols else 1
+		"a:motion": return 1 if Access.reduce_motion else 0
+		"a:captions": return 1 if Access.captions else 0
+		"as:damage": return Assists.damage_i
+		"as:pace": return Assists.pace_i
+		"as:recover": return 1 if Assists.recover else 0
+		"as:skip": return 1 if Assists.skip_fights else 0
+		"as:blank": return Assists.blank_i
+		"layout": return Settings.layout
 	return -1
 
 
@@ -368,7 +485,7 @@ func _back() -> void:
 	elif page == "first":
 		_activate(_rows.size() - 1)  # backing out of the first-start page is the same as Start
 	elif page != "main":
-		var from: String = {"controls": "controls", "fx": "fx_page", "display": "display_page", "access": "access_page"}[page]
+		var from: String = {"controls": "controls", "fx": "fx_page", "display": "display_page", "access": "access_page", "assists": "assists_page"}[page]
 		page = "main"
 		_rebuild()
 		sel = maxi(0, _rows.map(func(r): return r["id"]).find(from))
@@ -401,13 +518,15 @@ func _input(event: InputEvent) -> void:
 		return
 	if event is InputEventMouseMotion:
 		for i in _row_rects.size():
-			if (_row_rects[i] as Rect2).has_point(event.position):
+			if (_row_rects[i] as Rect2).has_point(event.position) and _rows[i]["kind"] != "header":
 				sel = i
 		return
 	var tap: bool = (event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT) \
 		or (event is InputEventScreenTouch and event.pressed)
 	if tap:
 		_tap(event.position)
+	elif event is InputEventMouseButton and event.pressed and event.button_index in [MOUSE_BUTTON_WHEEL_UP, MOUSE_BUTTON_WHEEL_DOWN]:
+		_move_sel(-1 if event.button_index == MOUSE_BUTTON_WHEEL_UP else 1)  # the wheel scrolls long pages (issue #192)
 	elif event is InputEventScreenTouch or event is InputEventMouseButton or event is InputEventScreenDrag:
 		pass
 	elif Engine.get_process_frames() == _opened_frame:
@@ -415,9 +534,9 @@ func _input(event: InputEvent) -> void:
 	elif event.is_action_pressed("ui_cancel") or event.is_action_pressed("pause"):
 		_back()
 	elif event.is_action_pressed("ui_down", true):
-		sel = posmod(sel + 1, _rows.size())
+		_move_sel(1)
 	elif event.is_action_pressed("ui_up", true):
-		sel = posmod(sel - 1, _rows.size())
+		_move_sel(-1)
 	elif event.is_action_pressed("ui_left", true) or _key(event, KEY_A):
 		_step(sel, -1)
 	elif event.is_action_pressed("ui_right", true) or _key(event, KEY_D):
@@ -475,7 +594,8 @@ func _tap(p: Vector2) -> void:
 			return
 	for i in _row_rects.size():
 		if (_row_rects[i] as Rect2).has_point(p):
-			_activate(i)
+			if _rows[i]["kind"] != "header":
+				_activate(i)
 			return
 	if not _panel.grow(6).has_point(p):
 		_back()
@@ -535,7 +655,7 @@ func _draw() -> void:
 	var x0 := _panel.position.x + 24.0
 	var x1 := _panel.end.x - 14.0
 	_str(font, Vector2(x0 - 8, _panel.position.y + 22), {"main": tr("Options"), "controls": tr("Controls"), "fx": tr("Visual effects"), "display": tr("Display"),
-		"access": tr("Accessibility"), "first": tr("Before you start")}[page], 16, Color("f3f1ea"))
+		"access": tr("Accessibility"), "assists": tr("Assists"), "first": tr("Before you start")}[page], 16, Color("f3f1ea"))
 	if page == "controls":
 		_str(font, Vector2(x1 - Access.px(168.0), _panel.position.y + 22), tr("Keyboard"), 9, SOFT)
 		_str(font, Vector2(x1 - Access.px(70.0), _panel.position.y + 22), tr("Gamepad"), 9, SOFT)
@@ -557,6 +677,13 @@ func _draw() -> void:
 		var r: Dictionary = _rows[i]
 		var rr := Rect2(_panel.position.x + 4, y, w - 8, row_h - 2)
 		_row_rects.append(rr)
+		if r["kind"] == "header":  # a heading on the Controls page: not a row you can pick
+			_left_rects.append(Rect2())
+			_right_rects.append(Rect2())
+			_str(font, Vector2(x0 - 8, y + ty), str(r["label"]), 9, SOFT)
+			draw_line(Vector2(x0 - 8, y + row_h - 3), Vector2(x1, y + row_h - 3), Color(1, 1, 1, 0.12), 1.0)
+			y += row_h
+			continue
 		var on_row := i == sel
 		if on_row:
 			draw_rect(rr, Color(1, 1, 1, 0.06))
@@ -614,5 +741,6 @@ func _draw() -> void:
 	elif detail != "":
 		draw_multiline_string(font, Vector2(x0 - 8, fy), detail, HORIZONTAL_ALIGNMENT_LEFT, w - 32, Access.fs(9), 2, SOFT)
 	var hint := tr("Up/Down: pick    Left/Right: change    X/B: back") if page != "controls" \
-		else tr("J/A: rebind (keyboard key or gamepad input)    X/B: back")
+		else (tr("Left/Right: change layout    X/B: back") if sel < _rows.size() and _rows[sel]["kind"] == "cycle"
+			else tr("J/A: rebind (keyboard key or gamepad input)    X/B: back"))
 	_str(font, Vector2(x0 - 8, fy + Access.px(23.0)), hint, 8, DIM)

@@ -144,6 +144,7 @@ func _start_phase2() -> void:
 func _physics_process(delta: float) -> void:
 	if dying_t >= 0.0:
 		return
+	delta *= Assists.pace()  # enemy speed assist (issue #192): timers run slower, _slide() moves slower
 	anim_t += delta
 	flash_t = maxf(flash_t - delta, 0.0)
 	taunt_t = maxf(taunt_t - delta, 0.0)
@@ -178,7 +179,7 @@ func _physics_process(delta: float) -> void:
 		Act.THRUST:
 			var before := global_position
 			velocity = aim_dir * THRUST_SPEED
-			move_and_slide()
+			_slide()
 			thrust_left -= global_position.distance_to(before)
 			_thrust_hits(before, global_position)
 			if thrust_left <= 0.0 or act_t <= 0.0 or global_position.distance_to(before) < 1.0:
@@ -198,7 +199,7 @@ func _physics_process(delta: float) -> void:
 
 	velocity = dir * move_speed * (1.25 if phase == 2 else 1.0) + knockback
 	knockback = knockback.move_toward(Vector2.ZERO, 900.0 * delta)
-	move_and_slide()
+	_slide()
 	queue_redraw()
 
 

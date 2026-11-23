@@ -38,7 +38,7 @@ tokens exactly as they are in translations.
 - Spoken lines keep speaker and expression ids; ids are never translated.
 - Pseudo-localisation reaches both script and data text.
 - Number/day formatting.
-- Both UI fonts (Jersey 10, Jacquard 12) have glyphs for accented Latin (German, French, Spanish,
+- The UI fonts (Jersey 10, Jacquard 12, and Atkinson Hyperlegible for the readable font option) have glyphs for accented Latin (German, French, Spanish,
   Portuguese, Italian, Polish, Czech). Chinese, Japanese, Korean or Cyrillic would need a fallback
   font (not planned for launch).
 
