@@ -43,7 +43,9 @@ var alarm := 0.0  # 0-100; at 100 the alarm is raised for good
 var raised := false
 var reinforce_t := 0.0
 var need := 0
-var grace := 0.0  # salvage: seconds before the white starts to move (enough to reach the nearest pile)
+# Salvage: seconds before the white starts to move (enough to reach the nearest pile).
+# Defense: seconds the surge waits for the party to reach the stone (it comes early once they arrive).
+var grace := 0.0
 var restore := {}  # state from a mid-mission save, applied once the world exists
 
 
@@ -65,6 +67,9 @@ func setup(p_obj: Dictionary, p_main) -> void:
 			ward.hp = ward.max_hp
 			ward.position = _tile(obj["ward"])
 			main.entities.add_child(ward)
+			# The surge gathers while the party walks over and breaks the moment they reach the stone, so the stone
+			# is whole when the fight starts. A party that dawdles still gets hit: the wait is the walk plus a breath.
+			grace = exit_pos.distance_to(ward.position) / GRACE_SPEED + float(obj.get("grace", 20.0))
 		"reclaim":
 			blot = BlotScript.new()
 			blot.total_hp = int(obj.get("hp", 220))
@@ -145,6 +150,15 @@ func update(delta: float) -> void:
 		return
 	match kind:
 		"defense":
+			if grace > 0.0:
+				grace -= delta
+				if main.leader and main.leader.global_position.distance_to(ward.position) < float(obj.get("arrive", 96.0)):
+					grace = 0.0
+				if grace <= 0.0:
+					grace = 0.0
+					spawn_t = 2.0  # a beat to set your feet before the first Nibbler crawls out
+					main.hud.say(tr("The surge comes. Hold the stone!"), 2.5)
+				return
 			time_left -= delta
 			_move_blank(-float(obj.get("creep", 3.0)) * delta)
 			_spawn_timer(delta, float(obj.get("spawn_every", 3.0)), func(): return _edge_point(ward.position.y, 160.0), true)
@@ -341,6 +355,8 @@ func fail_text() -> String:
 func text() -> String:
 	match kind:
 		"defense":
+			if grace > 0.0:
+				return tr("Reach the wardstone   (the surge comes in %d s)") % ceili(grace)
 			return tr("Hold the wardstone: %d s   (stone %d/%d)") % [ceili(time_left), ward.hp, ward.max_hp]
 		"reclaim":
 			return tr("Break the Blot   (%d/%d)") % [blot.hp, blot.max_hp] if not blot.dead else tr("The Blot is broken")
