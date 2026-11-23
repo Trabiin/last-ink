@@ -21,7 +21,7 @@ from scipy import ndimage
 TOL = 22  # how far (max channel diff) from the background grey still counts as background
 SIZE = (512, 768)  # painted cut-out
 PIXEL_H = 336  # game portrait height in art pixels (224x336)
-PIXEL_COLOURS = 32
+PIXEL_COLOURS = 24  # 24 since the speckle cleanup (2026-11-23): fewer near-duplicate shades, less noise
 POCKET = 40  # enclosed background blobs bigger than this (in source pixels) are cleared too
 # Characters whose own colours sit close to the background grey (Ilse's pale hair) only lose big pockets.
 POCKET_FOR = {"ilse": 1500}
