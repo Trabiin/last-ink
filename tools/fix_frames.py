@@ -229,7 +229,13 @@ def _leg_span(base, feet):
 SWAY = [0, 1, 1, 0, -1, -1]
 
 
-def step(sid, name, legs=0.22, split=None, span=None, sink=False, from_rot=False, hem=0, hem_x=None):
+# Stride for front, back and diagonal walks: the left foot's offset per frame (down = towards the camera); the
+# right foot does the opposite, so one foot comes forward while the other goes back.
+STRIDE = [1, 1, 0, -1, -1, 0]
+
+
+def step(sid, name, legs=0.22, split=None, span=None, sink=False, from_rot=False, hem=0, hem_x=None,
+         stride=False, slant=0):
     """Front and back walks whose legs stand still: the legs (the bottom `legs` share of the body, between the
     feet columns) are taken from the rotation frame and each foot lifts in turn, 1-2 px; the frame's own body,
     arms and items above stay. Built from rot_<dir>.png, so running it again is harmless."""
@@ -243,8 +249,9 @@ def step(sid, name, legs=0.22, split=None, span=None, sink=False, from_rot=False
     lo, hi = span or _leg_span(base, feet)
     mid = split if split is not None else (lo + hi + 1) // 2
     lift_l, lift_r = LIFT.get(n, LIFT[6])
-    left = base.crop((lo, y0, mid, fh))
-    right = base.crop((mid, y0, hi + 1, fh))
+    pad = 2 if stride else 0  # the rows above the cut cover the gap when a foot moves down
+    left = base.crop((lo, y0 - pad, mid, fh))
+    right = base.crop((mid, y0 - pad, hi + 1, fh))
     for i in range(n):
         frame = base.copy() if from_rot else strip.crop((i * fw, 0, (i + 1) * fw, fh))
         body = frame.crop((0, 0, fw, y0))
@@ -257,8 +264,13 @@ def step(sid, name, legs=0.22, split=None, span=None, sink=False, from_rot=False
         out = frame.copy()
         out.paste((0, 0, 0, 0), (0, 0, fw, y0))
         out.paste((0, 0, 0, 0), (lo, y0, hi + 1, fh))
-        out.alpha_composite(left, (lo, y0 - lift_l[i % len(lift_l)]))
-        out.alpha_composite(right, (mid, y0 - lift_r[i % len(lift_r)]))
+        if stride:
+            o = STRIDE[i % len(STRIDE)]
+            out.alpha_composite(left, (lo + slant * o, y0 - pad + o))
+            out.alpha_composite(right, (mid - slant * o, y0 - pad - o))
+        else:
+            out.alpha_composite(left, (lo, y0 - lift_l[i % len(lift_l)]))
+            out.alpha_composite(right, (mid, y0 - lift_r[i % len(lift_r)]))
         out.alpha_composite(body, (0, 1 if sink and i % 3 == 0 else 0))
         strip.paste(out, (i * fw, 0))
     strip.save(_path(sid, name))
@@ -283,10 +295,24 @@ def legs(sid, name, donor, y0, span, dx=0):
     strip.save(_path(sid, name))
 
 
-def patch(sid, name, rect, src=None, only=None):
+def _anchor(im, colour, rect=None):
+    """Mean (x, y) of the pixels within 40 of colour (an eye colour), or None."""
+    a = im.load()
+    x0, y0, x1, y1 = rect or (0, 0, im.size[0] - 1, im.size[1] - 1)
+    pts = [(x, y) for y in range(y0, y1 + 1) for x in range(x0, x1 + 1)
+           if a[x, y][3] and sum(abs(a[x, y][k] - colour[k]) for k in range(3)) <= 40]
+    if not pts:
+        return None
+    return sum(p[0] for p in pts) / len(pts), sum(p[1] for p in pts) / len(pts)
+
+
+def patch(sid, name, rect, src=None, only=None, anchor=None, sway=None, clear=None, still=False):
     """An item or hand that goes wrong in some frames (a staff let go of, a lantern that flares): the
     rectangle (x0, y0, x1, y1) is cleared and refilled from the rotation frame (or from frame `src` of the same
-    strip, counted from 1), moved with each frame's bob; `only` limits it to those frames (from 1). Running it again is harmless when the source is the
+    strip, counted from 1), moved with each frame's bob; `only` limits it to those frames (from 1). anchor: an
+    eye colour; the piece is placed relative to the eyes instead of the silhouette (a mouth under the eyes).
+    sway: extra (dx, dy) per frame, cycled, so a held item swings; clear: a bigger rectangle to empty first
+    (where the old item was drawn); still: no moving with the bob (planted feet). Running it again is harmless when the source is the
     rotation frame."""
     strip = Image.open(_path(sid, name)).convert("RGBA")
     fw, fh = _frame_size(sid)
@@ -299,8 +325,16 @@ def patch(sid, name, rect, src=None, only=None):
         if only and i + 1 not in only:
             continue
         frame = strip.crop((i * fw, 0, (i + 1) * fw, fh))
-        dx, dy = _best_offset(can, frame, rows)
-        frame.paste((0, 0, 0, 0), (x0 + dx, y0 + dy, x1 + 1 + dx, y1 + 1 + dy))
+        dx, dy = (0, 0) if still else _best_offset(can, frame, rows)
+        if anchor:
+            a0, a1 = _anchor(can, anchor), _anchor(frame, anchor)
+            if a0 and a1:
+                dx, dy = round(a1[0] - a0[0]), round(a1[1] - a0[1])
+        cx0, cy0, cx1, cy1 = clear or rect
+        frame.paste((0, 0, 0, 0), (cx0 + dx, cy0 + dy, cx1 + 1 + dx, cy1 + 1 + dy))
+        if sway:
+            sx, sy = sway[i % len(sway)]
+            dx, dy = dx + sx, dy + sy
         frame.alpha_composite(piece, (x0 + dx, y0 + dy))
         strip.paste(frame, (i * fw, 0))
     strip.save(_path(sid, name))
@@ -324,16 +358,17 @@ def outline(sid, name, rect):
     strip.save(_path(sid, name))
 
 
-def unglow(sid, name, rect):
+def unglow(sid, name, rect, white=False):
     """Stray lantern-glow pixels left where the glow flared (Jessamy's walk south): inside the rectangle, bright
-    yellow pixels take the colour of the nearest pixel on their left that isn't glow. Idempotent."""
+    yellow pixels (and near-white ones with white) take the colour of the nearest pixel on their left that isn't
+    glow. Idempotent."""
     strip = Image.open(_path(sid, name)).convert("RGBA")
     fw, fh = _frame_size(sid)
     x0, y0, x1, y1 = rect
     px = strip.load()
 
     def glow(p):
-        return p[3] and p[0] > 200 and p[1] > 150 and p[2] < 140
+        return p[3] and ((p[0] > 200 and p[1] > 150 and p[2] < 140) or (white and min(p[:3]) > 170))
 
     for i in range(strip.size[0] // fw):
         for y in range(y0, y1 + 1):
@@ -390,16 +425,18 @@ def main(argv):
             elif op == "center":
                 center(sid, name)
             elif op == "unglow":
-                unglow(sid, name, fix["rect"])
+                unglow(sid, name, fix["rect"], fix.get("white", False))
             elif op == "outline":
                 outline(sid, name, fix["rect"])
             elif op == "patch":
-                patch(sid, name, fix["rect"], fix.get("src"), fix.get("only"))
+                patch(sid, name, fix["rect"], fix.get("src"), fix.get("only"), fix.get("anchor"), fix.get("sway"),
+                      fix.get("clear"), fix.get("still", False))
             elif op == "legs":
                 legs(sid, name, fix["donor"], fix["y0"], fix["span"], fix.get("dx", 0))
             elif op == "step":
                 step(sid, name, fix.get("legs", 0.22), fix.get("split"), fix.get("span"), fix.get("sink", False),
-                     fix.get("from_rot", False), fix.get("hem", 0), fix.get("hem_x"))
+                     fix.get("from_rot", False), fix.get("hem", 0), fix.get("hem_x"), fix.get("stride", False),
+                     fix.get("slant", 0))
             else:
                 lock(sid, name, fix.get("band", 0.7))
             print("%-8s %s/%s  (%s)" % (op, sid, name, fix["why"]))
@@ -420,13 +457,15 @@ def main(argv):
         outline(argv[1], argv[2], [int(v) for v in argv[3:7]])
     elif argv[0] == "patch":  # patch sid strip x0 y0 x1 y1 [src]
         patch(argv[1], argv[2], [int(v) for v in argv[3:7]], int(argv[7]) if len(argv) > 7 and argv[7] != "rot" else None,
-              [int(v) for v in argv[8].split(",")] if len(argv) > 8 else None)
+              [int(v) for v in argv[8].split(",")] if len(argv) > 8 and argv[8] != "all" else None,
+              [int(v) for v in argv[9].split(",")] if len(argv) > 9 else None)
     elif argv[0] == "legs":  # legs sid strip donor y0 lo hi dx
         legs(argv[1], argv[2], argv[3], int(argv[4]), (int(argv[5]), int(argv[6])), int(argv[7]))
     elif argv[0] == "step":  # step sid strip legs lo hi split
         step(argv[1], argv[2], float(argv[3]), int(argv[6]), (int(argv[4]), int(argv[5])), "sink" in argv[7:],
              "rot" in argv[7:], int(([a[4:] for a in argv[7:] if a.startswith("hem=")] or [0])[0]),
-             ([tuple(int(v) for v in a[5:].split(":")) for a in argv[7:] if a.startswith("hemx=")] or [None])[0])
+             ([tuple(int(v) for v in a[5:].split(":")) for a in argv[7:] if a.startswith("hemx=")] or [None])[0],
+             "stride" in argv[7:], int(([a[6:] for a in argv[7:] if a.startswith("slant=")] or [0])[0]))
     elif argv[0] == "lock":
         lock(argv[1], argv[2], float(argv[3]) if len(argv) > 3 else 0.7)
     else:
