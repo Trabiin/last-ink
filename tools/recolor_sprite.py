@@ -44,6 +44,17 @@ def ramp_map(max_s, l_lo, l_hi, ramp):
     return f
 
 
+def hue_set(lo, hi, min_s, min_l, hue, s_mul, l_mul):
+    """Colours in the hue window (and not outline-dark) move to one hue, keeping their shading."""
+    def f(c):
+        h, l, s = _hls(c)
+        if lo <= h <= hi and s >= min_s and l >= min_l:
+            r, g, b = colorsys.hls_to_rgb(hue / 360.0, l * l_mul, s * s_mul)
+            return (round(r * 255), round(g * 255), round(b * 255))
+        return None
+    return f
+
+
 ROW_LIMIT = {("abeyance", "hood"): 34}  # frame rows at or below this are left alone
 
 FIXES = {
@@ -53,6 +64,9 @@ FIXES = {
     # Rows from 34 down in each 44px frame are the baked ground shadow, which stays dark.
     ("abeyance", "hood"): ramp_map(0.12, 0.11, 0.40, [(104, 98, 92), (138, 130, 118), (168, 160, 144),
                                                      (192, 184, 166), (214, 205, 186)]),
+    # Portrait: dark warm brown-black hood and coat. Sprite hood and coat were slate blue (Ojon, round 3).
+    # Outline ink (lightness under 0.08) stays as it is.
+    ("jessamy", "cloak"): hue_set(212, 262, 0.10, 0.08, 16, 0.8, 0.84),
 }
 
 

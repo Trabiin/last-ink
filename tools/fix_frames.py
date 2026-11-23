@@ -74,9 +74,11 @@ def breathe(sid, name):
     out.save(_path(sid, name))
 
 
-def bob(sid, name, ratio=0.62):
+def bob(sid, name, ratio=0.62, own=False):
     """Frames 3-4 (of each 4) get frame 1's upper body one pixel lower; rows below stay the frame's own.
-    Frame 1 is never changed and rows below the cut are never written, so running it again is harmless."""
+    Frame 1 is never changed and rows below the cut are never written, so running it again is harmless.
+    own: frames 3-4 sink their own upper body instead (keeps a fluttering scarf moving); rebuilt from the
+    generated strip in git history's first frame order, so only run it on a fresh strip."""
     strip = Image.open(_path(sid, name)).convert("RGBA")
     fw, fh = _frame_size(sid)
     first = strip.crop((0, 0, fw, fh))
@@ -88,8 +90,9 @@ def bob(sid, name, ratio=0.62):
         if i % 4 < 2:
             continue
         frame = strip.crop((i * fw, 0, (i + 1) * fw, fh))
+        top_part = frame.crop((0, 0, fw, cut)) if own else upper
         frame.paste((0, 0, 0, 0), (0, 0, fw, cut + 1))
-        frame.alpha_composite(upper, (0, 1))
+        frame.alpha_composite(top_part, (0, 1))
         strip.paste(frame, (i * fw, 0))
     strip.save(_path(sid, name))
 
@@ -202,21 +205,364 @@ def lock(sid, name, band=0.7):
     strip.save(_path(sid, name))
 
 
+LIFT = {6: ([1, 2, 1, 0, 0, 0], [0, 0, 0, 1, 2, 1]), 8: ([1, 2, 2, 1, 0, 0, 0, 0], [0, 0, 0, 0, 1, 2, 2, 1])}
+
+
+def _leg_span(base, feet):
+    """x range of the legs: the run of opaque columns in the bottom rows around the feet x (gaps of up to 2)."""
+    a = base.getchannel("A").load()
+    w = base.size[0]
+    fx, fy = feet
+    cols = [any(a[x, y] for y in range(fy - 2, min(base.size[1], fy + 2))) for x in range(w)]
+    lo = hi = fx
+    while lo > 0 and (cols[lo - 1] or (lo > 2 and (cols[lo - 2] or cols[lo - 3]))):
+        lo -= 1
+    while hi < w - 1 and (cols[hi + 1] or (hi < w - 3 and (cols[hi + 2] or cols[hi + 3]))):
+        hi += 1
+    while not cols[lo]:
+        lo += 1
+    while not cols[hi]:
+        hi -= 1
+    return lo, hi
+
+
+SWAY = [0, 1, 1, 0, -1, -1]
+
+
+# Stride for front, back and diagonal walks: the left foot's offset per frame (down = towards the camera); the
+# right foot does the opposite, so one foot comes forward while the other goes back.
+STRIDE = [1, 1, 0, -1, -1, 0]
+
+
+def step(sid, name, legs=0.22, split=None, span=None, sink=False, from_rot=False, hem=0, hem_x=None,
+         stride=False, slant=0):
+    """Front and back walks whose legs stand still: the legs (the bottom `legs` share of the body, between the
+    feet columns) are taken from the rotation frame and each foot lifts in turn, 1-2 px; the frame's own body,
+    arms and items above stay. Built from rot_<dir>.png, so running it again is harmless."""
+    strip = Image.open(_path(sid, name)).convert("RGBA")
+    fw, fh = _frame_size(sid)
+    n = strip.size[0] // fw
+    base = _rot(sid, name)
+    feet = SPRITES[sid]["feet"]
+    top = base.getchannel("A").getbbox()[1]
+    y0 = feet[1] - int((feet[1] - top) * legs)
+    lo, hi = span or _leg_span(base, feet)
+    mid = split if split is not None else (lo + hi + 1) // 2
+    lift_l, lift_r = LIFT.get(n, LIFT[6])
+    pad = 2 if stride else 0  # the rows above the cut cover the gap when a foot moves down
+    left = base.crop((lo, y0 - pad, mid, fh))
+    right = base.crop((mid, y0 - pad, hi + 1, fh))
+    for i in range(n):
+        frame = base.copy() if from_rot else strip.crop((i * fw, 0, (i + 1) * fw, fh))
+        body = frame.crop((0, 0, fw, y0))
+        if hem:
+            sway = SWAY[i % len(SWAY)]
+            hx0, hx1 = hem_x or (lo - 1, hi + 1)  # only the robe above the legs, not items beside it
+            band = body.crop((hx0, y0 - hem, hx1 + 1, y0))
+            body.paste((0, 0, 0, 0), (hx0, y0 - hem, hx1 + 1, y0))
+            body.alpha_composite(band, (hx0 + sway, y0 - hem))
+        out = frame.copy()
+        out.paste((0, 0, 0, 0), (0, 0, fw, y0))
+        out.paste((0, 0, 0, 0), (lo, y0, hi + 1, fh))
+        if stride:
+            o = STRIDE[i % len(STRIDE)]
+            out.alpha_composite(left, (lo + slant * o, y0 - pad + o))
+            out.alpha_composite(right, (mid - slant * o, y0 - pad - o))
+        else:
+            out.alpha_composite(left, (lo, y0 - lift_l[i % len(lift_l)]))
+            out.alpha_composite(right, (mid, y0 - lift_r[i % len(lift_r)]))
+        out.alpha_composite(body, (0, 1 if sink and i % 3 == 0 else 0))
+        strip.paste(out, (i * fw, 0))
+    strip.save(_path(sid, name))
+
+
+def legs(sid, name, donor, y0, span, dx=0):
+    """Legs that cross or tangle (rule 2): the rows from y0 down, between span's columns, are replaced frame by
+    frame with the legs of a direction Ojon OK'd (donor strip, same frame count), shifted dx to line up with
+    the feet. Items beside the legs (an axe) are outside the span and stay. Running it again is harmless."""
+    strip = Image.open(_path(sid, name)).convert("RGBA")
+    src = Image.open(_path(sid, donor)).convert("RGBA")
+    fw, fh = _frame_size(sid)
+    lo, hi = span
+    for i in range(strip.size[0] // fw):
+        frame = strip.crop((i * fw, 0, (i + 1) * fw, fh))
+        leg = src.crop((i * fw + lo, y0, i * fw + hi + 1, fh))
+        frame.paste((0, 0, 0, 0), (lo + dx, y0, hi + 1 + dx, fh))
+        body = frame.crop((0, 0, fw, y0))
+        frame.alpha_composite(leg, (lo + dx, y0))
+        frame.alpha_composite(body, (0, 0))
+        strip.paste(frame, (i * fw, 0))
+    strip.save(_path(sid, name))
+
+
+def _anchor(im, colour, rect=None):
+    """Mean (x, y) of the pixels within 40 of colour (an eye colour), or None."""
+    a = im.load()
+    x0, y0, x1, y1 = rect or (0, 0, im.size[0] - 1, im.size[1] - 1)
+    pts = [(x, y) for y in range(y0, y1 + 1) for x in range(x0, x1 + 1)
+           if a[x, y][3] and sum(abs(a[x, y][k] - colour[k]) for k in range(3)) <= 40]
+    if not pts:
+        return None
+    return sum(p[0] for p in pts) / len(pts), sum(p[1] for p in pts) / len(pts)
+
+
+def patch(sid, name, rect, src=None, only=None, anchor=None, sway=None, clear=None, still=False):
+    """An item or hand that goes wrong in some frames (a staff let go of, a lantern that flares): the
+    rectangle (x0, y0, x1, y1) is cleared and refilled from the rotation frame (or from frame `src` of the same
+    strip, counted from 1), moved with each frame's bob; `only` limits it to those frames (from 1). anchor: an
+    eye colour; the piece is placed relative to the eyes instead of the silhouette (a mouth under the eyes).
+    sway: extra (dx, dy) per frame, cycled, so a held item swings; clear: a bigger rectangle to empty first
+    (where the old item was drawn); still: no moving with the bob (planted feet). Running it again is harmless when the source is the
+    rotation frame."""
+    strip = Image.open(_path(sid, name)).convert("RGBA")
+    fw, fh = _frame_size(sid)
+    can = _rot(sid, name) if src is None else strip.crop(((src - 1) * fw, 0, src * fw, fh))
+    x0, y0, x1, y1 = rect
+    piece = can.crop((x0, y0, x1 + 1, y1 + 1))
+    bb = can.getchannel("A").getbbox()
+    rows = (bb[1], bb[1] + int((bb[3] - bb[1]) * 0.5))
+    for i in range(strip.size[0] // fw):
+        if only and i + 1 not in only:
+            continue
+        frame = strip.crop((i * fw, 0, (i + 1) * fw, fh))
+        dx, dy = (0, 0) if still else _best_offset(can, frame, rows)
+        if anchor:
+            a0, a1 = _anchor(can, anchor), _anchor(frame, anchor)
+            if a0 and a1:
+                dx, dy = round(a1[0] - a0[0]), round(a1[1] - a0[1])
+        cx0, cy0, cx1, cy1 = clear or rect
+        frame.paste((0, 0, 0, 0), (cx0 + dx, cy0 + dy, cx1 + 1 + dx, cy1 + 1 + dy))
+        if sway:
+            sx, sy = sway[i % len(sway)]
+            dx, dy = dx + sx, dy + sy
+        frame.alpha_composite(piece, (x0 + dx, y0 + dy))
+        strip.paste(frame, (i * fw, 0))
+    strip.save(_path(sid, name))
+
+
+def outline(sid, name, rect):
+    """An item whose bottom edge has no black outline (rule 29, Jessamy's lantern): inside the rectangle
+    (x0, y0, x1, y1), every empty pixel just below a coloured pixel turns into outline ink. Already outlined
+    edges are left alone, so running it again is harmless."""
+    strip = Image.open(_path(sid, name)).convert("RGBA")
+    fw, fh = _frame_size(sid)
+    x0, y0, x1, y1 = rect
+    px = strip.load()
+    ink = (12, 10, 16, 255)
+    for i in range(strip.size[0] // fw):
+        for x in range(i * fw + x0, i * fw + x1 + 1):
+            for y in range(y0, y1):
+                p, q = px[x, y], px[x, y + 1]
+                if p[3] and sum(p[:3]) >= 90 and not q[3]:
+                    px[x, y + 1] = ink
+    strip.save(_path(sid, name))
+
+
+def unglow(sid, name, rect, white=False):
+    """Stray lantern-glow pixels left where the glow flared (Jessamy's walk south): inside the rectangle, bright
+    yellow pixels (and near-white ones with white) take the colour of the nearest pixel on their left that isn't
+    glow. Idempotent."""
+    strip = Image.open(_path(sid, name)).convert("RGBA")
+    fw, fh = _frame_size(sid)
+    x0, y0, x1, y1 = rect
+    px = strip.load()
+
+    def glow(p):
+        return p[3] and ((p[0] > 200 and p[1] > 150 and p[2] < 140) or (white and min(p[:3]) > 170))
+
+    for i in range(strip.size[0] // fw):
+        for y in range(y0, y1 + 1):
+            for x in range(i * fw + x0, i * fw + x1 + 1):
+                if glow(px[x, y]):
+                    k = x - 1
+                    while k > i * fw and glow(px[k, y]):
+                        k -= 1
+                    px[x, y] = px[k, y]
+    strip.save(_path(sid, name))
+
+
+def center(sid, name, head=0.3):
+    """A walk that drifts sideways instead of going forward (rule 28, Jessamy's walk north): each frame moves
+    left or right by whole pixels so its head sits where the rotation frame's head sits. Idempotent."""
+    strip = Image.open(_path(sid, name)).convert("RGBA")
+    fw, fh = _frame_size(sid)
+    base = _rot(sid, name)
+    feet_y = SPRITES[sid]["feet"][1]
+    top = base.getchannel("A").getbbox()[1]
+    rows = (top, top + int((feet_y - top) * head))
+
+    def head_x(im):
+        a = im.getchannel("A").load()
+        xs = [x for y in range(*rows) for x in range(fw) if a[x, y]]
+        return sum(xs) / len(xs)
+
+    ref = head_x(base)
+    for i in range(strip.size[0] // fw):
+        frame = strip.crop((i * fw, 0, (i + 1) * fw, fh))
+        dx = round(ref - head_x(frame))
+        if dx:
+            moved = Image.new("RGBA", (fw, fh), (0, 0, 0, 0))
+            moved.alpha_composite(frame, (dx, 0)) if dx > 0 else moved.alpha_composite(frame.crop((-dx, 0, fw, fh)), (0, 0))
+            strip.paste(moved, (i * fw, 0))
+    strip.save(_path(sid, name))
+
+
+def erase(sid, name, colour, tol=30, loose=False):
+    """Spell sparks and swooshes drawn into a sprite (the game draws its own effects, rule 24): every pixel within
+    tol of the effect colour is removed. Only for colours the character itself doesn't use, or with loose: only
+    the effect pixels that don't touch the rest of the character (Bran's beard shares the swoosh's beige).
+    Idempotent."""
+    strip = Image.open(_path(sid, name)).convert("RGBA")
+    px = strip.load()
+    w, h = strip.size
+
+    colours = colour if isinstance(colour[0], (list, tuple)) else [colour]  # one colour or a list (a glow in shades)
+
+    def fx(x, y):
+        p = px[x, y]
+        return p[3] and any(sum(abs(p[k] - c[k]) for k in range(3)) <= tol for c in colours)
+
+    hits = [(x, y) for y in range(h) for x in range(w) if fx(x, y)]
+    if not loose:
+        for x, y in hits:
+            px[x, y] = (0, 0, 0, 0)
+    else:
+        # Only effect pixels whose neighbours are all effect or empty go (a swoosh drawn on its own); effect-coloured
+        # pixels inside the character (a beard highlight) always touch other colours and stay.
+        def lone(x, y):
+            for dx in (-1, 0, 1):
+                for dy in (-1, 0, 1):
+                    X, Y = x + dx, y + dy
+                    q = px[X, Y] if 0 <= X < w and 0 <= Y < h else (0, 0, 0, 0)
+                    if q[3] and not fx(X, Y) and sum(q[:3]) > 120:  # outline ink next to it doesn't count
+                        return False
+            return True
+
+        for _ in range(6):
+            gone = [(x, y) for x, y in hits if px[x, y][3] and lone(x, y)]
+            if not gone:
+                break
+            for x, y in gone:
+                px[x, y] = (0, 0, 0, 0)
+    strip.save(_path(sid, name))
+
+
+def despeck(sid, name, size=3):
+    """Removes loose specks (groups of fewer than `size` pixels not touching the character), e.g. what's left of
+    an erased spell spark. Idempotent."""
+    strip = Image.open(_path(sid, name)).convert("RGBA")
+    fw, fh = _frame_size(sid)
+    px = strip.load()
+    for i in range(strip.size[0] // fw):
+        seen = set()
+        for y in range(fh):
+            for x in range(fw):
+                if not px[i * fw + x, y][3] or (x, y) in seen:
+                    continue
+                group, todo = [], [(x, y)]
+                seen.add((x, y))
+                while todo:
+                    p = todo.pop()
+                    group.append(p)
+                    for dx in (-1, 0, 1):
+                        for dy in (-1, 0, 1):
+                            q = (p[0] + dx, p[1] + dy)
+                            if 0 <= q[0] < fw and 0 <= q[1] < fh and q not in seen and px[i * fw + q[0], q[1]][3]:
+                                seen.add(q)
+                                todo.append(q)
+                if len(group) < size:
+                    for gx, gy in group:
+                        px[i * fw + gx, gy] = (0, 0, 0, 0)
+    strip.save(_path(sid, name))
+
+
+def remap(sid, name, pairs, tol=20):
+    """An item that changes colour on some frames (a sword blade turning red): each pixel within tol of a `from`
+    colour becomes its `to` colour. pairs = [[from, to], ...]. Idempotent."""
+    strip = Image.open(_path(sid, name)).convert("RGBA")
+    px = strip.load()
+    for y in range(strip.size[1]):
+        for x in range(strip.size[0]):
+            p = px[x, y]
+            if not p[3]:
+                continue
+            for a, b in pairs:
+                if sum(abs(p[k] - a[k]) for k in range(3)) <= tol:
+                    px[x, y] = tuple(b) + (p[3],)
+                    break
+    strip.save(_path(sid, name))
+
+
+def addin(sid, name, rect, src, only):
+    """An item that vanishes on some frames (a sword tip): the pixels of frame `src` (from 1) inside rect are added
+    to the `only` frames, moved with each frame's bob, but only where the frame is empty, so nothing of the
+    frame's own drawing (a swinging cloak) is covered or frozen. Idempotent."""
+    strip = Image.open(_path(sid, name)).convert("RGBA")
+    fw, fh = _frame_size(sid)
+    can = strip.crop(((src - 1) * fw, 0, src * fw, fh))
+    bb = can.getchannel("A").getbbox()
+    rows = (bb[1], bb[1] + int((bb[3] - bb[1]) * 0.5))
+    x0, y0, x1, y1 = rect
+    sp = can.load()
+    for i in only:
+        frame = strip.crop(((i - 1) * fw, 0, i * fw, fh))
+        dx, dy = _best_offset(can, frame, rows)
+        fp = frame.load()
+        for y in range(y0, y1 + 1):
+            for x in range(x0, x1 + 1):
+                X, Y = x + dx, y + dy
+                if sp[x, y][3] and 0 <= X < fw and 0 <= Y < fh and not fp[X, Y][3]:
+                    fp[X, Y] = sp[x, y]
+        strip.paste(frame, ((i - 1) * fw, 0))
+    strip.save(_path(sid, name))
+
+
+def apply(fix):
+    """Runs one ai_fixes.json entry."""
+    op, sid, name = fix["op"], fix["sprite"], fix["strip"]
+    if op == "breathe":
+        breathe(sid, name)
+    elif op == "ends":
+        ends(sid, name)
+    elif op == "swell":
+        swell(sid, name)
+    elif op == "bob":
+        bob(sid, name, fix.get("ratio", 0.62), fix.get("own", False))
+    elif op == "remap":
+        remap(sid, name, fix["pairs"], fix.get("tol", 20))
+    elif op == "despeck":
+        despeck(sid, name, fix.get("size", 3))
+    elif op == "erase":
+        erase(sid, name, fix["colour"], fix.get("tol", 30), fix.get("loose", False))
+    elif op == "center":
+        center(sid, name)
+    elif op == "unglow":
+        unglow(sid, name, fix["rect"], fix.get("white", False))
+    elif op == "outline":
+        outline(sid, name, fix["rect"])
+    elif op == "patch":
+        patch(sid, name, fix["rect"], fix.get("src"), fix.get("only"), fix.get("anchor"), fix.get("sway"),
+              fix.get("clear"), fix.get("still", False))
+    elif op == "legs":
+        legs(sid, name, fix["donor"], fix["y0"], fix["span"], fix.get("dx", 0))
+    elif op == "step":
+        step(sid, name, fix.get("legs", 0.22), fix.get("split"), fix.get("span"), fix.get("sink", False),
+             fix.get("from_rot", False), fix.get("hem", 0), fix.get("hem_x"), fix.get("stride", False),
+             fix.get("slant", 0))
+    elif op == "addin":
+        addin(sid, name, fix["rect"], fix["src"], fix["only"])
+    else:
+        lock(sid, name, fix.get("band", 0.7))
+
+
 def main(argv):
     if not argv:
         for fix in json.load(open(os.path.join(HERE, "ai_fixes.json")))["fixes"]:
-            op, sid, name = fix["op"], fix["sprite"], fix["strip"]
-            if op == "breathe":
-                breathe(sid, name)
-            elif op == "ends":
-                ends(sid, name)
-            elif op == "swell":
-                swell(sid, name)
-            elif op == "bob":
-                bob(sid, name, fix.get("ratio", 0.62))
-            else:
-                lock(sid, name, fix.get("band", 0.7))
-            print("%-8s %s/%s  (%s)" % (op, sid, name, fix["why"]))
+            if fix.get("once"):
+                print("skip     %s/%s  (applied once to the generated strip; running it again would add up)" % (fix["sprite"], fix["strip"]))
+                continue
+            apply(fix)
+            print("%-8s %s/%s  (%s)" % (fix["op"], fix["sprite"], fix["strip"], fix["why"]))
         return 0
     if argv[0] == "breathe":
         breathe(argv[1], argv[2])
@@ -225,7 +571,24 @@ def main(argv):
     elif argv[0] == "swell":
         swell(argv[1], argv[2])
     elif argv[0] == "bob":
-        bob(argv[1], argv[2], float(argv[3]) if len(argv) > 3 else 0.62)
+        bob(argv[1], argv[2], float(argv[3]) if len(argv) > 3 else 0.62, "own" in argv[4:])
+    elif argv[0] == "center":
+        center(argv[1], argv[2])
+    elif argv[0] == "unglow":  # unglow sid strip x0 y0 x1 y1
+        unglow(argv[1], argv[2], [int(v) for v in argv[3:7]])
+    elif argv[0] == "outline":  # outline sid strip x0 y0 x1 y1
+        outline(argv[1], argv[2], [int(v) for v in argv[3:7]])
+    elif argv[0] == "patch":  # patch sid strip x0 y0 x1 y1 [src]
+        patch(argv[1], argv[2], [int(v) for v in argv[3:7]], int(argv[7]) if len(argv) > 7 and argv[7] != "rot" else None,
+              [int(v) for v in argv[8].split(",")] if len(argv) > 8 and argv[8] != "all" else None,
+              [int(v) for v in argv[9].split(",")] if len(argv) > 9 else None)
+    elif argv[0] == "legs":  # legs sid strip donor y0 lo hi dx
+        legs(argv[1], argv[2], argv[3], int(argv[4]), (int(argv[5]), int(argv[6])), int(argv[7]))
+    elif argv[0] == "step":  # step sid strip legs lo hi split
+        step(argv[1], argv[2], float(argv[3]), int(argv[6]), (int(argv[4]), int(argv[5])), "sink" in argv[7:],
+             "rot" in argv[7:], int(([a[4:] for a in argv[7:] if a.startswith("hem=")] or [0])[0]),
+             ([tuple(int(v) for v in a[5:].split(":")) for a in argv[7:] if a.startswith("hemx=")] or [None])[0],
+             "stride" in argv[7:], int(([a[6:] for a in argv[7:] if a.startswith("slant=")] or [0])[0]))
     elif argv[0] == "lock":
         lock(argv[1], argv[2], float(argv[3]) if len(argv) > 3 else 0.7)
     else:
