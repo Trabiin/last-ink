@@ -493,45 +493,76 @@ def remap(sid, name, pairs, tol=20):
     strip.save(_path(sid, name))
 
 
+def addin(sid, name, rect, src, only):
+    """An item that vanishes on some frames (a sword tip): the pixels of frame `src` (from 1) inside rect are added
+    to the `only` frames, moved with each frame's bob, but only where the frame is empty, so nothing of the
+    frame's own drawing (a swinging cloak) is covered or frozen. Idempotent."""
+    strip = Image.open(_path(sid, name)).convert("RGBA")
+    fw, fh = _frame_size(sid)
+    can = strip.crop(((src - 1) * fw, 0, src * fw, fh))
+    bb = can.getchannel("A").getbbox()
+    rows = (bb[1], bb[1] + int((bb[3] - bb[1]) * 0.5))
+    x0, y0, x1, y1 = rect
+    sp = can.load()
+    for i in only:
+        frame = strip.crop(((i - 1) * fw, 0, i * fw, fh))
+        dx, dy = _best_offset(can, frame, rows)
+        fp = frame.load()
+        for y in range(y0, y1 + 1):
+            for x in range(x0, x1 + 1):
+                X, Y = x + dx, y + dy
+                if sp[x, y][3] and 0 <= X < fw and 0 <= Y < fh and not fp[X, Y][3]:
+                    fp[X, Y] = sp[x, y]
+        strip.paste(frame, ((i - 1) * fw, 0))
+    strip.save(_path(sid, name))
+
+
+def apply(fix):
+    """Runs one ai_fixes.json entry."""
+    op, sid, name = fix["op"], fix["sprite"], fix["strip"]
+    if op == "breathe":
+        breathe(sid, name)
+    elif op == "ends":
+        ends(sid, name)
+    elif op == "swell":
+        swell(sid, name)
+    elif op == "bob":
+        bob(sid, name, fix.get("ratio", 0.62), fix.get("own", False))
+    elif op == "remap":
+        remap(sid, name, fix["pairs"], fix.get("tol", 20))
+    elif op == "despeck":
+        despeck(sid, name, fix.get("size", 3))
+    elif op == "erase":
+        erase(sid, name, fix["colour"], fix.get("tol", 30), fix.get("loose", False))
+    elif op == "center":
+        center(sid, name)
+    elif op == "unglow":
+        unglow(sid, name, fix["rect"], fix.get("white", False))
+    elif op == "outline":
+        outline(sid, name, fix["rect"])
+    elif op == "patch":
+        patch(sid, name, fix["rect"], fix.get("src"), fix.get("only"), fix.get("anchor"), fix.get("sway"),
+              fix.get("clear"), fix.get("still", False))
+    elif op == "legs":
+        legs(sid, name, fix["donor"], fix["y0"], fix["span"], fix.get("dx", 0))
+    elif op == "step":
+        step(sid, name, fix.get("legs", 0.22), fix.get("split"), fix.get("span"), fix.get("sink", False),
+             fix.get("from_rot", False), fix.get("hem", 0), fix.get("hem_x"), fix.get("stride", False),
+             fix.get("slant", 0))
+    elif op == "addin":
+        addin(sid, name, fix["rect"], fix["src"], fix["only"])
+    else:
+        lock(sid, name, fix.get("band", 0.7))
+
+
 def main(argv):
     if not argv:
         for fix in json.load(open(os.path.join(HERE, "ai_fixes.json")))["fixes"]:
-            op, sid, name = fix["op"], fix["sprite"], fix["strip"]
             if fix.get("once"):
-                print("skip     %s/%s  (applied once to the generated strip; running it again would add up)" % (sid, name))
+                print("skip     %s/%s  (applied once to the generated strip; running it again would add up)" % (fix["sprite"], fix["strip"]))
                 continue
-            if op == "breathe":
-                breathe(sid, name)
-            elif op == "ends":
-                ends(sid, name)
-            elif op == "swell":
-                swell(sid, name)
-            elif op == "bob":
-                bob(sid, name, fix.get("ratio", 0.62), fix.get("own", False))
-            elif op == "remap":
-                remap(sid, name, fix["pairs"], fix.get("tol", 20))
-            elif op == "despeck":
-                despeck(sid, name, fix.get("size", 3))
-            elif op == "erase":
-                erase(sid, name, fix["colour"], fix.get("tol", 30), fix.get("loose", False))
-            elif op == "center":
-                center(sid, name)
-            elif op == "unglow":
-                unglow(sid, name, fix["rect"], fix.get("white", False))
-            elif op == "outline":
-                outline(sid, name, fix["rect"])
-            elif op == "patch":
-                patch(sid, name, fix["rect"], fix.get("src"), fix.get("only"), fix.get("anchor"), fix.get("sway"),
-                      fix.get("clear"), fix.get("still", False))
-            elif op == "legs":
-                legs(sid, name, fix["donor"], fix["y0"], fix["span"], fix.get("dx", 0))
-            elif op == "step":
-                step(sid, name, fix.get("legs", 0.22), fix.get("split"), fix.get("span"), fix.get("sink", False),
-                     fix.get("from_rot", False), fix.get("hem", 0), fix.get("hem_x"), fix.get("stride", False),
-                     fix.get("slant", 0))
-            else:
-                lock(sid, name, fix.get("band", 0.7))
-            print("%-8s %s/%s  (%s)" % (op, sid, name, fix["why"]))
+            apply(fix)
+            print("%-8s %s/%s  (%s)" % (fix["op"], fix["sprite"], fix["strip"], fix["why"]))
         return 0
     if argv[0] == "breathe":
         breathe(argv[1], argv[2])

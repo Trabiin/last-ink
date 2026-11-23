@@ -154,7 +154,7 @@
   {"op": "step", "sprite": "bran", "strip": "walk_south", "legs": 0.22, "span": [15, 29], "split": 22, "stride": true, "why": "legs stood still (Ojon: not actually walking); feet now stride forward and back"},
   {"op": "lock", "sprite": "bran", "strip": "walk_south", "band": 0.35, "why": "face changed between frames"},
   {"op": "step", "sprite": "bran", "strip": "walk_north", "legs": 0.22, "span": [14, 27], "split": 21, "stride": true, "why": "legs stood still (Ojon: isn't walking at all)"},
-  {"op": "lock", "sprite": "bran", "strip": "walk_north", "band": 0.35, "why": "red collar climbed the back of the head on some frames"},
+  {"op": "lock", "sprite": "bran", "strip": "walk_north", "band": 0.2, "why": "red collar climbed the back of the head on some frames; head only, so the shoulders still move (Ojon)"},
   {"op": "step", "sprite": "bran", "strip": "walk_north-east", "legs": 0.2, "span": [16, 27], "split": 21, "stride": true, "slant": -1, "why": "feet crossed over each other (Ojon); legs now stride diagonally from the rotation pose"},
   {"op": "breathe", "sprite": "bran", "strip": "idle_south-east", "why": "the idle stepped like a walk and the forehead and eyes twitched (Ojon)"},
   {"op": "lock", "sprite": "bran", "strip": "idle_east", "band": 0.45, "why": "mouth changed colour (Ojon)"},
@@ -190,9 +190,8 @@
   {"op": "patch", "sprite": "jessamy", "strip": "walk_north", "rect": [10, 27, 16, 33], "sway": [[0, 0], [0, -1], [-1, -1], [0, 0], [0, 1], [1, 0]], "clear": [10, 27, 15, 34], "why": "lantern swings gently both ways"},
   {"op": "step", "sprite": "jessamy", "strip": "walk_north", "legs": 0.12, "span": [16, 27], "split": 21, "stride": true, "why": "legs drifted left; now stride straight from the rotation"},
   {"op": "patch", "sprite": "ash", "strip": "idle_north-east", "rect": [15, 33, 28, 37], "still": true, "why": "feet shifted like a small step"},
-  {"op": "breathe", "sprite": "ash", "strip": "idle_north", "why": "sword vanished and the body shrank on frames 3-4; feet stepped"},
-  {"op": "patch", "sprite": "ash", "strip": "walk_north", "rect": [6, 20, 14, 31], "why": "sword vanished on frames 4-6; sword and cloak edge held from the rotation"},
-  {"op": "step", "sprite": "ash", "strip": "walk_north", "legs": 0.12, "span": [16, 27], "split": 21, "stride": true, "why": "legs barely moved"},
+  {"op": "addin", "sprite": "ash", "strip": "idle_north", "rect": [8, 26, 14, 34], "src": 2, "only": [3, 4], "why": "sword tip vanished on frames 3-4; tip added back, cloak keeps its own motion (Ojon)"},
+  {"op": "addin", "sprite": "ash", "strip": "walk_north", "rect": [8, 26, 14, 34], "src": 3, "only": [4, 5], "why": "sword tip vanished on frames 4-5; tip added back, cloak keeps its own motion (Ojon)"},
   {"op": "erase", "sprite": "ash", "strip": "cast_south", "colour": [214, 205, 186], "why": "beige spell sparks drawn into the sprite; the game draws its own"},
   {"op": "erase", "sprite": "ash", "strip": "cast_south-east", "colour": [214, 205, 186], "why": "beige spell sparks drawn into the sprite"},
   {"op": "erase", "sprite": "ash", "strip": "cast_north-east", "colour": [214, 205, 186], "why": "beige spell sparks drawn into the sprite"},
@@ -270,7 +269,10 @@
   {"op": "remap", "sprite": "jessamy", "strip": "hurt_north", "pairs": [[[34, 253, 252], [254, 218, 52]], [[75, 240, 243], [254, 218, 52]], [[83, 206, 219], [202, 125, 51]]], "tol": 30, "why": "lantern flame turned cyan on frames 2-4"},
   {"op": "erase", "sprite": "jessamy", "strip": "tech_north-east", "colour": [214, 205, 186], "tol": 30, "loose": true, "why": "beige swoosh arcs on frames 7-8"},
   {"op": "despeck", "sprite": "jessamy", "strip": "tech_north-east", "size": 6, "why": "specks"},
-  {"op": "patch", "sprite": "jessamy", "strip": "tech_north-east", "rect": [14, 3, 30, 17], "only": [3, 4, 5, 6, 7, 8], "why": "face turned to the camera with staring eyes on frames 3-8; hood held from the rotation"}
+  {"op": "patch", "sprite": "jessamy", "strip": "tech_north-east", "rect": [14, 3, 30, 17], "only": [3, 4, 5, 6, 7, 8], "why": "face turned to the camera with staring eyes on frames 3-8; hood held from the rotation"},
+  {"op": "patch", "sprite": "ash", "strip": "idle_east", "rect": [25, 23, 31, 29], "src": 4, "only": [1, 2, 3], "why": "sword bent upwards and short on frames 1-3; the straight blade of frame 4 held (Ojon)"},
+  {"op": "patch", "sprite": "bran", "strip": "hurt_north", "rect": [0, 0, 0, 0], "clear": [0, 10, 8, 19], "still": true, "only": [2, 3, 4], "why": "a stray dagger appeared beside his left hand on frames 2-4 (Ojon)"},
+  {"op": "despeck", "sprite": "bran", "strip": "victory_south", "size": 4, "why": "stray pixels left from the erased wisps (Ojon)"}
  ],
  "recolors": [
   {
