@@ -27,6 +27,46 @@ sheet, both zoomed in and at game size.
 | 9 | **Directions match each other.** The same colours, proportions and details appear in every direction. | eye |
 | 10 | **Small repeated details keep their count.** Hair ornaments, buttons and bottles don't go 1, 2, 3 between frames (Gristle's idle facing north-east). | `detail-pops` + eye |
 
+## More things that can go wrong (proposed 2026-11-23, not yet confirmed by Ojon)
+Collected from the Act 1 audit, the two calibration rounds and common pixel-animation faults.
+
+**Body and motion**
+| # | Rule | Checked by |
+|---|---|---|
+| 11 | **Proportions hold.** The head, body and limbs keep their size from frame to frame (no head that pulses or a body that shrinks halfway, like the Scarecrow's north walk). | measurable (planned) + eye |
+| 12 | **Feet stay on the ground.** In walks and idles, the feet line doesn't drift or bob unless the motion calls for it (a jump); the character doesn't slide against the ground. | `ai_audit.py` feet + eye |
+| 13 | **No extra or missing parts.** No third hand, extra finger, doubled weapon or vanished arm on any frame. | eye |
+| 14 | **The loop closes.** The last frame flows into the first without a jump (idles and walks). | measurable (planned) |
+| 15 | **Secondary motion follows.** Cloaks, hair and hanging items lag slightly behind the body instead of staying rigid, but they don't flap at random. | eye |
+| 16 | **Facing stays put.** The character doesn't turn towards the camera mid-animation (the Act 1 idle-north problem). | `new-colour` + eye |
+
+**Items and details**
+| # | Rule | Checked by |
+|---|---|---|
+| 17 | **Same hand.** A held item stays in the same hand across frames and directions; it doesn't swap hands. | eye |
+| 18 | **No clipping.** Items don't pass through the body or the head (a staff through the face). | eye |
+| 19 | **Marks stay on their side.** Scars, tattoos, a clouded eye and a pauldron stay on the same side of the body in every direction. | eye, per character sheet |
+| 20 | **Mirrored directions.** The game draws west, south-west and north-west by mirroring the east side, so anything one-sided (an axe hand, a scar, a pauldron) flips sides there. Decide per character whether that's acceptable. | eye, per character sheet |
+
+**Pixels**
+| # | Rule | Checked by |
+|---|---|---|
+| 21 | **Clean pixels.** No soft or half-transparent edge pixels and no stray specks around the character. | `ai_audit.py` |
+| 22 | **No shimmer.** Flat areas (cloth, skin) don't boil with pixels that change every frame while the shape stays still. | `detail-pops` + eye |
+| 23 | **Inside the frame.** Nothing is cut off at the canvas edge (weapon tips in attacks). | measurable (planned) |
+
+**Per animation type**
+| # | Rule | Checked by |
+|---|---|---|
+| 24 | **Attacks read.** A clear wind-up, a hit frame and a recovery; the weapon is visible on the hit frame. The game draws its own swing trail, so the sprite shouldn't have a swoosh. | eye |
+| 25 | **Hurt and KO read.** Hurt is a short, clear recoil that goes back to the idle pose. KO ends lying still on the last frame. | eye |
+| 26 | **Victory and cast poses** stay in character and keep the item in the hand. | eye |
+
+## Character sheets
+Before reviewing a character's animations, write down what makes that character, from the rotation frames
+and the portrait: features, small counted details, items, sides. Then check every animation against the
+sheet. Sheets are in `docs/ANIMATION_FEATURES.md`.
+
 ## Claude's habits
 - Every checker flag gets a zoom on that exact frame before it can be called OK. In round 2 the checker had
   already flagged both of the directions Claude missed.
