@@ -346,7 +346,7 @@ func test_journal_at_the_command_table_and_in_a_mission() -> void:
 	await _press("journal")
 	check(cmd.journal_view.visible, "I opens the journal at the table")
 	var speed: int = Empire.speed
-	await _press("clock_faster")
+	await _press("tab_next")
 	check_eq(Empire.speed, speed, "tab keys don't touch the clock while it is open")
 	check_eq(cmd.journal_view._tab_id(), "people", "RB moves to the next tab")
 	cmd.journal_view.close()

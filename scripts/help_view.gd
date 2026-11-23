@@ -31,9 +31,10 @@ const CONTROLS := [
 		["Ledger", ["ledger"]], ["Zoom the map", ["map_zoom_in", "map_zoom_out", "map_zoom_toggle"]]]],
 	["Screens", [["Roster", ["roster"]], ["Buildings", ["buildings"]], ["Governor", ["govern"]], ["Expeditions", ["expeditions"]],
 		["Research", ["research"]], ["Diplomacy", ["diplomacy"]], ["Bonds", ["bonds"]], ["Newcomers", ["newcomers"]],
-		["Party gear & shop", ["gear"]], ["Forge & Market", ["armory"]], ["Journal", ["journal"]]]],
+		["Party gear & shop", ["gear"]], ["Forge & Market", ["armory"]], ["Journal", ["journal"]],
+		["Switch tabs (gear, Forge & Market, journal)", ["tab_prev", "tab_next"]]]],
 	["In the field", [["Move", "move"], ["Attack (hold: charged tech)", ["attack"]], ["Swap hero", ["swap"]],
-		["Abilities", ["ability_1", "ability_2", "ability_3", "ability_4"]], ["Quick menu", ["quick_menu"]], ["Pause", ["pause"]], ["Screenshot", ["screenshot"]]]],
+		["Abilities", ["ability_1", "ability_2", "ability_3", "ability_4"]], ["Quick menu", ["quick_menu"]], ["Quick menu tabs", ["tab_prev", "tab_next"]], ["Pause", ["pause"]], ["Screenshot", ["screenshot"]]]],
 ]
 const TOUCH_CONTROLS := [
 	["In town and at the table", ["Drag the stick on the left to walk; tap the hand button to talk or use.",

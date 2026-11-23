@@ -36,6 +36,10 @@ func _ready() -> void:
 	_add_action("armory", [KEY_M], [])  # Forge & Market (issue #112); rebindable; gamepad: through the menus
 	_add_action("journal", [KEY_I], [])  # quest log, people, codex, history (issue #114); rebindable; gamepad: through the menus
 	_add_action("quick_menu", [KEY_C], [JOY_BUTTON_BACK])  # missions only; Back is the ledger on the Command Table
+	# Tabs in every tabbed screen (gear, Forge & Market, journal, quick menu): TabStrip draws these keys
+	# beside the tab row. Menus own the input while open, so sharing Q / E / LB / RB with play is fine.
+	_add_action("tab_prev", [KEY_Q], [JOY_BUTTON_LEFT_SHOULDER])
+	_add_action("tab_next", [KEY_E], [JOY_BUTTON_RIGHT_SHOULDER])
 	_add_action("alert_go", [KEY_TAB], [], JOY_AXIS_TRIGGER_RIGHT, 1.0)
 	# Territory map camera (issue #53): + and - zoom, LT flips between the whole map and the open
 	# regions, the right stick pans. The mouse wheel, dragging and pinching are handled by the map.

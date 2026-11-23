@@ -41,6 +41,7 @@ const REMAPPABLE := [
 	["map_zoom_in", "Map zoom in"], ["map_zoom_out", "Map zoom out"], ["map_zoom_toggle", "Map: whole / regions"],
 	["map_pan_up", "Map pan up"], ["map_pan_down", "Map pan down"], ["map_pan_left", "Map pan left"], ["map_pan_right", "Map pan right"],
 	["ui_up", "Menu up"], ["ui_down", "Menu down"], ["ui_left", "Menu left"], ["ui_right", "Menu right"],
+	["tab_prev", "Previous tab"], ["tab_next", "Next tab"],
 	["ui_accept", "Confirm"], ["ui_cancel", "Back / cancel"], ["pause", "Pause menu"],
 	["dialogue_log", "Dialogue log"],  # made by DialogueLog.ensure_action (issue #34)
 ]
@@ -54,7 +55,7 @@ const GROUPS := {
 	"move_up": "move", "move_down": "move", "move_left": "move", "move_right": "move", "attack": "hero",
 	"swap": "field", "quick_menu": "field", "ability_1": "field", "ability_2": "field", "ability_3": "field", "ability_4": "field",
 	"ui_up": "menu", "ui_down": "menu", "ui_left": "menu", "ui_right": "menu", "ui_accept": "menu", "ui_cancel": "menu",
-	"pause": "menu", "dialogue_log": "menu",
+	"tab_prev": "menu", "tab_next": "menu", "pause": "menu", "dialogue_log": "menu",
 }
 const GROUP_TITLES := {"move": "Moving and fighting", "manage": "Town and Command Table", "menu": "Menus and conversations"}
 
@@ -73,19 +74,19 @@ const LOCKED_PAD := {
 const LAYOUTS := ["Default", "One hand (left)", "One hand (right)"]
 const LAYOUT_INFO := [
 	"Keys as designed: move with WASD or the arrows, attack with J.",
-	"Move with WASD, attack and confirm with Space, swap with Tab, the quick menu on C, abilities on 1 to 4, back with Q, the log on the key above Tab.",
-	"Move with the arrows, attack and confirm with Enter, swap with Shift, the quick menu on /, abilities on , . ; ' and back with Backspace.",
+	"Move with WASD, attack and confirm with Space, swap with Tab, the quick menu on C, abilities on 1 to 4, back with Q, tabs on E and R, the log on the key above Tab.",
+	"Move with the arrows, attack and confirm with Enter, swap with Shift, the quick menu on /, abilities on , . ; ' and back with Backspace, tabs on [ and ].",
 ]
 const LAYOUT_KEYS := [
 	{},
 	{"move_up": KEY_W, "move_down": KEY_S, "move_left": KEY_A, "move_right": KEY_D, "attack": KEY_SPACE, "swap": KEY_TAB,
 		"quick_menu": KEY_C, "ability_1": KEY_1, "ability_2": KEY_2, "ability_3": KEY_3, "ability_4": KEY_4,
 		"ui_up": KEY_W, "ui_down": KEY_S, "ui_left": KEY_A, "ui_right": KEY_D,
-		"ui_accept": KEY_SPACE, "ui_cancel": KEY_Q, "dialogue_log": KEY_QUOTELEFT},
+		"ui_accept": KEY_SPACE, "ui_cancel": KEY_Q, "tab_prev": KEY_E, "tab_next": KEY_R, "dialogue_log": KEY_QUOTELEFT},
 	{"move_up": KEY_UP, "move_down": KEY_DOWN, "move_left": KEY_LEFT, "move_right": KEY_RIGHT, "attack": KEY_ENTER,
 		"swap": KEY_SHIFT, "quick_menu": KEY_SLASH, "ability_1": KEY_COMMA, "ability_2": KEY_PERIOD,
 		"ability_3": KEY_SEMICOLON, "ability_4": KEY_APOSTROPHE, "ui_accept": KEY_ENTER, "ui_cancel": KEY_BACKSPACE,
-		"dialogue_log": KEY_BACKSLASH, "pause": KEY_P},
+		"tab_prev": KEY_BRACKETLEFT, "tab_next": KEY_BRACKETRIGHT, "dialogue_log": KEY_BACKSLASH, "pause": KEY_P},
 ]
 
 ## Scene effects (docs/ART_STYLE.md "Sitting in the world"), each a 0-100 slider on the options screen's

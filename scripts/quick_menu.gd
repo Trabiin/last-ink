@@ -6,8 +6,9 @@ extends Control
 ## A plain list, never a ring.
 ## Every action is two presses: pick a row, then pick from its short list (or it acts at once).
 ##
-## Keyboard: C opens/closes, arrows/WASD move, left/right or Q/E change tab, J/Enter picks, X/Esc backs out.
-## Gamepad: Back opens/closes, d-pad/stick move (left/right change tab), A picks, B backs out.
+## Keyboard: C opens/closes, arrows/WASD move, Q/E (or left/right) change tab, J/Enter picks, X/Esc backs out.
+## Gamepad: Back opens/closes, d-pad/stick move, LB/RB (or left/right) change tab, A picks, B backs out.
+## The tab keys sit either side of the tab row (TabStrip), read from the live bindings.
 ## 1-4 and the shoulders/triggers are left alone: they are ability hotkeys (issue #7).
 ## Mouse and touch: tap a tab, tap a row, tap outside the panel to close.
 
@@ -33,7 +34,7 @@ var note := ""
 var note_t := 0.0
 var _t := 0.0
 var _panel := Rect2()
-var _tab_rects: Array = []
+var _strip := TabStrip.new()  # the tab row with its switch keys either side
 var _row_rects: Array = []
 var _sub_rects: Array = []
 var _sub_panel := Rect2()
@@ -494,17 +495,15 @@ func _input(event: InputEvent) -> void:
 			_pick_sub(sub_sel)
 		else:
 			_pick_row(sel)
-	elif event.is_action_pressed("move_left") or _key(event, KEY_Q):
+	elif TabStrip.step(event) != 0:
+		_set_tab(tab + TabStrip.step(event))
+	elif event.is_action_pressed("move_left"):
 		_set_tab(tab - 1)
-	elif event.is_action_pressed("move_right") or _key(event, KEY_E) or event.is_action_pressed("swap"):
+	elif event.is_action_pressed("move_right"):
 		_set_tab(tab + 1)
 	# The menu owns all input while it is open: nothing reaches the fight underneath.
 	if is_inside_tree():
 		get_viewport().set_input_as_handled()
-
-
-func _key(event: InputEvent, k: Key) -> bool:
-	return event is InputEventKey and event.pressed and not event.echo and event.physical_keycode == k
 
 
 func _hover(p: Vector2) -> void:
@@ -528,10 +527,10 @@ func _tap(p: Vector2) -> void:
 		if not _sub_panel.has_point(p):
 			sub = []  # tapping elsewhere just closes the short list
 		return
-	for i in _tab_rects.size():
-		if (_tab_rects[i] as Rect2).has_point(p):
-			_set_tab(i)
-			return
+	var ti := _strip.hit(p)
+	if ti >= 0:
+		_set_tab(ti)
+		return
 	for i in _row_rects.size():
 		if (_row_rects[i] as Rect2).has_point(p):
 			_pick_row(i)
@@ -582,18 +581,10 @@ func _draw() -> void:
 	UiSkin.panel(self, _panel, "ledger")
 
 	# Tabs across the top.
-	_tab_rects.clear()
-	var tw := w / TABS.size()
-	for i in TABS.size():
-		var r := Rect2(_panel.position.x + tw * i, _panel.position.y, tw, 24.0)
-		_tab_rects.append(r)
-		if i == tab:
-			draw_rect(r, Color(1, 0.82, 0.4, 0.14))
-			draw_rect(Rect2(r.position.x + 6, r.end.y - 2, r.size.x - 12, 2), GOLD)
-		var label: String = Loc.t(TABS[i])
-		var lw := font.get_string_size(label, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(11)).x
-		_str(font, Vector2(r.position.x + (tw - lw) / 2.0, r.position.y + 16), label, 11, GOLD if i == tab else TEXT)
-	draw_line(Vector2(_panel.position.x, _panel.position.y + 24), Vector2(_panel.end.x, _panel.position.y + 24), Color(1, 1, 1, 0.12))
+	_strip.labels = TABS.map(func(t): return Loc.t(t))
+	_strip.current = tab
+	_strip.draw(self, font, _panel.position + Vector2(8, 6), 10, w - 16)
+	draw_line(Vector2(_panel.position.x + 6, _panel.position.y + 27), Vector2(_panel.end.x - 6, _panel.position.y + 27), Color(1, 1, 1, 0.12))
 
 	# Rows.
 	_row_rects.clear()
@@ -624,7 +615,7 @@ func _draw() -> void:
 		_str(font, Vector2(x0, fy), note, 9, Color("9fe07a"))
 	else:
 		var hint := tr("Tap a tab or row.  Tap outside to close.") if (party and party.touch_active()) or Prompts.touch() \
-			else Prompts.help([["leftright", "tabs"], ["ui_accept", "pick"], ["ui_cancel", "back"], ["quick_menu", "close"]])
+			else Prompts.help([["ui_accept", "pick"], ["ui_cancel", "back"], ["quick_menu", "close"]])
 		if sub_sel >= 0 and sub_sel < sub.size() and str(sub[sub_sel]["id"]).begins_with("ai:"):
 			hint = _style_desc(str(sub[sub_sel]["id"]).substr(3))  # what the highlighted AI preset does (issue #9)
 		elif sub_sel >= 0 and sub_sel < sub.size() and str(sub[sub_sel]["id"]).begins_with("tech:"):

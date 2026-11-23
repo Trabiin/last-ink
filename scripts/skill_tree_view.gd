@@ -7,10 +7,12 @@ extends Control
 ## unlearning (for Gilt) only happens at home.
 ##
 ## Keyboard and pad: arrows / d-pad / stick walk the tree (Down from the root reaches Unlearn), Enter / A
-## learns, Tab / Q / Y next hero, Esc / B / K closes. Mouse and touch: tap a hero, tap a node to look at it,
+## learns, Tab / Y next hero, Esc / B / K closes. Opened from the Gear screen it shows that screen's tab row
+## (TabStrip), and Q / E (LB / RB) or a tap there move on to the next tab. Mouse and touch: tap a hero, tap a node to look at it,
 ## tap it again to learn it.
 
 signal closed
+signal tab_picked(i: int)  # a tab of the Gear screen's row was picked while this one is open
 
 const GOLD := Color("ffd166")
 const GOOD := Color("9fd18b")
@@ -39,6 +41,7 @@ var flash := ""
 var flash_t := 0.0
 var _t := 0.0
 var font: Font
+var tabs: TabStrip = null  # the Gear screen's tab row, when opened from its Tree tab
 
 
 func _ready() -> void:
@@ -102,7 +105,10 @@ func _process(delta: float) -> void:
 	if Input.is_action_just_pressed("ui_cancel") or Input.is_action_just_pressed("pause") or Input.is_action_just_pressed("gear"):
 		close()
 		return
-	if Input.is_action_just_pressed("swap"):
+	if tabs != null and TabStrip.pressed() != 0:
+		tab_picked.emit(tabs.stepped(TabStrip.pressed()))
+		return
+	if Input.is_action_just_pressed("swap") and TabStrip.pressed() == 0:
 		_set_hero(posmod(hero_i + 1, _ids.size()))
 		return
 	if Input.is_action_just_pressed("move_up") or Input.is_action_just_pressed("ui_up"):
@@ -227,6 +233,12 @@ func _gui_input(event: InputEvent) -> void:
 	if _close_rect().has_point(p):
 		close()
 		return
+	if tabs != null:
+		var ti := tabs.hit(p)
+		if ti >= 0:
+			if ti != tabs.current:
+				tab_picked.emit(ti)
+			return
 	for i in _hero_rects.size():
 		if (_hero_rects[i] as Rect2).has_point(p):
 			if i != hero_i:
@@ -283,6 +295,9 @@ func _draw() -> void:
 	UiSkin.panel(self, cr, "button")
 	_text(cr.position + Vector2(9, 12), tr("Close"), 9, Color(0.75, 0.72, 0.7))
 	draw_string(UiSkin.TITLE_FONT, Vector2(8, 20), tr("Skill tree"), HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(16), PAPER)
+	var px := 100.0
+	if tabs != null:
+		px = tabs.draw(self, font, Vector2(100, 7), 9) + 10.0
 	_hero_rects.clear()
 	_node_rects.clear()
 	_reset_rect = Rect2()
@@ -291,7 +306,7 @@ func _draw() -> void:
 		_text(Vector2(8, 50), tr("No field heroes with a skill tree yet."), 10, BAD)
 		return
 	var id := hero_id()
-	_text(Vector2(100, 19), tr("Skill Points: %d free of %d") % [SkillTree.points_free(id), SkillTree.points_total(id)], 9, GOLD)
+	_text(Vector2(px, 19), tr("Skill Points: %d free of %d") % [SkillTree.points_free(id), SkillTree.points_total(id)], 9, GOLD)
 	_text_r(Vector2(vs.x - 64, 19), tr("Gilt: %d") % int(Empire.res.get("gilt", 0)), 9, GOLD)
 	_draw_chips(vs)
 	var split := minf(392.0, vs.x * 0.61)

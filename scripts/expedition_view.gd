@@ -7,6 +7,7 @@ extends Control
 ## - squad: tick 2 to 4 people for the chosen job; the success chance and every reason behind
 ##   it update as you pick, and the last row sends them
 ## - reports: the written reports from squads that came back
+## The board and the reports are two tabs (TabStrip): Q / E, LB / RB or a tap switch between them.
 
 signal closed
 
@@ -19,6 +20,7 @@ const SOFT := Color(0.62, 0.6, 0.62)
 const ROW_H := 17.0
 
 var page := "board"
+var _strip := TabStrip.new()  # Job board | Reports, with the tab keys either side
 var sel := 0
 var job_id := ""
 var squad: Array = []
@@ -110,6 +112,9 @@ func _process(delta: float) -> void:
 		_build_rows()  # squads come home and cooldowns end while the screen is open
 		sel = clampi(sel, 0, maxi(_rows.size() - 1, 0))
 	queue_redraw()
+	if Engine.get_process_frames() != opened_frame and page != "squad" and TabStrip.pressed() != 0:
+		_tab_to("reports" if page == "board" else "board")
+		return
 	if Engine.get_process_frames() == opened_frame or _rows.is_empty():
 		if Input.is_action_just_pressed("ui_cancel") or Input.is_action_just_pressed("expeditions"):
 			_back()
@@ -126,6 +131,27 @@ func _process(delta: float) -> void:
 		close()
 	elif Input.is_action_just_pressed("ui_cancel") or Input.is_action_just_pressed("pause"):
 		_back()
+
+
+## The Job board and Reports tabs.
+func _tab_to(p: String) -> void:
+	if p == page:
+		return
+	if p == "reports" and Empire.reports.is_empty():
+		_say(tr("No reports yet: squads write one when they come home."))
+		return
+	if p == "board":
+		_back()
+	else:
+		_go("reports")
+
+
+func _draw_tabs() -> void:
+	var unread := Empire.unread_reports()
+	_strip.labels = [tr("Job board"), tr("Reports (%d new)") % unread if unread > 0 else tr("Reports")]
+	_strip.current = 1 if page == "reports" else 0
+	var title_w := font.get_string_size(tr("Expeditions"), HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(15)).x
+	_strip.draw(self, font, Vector2(maxf(100.0, 8.0 + title_w + 12.0), 7), 9)
 
 
 func _back() -> void:
@@ -205,6 +231,11 @@ func _gui_input(event: InputEvent) -> void:
 				sel = i
 				_mark_read()
 	elif Prompts.tapped(event):
+		if page != "squad":
+			var ti := _strip.hit(event.position)
+			if ti >= 0:
+				_tab_to("reports" if ti == 1 else "board")
+				return
 		for i in _row_rects.size():
 			if (_row_rects[i] as Rect2).has_point(event.position):
 				sel = i
@@ -275,6 +306,7 @@ func _draw() -> void:
 
 func _draw_board(vs: Vector2) -> void:
 	_text(Vector2(8, 20), tr("Expeditions"), 15, Color("f3efe4"))
+	_draw_tabs()
 	var gh := Empire.level_of("guildhall")
 	var sub := tr("Guildhall level %d: up to %d squad%s out at once (%d out now). Squads of %d to %d. Supplies pay the rations.") % [
 		gh, Empire.expedition_slots(), "" if Empire.expedition_slots() == 1 else "s", Empire.expeditions.size(), Empire.SQUAD_MIN, Empire.SQUAD_MAX]
@@ -429,7 +461,8 @@ func _draw_squad(vs: Vector2) -> void:
 
 
 func _draw_reports(vs: Vector2) -> void:
-	_text(Vector2(8, 20), tr("Expedition reports"), 15, Color("f3efe4"))
+	_text(Vector2(8, 20), tr("Expeditions"), 15, Color("f3efe4"))
+	_draw_tabs()
 	var lw := 220.0
 	var y := 40.0
 	for i in _rows.size():
