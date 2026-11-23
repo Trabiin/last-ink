@@ -33,14 +33,14 @@ func _ready() -> void:
 
 
 func _remember() -> void:
-	last_img = cmd.map_tex.get_image() if cmd.map_tex != null else null
+	last_img = cmd.map_img.duplicate() if cmd.map_img != null else null
 	for p in cmd.territory.provinces:
 		last_fray[p["id"]] = int(p["fray"])
 		last_owner[p["id"]] = p["owner"]
 
 
 func _on_day_passed(_d: int) -> void:
-	var img: Image = cmd.map_tex.get_image()
+	var img: Image = cmd.map_img
 	if last_img != null and last_img.get_size() == img.get_size():
 		# Land that turned white overnight keeps its old colour for a moment, then drains away.
 		var diff := Image.create(img.get_width(), img.get_height(), false, Image.FORMAT_RGBA8)

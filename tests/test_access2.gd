@@ -167,10 +167,10 @@ func test_map_markings() -> void:
 	p["fray"] = 80
 	Access.map_symbols = true
 	cmd._bake()
-	var on: Image = cmd.map_tex.get_image()
+	var on: Image = cmd.map_img
 	Access.map_symbols = false
 	cmd._bake()
-	var off: Image = cmd.map_tex.get_image()
+	var off: Image = cmd.map_img
 	var hatched := 0
 	var cells := 0
 	var elsewhere := 0

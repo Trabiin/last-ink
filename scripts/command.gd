@@ -37,6 +37,7 @@ const RES_NAMES := {"gilt": "Gilt", "supplies": "Supplies", "ink": "Ink"}
 
 var territory: Territory
 var map_tex: ImageTexture
+var map_img: Image  # the last bake's pixels (read this, not map_tex.get_image(), which can lag an in-place update)
 var painted_tex: Texture2D = load("res://assets/ui/map_painted.jpg")  # painted island under the washes (Phase 8)
 var selected := 0
 var hovered := -1
@@ -722,7 +723,7 @@ func _bake() -> void:
 				blank_edge.append(Vector2(x, y))
 	# Update the textures in place: a canvas keeps drawing whatever it last drew, and while a help card
 	# pauses the game it is not redrawn, so swapping in new textures left it drawing freed ones (white).
-	var map_img := Image.create_from_data(w, h, false, Image.FORMAT_RGBA8, px)
+	map_img = Image.create_from_data(w, h, false, Image.FORMAT_RGBA8, px)
 	var fog_img := Image.create_from_data(w, h, false, Image.FORMAT_RGBA8, fog)
 	if map_tex != null and map_tex.get_size() == Vector2(w, h):
 		map_tex.update(map_img)
