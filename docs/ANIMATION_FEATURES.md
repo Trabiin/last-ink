@@ -4,6 +4,15 @@ One sheet per character: what has to stay the same in every frame of every anima
 rotation frames (south, south-east, east, north-east, north) and the portrait. Rule numbers refer to
 docs/ANIMATION_RULES.md. "His/her right" means the character's own right.
 
+## Ash (ash)
+| What | Detail | Watch for |
+|---|---|---|
+| Hood | Grey-blue hood, always up, light trim at the edge | Hood dropping or changing shape [11]; the portrait wears a dark brown-black cloak with blue, so the sprite colour is still an open question [27] |
+| Face | Pale face, dark hair under the hood, silent and calm | Eyes vanishing or the face going dark (hurt east) [5] |
+| Sword | Sword held low in his **right** hand, steel blade | The sword vanishing (idle north, walk north, tech south) [8, 30]; the blade turning red (tech north) [8]; a swoosh blob instead of a sword (attack south) [24] |
+| Belt | Red-orange buckle | Buckle colour flicker [5] |
+| Build | Slim, light on his feet | Feet sliding in idles (idle north-east) [2] |
+
 ## Bran (bran)
 | What | Detail | Watch for |
 |---|---|---|

@@ -407,6 +407,92 @@ def center(sid, name, head=0.3):
     strip.save(_path(sid, name))
 
 
+def erase(sid, name, colour, tol=30, loose=False):
+    """Spell sparks and swooshes drawn into a sprite (the game draws its own effects, rule 24): every pixel within
+    tol of the effect colour is removed. Only for colours the character itself doesn't use, or with loose: only
+    the effect pixels that don't touch the rest of the character (Bran's beard shares the swoosh's beige).
+    Idempotent."""
+    strip = Image.open(_path(sid, name)).convert("RGBA")
+    px = strip.load()
+    w, h = strip.size
+
+    colours = colour if isinstance(colour[0], (list, tuple)) else [colour]  # one colour or a list (a glow in shades)
+
+    def fx(x, y):
+        p = px[x, y]
+        return p[3] and any(sum(abs(p[k] - c[k]) for k in range(3)) <= tol for c in colours)
+
+    hits = [(x, y) for y in range(h) for x in range(w) if fx(x, y)]
+    if not loose:
+        for x, y in hits:
+            px[x, y] = (0, 0, 0, 0)
+    else:
+        # Only effect pixels whose neighbours are all effect or empty go (a swoosh drawn on its own); effect-coloured
+        # pixels inside the character (a beard highlight) always touch other colours and stay.
+        def lone(x, y):
+            for dx in (-1, 0, 1):
+                for dy in (-1, 0, 1):
+                    X, Y = x + dx, y + dy
+                    q = px[X, Y] if 0 <= X < w and 0 <= Y < h else (0, 0, 0, 0)
+                    if q[3] and not fx(X, Y) and sum(q[:3]) > 120:  # outline ink next to it doesn't count
+                        return False
+            return True
+
+        for _ in range(6):
+            gone = [(x, y) for x, y in hits if px[x, y][3] and lone(x, y)]
+            if not gone:
+                break
+            for x, y in gone:
+                px[x, y] = (0, 0, 0, 0)
+    strip.save(_path(sid, name))
+
+
+def despeck(sid, name, size=3):
+    """Removes loose specks (groups of fewer than `size` pixels not touching the character), e.g. what's left of
+    an erased spell spark. Idempotent."""
+    strip = Image.open(_path(sid, name)).convert("RGBA")
+    fw, fh = _frame_size(sid)
+    px = strip.load()
+    for i in range(strip.size[0] // fw):
+        seen = set()
+        for y in range(fh):
+            for x in range(fw):
+                if not px[i * fw + x, y][3] or (x, y) in seen:
+                    continue
+                group, todo = [], [(x, y)]
+                seen.add((x, y))
+                while todo:
+                    p = todo.pop()
+                    group.append(p)
+                    for dx in (-1, 0, 1):
+                        for dy in (-1, 0, 1):
+                            q = (p[0] + dx, p[1] + dy)
+                            if 0 <= q[0] < fw and 0 <= q[1] < fh and q not in seen and px[i * fw + q[0], q[1]][3]:
+                                seen.add(q)
+                                todo.append(q)
+                if len(group) < size:
+                    for gx, gy in group:
+                        px[i * fw + gx, gy] = (0, 0, 0, 0)
+    strip.save(_path(sid, name))
+
+
+def remap(sid, name, pairs, tol=20):
+    """An item that changes colour on some frames (a sword blade turning red): each pixel within tol of a `from`
+    colour becomes its `to` colour. pairs = [[from, to], ...]. Idempotent."""
+    strip = Image.open(_path(sid, name)).convert("RGBA")
+    px = strip.load()
+    for y in range(strip.size[1]):
+        for x in range(strip.size[0]):
+            p = px[x, y]
+            if not p[3]:
+                continue
+            for a, b in pairs:
+                if sum(abs(p[k] - a[k]) for k in range(3)) <= tol:
+                    px[x, y] = tuple(b) + (p[3],)
+                    break
+    strip.save(_path(sid, name))
+
+
 def main(argv):
     if not argv:
         for fix in json.load(open(os.path.join(HERE, "ai_fixes.json")))["fixes"]:
@@ -422,6 +508,12 @@ def main(argv):
                 swell(sid, name)
             elif op == "bob":
                 bob(sid, name, fix.get("ratio", 0.62), fix.get("own", False))
+            elif op == "remap":
+                remap(sid, name, fix["pairs"], fix.get("tol", 20))
+            elif op == "despeck":
+                despeck(sid, name, fix.get("size", 3))
+            elif op == "erase":
+                erase(sid, name, fix["colour"], fix.get("tol", 30), fix.get("loose", False))
             elif op == "center":
                 center(sid, name)
             elif op == "unglow":
