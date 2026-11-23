@@ -157,6 +157,44 @@ static func tapped(event: InputEvent) -> bool:
 		or (event is InputEventScreenTouch and event.pressed)
 
 
+## Screens built from Godot controls (buttons, check boxes, text boxes: the report form, the playtest
+## survey) never see a finger, because the project turns off "touch as mouse" for the game's own tap
+## handling. They call this first thing in _input: a touch or drag on them is handed to the controls as
+## the matching left-button mouse event, and the touch itself is used up. True when it did that.
+static func touch_to_mouse(host: Control, event: InputEvent) -> bool:
+	var vp := host.get_viewport()
+	if vp == null:
+		return false
+	if event is InputEventScreenTouch:
+		if event.index != 0:
+			vp.set_input_as_handled()  # a second finger does nothing here
+			return true
+		var mb := InputEventMouseButton.new()
+		mb.button_index = MOUSE_BUTTON_LEFT
+		mb.pressed = event.pressed
+		mb.button_mask = MOUSE_BUTTON_MASK_LEFT if event.pressed else 0
+		mb.double_click = event.double_tap
+		mb.position = event.position
+		mb.global_position = event.position
+		vp.set_input_as_handled()
+		vp.push_input(mb, true)
+		return true
+	if event is InputEventScreenDrag:
+		if event.index != 0:
+			vp.set_input_as_handled()
+			return true
+		var mm := InputEventMouseMotion.new()
+		mm.button_mask = MOUSE_BUTTON_MASK_LEFT
+		mm.position = event.position
+		mm.global_position = event.position
+		mm.relative = event.relative
+		mm.velocity = event.velocity
+		vp.set_input_as_handled()
+		vp.push_input(mm, true)
+		return true
+	return false
+
+
 ## " (B)" after a screen's name in running text: its shortcut on this device, or nothing.
 static func tag(action: String) -> String:
 	var k := key(action)
