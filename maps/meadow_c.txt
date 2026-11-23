@@ -9,7 +9,7 @@
 @propZ drygrass
 @propN fern
 @propP boulder
-@sign1 THE FRAYED MEADOW|pop. 212   pop. 40   pop. ?
+@sign1 THE FRAYED MEADOW|~~pop. 212~~   ~~pop. 40~~   pop. ?
 @spot start 10,10
 @spot ward 46,38 54,22
 @spot blot 66,44 66,20

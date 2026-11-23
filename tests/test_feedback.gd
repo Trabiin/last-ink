@@ -430,6 +430,56 @@ func test_form_from_the_title_and_every_pause_menu() -> void:
 	main.set_paused(false)
 
 
+## A finger on the screen, as the browser or a touch screen sends it (window coordinates).
+func _tap(c: Control) -> void:
+	var at := tree.root.get_final_transform() * c.get_global_rect().get_center()
+	for down in [true, false]:
+		var t := InputEventScreenTouch.new()
+		t.index = 0
+		t.pressed = down
+		t.position = at
+		Input.parse_input_event(t)
+		await frames(2)
+
+
+## The project does not turn touches into mouse clicks, so the forms built from Godot controls (this
+## one and the playtest survey) do it themselves: tapping works as well as clicking (Ojon, 2026-11-23).
+func test_forms_work_by_touch() -> void:
+	var title := await goto(TITLE)
+	title._on_choice("report")
+	var v := await _wait_view()
+	if not check(v != null, "the form opens"):
+		return
+	var logs_were := v.log_check.button_pressed
+	await _tap(v.log_check)
+	check(v.log_check.button_pressed != logs_were, "a tap ticks a box")
+	await _tap(v.kind_buttons["idea"])
+	check_eq(v.kind, "idea", "a tap picks the kind")
+	await _tap(v.text_box)
+	check(v.text_box.has_focus(), "a tap puts the cursor in the text box")
+	await _tap(v.file_button)
+	check(v.saved_path != "", "a tap on Save to file saves the report")
+	if v.saved_path != "":
+		DirAccess.remove_absolute(v.saved_path)
+	await _tap(v.cancel_button)
+	await frames(3)
+	check(not is_instance_valid(v) or not v.visible, "a tap on Cancel closes it")
+	check(title.menu.visible, "back on the title menu")
+	# The survey is built the same way.
+	title.menu.visible = false
+	var s := SurveyView.popup(title)
+	await frames(5)
+	var b: Button = s.cancel_button
+	if check(b != null and b.is_visible_in_tree(), "the survey has a Cancel button on screen"):
+		await _tap(b)
+		await frames(3)
+		if is_instance_valid(b) and b.is_visible_in_tree():
+			await _tap(b)  # it may ask before throwing answers away
+			await frames(3)
+		check(not is_instance_valid(s) or not s.visible, "a tap on the survey's Cancel closes it")
+	title.menu.visible = true
+
+
 func test_screenshot_key_and_release_builds() -> void:
 	check(InputMap.has_action("screenshot"), "a screenshot action")
 	var keys := InputMap.action_get_events("screenshot").filter(func(e): return e is InputEventKey and e.physical_keycode == KEY_F12)

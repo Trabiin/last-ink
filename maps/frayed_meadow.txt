@@ -8,7 +8,7 @@
 @name The Frayed Meadow
 @blank 69
 @ground meadow
-@sign1 WELCOME TO THE FRAYED MEADOW|pop. 212   pop. 40   pop. ?
+@sign1 WELCOME TO THE FRAYED MEADOW|~~pop. 212~~   ~~pop. 40~~   pop. ?
 @sign2 HOLLOWMARK  ->  (east)|(east is gone)
 @sign3 STUMP CIRCLE|Please do not feed the silence
 # @spot lines: objective spots missions pick from (tools/make_biomes.py annotate).
