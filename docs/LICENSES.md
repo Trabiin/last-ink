@@ -18,7 +18,7 @@ found; anything marked **Ojon** needs a decision or a check only Ojon can make (
 | PixelLab | Terms (updated 2026-10-30): we own the output, commercial use allowed, **no difference between free trial, subscription and API** | Ash's base character came from free-trial gens; terms cover it, and the pricing page's free-trial card says so too (screenshot saved 2026-11-23) |
 | OpenAI images | Output is assigned to us; commercial use allowed; we must not claim AI output is human-made | Disclosure is #164's job; nothing to replace |
 | Code-made audio and FX | Ours | None |
-| Name "Last Ink" | No trademark found on TMview (EU, US, UK and 70+ offices) or the Benelux register (2026-11-23); no game found in web searches | **Ojon:** Steam, itch.io and handles still to check before the store page |
+| Name "Last Ink" | No trademark (TMview, BOIP) and no game called "Last Ink" on Steam or itch.io (2026-11-23). Nearest: *Last Inkwarden*, a free itch.io beta with a similar ink/erased-history theme | Keep the name. Handles still to check (optional) |
 
 Nothing in `assets/` has unclear terms, so nothing has to be replaced or regenerated.
 
@@ -106,23 +106,27 @@ blocked from this environment, so these need a quick manual pass, see below).
 
 | Where | What we found |
 |---|---|
-| Steam | No game called "Last Ink" in search results |
-| itch.io | No game called "Last Ink". Nearest: **"Last Inkwarden"** by JoyerH (a small itch.io game; page could not be opened to see details). Different name, but close enough that the store search should be checked |
+| Steam (Ojon, 2026-11-23) | No "Last Ink". Only other ink titles (*Inkbound*, *Ink*), different names |
+| itch.io (Ojon, 2026-11-23) | No "Last Ink". Near: *Last Call Ink* and **_Last Inkwarden_ / 墨卫残章** by JoyerH: free public beta (0.25.0), Windows, top-down pixel action roguelike, English/Chinese, Godot 4.5; story about the last Ink Warden in a self-rewriting manuscript and erased history. No trademark filed. Different name and genre, but the themes overlap with ours (ink, erasure), so players searching "last ink" on itch may see both |
 | Other games | Nothing with this exact title. Similar but distinct: *Inked* (2018), *INK* (indie platformer) and *Ink* (board game), *The Last Tinker*, *The Last Night* |
 | US trademarks (Justia index of USPTO, 2026-11-21) | No "LAST INK" mark found. Nearest marks are unrelated ink/printing names (LIVING INK, LIVE INK, ETERNAL INK, THE LAST INCH) |
 | TMview, all offices incl. EUIPO, US, UK (Ojon, 2026-11-23) | No "Last Ink" mark. 33 fuzzy matches, none the same name; the nearest game marks are THE LAST TINKER (EU/UK/US, classes 9 and 41) and LASTLINK (US 41, DE 9), both clearly different. Export in project files `last-ink/legal/tmview-last-ink-2026-11-23.xlsx` |
 | Benelux register (BOIP, Ojon, 2026-11-23) | 0 results for "last ink" (BX, EU and international filters on). Screenshot `last-ink/legal/boip-search-2026-11-23.png` |
 | Domains and handles | Not checked (lookups blocked here). Fallbacks if `lastink.com` is taken: `lastinkgame.com`, `playlastink.com`; handle `@lastinkgame` |
 
-No trademark conflict. Store pages and handles are still open:
+No trademark or store conflict. Handles are still open:
 
 **Ojon, before the Steam store page (#151), about 10 minutes, all free:**
-1. Steam: search "Last Ink" on store.steampowered.com and on SteamDB (catches unreleased apps).
-2. itch.io: search "Last Ink", and open joyerh.itch.io/last-inkwarden to see what it is.
+1. ~~Steam~~ Done 2026-11-23: nothing called Last Ink.
+2. ~~itch.io~~ Done 2026-11-23: nearest is Last Inkwarden (see table).
 3. ~~EU + national marks on TMview and the Benelux register~~ Done 2026-11-23: nothing.
 4. ~~US marks~~ Covered by the TMview search (it includes the USPTO).
 5. Domain and handles: check lastink.com / lastinkgame.com at any registrar, and @lastinkgame on X, Bluesky,
    TikTok, YouTube. Buying a domain (~$10 a year) is optional and Ojon's call.
+
+**Verdict on Last Inkwarden:** no legal issue (different title, no registered mark, and our name is the shorter,
+older-in-our-repo one), so we keep "Last Ink". It only affects search: our store pages should show our own key
+art and tagline prominently, and a subtitle later (e.g. "Last Ink: ...") is an option if confusion ever shows up.
 
 If any of those turns up a game or a class 9/41 mark called "Last Ink", tell Claude and we'll pick a fallback
 following docs/NAMING.md. Filing our own trademark is optional (~$250 to $350 per class in the US, EUR 850 for
