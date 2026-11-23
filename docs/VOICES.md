@@ -8,7 +8,7 @@ that *sounds* generated costs us the player's trust in everything around it. [NA
 for names; this file does it for prose.
 
 **How to use it:**
-- Before writing or editing a character's lines, read their sheet (section 4). Cover the speaker name and read
+- Before writing or editing a character's lines, read their sheet (section 5). Cover the speaker name and read
   the line back: if it could be anyone's, rewrite it.
 - `tests/test_voice.gd` enforces the hard bans (section 2.1) and punctuation (section 3) on every push, and
   prints a count of the softer tells (section 2.2) so we can watch them go down.
@@ -81,7 +81,7 @@ count into a limit.
 |---|---|---|
 | **"People think X"** | "People think medicine and poison are opposites." | A lecture opener. Three characters use it now (Gristle, Jessamy, Odile). Keep at most one in the whole script |
 | **The correction** | "Not empty. Clean." · "It isn't cowardice. It's manners." | Strong once a chapter. As a habit it's the "it's not X, it's Y" tell in short form |
-| **The either/or verdict** | "That's either very smart or very stupid." · "Must be nice. Or terrifying." | Bran and Jessamy share it now. Give it to one (section 4) |
+| **The either/or verdict** | "That's either very smart or very stupid." · "Must be nice. Or terrifying." | Bran and Jessamy share it now. Give it to one (section 5) |
 | **The "Or X." afterthought** | "Or sell it. Or forget whose I was." | Owned by Jessamy ("handsome. Or pretty.") and Bran (escalating options). Others drop it |
 | **Fragment triplets** | "Streets. Families. Whole towns." | One per scene at most. Owned by nobody |
 | **Stated feelings** | "I'm not crying." · "I feel so guilty." | Rewrite as action or deflection (house rule 2) |
@@ -122,16 +122,76 @@ One style across the whole script, chosen to read cleanly in a small pixel font:
 
 ---
 
-## 4. Voice sheets
+## 4. Accent and dialect
+
+**Why (Ojon, 2026-11-22):** everyone used to speak the same perfect, correct English. Where someone grew up, and
+how high they stand, should come through in how they talk, so a reader can tell a dock kid from a Chief
+Assessor's daughter without a portrait. Every character gets their own speech, not just their own jokes.
+
+### 4.1 Rules for writing dialect
+1. **Grammar and words before spelling.** "It were cold" and "I'll not" carry a dialect better than
+   apostrophes everywhere. Respell a word only when it's one of that character's markers below.
+2. **Light touch: one or two markers per line,** not every word. The line has to read at speed in a small
+   pixel font, and a wall of `'ere 'e 'ad` reads as a joke about the speaker.
+3. **Dialect shows place and rank, never brains.** The smartest people in the cast include a dock kid who
+   can't read and a hedge-witch. Nobody's accent is the punchline.
+4. **Keep it consistent.** Each character's markers are listed in their sheet; use those, always, and don't
+   borrow another character's. A marker in someone else's mouth is as wrong as their catchphrase.
+5. **Stress changes it.** Upper-class speakers get more formal when hurt; working speakers get broader when
+   angry or drunk. Fauvette's real voice slips through only when she stops performing.
+6. **Spoken lines only.** Narration, menus, tooltips, the journal and help stay plain English. Letters and
+   notices are written as their author would write, not speak (an educated letter has no dialect at all).
+7. **Translators** get the glossary in 4.3. Dialect is translated by register (rough, posh, rural), not word
+   for word (docs/LOCALIZATION.md).
+
+### 4.2 Who speaks how
+
+The world borrows its regions from British and French sources (docs/NAMING.md 2.1), so the speech does too.
+
+| Background | Who | Speech |
+|---|---|---|
+| **Gallows Ferry docks** (river, working) | Bran, Ozias Crane (who hides it) | Dropped h's on a few words ('im, 'er, 'ere), "ain't", "me" for "my", "nothing" as "nothin'", "them" for "those", double negatives. Short |
+| **The North, plain folk** (Hollowmark tavern trade) | Tobble (broad, old), Ottoline (younger, flatter) | "Aye", "nowt", "owt", "summat", "were" for "was", "our" before family names ("our Tobble"), "us" for "me", "love". Tobble also has "thee/tha" when sentimental |
+| **Gutterwoods, Welsh border** (rural, witches) | Gristle, Hester Vane, Pell | Turned-round sentences ("Lovely work, that is."), tag questions ("isn't it", "is it now"), "I'll not", "there's" for wonder ("There's a face on you"). Pell is the slow farm end of it: "reckon", "ar", "proper" |
+| **Tithe Road back roads** (smugglers, thieves' cant) | Jessamy | Keeps her h's, drops g's ("somethin'", "nothin'"), thieves' cant: "cully" (friend), "lark", "peach" (to inform), "flash" (showy), "on the cross" (crooked), "the pennies" (toll men) |
+| **Concord army barracks** (enlisted) | Daro | Drops the subject ("Saw it. Didn't like it."), army slang ("bloody", "kit", "stand down", "civvies"), "sir" and "ma'am" as insults, numbers for everything |
+| **Concord gentry and high office** | Odile, Marguerite Penhallow, Verity, Governor Thale | No contractions on duty, "one" for "you", "rather", "I should think", "quite", Latinate words. Odile and her mother are the clipped school; Verity the warm, bookish end; Thale the pompous end |
+| **Concord clerks and officials** (lower office) | Quill, Clerk Pettigrew, Notary Fennick, the Auditor, wardens, Tithe-Captain Morrow | Officialese: "per", "herewith", "duly", "as it were", "in respect of", passive voice ("it has been noted"). Quill plays with it; the others mean it |
+| **Saint Ledger's Abbey** | Sister Hild | Gentle, old-fashioned church English: "I think it a promise", "God keep you", "Deo gratias" and other half-remembered Latin tags, "the Abbot used to say". No contractions when she quotes scripture, plenty when she rambles |
+| **The Velvet Causeway** (French-speaking bridge-city) | Fauvette, Augustin Sallow, Hortense later | Fauvette performs a grand stage English with French words dropped in ("chérie", "voilà", "enfin", "mon petit"), French word order ("It is not nothing, this."). Underneath she is Colombe Brissot from the Causeway quays: when sincere, the French goes and a plain, blunt quayside voice comes out. Sallow overdoes the same French, badly |
+| **The Unfinished Coast** (Cornish fishing shore) | The Merrow Three | "Proper", "dreckly" (some time, never), "where's that to?", "my bird" as an endearment, "they'm" for "they are" |
+| **The Margin** | The Vacancy | No dialect. Redacted bars and a few plain words |
+
+### 4.3 Glossary for translators and new writers
+
+| Word | Who uses it | Means |
+|---|---|---|
+| nowt / owt / summat | Tobble, Ottoline | nothing / anything / something |
+| our (before a name) | Tobble, Ottoline | my (family member): "our Tobble" |
+| cully | Jessamy | friend, mate (also a mark in a con) |
+| peach | Jessamy | to inform on someone |
+| on the cross | Jessamy | crooked, illegal |
+| the pennies | Jessamy | toll men on the Tithe Road |
+| civvies | Daro | civilians |
+| dreckly | Merrow Three | "directly": some time, maybe never |
+| my bird | Merrow Three | dear, love |
+| chérie, voilà, enfin, mon petit | Fauvette | darling (to a woman), there it is, well/at last, my little one |
+| per, herewith, duly | Quill, clerks | Concord officialese: as, enclosed, properly |
+
+---
+
+## 5. Voice sheets
 
 Each sheet: how they talk, their tics (words and moves they own), what they never say, and sample lines. Lines
-marked *(in game)* are from the current script and show the voice at its best; unmarked lines are new examples
-written to this sheet.
+marked *(in game)* show the voice as first written, before the dialect pass (2026-11-22); lines marked *With
+dialect* show how the character sounds now, and the script has been rewritten to match. Unmarked lines are new
+examples written to this sheet.
 
 ### Narrator
 - **Talks:** present tense, plain, dry. Short sentences. Hands, objects, weather, the Blank's behaviour. One odd
   detail per scene does more than three adjectives.
 - **Tics:** treats the Blank like a sulking animal ("sulking that it let you go"). Deadpan understatement.
+- **Speech:** No dialect. Plain, neutral English (rule 4.1.6).
 - **Never:** tells the player how a character feels; uses "whisper" for wind; ends on a moral.
 - *(in game)* "He polishes a mug that was clean when he started."
 - *(in game)* "The tollgate is too quiet. Someone has swept the road. Someone has swept the birds off it, too."
@@ -140,6 +200,7 @@ written to this sheet.
 ### Brannoc "Bran" Tolley (`bran`)
 - **Who:** sellsword, contract tattooed on his arm. Gallows Ferry dock kid. Can't read, can count.
 - **Talks:** short, blunt, transactional. Talks about feelings only as costs. Lists options in escalating order.
+- **Speech:** Gallows Ferry docks. Drops the h on a handful of words ('im, 'er, 'ere), "ain't", "me" for "my", "nothin'", "them" for "those". Gets broader when angry.
 - **Owns:** "clause" (numbered clauses of his contract), "invoice", "hazard pay", "on the bill", calling Ash
   "smudge". The escalating "Or X. Or Y." list. The either/or verdict ("That's either very smart or very
   stupid").
@@ -149,10 +210,14 @@ written to this sheet.
 - *(in game)* "So the contract's with nobody now. Which means I'm here because I want to be. Disgusting."
 - *(in game)* "Don't look at me. I can't read. I can count, though, and that sign's going the wrong way."
 - "Clause six. If the client dies, I keep the deposit. Don't make me use clause six."
+- With dialect: "Clause four: I guard the client. Clause nine: someone pays more, I tell the client first. Then I'm off."
+- With dialect: "It tightens if I break it. Like a fist. Ask me 'ow I know."
+- With dialect: "So the contract's with nobody now. Means I'm 'ere 'cause I want to be. Disgustin'."
 
 ### Mother Gristle (`gristle`)
 - **Who:** hedge-witch healer thrown out of the Coven; her medicines and poisons are the same bottles.
 - **Talks:** sweet-voiced and poisonous. Bedside manner of a loan shark. Medium sentences with a sting at the end.
+- **Speech:** Gutterwoods, Welsh border. Turns sentences round ("Lovely hands, those are."), tag questions ("isn't it", "is it now"), "I'll not". Never drops letters.
 - **Owns:** "dearie", "bill", "itemised", "interest", "on your account", "same bottle, different spoon". Lists of
   prices.
 - **Never:** "invoice" or "clause" (Bran's); apologises; says she's lonely. Her tenderness comes out as a lower
@@ -162,12 +227,16 @@ written to this sheet.
   anyone."
 - "Lie down, dearie. No, the other way. That's the end that bleeds."
 - Rewrite note: drop "People think medicine and poison are opposites"; she'd never explain herself that patiently.
+- With dialect: "One's for fever. One's for husbands. Same bottle, isn't it. Different spoon."
+- With dialect: "Brave, that was. The husband one, you've had. Sit down an hour, dearie."
+- With dialect: "Billed her for the tissue, I did. We're even now. Horrible, it is."
 
 ### Corporal "Ninefingers" Daro (`ninefingers`, they/them)
 - **Who:** Concord deserter who tore up an Erasure order and lost a finger as a "fine". Sharpest tongue in the
   party.
 - **Talks:** clipped, sarcastic, military. Insults as affection. Fast comebacks; if a line runs long, they cut
   themselves off.
+- **Speech:** Concord army barracks. Drops the subject ("Saw it. Didn't like it."), army slang ("bloody", "kit", "civvies", "stand down"), "sir" as an insult. Numbers and form codes for everything.
 - **Owns:** Concord form numbers ("Form C-114"), "dismissed", "on record", counting ("Nine. Always nine."),
   saluting things that don't deserve it.
 - **Never:** "darling", "dearie", "handsome"; anything that sounds like a speech. Never asks for pity, and refuses
@@ -176,10 +245,14 @@ written to this sheet.
 - *(in game)* "First time I've been dead. It's roomier than I expected."
 - *(in game)* "They gave me a bigger chin. I'm flattered and offended."
 - "Your plan has a hole in it. The hole is you. Fine, let's go."
+- With dialect: "Lost it to a paper cut. Form C-114. Went septic. Don't laugh, it's on file."
+- With dialect: "Twelve years in. Didn't train us to fight. Trained us to stand still while some sir read at us."
+- With dialect: "First time dead. Roomier than expected. Recommend it to civvies."
 
 ### Big Ottoline (`ottoline`)
 - **Who:** the Crimson Encore's bouncer, Tobble's niece. Shut a door on six people to save a hundred and six.
 - **Talks:** few words, door-keeper grammar: commands, checks, verdicts. Warm underneath, and embarrassed about it.
+- **Speech:** Northern, like her uncle, but younger and flatter: "were" for "was", "nowt", "our" before family ("our Tobble"), "us" for "me" ("give us a minute"). Not Tobble's "thee/tha".
 - **Owns:** lists (who's in, who's out), "house rules" (shared with Fauvette, as two people from the same club;
   hers are about doors, Fauvette's about secrets), chalk, counting people in and out, the waltz.
 - **Never:** long confessions without a joke to get out; flirting; fancy words. Doesn't say "darling".
@@ -188,11 +261,15 @@ written to this sheet.
   shorter. It's got more teeth in it."
 - *(in game)* "You can't subtract people."
 - "Coat. Ticket. Out. In that order."
+- With dialect: "Stop. Name?"
+- With dialect: "Thirty year our Tobble's kept a list of who drinks here. I keep the list of who doesn't. It's shorter. More teeth in it."
+- With dialect: "It were the door. Just the door, stood in the white, nowt round it."
 
 ### Jessamy Leake (`jessamy`)
 - **Who:** night-only smuggler who paid to be struck out of the Ledger and is fading in daylight.
 - **Talks:** flirty, quick, conspiratorial. Runs on, then undercuts herself. Uses "you know" and "mind" as
   softeners.
+- **Speech:** Tithe Road smuggler. Keeps her h's, drops her g's ("somethin'", "nothin'"), and talks thieves' cant: "cully", "lark", "peach", "flash", "on the cross", "the pennies" for toll men.
 - **Owns:** "handsome. Or pretty." (she can't tell what Ash is and enjoys not knowing), crates and boxes nobody
   opens, petty by-law crimes ("rooftop loitering, two counts"), the dark and the sun.
 - **Never:** "darling" (Fauvette's); asks what's in a box; states a feeling without immediately stealing
@@ -202,11 +279,15 @@ written to this sheet.
 - *(in game)* "I'm sunburnt. It's horrible. I love it. Everything is so loud and yellow."
 - Rewrite note: "People think not asking is cowardice. It isn't. It's manners." stacks two watched tells. Keep the
   idea, cut the lecture: "Not asking is good manners. Everyone gets one box nobody looks in."
+- With dialect: "Oh, hello, handsome. Or pretty. It's dark, I'm generous, and you're a bit of a blur, cully. Come up."
+- With dialect: "Six years runnin' crates down the Tithe Road and never once opened one. Not openin' is good manners."
+- With dialect: "Nobody peaches on me twice. Fennick learned that one the expensive way."
 
 ### Odile Penhallow (`odile`)
 - **Who:** ex-Concord tax collector who walked out with the ledger. Chief Assessor's daughter.
 - **Talks:** formal, exact, slightly prim. Full sentences, no contractions when she's on duty. Turns everything
   into an entry, a column, a valuation. Dry jokes delivered like minutes of a meeting.
+- **Speech:** Concord gentry, Chief Assessor's daughter. No contractions on duty, "one" for "you", "rather", "I should think", Latinate words. Contractions only slip in when she's moved, and she notices.
 - **Owns:** "declare", "enter it", "column", "assets / liabilities", "on the record", "fair", red ink then black
   ink.
 - **Never:** "bill" (Gristle's) or "books" (Quill's); rounds anything; swears. Doesn't hug first.
@@ -216,13 +297,17 @@ written to this sheet.
 - *(in game)* "Quill rounds up. I would like that on the record."
 - Rewrite note: "People think tax collectors hate people..." is the third "People think"; open on the sums
   instead: "Tax collectors don't hate people. We love sums. People simply get in the way."
+- With dialect: "Sit down. This will not hurt. Much. I am opening an account for you."
+- With dialect: "One does not round. One records. Quill rounds, and I should like that on the record."
+- With dialect: "Thank you. I am not... It is the red ink. It gets in one's eyes."
 
 ### Fauvette (`velvette`)
 - **Who:** cabaret duelist and secret-broker (stage name of Colombe Brissot). Killed eleven "volunteers" on stage.
   Separate person from Hortense.
 - **Talks:** theatrical, long elegant sentences, then a short cruel one. Always performing, so the rare plain line
   hits hard.
-- **Owns:** "darling", "house rules: a secret for a secret", stage words (closing act, curtain, house, bow), "my
+- **Speech:** The Velvet Causeway. On stage (which is always): grand English with French dropped in ("chérie", "voilà", "enfin", "mon petit") and French word order ("A secret, it is only dangerous while one person owns it."). Underneath, Colombe Brissot from the Causeway quays: when she is sincere, the French and the flourishes drop away and a short, blunt voice comes out. That shift is her most important line in any scene.
+- **Owns:** "darling", the French words in 4.3, "house rules: a secret for a secret", stage words (closing act, curtain, house, bow), "my
   book".
 - **Never:** "handsome. Or pretty." (Jessamy's); grovels; explains her own feelings at length. When she's sincere
   she gets shorter.
@@ -231,11 +316,15 @@ written to this sheet.
 - *(in game)* "When the Blank took Lantern Row I was almost grateful. Isn't that ugly? I've never said it out
   loud."
 - "Applause is a debt, darling. I always collect."
+- With dialect: "Don't touch the sword, chérie. It is the only one in the room who isn't flirting with you."
+- With dialect: "Voilà, the closing act. A real duel, live blades, a volunteer from the house. Enfin, a man confesses much with a rapier at his throat."
+- With dialect: (sincere) "Eleven. I knew by the third. Kept going. Other choice was being the twelfth."
 
 ### Edwin "Quill" Pask (`quill`)
 - **Who:** quartermaster at the Command Table; kept Hollowmark's books for the Concord, now cooks them for you.
 - **Talks:** precise, a little fussy, self-deprecating. The longest sentences in the cast when he's explaining
   money; very short when it's personal. Reads documents aloud in "the voice they deserve".
+- **Speech:** Concord clerk, lower office, Hollowmark born. Officialese he can't switch off ("per", "herewith", "duly", "as it were", "in respect of"), used half as a joke. Correct grammar, but a clerk's correct, not a gentleman's.
 - **Owns:** "the beautiful books / the true books", "file", "receipt", "written off / carried forward", turnips,
   the goose.
 - **Never:** fights ("I don't fight. I want to be very clear about that."); "declare" (Odile's); says his guilt
@@ -245,11 +334,15 @@ written to this sheet.
 - *(in game)* "Name: none. Debts: none. Taxable property: one cloak, scorched."
 - *(in game)* "I once lost an argument with a goose. Stay close to me."
 - "I've moved forty Gilt from 'roads' to 'not dying'. The roads will understand."
+- With dialect: "A quartermaster keeps two sets of books, per regulations. One for the Concord, which is beautiful. One for us, which is true."
+- With dialect: "Name: none. Debts: none. Taxable property: one cloak, scorched, herewith noted."
+- With dialect: "I have duly moved forty Gilt from roads to not dying. The roads will understand, as it were."
 
 ### Sister Hild (`abeyance`)
 - **Who:** runaway Abbey scribe with a page that rewrites itself every night; hears the erased.
 - **Talks:** gentle, rambling, oddly matter-of-fact about the uncanny. Apologises for being too much. Starts a
   thought, gets distracted by the page, comes back.
+- **Speech:** Saint Ledger's Abbey. Gentle, old-fashioned church English ("I think it a promise", "God keep you"), half-remembered Latin tags ("Deo gratias", "fiat"), "the Abbot used to say". Formal when quoting, rambling and contracted otherwise.
 - **Owns:** "the page" (treated as a person with manners), "the voices" (polite, ask for directions), margins,
   serifs, "Oh."
 - **Never:** sounds frightened of the uncanny; uses Abbey jargon without mocking it; delivers a second big
@@ -258,11 +351,15 @@ written to this sheet.
 - *(in game)* "It also said you'd be taller, so it isn't always right."
 - *(in game)* "It usually just complains about my spelling."
 - "The page has been very rude about your handwriting. I said you don't have any. It wasn't listening."
+- With dialect: "The page rewrote itself again. Deo gratias, I copied it before breakfast."
+- With dialect: "I don't know if it's a warning or a promise. I think it a promise. The Abbot would say that is pride."
+- With dialect: "They're very polite, the voices. They say please. They ask what year it is. God keep them, they're lost."
 
 ### Old Tobble (`tobble`)
 - **Who:** tavern keeper about to retire for thirty years. Trades in secrets.
 - **Talks:** chatty, warm, a bit rambling, northern-ish ("Aye", "lad", "love", "mind"). Tells stories that go
   sideways. Calls everyone younger than him by a pet name.
+- **Speech:** Broad Northern, old-fashioned: "aye", "nowt", "owt", "summat", "were" for "was", "lad", "lass", "love", "reckon". Goes to "thee" and "tha" when he's moved.
 - **Owns:** "aye", "love", "retiring next week", knees, "first drink's free", secrets as currency, the Last Drop.
 - **Never:** sounds sharp or cruel (that's Ottoline and Daro); says a secret for free unless it's the one that
   hurts.
@@ -271,33 +368,40 @@ written to this sheet.
   the one correction that earns its place)
 - *(in game)* "Got her! Run! Well, you run. I'll do something near it."
 - Rewrite note: "Now you know" closes two of his confessions; keep one.
+- With dialect: "First drink's free. House rule. Second costs thee a secret."
+- With dialect: "I told him. Next morning the cellar were clean. Not empty. Clean. White as new paper."
+- With dialect: "Got her! Run! Well, tha run. I'll do summat near it."
 
 ### Light recruits
 Short lines (quips, hooks, a line or two in town). One clear angle each; never a mini-speech.
 
 | Who | Talks like | Owns | Never |
 |---|---|---|---|
-| **Pell Mossop** (`pell`), gravedigger | soft, cheerful, unsettling; apologises for measuring you | sizes, holes, "ready" | explains how he knows |
-| **Hetty Coyne** (`hesper`), cartographer | brisk, offended by blank space, talks about places in future tense | "There's a road here on Thursday." | describes a place she hasn't drawn |
-| **Dunmore Vellacott** (`dunmore`), debt-tattooed cobbler | polite, ground-down, counts debts in body parts, says "miss" | elbows, forearms, "paid off" | complains |
+| **Pell Mossop** (`pell`), gravedigger | soft, cheerful, unsettling; apologises for measuring you. Gutterwoods farm speech: "reckon", "ar", "proper" ("Proper lovely shape, you are.") | sizes, holes, "ready" | explains how he knows |
+| **Hetty Coyne** (`hesper`), cartographer | brisk, offended by blank space, talks about places in future tense. Educated town speech, surveyor's jargon ("bearing", "chain", "datum") | "There's a road here on Thursday." | describes a place she hasn't drawn |
+| **Dunmore Vellacott** (`dunmore`), debt-tattooed cobbler | polite, ground-down, counts debts in body parts. Hollowmark working man, deferential: "miss", "sir", "if it please" | elbows, forearms, "paid off" | complains |
 | **Mr. Biscuits** (`biscuits`) | one bark or growl, then a narrated bracket explaining his dignity | the bracket | words |
-| **The Merrow Three** (`merrow`) | one voice between three girls, in capitals when they sing; finish each other's lines | the hot-coal voice | speak at the same time in normal text |
+| **The Merrow Three** (`merrow`) | one voice between three girls, in capitals when they sing; finish each other's lines. Unfinished Coast Cornish: "proper", "dreckly", "my bird", "where's that to?" | the hot-coal voice | speak at the same time in normal text |
 
 ### Saint Verity Hale (`verity`), antagonist
 - **Talks:** polite, tired, dry, genuinely kind. Long, well-built sentences, like a good archivist's letter.
   Apologises for things she'll still do. Never raises her voice.
+- **Speech:** Concord high office, the bookish end: long, elegant, educated sentences, no slang, gentle formality ("I should think", "rather"). Her letters read exactly as she speaks.
 - **Owns:** "drafts", "the clean page", "fondly", gentle corrections of other people's words.
 - **Never:** gloats, threatens, monologues about power, or calls the Blank a weapon (to her it "helps").
 - *(in game)* "Oh. So you're the one it gave back. How rude of it. It never gives anything back."
 - *(in game)* "Please stop pushing the white back. It is only trying to help. Fondly, and with regret for what
   comes next: V. Hale."
+- With dialect: "Oh. So you are the one it gave back. How rude of it. It never gives anything back, you know."
 
 ### The Auditor (`auditor`), Act 1 boss
 - **Talks:** procedural. No contractions, no humour he's aware of. Paperwork as violence. Breaks down into broken
   sentences when the procedures fail.
+- **Speech:** Concord officialese at its coldest: passive voice, "duly", "herewith", "it has been noted". No contractions, ever.
 - **Owns:** "irregular", "discrepancy", "notice", capitals for FINAL NOTICE.
 - *(in game)* "Hold still. This will not hurt. Nothing that never happened can hurt."
 - *(in game)* "There is no form for it. There is no form for YOU."
+- With dialect: "It has been noted that you are not on the Ledger. Your town will duly join you."
 
 ### The Vacancy (not written yet)
 Speaks only in redacted text: black bars, with the occasional terribly clear word (DESIGN.md section 11). It never
@@ -309,21 +413,21 @@ Each gets one note of colour. Concord officials are the funniest when they're co
 
 | Who | Note |
 |---|---|
-| Clerk Pettigrew (`clerk`) | Kafka at a counter: polite, logical, terrifying. "There is, in fact, nothing at all where you are standing." |
+| Clerk Pettigrew (`clerk`) | Kafka at a counter: polite, logical, terrifying, pure officialese. "There is, in fact, nothing at all where you are standing." |
 | Concord Warden (`warden`), Tithe-Captain Morrow (`captain`) | Officials reading out charges like a menu. |
-| Governor Thale (`governor`) | Bluster and paperwork threats; runs away mid-sentence. |
-| Ozias Crane (`crane`) | Silk-voiced contract broker; talks about people as stock that "appreciates". |
-| Hester Vane (`hester`) | Coven elder; grave, guilty, formal; hides behind "the tree decides". |
-| Notary Fennick (`marrow`) | Panicky, procedural, terrified of being audited himself. |
-| Marguerite Penhallow (`penhallow`) | Odile, thirty years harder. Shortest sentences in the game. "Audit. Me." |
-| Augustin Sallow (`sallow`) | Impresario patter, applause cues, "darling" (borrowed from his star). Blames "the commissions". |
+| Governor Thale (`governor`) | Pompous gentry ("I say", "one shall"); bluster and paperwork threats; runs away mid-sentence. |
+| Ozias Crane (`crane`) | Silk-voiced contract broker; talks about people as stock that "appreciates". Gallows Ferry docks under a bought gentleman's polish: an h drops when he panics. |
+| Hester Vane (`hester`) | Coven elder; grave, guilty, formal; hides behind "the tree decides". Gristle's Border speech, but stately ("Thought of it every day, I have."). |
+| Notary Fennick (`marrow`) | Panicky, procedural, terrified of being audited himself. Officialese that falls apart under stress. |
+| Marguerite Penhallow (`penhallow`) | Odile, thirty years harder. High-office English, no contractions. Shortest sentences in the game. "Audit. Me." |
+| Augustin Sallow (`sallow`) | Impresario patter, applause cues, "darling" (borrowed from his star), Causeway French laid on thick and slightly wrong. Blames "the commissions". |
 
 ### Not built yet
 Seeds for chapters #28 to #32; flesh these out into full sheets when the character is written.
 
 - **Hortense, the Velvet Marquise:** flirts with everyone, enemies included, mid-fight; a spy, so her flirting is
   a little too well-rehearsed. Must sound nothing like Fauvette: Hortense is aristocratic and light, Fauvette is
-  showbusiness and dark. No "darling" (Fauvette's); her word is "sweet".
+  showbusiness and dark. No "darling" (Fauvette's); her word is "sweet". She is Causeway aristocracy: perfect, light court English with the French used correctly and sparingly, which is how you tell her from Fauvette's stage French.
 - **Ilse of the Mirror:** a reflection that walked out when her original was erased. Vain, precise, slightly
   backwards: describes things left-to-right reversed, compliments herself in the third person, never says "I
   remember".

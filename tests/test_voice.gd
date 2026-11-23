@@ -48,7 +48,7 @@ const WATCH := [
 	{"id": "therapy-speak", "re": "\\b(closure|boundaries|healing journey|process (this|it|that)|trauma|toxic|validate|valid feelings)\\b", "limit": 0},
 ]
 
-## Words a character owns (VOICES.md 4): anyone else saying them is counted under "somebody else's word".
+## Words a character owns (VOICES.md 5) and dialect markers (VOICES.md 4): anyone else saying them is counted under "somebody else's word".
 const OWNED := {
 	"dearie": ["gristle"],
 	"darling": ["velvette", "sallow"],
@@ -56,6 +56,14 @@ const OWNED := {
 	"invoice": ["bran"],
 	"smudge": ["bran"],
 	"handsome": ["jessamy"],
+	# dialect markers (VOICES.md 4.2): a marker in the wrong mouth is as wrong as a catchphrase
+	"cully": ["jessamy"],
+	"nowt": ["tobble", "ottoline"],
+	"summat": ["tobble", "ottoline"],
+	"civvies": ["ninefingers"],
+	"dreckly": ["merrow"],
+	"herewith": ["quill", "clerk", "marrow", "auditor", "warden", "captain"],
+	"chérie": ["velvette", "sallow"],
 }
 
 ## Step two of #167 flips this: watched tells over their limit fail the run.

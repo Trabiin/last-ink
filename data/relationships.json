@@ -8,31 +8,31 @@
 				"perk": {"name": "Leading Lady", "desc": "Fallen party members get back up 25% faster on missions.", "effect": {"mission_revive": 0.25}},
 				"moment": {"title": "Second Billing", "lines": [
 					["", "Late. The Encore's old dressing-room trunk stands open in the barracks loft. Fauvette has hung a sheet for a curtain and lit exactly one candle."],
-					["velvette", "Sit. No, there. That's the good side of the candle. I gave you the good side. Notice it."],
-					["velvette", "I've been thinking about what you did. Not looking away. Do you know how rare that is? Everyone looks away from me eventually. It's practically my exit cue."],
-					["velvette", "So here is my problem, darling. I don't do sincere. Sincere has no second act. And yet."],
+					["velvette", "Sit. No, there. That is the good side of the candle. I gave you the good side. Notice it."],
+					["velvette", "I've been thinking about what you did. Not looking away. Rare, that. Everyone looks away from me eventually. It's practically my exit cue."],
+					["velvette", "So here is my problem, darling. I don't do sincere. Sincere has no second act. Et pourtant."],
 					["", "She tips her head. The candle does a great deal for her eyeliner, and she knows it."],
-					["velvette", "I'm offering you a part. Small, demanding, terrible hours. Leading man, if you want it. Or you stay my favourite audience and I never ask again. Both are honourable. One is more fun."]
+					["velvette", "I am offering you a part. Small, demanding, terrible hours. Leading man, if you want it. Or you stay my favourite audience and I never ask again. Both honourable. One more fun."]
 				], "choice": [
 					{"label": "[Take the part: kiss her]", "bond": 3, "romance": true, "reply": [
 						["velvette", "...Well. Somebody's been rehearsing.", "smug"],
-						["velvette", "House rules. Nobody hears about this. Everybody will guess. I'll deny it beautifully."],
+						["velvette", "House rules. Nobody hears about this. Everybody will guess. I deny it beautifully."],
 						["", "She pinches out the candle. Whatever happens next happens offstage, where it belongs."]
 					]},
 					{"label": "[Applaud softly, and stay in your seat]", "bond": 2, "romance": false, "reply": [
 						["velvette", "Front row, then. Best seat in the house, and you never have to learn any lines. Wise.", "happy"],
-						["velvette", "Don't look so worried. I'm not wounded. I'm a professional. I'll be wounded in private, with a bottle, like an artist."]
+						["velvette", "Don't look so worried. I'm not wounded. I am a professional. I will be wounded in private, with a bottle, like an artist."]
 					]}
 				]},
 				"rank5": {"rank": 5, "title": "Curtain Call", "lines": [
-					["velvette", "The Gilded Heron had a full house. I came on during the closing act. In costume, naturally. One has standards."],
+					["velvette", "The Gilded Heron had a full house. I came on during the closing act. In costume, naturellement. One has standards."],
 					["velvette", "I challenged Augustin with the whole Marsh watching. He'd never held a sword in his life. I let him keep his. Then I read the commissions aloud. Every name. Every price."],
-					["velvette", "Eleven names, said slowly. And the audience didn't cheer. They took off their hats. Best show I ever gave."],
-					["velvette", "And through all of it I kept finding you in the wings. Do you know how distracting that is? I nearly missed a cue. I have never missed a cue."],
-					["velvette", "House rules: a secret for a secret. I've owed you one since the first night."],
+					["velvette", "Eleven names, read slow. And the audience didn't cheer. They took their hats off. Best show I ever gave."],
+					["velvette", "And through all of it I kept finding you in the wings. So distracting. I nearly missed a cue. I never miss a cue."],
+					["velvette", "House rules: a secret for a secret. I owe you one since the first night."],
 					["", "She leans in and says it in Ash's ear: her real name. It is a very ordinary name. Nobody else will ever hear it."],
-					["velvette", "That's what you call me when it's just us. In public I'm still Fauvette, and you're still my extremely lucky stagehand."],
-					["velvette", "I've played a hundred lovers, darling. Every one of them died in the third act. I'd like to try one where nobody does."]
+					["velvette", "That's what you call me when it's just us. In public I am still Fauvette, and you are still my extremely lucky stagehand."],
+					["velvette", "Played a hundred lovers. Every one died in the third act. I want one where nobody does."]
 				], "choice": [
 					{"label": "[Say nothing, and kiss her]", "bond": 3, "reply": [
 						["velvette", "Mm. No notes.", "smug"],
@@ -44,7 +44,7 @@
 				]},
 				"ended": [
 					["velvette", "Oh, don't creep up on me looking tragic. I heard. Everybody heard. I made sure the version going round is the one where I left you.", "smug"],
-					["velvette", "No hard feelings. A few soft ones, which I'll keep in a drawer with the other props. Exit stage left, darling."]
+					["velvette", "No hard feelings. A few soft ones, which I keep in a drawer with the other props. Exit stage left, darling."]
 				],
 				"talk": [
 					"Stop looking at me like that in public. Save it for private, where it counts.",
@@ -57,31 +57,31 @@
 				"perk": {"name": "Two for the Road", "desc": "+5% success on every expedition.", "effect": {"all_odds": 5}},
 				"moment": {"title": "Rooftop Rates", "lines": [
 					["", "Past midnight. Jessamy has found the one roof in Hollowmark with a view of nothing in particular, and a blanket she definitely didn't buy."],
-					["jessamy", "Shh. Listen. That's the best sound in the world. Nobody looking for anybody."],
-					["jessamy", "I've been doing sums. You never ask what's in the crates, you never ask where I go, and you stood in front of the sun for me. That's three favours. I hate owing."],
-					["jessamy", "So. I can pay you back in coin, which I've stolen. Or in Supplies, which I've also stolen."],
+					["jessamy", "Shh. Listen. That's the best sound in the world. Nobody lookin' for anybody."],
+					["jessamy", "I've been doin' sums. You never ask what's in the crates, you never ask where I go, and you stood in front of the sun for me. That's three favours. I hate owin'."],
+					["jessamy", "So. I can pay you back in coin, which I've nicked. Or in Supplies, which I've also nicked."],
 					["", "She shuffles closer on the tiles, all elbows, until her shoulder is against Ash's. Solid, at this hour."],
-					["jessamy", "Or I could stop pretending I climb up here for the view. Your call. I'm very bad at waiting, so call fast."]
+					["jessamy", "Or I could stop pretendin' I climb up here for the view. Your call. I'm very bad at waitin', so call fast."]
 				], "choice": [
 					{"label": "[Pull the blanket round you both]", "bond": 3, "romance": true, "reply": [
 						["jessamy", "Oh. Oh, that was the right answer. That was so much the right answer.", "happy"],
-						["jessamy", "Don't tell anyone. Smuggler's honour. I've got a reputation for having no attachments, and it's been very good for business."],
+						["jessamy", "Don't tell anyone. Smuggler's honour. I've got a reputation for no attachments, and it's been very good for business."],
 						["", "They stay until the sky starts to grey. She doesn't fade. Not tonight. She checks twice, and laughs both times."]
 					]},
 					{"label": "[Toss her an apple: call it even]", "bond": 2, "romance": false, "reply": [
 						["jessamy", "Ha! Paid in fruit. Fair. Generous, even.", "happy"],
-						["jessamy", "Partners, then. The business kind. Best kind, honestly. Nobody gets their heart stolen, only the cargo."]
+						["jessamy", "Partners, then. The business kind. Best kind, honestly. Nobody gets their heart nicked, only the cargo."]
 					]}
 				]},
 				"rank5": {"rank": 5, "title": "Noon", "lines": [
 					["", "It is noon. The plaza is full of honest people doing honest things. In the middle of it, Jessamy lies flat on her back on the cobbles, eyes shut, perfectly solid."],
 					["jessamy", "Don't block it. Shift. You're in my sun."],
-					["jessamy", "Fennick wrote me back in. Took him an hour, his hand was shaking so badly. When he asked for my occupation, I told him to put \"yes\"."],
+					["jessamy", "Fennick wrote me back in. Took him an hour, his hand was shakin' so bad. When he asked for my occupation, I told him to put \"yes\"."],
 					["jessamy", "Then he asked for next of kin. I gave him your name. He said you haven't got one. I said write \"Ash\" and stop being difficult."],
-					["jessamy", "So you're on my line now. Officially. Sorry. Should've asked. Wasn't going to."],
-					["jessamy", "Lie down. Properly. Next to me. I want to know what it's like to hold someone's hand in daylight and actually feel it."],
+					["jessamy", "So you're on my line now. Official. Sorry. Should've asked. Wasn't goin' to."],
+					["jessamy", "Lie down. Properly. Next to me. I want to know what it's like holdin' someone's hand in daylight and actually feelin' it."],
 					["", "Ash lies down. Her hand is warm and very solid and slightly sticky from something she lifted off a pie stall."],
-					["jessamy", "There. That's it? That's what everyone else gets all the time? Unbelievable. You lot have been keeping this very quiet."]
+					["jessamy", "There. That's it? That's what everyone else gets all the time? Unbelievable. You lot have been keepin' this very quiet."]
 				], "choice": [
 					{"label": "[Squeeze her hand]", "bond": 3, "reply": [
 						["jessamy", "I felt that. I felt that. Do it again. ...Again. I'm going to be insufferable about this for years.", "happy"]
@@ -93,7 +93,7 @@
 				]},
 				"ended": [
 					["jessamy", "So that's how it is. No, it's fine. I'm a smuggler. I know when a cargo's gone to another buyer."],
-					["jessamy", "I'll still run your supplies. I'll just charge you for the rooftop. Retroactively. With interest."]
+					["jessamy", "I'll still run your supplies. I'll just charge you for the rooftop. Backdated. With interest."]
 				],
 				"talk": [
 					"Saved you a pear. Don't ask whose orchard.",
@@ -106,19 +106,19 @@
 				"perk": {"name": "Joint Account", "desc": "+3 Gilt a day.", "effect": {"gilt": 3}},
 				"moment": {"title": "Off the Books", "lines": [
 					["", "The Command Table, after hours. Odile has two cups, a pot of something strong and a ledger she has very deliberately closed."],
-					["odile", "I'm not working. Look. Closed. I'm being informal. I read about it."],
-					["odile", "I've drawn up a statement. Of you. Assets: you listen. You sat with me. You don't round anything off, not even people."],
+					["odile", "I am not working. Look. Closed. I am being informal. I read about it."],
+					["odile", "I have drawn up a statement. Of you. Assets: you listen. You sat with me. You do not round anything off, not even people."],
 					["odile", "Liabilities: no Ledger line, no surname, no fixed abode, and you keep walking into the Blank on purpose. Any assessor would tell me to walk away."],
 					["", "She turns her cup a quarter turn, then back. Then a quarter turn again."],
-					["odile", "I'm proposing a joint account. Emotionally. I'm aware that's the least romantic sentence ever spoken in the Inklands. I had a better one. I crossed it out."]
+					["odile", "I am proposing a joint account. Emotionally. I am aware that is the least romantic sentence ever spoken in the Inklands. I had a better one. I crossed it out."]
 				], "choice": [
 					{"label": "[Take her hand across the ledger]", "bond": 3, "romance": true, "reply": [
 						["odile", "Oh. Good. Yes. Motion carried.", "happy"],
-						["odile", "I'll have to declare it. To myself. Privately. In red ink, because red is for the things that matter."],
+						["odile", "I shall have to declare it. To myself. Privately. In red ink, because red is for the things that matter."],
 						["", "She doesn't let go of Ash's hand to pour the second cup. She pours it badly, and for once doesn't fix it."]
 					]},
 					{"label": "[Raise your cup to her: colleagues]", "bond": 2, "romance": false, "reply": [
-						["odile", "Colleagues. Of course. Very sensible. I'd have advised the same."],
+						["odile", "Colleagues. Of course. Very sensible. I should have advised the same."],
 						["odile", "Thank you for not making me read the crossed-out one. Same time tomorrow? Strictly the accounts."]
 					]}
 				]},
@@ -127,11 +127,11 @@
 					["odile", "We argued in numbers for three hours. Then I audited her, right there in the inn, on the back of the menu."],
 					["odile", "Every account balanced but one line, twenty-six years old. Ninety Gilt, quietly moved, to keep one village off the lists. Penhallow Mere. Where I was born."],
 					["odile", "She said, \"Keep the ledger. Use it better than I did.\" Then she asked about you."],
-					["odile", "I said you have no name, no income and you fight the end of the world for a living. She said it was the most Penhallow thing she'd ever heard. I think that was approval. She doesn't use that column much."],
+					["odile", "I said you have no name, no income and you fight the end of the world for a living. She said it was the most Penhallow thing she had ever heard. I believe that was approval. She does not use that column much."],
 					["", "Odile turns Ash's account page around. Under Liabilities, everything is struck through. Under Assets there is one new line, in red: ODILE. Then, smaller, in her most careful hand: (jointly held)."]
 				], "choice": [
 					{"label": "[Initial the page, next to her name]", "bond": 3, "reply": [
-						["odile", "Countersigned. Binding. You're stuck with me. That's how accounts work.", "happy"],
+						["odile", "Countersigned. Binding. You are stuck with me. That is how accounts work.", "happy"],
 						["odile", "...That's also how this works. I checked."]
 					]},
 					{"label": "[Kiss her ink-stained knuckles]", "bond": 2, "reply": [
@@ -140,8 +140,8 @@
 					]}
 				]},
 				"ended": [
-					["odile", "I've closed the account. Don't. It's entered properly: one item, written off. Not lost. Written off. There's a difference, and I'm holding on to it."],
-					["odile", "We'll work together. Professionally. I'm very good at professionally. I've had years of practice."]
+					["odile", "I have closed the account. Don't. It is entered properly: one item, written off. Not lost. Written off. There is a difference, and I am holding on to it."],
+					["odile", "We shall work together. Professionally. I am very good at professionally. I have had years of practice."]
 				],
 				"talk": [
 					"I've moved you from \"contingent\" to \"recurring\". It's a big step. Don't make it weird.",
@@ -154,28 +154,28 @@
 				"perk": {"name": "Watch Your Six", "desc": "The party takes 5% less damage on missions.", "effect": {"mission_guard": 0.05}},
 				"moment": {"title": "Off Duty", "lines": [
 					["", "Behind the Barracks. Daro is sharpening a blade that's already sharp, which is how you know they want company."],
-					["ninefingers", "Sit down, you're blocking my light. ...No, stay. That was an order. I'm allowed to give them now. I'm officially dead."],
+					["ninefingers", "Sit down, you're blocking my light. ...No, stay. That was an order. Allowed to give them now. Officially dead."],
 					["ninefingers", "Here's the thing. I don't do this. In the army you don't get attached to whoever's next to you. They get moved, or struck off, or you do."],
-					["ninefingers", "Then you put your hand on my shoulder and I didn't flinch. I always flinch. I've been annoyed about it for days."],
+					["ninefingers", "Then you put your hand on my shoulder and I didn't flinch. Always flinch. Been annoyed about it for days."],
 					["", "They set the whetstone down. Nine fingers, laced together, very still."],
 					["ninefingers", "So I'm asking. Plainly, because I'm bad at the other way. You and me. Not as a unit. As a... you know. Don't make me say the word, Unwritten."]
 				], "choice": [
 					{"label": "[Lean in and kiss them]", "bond": 3, "romance": true, "reply": [
 						["ninefingers", "...Right. Yes. That's the word.", "happy"],
-						["ninefingers", "If anyone in the Barracks finds out, I'll deny it, then make them run laps until they forget."],
+						["ninefingers", "Anyone in the Barracks finds out, I'll deny it, then run them round the yard till they forget."],
 						["", "Daro picks the whetstone back up. They don't sharpen anything with it. The other hand stays in Ash's."]
 					]},
 					{"label": "[Sit back to back with them, the way soldiers do]", "bond": 2, "romance": false, "reply": [
 						["ninefingers", "Back to back. Yeah. That I know how to do.", "happy"],
-						["ninefingers", "Honest answer. Good. We never mention this again, and you're still on watch with me tonight."]
+						["ninefingers", "Honest answer. Good. Never mention this again, and you're still on watch with me tonight."]
 					]}
 				]},
 				"rank5": {"rank": 5, "title": "Roll of Honour", "lines": [
-					["ninefingers", "It's there. The whole village. The mill's turning. Kids. Goats. Bad beer."],
-					["ninefingers", "And in the chapel there's a plaque. \"Corporal Daro, fallen against the Blank.\" The Concord declared me dead so they wouldn't have to say I deserted."],
-					["ninefingers", "Forty people pray for me every week. I didn't have the heart to correct them."],
-					["ninefingers", "I stood in that chapel and thought: the dead me's got a plaque. What's the live one got?"],
-					["ninefingers", "Then I thought about you. Which was embarrassing. In a chapel. With goats watching."]
+					["ninefingers", "It's there. Whole village. Mill's turning. Kids. Goats. Bad beer."],
+					["ninefingers", "And in the chapel, a plaque. \"Corporal Daro, fallen against the Blank.\" Concord declared me dead so they wouldn't have to say deserted."],
+					["ninefingers", "Forty civvies pray for me every week. Didn't have the heart to correct them."],
+					["ninefingers", "Stood in that chapel and thought: dead me's got a plaque. What's the live one got?"],
+					["ninefingers", "Then thought about you. Embarrassing. In a chapel. With goats watching."]
 				], "choice": [
 					{"label": "[Count their fingers with them: nine. Keep hold of the hand]", "bond": 3, "reply": [
 						["ninefingers", "Nine. Yeah. Nine's what it cost. And look what it bought.", "happy"]
@@ -185,8 +185,8 @@
 					]}
 				]},
 				"ended": [
-					["ninefingers", "Heard the news. Don't. I've been struck off worse lists than yours."],
-					["ninefingers", "I've still got your back in the field. That's not up for negotiation. The rest is dismissed, soldier."]
+					["ninefingers", "Heard the news. Don't. Been struck off worse lists than yours."],
+					["ninefingers", "Still got your back in the field. Not up for negotiation. The rest is dismissed, soldier."]
 				],
 				"talk": [
 					"You took a hit for me yesterday. Don't. That's my job. ...Thanks.",
@@ -199,29 +199,29 @@
 				"perk": {"name": "Bouncer's Favourite", "desc": "+10 max HP for the party on missions.", "effect": {"mission_hp": 10}},
 				"moment": {"title": "After Hours", "lines": [
 					["", "Closing time at Tobble's. Ottoline is stacking chairs, two at a time, then three, then giving up and carrying the table."],
-					["ottoline", "You're still here. Everyone's gone. That's usually when I throw people out."],
-					["ottoline", "Thirty years on doors, counting the Encore. Know what you learn? Who stays after the lights go up. Drunks. Thieves. People who want something."],
-					["ottoline", "You stood by me at that door like it was nothing. Like you'd do it every night. Nobody does that."],
+					["ottoline", "You're still here. Everyone's gone. That's usually when I throw folk out."],
+					["ottoline", "Thirty year on doors, counting the Encore. Know what you learn? Who stays after the lights go up. Drunks. Thieves. Folk who want summat."],
+					["ottoline", "You stood by me at that door like it were nowt. Like you'd do it every night. Nobody does that."],
 					["", "She puts the table down very carefully, as if it might be the thing that breaks."],
 					["ottoline", "So I'm asking once, and if it's no, we laugh about it and you help with the chairs. Do you want to stay after closing? Not tonight. Generally."]
 				], "choice": [
 					{"label": "[Stay. Take her hand]", "bond": 3, "romance": true, "reply": [
-						["ottoline", "Ha! Right. Good. I had a speech ready for no. It was very dignified.", "happy"],
+						["ottoline", "Ha! Right. Good. Had a speech ready for no. It were very dignified.", "happy"],
 						["ottoline", "House rules still apply. Nobody touches you while I'm about. That goes double now."],
 						["", "She hugs Ash off the floor, reorganising several bones, and then, much more gently, sets Ash back down."]
 					]},
 					{"label": "[Pick up a chair and start stacking]", "bond": 2, "romance": false, "reply": [
 						["ottoline", "Chairs it is. Good answer.", "happy"],
-						["ottoline", "No, I mean it. Not many would say no to my face. Mind your fingers on that one, it bites."]
+						["ottoline", "No, I mean it. Not many'd say no to my face. Mind your fingers on that one, it bites."]
 					]}
 				]},
 				"rank5": {"rank": 5, "title": "Coat Check", "lines": [
 					["", "Ottoline comes in out of the weather, soaked to the skin, carrying six coats over her arm like sleeping children."],
-					["ottoline", "It was the door. Just the door, standing in the white with no building round it. My chalk marks still on the frame."],
-					["ottoline", "I knocked back. Six times. Then I opened it. Nothing behind it but the cloakroom. Six coats on six hooks, waiting to be collected."],
+					["ottoline", "It were the door. Just the door, stood in the white, nowt round it. My chalk marks still on the frame."],
+					["ottoline", "I knocked back. Six times. Then I opened it. Nowt behind it but the cloakroom. Six coats on six hooks, waiting to be collected."],
 					["ottoline", "So I collected them. You hand the ticket over, you get your coat, you go home. They're on the old tree in the plaza."],
-					["ottoline", "On the walk home I worked something out. Six years I've held a door shut. Never once thought about who I'd open one for."],
-					["ottoline", "Turns out I know. It's very annoying. You've got a face like a closed sign and I'm mad about it."]
+					["ottoline", "On the walk home I worked summat out. Six year I've held a door shut. Never once thought about who I'd open one for."],
+					["ottoline", "Turns out I know. It's right annoying. You've got a face like a closed sign and I'm mad about it."]
 				], "choice": [
 					{"label": "[Hand her a fresh stick of chalk]", "bond": 3, "reply": [
 						["ottoline", "For the list? No. You don't go on the list. You go on the door. Top of it, where everyone can see.", "happy"]
@@ -247,14 +247,14 @@
 		{"ids": ["ottoline", "velvette"], "kind": "friends", "name": "Old Encore hands", "text": "Ottoline keeps the door, Fauvette works the room. Fifteen years of closing nights between them.",
 			"effects": {"expedition": 5, "building": 1, "party": {"guard": 0.05}, "bond": 1},
 			"banter": [
-				[["velvette", "Ottoline, darling, if this goes badly, carry me out dramatically."], ["ottoline", "I carry you out every time. You always want it dramatic."]],
+				[["velvette", "Ottoline, chérie, if this goes badly, carry me out dramatically."], ["ottoline", "I carry you out every time. You always want it dramatic, you."]],
 				[["ottoline", "Same as the Encore. I hit them, you charm the ones I miss."], ["velvette", "You never miss. It's very bad for my part."]]
 			]},
 		{"ids": ["jessamy", "velvette"], "kind": "friends", "name": "Night owls", "text": "Jessamy and Fauvette know every back door that's open after dark, and who left it open.",
 			"effects": {"expedition": 5, "party": {"power_rate": 0.1}, "bond": 1},
 			"banter": [
-				[["jessamy", "Bet you a crate of Coven gin I get more of them."], ["velvette", "Darling, I'd never bet against you. I'd only cheat."]],
-				[["velvette", "Daylight mission. How vulgar."], ["jessamy", "I know. I can see my own feet. It's horrible."]]
+				[["jessamy", "Bet you a crate of Coven gin I get more of 'em."], ["velvette", "Darling, I'd never bet against you. I'd only cheat."]],
+				[["velvette", "Daylight mission. Quelle horreur."], ["jessamy", "I know. I can see my own feet. It's horrible."]]
 			]},
 		{"ids": ["odile", "quill"], "kind": "friends", "name": "Two sets of books", "text": "Odile and Quill argue about rounding for hours, and between them nothing gets past.",
 			"effects": {"expedition": 5, "building": 1, "bond": 1},
@@ -266,7 +266,7 @@
 			"effects": {"expedition": 5, "building": 1, "party": {"damage": 1}, "bond": 1},
 			"banter": [
 				[["bran", "Your left, Corporal."], ["ninefingers", "Saw it. Your left, mercenary. Your other left."]],
-				[["ninefingers", "What's your rate for this one?"], ["bran", "Double. I'm working with you. That's hazard pay."]]
+				[["ninefingers", "What's your rate for this one?"], ["bran", "Double. I'm workin' with you. That's 'azard pay."]]
 			]},
 		{"ids": ["quill", "ninefingers"], "kind": "friends", "name": "Two ex-Concord", "text": "Quill and Daro both walked out on the Concord, and know exactly where its forms are weakest.",
 			"effects": {"expedition": 5, "building": 1, "bond": 1},
@@ -281,12 +281,12 @@
 		{"ids": ["ottoline", "tobble"], "kind": "friends", "name": "Family, probably", "text": "Tobble's niece, or cousin, or creditor. Nobody remembers, least of all them. Work goes faster when they're shouting at each other fondly.",
 			"effects": {"expedition": 5, "building": 1, "bond": 1},
 			"banter": [
-				[["tobble", "Mind your back, girl. You're not getting any younger."], ["ottoline", "Neither are you, and you've been retiring since before I was born."]]
+				[["tobble", "Mind your back, lass. You're not getting any younger."], ["ottoline", "Neither are you, and you've been retiring since before I were born."]]
 			]},
 		{"ids": ["hesper", "jessamy"], "kind": "friends", "name": "Maps and back roads", "text": "Hetty draws the roads a week before they exist. Jessamy has already used them.",
 			"effects": {"expedition": 5, "building": 1, "bond": 1},
 			"banter": [
-				[["hesper", "There's a road here on Thursday."], ["jessamy", "Lovely. I'll be on it Wednesday night."]]
+				[["hesper", "There's a road here on Thursday. Bearing north-north-east."], ["jessamy", "Lovely. I'll be on it Wednesday night."]]
 			]},
 		{"ids": ["quill", "tobble"], "kind": "rivals", "name": "The bar tab", "text": "Quill has kept Tobble's bar tab for nine years. Tobble disputes every line of it.",
 			"effects": {"expedition": -5, "building": -1, "bond": -1},
@@ -303,7 +303,7 @@
 			"effects": {"expedition": -5, "building": -1, "party": {"damage": 2, "guard": -0.1}, "bond": -1},
 			"banter": [
 				[["gristle", "Every scratch goes on your account, dearie."], ["bran", "Then I'll bleed quietly, out of principle."]],
-				[["bran", "You overcharged me for the last stitch."], ["gristle", "You screamed for the last stitch. Screaming costs extra."]]
+				[["bran", "You overcharged me for the last stitch."], ["gristle", "You screamed for the last stitch. Screaming costs extra, it does."]]
 			],
 			"truce": {"days": 12, "name": "Account in good standing", "text": "Bran paid his bill. All of it, in coin, with a little bow. Gristle has framed the receipt. They are still rude to each other, but now it's a hobby.",
 				"effects": {"expedition": 5, "party": {"hp": 5}},
@@ -313,19 +313,19 @@
 		{"ids": ["odile", "jessamy"], "kind": "rivals", "name": "Tax and contraband", "text": "Odile keeps assessing Jessamy's crates. Jessamy keeps emptying them before Odile can finish the sum.",
 			"effects": {"expedition": -5, "building": -1, "party": {"power_rate": 0.1, "guard": -0.05}, "bond": -1},
 			"banter": [
-				[["odile", "What's in the crates, Jessamy?"], ["jessamy", "Nothing taxable. Mostly air. Very fine, imported air."]],
-				[["jessamy", "She's following me with a pencil. It's unsettling."], ["odile", "I'm following the money. You keep getting in the way."]]
+				[["odile", "What's in the crates, Jessamy?"], ["jessamy", "Nothin' taxable. Mostly air. Very fine, imported air."]],
+				[["jessamy", "She's followin' me with a pencil. It's unsettlin'."], ["odile", "I am following the money. You keep getting in the way."]]
 			],
 			"truce": {"days": 10, "name": "Off the record", "text": "Odile and Jessamy have reached an understanding: Odile doesn't ask what's in the crates, and Jessamy brings her one, unopened, every week. It's always a good pen.",
 				"effects": {"expedition": 5, "party": {"power_rate": 0.1}},
 				"banter": [
-					[["odile", "I'm not asking what's in the crate."], ["jessamy", "And I'm not telling you it's the nib you wanted."]]
+					[["odile", "I am not asking what is in the crate."], ["jessamy", "And I'm not telling you it's the nib you wanted."]]
 				]}},
 		{"ids": ["ninefingers", "odile"], "kind": "rivals", "name": "Collector and deserter", "text": "Daro tore up an order to strike a village. Odile used to deliver them. Both quit. Neither has forgiven the other for having been there first.",
 			"effects": {"expedition": -5, "building": -1, "party": {"damage": 2, "guard": -0.05}, "bond": -1},
 			"banter": [
-				[["ninefingers", "How many villages did you collect, Penhallow?"], ["odile", "Fewer than your regiment burned, Corporal."]],
-				[["odile", "You had a choice. You tore it up."], ["ninefingers", "So did you. You took the ledger. We're both thieves. Get over it."]]
+				[["ninefingers", "How many villages did you collect, ma'am?"], ["odile", "Fewer than your regiment burned, Corporal."]],
+				[["odile", "You had a choice. You tore it up."], ["ninefingers", "So did you. Took the ledger. We're both thieves. Get over it."]]
 			],
 			"truce": {"days": 14, "name": "Same side of the ledger", "text": "Somewhere on the road Daro and Odile compared notes, and found they had both been lied to by the same three men. They are making a list. It is not a kind list.",
 				"effects": {"expedition": 10, "party": {"damage": 1}},
@@ -335,22 +335,22 @@
 		{"ids": ["dunmore", "odile"], "kind": "rivals", "name": "Debtor and collector", "text": "Every debt Dunmore owes is tattooed on him. Odile can't stop adding it up, out loud, while he works.",
 			"effects": {"expedition": -5, "building": -1, "bond": -1},
 			"banter": [
-				[["odile", "Your left shoulder alone comes to four hundred Gilt."], ["dunmore", "My left shoulder's not for sale, miss."]]
+				[["odile", "Your left shoulder alone comes to four hundred Gilt."], ["dunmore", "My left shoulder's not for sale, miss, if it please you."]]
 			],
 			"truce": {"days": 8, "name": "A payment plan", "text": "Odile drew up a payment plan for Dunmore's back, shoulder and most of one leg. He cried a little. It's the first plan anyone's ever made him.",
 				"effects": {"expedition": 5, "building": 1},
 				"banter": [
-					[["dunmore", "Paid off another elbow this week, miss."], ["odile", "Good. Ahead of schedule. I'm very proud. Professionally."]]
+					[["dunmore", "Paid off another elbow this week, miss."], ["odile", "Good. Ahead of schedule. I am very proud. Professionally."]]
 				]}},
 		{"ids": ["merrow", "velvette"], "kind": "rivals", "name": "One spotlight", "text": "Fauvette and the Merrow Three both expect the last word. There are four of them and only one last word.",
 			"effects": {"expedition": -5, "building": -1, "party": {"power_rate": 0.1, "guard": -0.05}, "bond": -1},
 			"banter": [
-				[["velvette", "Darlings, a little harmony goes a long way. Ideally away."], ["merrow", "WE WERE SINGING IN THE MARGINS BEFORE YOU HAD TEETH."]]
+				[["velvette", "Darlings, a little harmony goes a long way. Ideally away."], ["merrow", "WE WERE SINGING IN THE MARGINS BEFORE YOU HAD TEETH, MY BIRD."]]
 			],
 			"truce": {"days": 10, "name": "A duet, for once", "text": "Fauvette and the Merrow Three found a song they all know: the Encore's old closing number. Now they do it together, in four parts. Pim gets the high bit.",
 				"effects": {"expedition": 5, "party": {"power_rate": 0.1}},
 				"banter": [
-					[["merrow", "FROM THE TOP, VELVETTE?"], ["velvette", "From the top, darlings. Pim, the high bit's yours."]]
+					[["merrow", "FROM THE TOP, FAUVETTE? PROPER THIS TIME."], ["velvette", "From the top, mes petites. Pim, the high bit is yours."]]
 				]}},
 		{"ids": ["biscuits", "gristle"], "kind": "rivals", "name": "The Coven grudge", "text": "Mother Gristle left the Coven over a bill nobody paid. Mr. Biscuits was the Coven's dog at the time, and remembers whose side he was on.",
 			"effects": {"expedition": -5, "building": -1, "bond": -1},
@@ -360,18 +360,18 @@
 			"truce": {"days": 10, "name": "Treats on account", "text": "Gristle started keeping a jar of biscuits by her bottles. She bills them to Ash, naturally. Mr. Biscuits considers the matter closed.",
 				"effects": {"expedition": 5, "building": 1},
 				"banter": [
-					[["gristle", "One biscuit. One. That's two coppers on Ash's account."], ["biscuits", "Woof. (Worth every copper.)"]]
+					[["gristle", "One biscuit. One. Two coppers on Ash's account, that is."], ["biscuits", "Woof. (Worth every copper.)"]]
 				]}},
 		{"ids": ["bran", "ottoline"], "kind": "rivals", "name": "The good chair", "text": "Bran's contract says he gets the good chair. Ottoline throws people out of chairs for a living. Furniture is suffering.",
 			"effects": {"expedition": -5, "building": -1, "party": {"damage": 2, "guard": -0.05}, "bond": -1},
 			"banter": [
-				[["ottoline", "That's my chair, Tolley."], ["bran", "Clause twelve says otherwise."], ["ottoline", "Clause twelve's about to go through a window."]],
+				[["ottoline", "That's my chair, Tolley."], ["bran", "Clause twelve says otherwise."], ["ottoline", "Your chair's about to go through a window, Tolley."]],
 				[["bran", "Bet I drop more of them than you."], ["ottoline", "Bet you need carrying home after."]]
 			],
 			"truce": {"days": 10, "name": "Two chairs", "text": "Ottoline built a second good chair out of a wardrobe and a Concord desk. It is enormous. Bran pretends to hate it and sits in it every night.",
 				"effects": {"expedition": 5, "party": {"hp": 5}},
 				"banter": [
-					[["bran", "Chair's holding up."], ["ottoline", "Course it is. I built it to hold me."]]
+					[["bran", "Chair's holding up."], ["ottoline", "Course it is. Built it to hold me."]]
 				]}}
 	]
 }

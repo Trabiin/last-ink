@@ -10,22 +10,22 @@
 	"talks": {
 		"personal_bran_intro": {"title": "Buy Back the Paper", "lines": [
 			["", "Gallows Ferry at low water. The river smells of tar and other people's money. A counting-house squats on the landing with its shutters half open, like a man pretending to be asleep."],
-			["bran", "That's him. Ozias Crane. Buys contracts by the barrel, sells them by the pound. Mine's been passed round more often than the collection plate."],
-			["bran", "His nephews will be about. Big lads. Not bright. They hit like debt collectors because that's what they are."],
-			["bran", "I've got the money. Every coin I didn't spend on you. If he takes it, nobody gets hurt. If he doesn't..."],
+			["bran", "That's 'im. Ozias Crane. Buys contracts by the barrel, sells 'em by the pound. Mine's been passed round more than the collection plate."],
+			["bran", "His nephews'll be about. Big lads. Not bright. They 'it like debt collectors 'cause that's what they are."],
+			["bran", "I got the money. Every coin I never spent on you. If he takes it, nobody gets hurt. If 'e don't..."],
 			["", "He rolls his shoulders. The tattoo on his forearm creaks like a tightened belt."],
 			["bran", "Then clause nine's about to get a workout."]
 		]},
 		"personal_bran_broker": {"title": "Crane & Nephews", "lines": [
 			["", "Inside, the counting-house is all ledgers and lamp smoke. Ozias Crane sits behind a desk the size of a coffin, pen already wet."],
 			["crane", "Brannoc Tolley. I wondered when you'd come in out of the rain. And you've brought... something. It doesn't appear to be anyone."],
-			["bran", "My paper, Crane. I'm buying it back. Full price. Then you strike your name off my arm, in your own hand, while I watch."],
+			["bran", "Me paper, Crane. I'm buying it back. Full price. Then you strike your name off my arm, in your own hand, while I watch."],
 			["crane", "Full price? Brannoc. A contract like yours appreciates. The more people you've hit for me, the more you're worth to whoever holds you."],
 			["bran", "Name a number."],
 			["crane", "I'd rather name a buyer. The Guild has been asking after you. They're downstairs. They're early, actually. I may have mentioned you'd be calling.", "smug"],
 			["", "Boots on the stairs outside. A lot of them."],
-			["bran", "Right. Ash, keep them off the door. I'm going to stand here and watch him write very slowly."],
-			["crane", "You can't seriously expect me to..."],
+			["bran", "Right. Ash, keep 'em off the door. I'm gonna stand here and watch him write very slowly."],
+			["crane", "You can't seriously expect me to... 'ere, put that down..."],
 			["bran", "Pen. Paper. Arm. Start writing.", "angry"]
 		]},
 		"personal_bran_outro": {"title": "Clause Nine", "lines": [
@@ -35,60 +35,60 @@
 			["", "Bran drops the purse on the desk. Then he takes Crane's pen, looks at it for a long moment, and walks out onto the landing."],
 			["", "There is a small splash."],
 			["bran", "Don't look at me like that. It was a terrible pen.", "smug"],
-			["bran", "Come on. Let's go home before I start feeling things."]
+			["bran", "Come on. Let's go 'ome before I start feelin' things."]
 		]},
 		"personal_gristle_intro": {"title": "Collect from Hester Vane", "lines": [
 			["", "The Gutterwoods close over the path like a hand. Letters hang from the branches in their thousands, sealed, addressed, never sent."],
 			["gristle", "Coven ground starts at the totems. Past them, every tree is a witness, and every witness talks."],
-			["gristle", "Hester will know we're here before we do. She'll send the moths first. Then the nephews. Then she'll come out herself, wearing her sad face."],
-			["gristle", "Eleven years, dear. Eleven years of interest on one life. I've kept the receipt."],
+			["gristle", "Hester will know we're here before we do. Moths first, she'll send. Then the nephews. Then she'll come out herself, wearing her sad face."],
+			["gristle", "Eleven years, dear. Eleven years of interest on one life. Kept the receipt, I have."],
 			["", "She pats a fold of her shawl. Something in it crackles, old and much-folded."]
 		]},
 		"personal_gristle_tree": {"title": "The Coven Tree", "lines": [
 			["", "The Coven tree is older than the woods around it. Every name carved in its bark is a witch, living or dead. There is a smooth, pale scar where one name used to be."],
-			["hester", "Gristle. You always did know how to make an entrance. Usually through someone else's front door."],
-			["gristle", "Hester. You look terrible. I'd charge you for the diagnosis, but you owe me enough already."],
-			["hester", "I owe you a grandson. I know. I have thought about it every day for eleven years."],
-			["gristle", "Then you've had plenty of time to find a knife. Put my name back, Hester. Where it was. Deep."],
+			["hester", "Gristle. Always did know how to make an entrance, you did. Usually through someone else's front door."],
+			["gristle", "Hester. Terrible, you look. I'd charge you for the diagnosis, but you owe me enough already."],
+			["hester", "I owe you a grandson. I know. Thought of it every day for eleven years, I have."],
+			["gristle", "Then you've had plenty of time to find a knife, haven't you. Put my name back, Hester. Where it was. Deep."],
 			["hester", "The tree decides, not me. It wants to know you're still one of us. It will test you. The woods will come for the tree, and you will defend it, or you won't."],
-			["gristle", "Ugh. Ceremony. Fine. Ash, dear, hit anything that tries to eat the tree. Anything. I'll invoice the Coven later.", "smug"]
+			["gristle", "Ugh. Ceremony. Fine. Ash, dear, hit anything that tries to eat the tree. Anything. The Coven gets the bill.", "smug"]
 		]},
 		"personal_gristle_outro": {"title": "Paid in Full", "lines": [
 			["", "The last moth falls in a flutter of torn envelopes. The woods go quiet, the way a room goes quiet after an argument."],
-			["hester", "It's done. The tree is satisfied. I am... not sure I am, but the tree is."],
+			["hester", "It's done. Satisfied, the tree is. I am... not sure I am, but the tree is."],
 			["", "Hester takes a little curved knife from her sleeve and carves, slowly and deep, into the pale scar: GRISTLE."],
-			["hester", "He's grown, you know. My grandson. He has children. They have your fever-tonic recipe pinned in the kitchen."],
+			["hester", "Grown, he has, you know. My grandson. Children of his own. They have your fever-tonic recipe pinned in the kitchen."],
 			["gristle", "Then they owe me too. I'll send a bill."],
 			["", "But she doesn't. She stands looking at her name in the bark for a long time, and when Hester cries, Gristle hands her a handkerchief and only charges her half."]
 		]},
 		"personal_ninefingers_intro": {"title": "Find Hob's Wick", "lines": [
 			["", "The Tithe Road runs straight and grey toward the capital. Every mile there is a Concord noticeboard. Every noticeboard has a face on it."],
-			["ninefingers", "That's me. WANTED: CORPORAL DARO, DESERTER. They gave me a bigger chin. I'm flattered and offended."],
-			["ninefingers", "Hob's Wick is off the road, two miles past the toll post. If it's still there."],
-			["ninefingers", "Tear the posters down as we go. Not for vanity. Every toll man on this road has looked at that face twenty times a day. I'd rather they forgot it."],
+			["ninefingers", "That's me. WANTED: CORPORAL DARO, DESERTER. Gave me a bigger chin. Flattered and offended."],
+			["ninefingers", "Hob's Wick's off the road, two miles past the toll post. If it's still there."],
+			["ninefingers", "Tear the posters down as we go. Not vanity. Every toll man on this road's looked at that face twenty times a day. Rather they forgot it."],
 			["", "They pull their hood lower. It does not help with the chin."]
 		]},
 		"personal_ninefingers_village": {"title": "Smoke from the Mill", "lines": [
 			["", "Over the rise: a mill wheel turning, a chapel roof, goats where goats should not be. Hob's Wick. Every house still standing."],
 			["ninefingers", "It's there. It's all... there."],
 			["", "But the fields to the east have gone pale at the edges, and something is crawling out of the white toward the nearest house."],
-			["ninefingers", "No. Not after all this. I didn't spend nine years and one finger keeping this place on the map to watch it get nibbled.", "angry"],
+			["ninefingers", "No. Not after all this. Didn't spend nine years and one finger keeping this place on the map to watch it get bloody nibbled.", "angry"],
 			["ninefingers", "Ash. Hold the line at the village. Nothing gets past the well."]
 		]},
 		"personal_ninefingers_outro": {"title": "Roll of Honour", "lines": [
 			["", "Inside the chapel it is cool and smells of candle wax. The villagers have followed you in, at a respectful distance, to see who drove off the white."],
 			["", "On the wall by the altar there is a small brass plaque. Daro reads it twice."],
 			["", "CORPORAL DARO. FALLEN AGAINST THE BLANK. SHE KEPT US ON THE MAP."],
-			["ninefingers", "They got the pronoun wrong. And the dying. And the bit about the Blank. The Concord told them I died a hero so they wouldn't have to say I ran.", "sad"],
+			["ninefingers", "Got the pronoun wrong. And the dying. And the bit about the Blank. Concord told them I died a hero so nobody has to say I ran.", "sad"],
 			["", "An old woman touches Daro's sleeve and asks, very politely, if they knew the Corporal."],
-			["ninefingers", "Yeah. I knew them. Bit of a mouth on them. They'd have liked it here."],
-			["ninefingers", "Come on, Ash. Let's go before someone offers me a drink and I have to explain the finger."]
+			["ninefingers", "Yeah. Knew them. Bit of a mouth on them. They'd have liked it here."],
+			["ninefingers", "Come on, Ash. Let's go before some civvy offers me a drink and I have to explain the finger."]
 		]},
 		"personal_quill_intro": {"title": "Correct the Original", "lines": [
 			["", "Old Mill Crossing. The mill still turns, slow and creaking. Across the millrace, behind a Concord barricade, sits an iron strongbox on a seized cart."],
 			["quill", "There. Records of the Hollowmark Office. My handwriting on every page. Thirty-one people written off, alphabetically."],
-			["quill", "I'll need it open, and then I'll need time. Correcting a Concord ledger isn't striking a line through. It has to look like it was always right."],
-			["quill", "I don't fight. I want to be very clear about that. I once lost an argument with a goose. Stay close to me."],
+			["quill", "I'll need it open, and then I'll need time. Correcting a Concord ledger isn't striking a line through. It has to look as though it was always right."],
+			["quill", "I don't fight. I want that duly minuted. I once lost an argument with a goose. Stay close to me."],
 			["", "Quill clutches a pen case to their chest like a holy relic. It is, in a way."]
 		]},
 		"personal_quill_open": {"title": "Thirty-one Lines", "lines": [
@@ -100,35 +100,35 @@
 		]},
 		"personal_quill_outro": {"title": "Carried Forward", "lines": [
 			["", "Quill blots the last line and holds the ledger up to the light. Thirty-one entries that said WRITTEN OFF now say CARRIED FORWARD, in a hand nobody alive could tell from the original."],
-			["quill", "There. Officially, they never stopped counting. The Ledger can see them again."],
+			["quill", "There. Per the record, they never stopped counting. The Ledger can see them again."],
 			["quill", "It won't bring anyone back from wherever the Blank put them. I know that. But if it ever lets anyone go, they'll have somewhere to come home to. On paper, at least."],
 			["", "They put the ledger back in the strongbox and close the lid gently, like a coffin, or a cradle."],
-			["quill", "Let's go. And thank you, Ash. Truly. I'll write you a receipt. A real one."]
+			["quill", "Let's go. And thank you, Ash. I'll write you a receipt. A real one."]
 		]},
 		"personal_tobble_intro": {"title": "Fetch the Last Drop's Sign", "lines": [
 			["", "The Frayed Meadow, far side. The grass grows in half-sentences here, and then in single words, and then not at all."],
-			["tobble", "Over the ridge. You'll see it. Or what's left. Thirty years I pulled pints there, and now the Blank drinks for free."],
+			["tobble", "Over the ridge. You'll see it. What's left. Thirty year I pulled pints there, and now the Blank drinks for free."],
 			["tobble", "The sign hangs over the door. A mug, a crack, THE LAST DROP in gold. I'll get it down. Ladder's my job. Hitting things is yours."],
-			["tobble", "And go easy. My knees aren't what they were. They weren't much then, either."]
+			["tobble", "And go easy. My knees aren't what they were. They weren't much then, neither."]
 		]},
 		"personal_tobble_ruin": {"title": "The Last Drop", "lines": [
 			["", "The Last Drop is a shell. The roof is gone, the windows are gone, and a step from the door the ground stops being ground and starts being white."],
 			["", "The sign still hangs from its iron bracket, swinging a little. Old gold letters, peeling: THE LAST DROP."],
 			["tobble", "There she is. Hello, old girl."],
-			["tobble", "Right. Ladder up. Give me a minute with the bracket. It's rusted on, like everything else I own."],
+			["tobble", "Right. Ladder up. Give us a minute with the bracket. It's rusted on, like everything else I own."],
 			["", "The white shifts. It has noticed you. Things begin to climb out of it."]
 		]},
 		"personal_tobble_outro": {"title": "Last Orders", "lines": [
 			["", "Back on the ridge, out of breath. Tobble sits on a stump with the sign across his knees, picking a flake of white from the corner of the mug."],
 			["tobble", "Got her. Got her, and the doorstep went a minute after. A minute! I've cut it finer at closing time, mind."],
-			["tobble", "Look at that crack. That's from the night Bran's old captain tried to arm-wrestle a Concord magistrate. Lost. Sign fell on him. Best night of the year."],
+			["tobble", "Look at that crack. That's from the night Bran's old captain tried to arm-wrestle a Concord magistrate. Lost. Sign fell on him. Best night of the year, that were."],
 			["", "He laughs until he has to wipe his eyes, and blames it on the dust."],
 			["tobble", "Home, then. I know just where she's going."]
 		]},
 		"personal_abeyance_intro": {"title": "Follow the Page", "lines": [
 			["", "The Wickham Hills. Ink wells up between the stones and runs downhill in black threads, toward a valley nobody marked on any map."],
 			["abeyance", "The page has drawn the way. Look: the hills, the road, three little marks, and an X. It's never drawn anything before. It usually just complains about my spelling."],
-			["abeyance", "I'll read the way, you keep things off me. I'm told I'm a terrible fighter. I've never tried, so I can't argue."],
+			["abeyance", "I'll read the way, you keep things off me. I'm told I'm a terrible fighter. I've never tried, so I can't in conscience argue."],
 			["", "She holds the page up to the light. The lines on it move, very slightly, like something breathing."]
 		]},
 		"personal_abeyance_door": {"title": "Not Today", "lines": [
@@ -137,19 +137,19 @@
 			["", "From behind the door, a voice. Very polite. Very tired."],
 			["", "\"Not today.\""],
 			["abeyance", "Oh, I know that one. That's what the Abbot used to say. It means 'ask nicely and keep asking'."],
-			["abeyance", "I'll read to it. The whole page, out loud, as many times as it takes. Don't let anything interrupt me. Doors hate being interrupted."]
+			["abeyance", "I'll read to it. The whole page, aloud, as many times as it takes. Like Compline. Don't let anything interrupt me. Doors hate being interrupted."]
 		]},
 		"personal_abeyance_outro": {"title": "The Missing Page", "lines": [
 			["", "Mid-sentence, the door swings open on its own. Inside: dust, a lectern, and a book with every page torn out but one gap."],
 			["", "Hild walks in very slowly. The page in her hands goes still for the first time since she stole it."],
 			["abeyance", "You fit. Of course you fit. You were never mine, were you."],
 			["", "She lays the page in the gap. The book closes by itself. When it opens again, there is one new line on the page, and she copies it into her notebook without letting you see."],
-			["abeyance", "Let's go home. I'll tell you what it said when we get there. I need to decide what it means first."]
+			["abeyance", "Let's go home. I'll tell you what it said when we get there. I need to pray on what it means first."]
 		]},
 		"personal_ottoline_intro": {"title": "Answer the Knocking", "lines": [
 			["", "Gallows Ferry, the east bank. Lantern Row used to be the brightest street on the river. Now half of it is white, and the lamps along what's left burn for nobody."],
-			["ottoline", "Encore was at the end. Red door, brass handle. I stood outside it every night for nine years with my arms folded."],
-			["ottoline", "Six years ago I stood outside it with my back against it, and I didn't let anyone out."],
+			["ottoline", "Encore were at the end. Red door, brass handle. I stood outside it every night for nine year with my arms folded."],
+			["ottoline", "Six year ago I stood outside it with my back against it, and I didn't let anyone out."],
 			["", "Somewhere ahead, from inside the white, comes a sound. Knock. Knock. Knock. Knock. Knock. Knock. Then a wait."],
 			["ottoline", "Six. Always six. Come on. And whatever comes out of that white, it doesn't touch me before I get to that door.", "angry"]
 		]},
@@ -159,30 +159,30 @@
 			["ottoline", "I hear you."],
 			["", "She raises one enormous fist and knocks back. Six times. Slow."],
 			["", "The white around the door begins to stir, like a crowd getting to its feet."],
-			["ottoline", "Keep it off the door. Give me a minute. I've waited six years. I can wait one more minute, but it can't have this door.", "sad"]
+			["ottoline", "Keep it off the door. Give us a minute. I've waited six year. I can wait one more minute, but it can't have this door.", "sad"]
 		]},
 		"personal_ottoline_outro": {"title": "Coat Check", "lines": [
 			["", "Ottoline turns the brass handle and opens the door. Behind it there is no stage, no bar, no people. Just the cloakroom: a counter, and six coats on six hooks."],
 			["ottoline", "Oh."],
 			["", "She takes them down one at a time and folds each over her arm, as carefully as if someone were still inside it."],
-			["ottoline", "That's the job, isn't it. They hand you a ticket. You give them their coat back. They go home."],
+			["ottoline", "There. They hand you a ticket. You give them their coat back. They go home."],
 			["", "Behind you, very faintly, one knock. Ottoline doesn't turn round. She just nods, once, and carries the coats out of the white."]
 		]},
 		"personal_jessamy_intro": {"title": "Back on the Books", "lines": [
 			["", "The Tithe Road after dark. Lamps at every toll post, and between them the kind of dark that has a smell. Jessamy is easier to see at night. She says that's the point."],
-			["jessamy", "Toll Post Nine. Notary Fennick keeps late hours. Striking people out pays better after supper."],
-			["jessamy", "He has friends with crossbows, and the friends have friends. We go up the back lane, quietly, and we knock at his window. He'll adore that.", "smug"],
-			["jessamy", "And Ash? If I start to go see-through in the lamplight, ignore it. It's a skin condition. It's called the Concord."]
+			["jessamy", "Toll Post Nine. Notary Fennick keeps late hours. Strikin' people out pays better after supper."],
+			["jessamy", "He's got friends with crossbows, and the friends have friends. We go up the back lane, quiet, and knock at his window. He'll adore that.", "smug"],
+			["jessamy", "And Ash? If I start goin' see-through in the lamplight, ignore it. It's a skin condition. It's called the Concord."]
 		]},
 		"personal_jessamy_marrow": {"title": "The Notary", "lines": [
 			["", "A rap at the shutter. A rattle of the latch. Notary Fennick opens his window and finds Jessamy's face an inch from his own."],
-			["marrow", "You. You're... I struck you out. You paid me to. I remember the fee. It was a very good fee."],
+			["marrow", "You. You're... I struck you out. You paid me to, duly. I remember the fee. It was a very good fee."],
 			["jessamy", "And now I'd like a refund, Fennick. In ink. Write me back in."],
-			["marrow", "That's not how it works. Once you're out of the Ledger you're out. That's the whole point of being out."],
+			["marrow", "That's not how it works. Once you're out of the Ledger you're out. Per the statute. That's the whole point of being out."],
 			["jessamy", "Then make it how it works. You're a notary. Notarise something.", "angry"],
 			["", "Outside, someone shouts. A lantern swings toward the toll house. Then another."],
 			["marrow", "The clerks! They'll see you! They'll see me! They'll audit me!"],
-			["jessamy", "Then you'd better write fast. Ash, darling, keep them off the house. Fennick and I have paperwork."]
+			["jessamy", "Then you'd better write fast. Ash, cully, keep 'em off the house. Fennick and I have paperwork."]
 		]},
 		"personal_jessamy_outro": {"title": "Occupation: Yes", "lines": [
 			["", "It takes Fennick an hour. His hand shakes so badly he ruins three sheets. Jessamy stands at his shoulder and reads every word."],
@@ -191,22 +191,22 @@
 			["marrow", "That isn't an occupation."],
 			["jessamy", "It is now. Seal it.", "smug"],
 			["", "The seal comes down. Jessamy holds her hand up to the lamp. For the first time in years, the light does not go through it."],
-			["jessamy", "Oh. Oh, that's... I'd forgotten I had knuckles. Look at them. Horrible little things. I love them."]
+			["jessamy", "Oh. Oh, that's... I'd forgotten I had knuckles. Look at 'em. Horrible little things. I love them."]
 		]},
 		"personal_odile_intro": {"title": "Settle the Account", "lines": [
 			["", "Old Mill Crossing in the afternoon. Across the scarecrow fields stands an inn called the Honest Measure, which Odile says is the only honest thing for ten miles."],
-			["odile", "She'll be in the back room. Window seat. Two pens, one red, one black. She will have ordered tea and not drunk it."],
-			["odile", "Something's been stitching the scarecrows back together out here. We go through them. Politely, if possible. Firmly, if not."],
-			["odile", "And Ash. Whatever she says to me, don't look at me while she says it. I'd rather you didn't see my face."]
+			["odile", "She will be in the back room. Window seat. Two pens, one red, one black. She will have ordered tea and not drunk it."],
+			["odile", "Something has been stitching the scarecrows back together out here. We go through them. Politely, if possible. Firmly, if not."],
+			["odile", "And Ash. Whatever she says to me, do not look at me while she says it. I would rather you did not see my face."]
 		]},
 		"personal_odile_meet": {"title": "Red, Then Black", "lines": [
 			["", "The back room. Window seat. Two pens. Tea, untouched. Chief Assessor Marguerite Penhallow looks up from a ledger and does not smile."],
-			["penhallow", "Odile. You're thinner. And you've brought a guard. Is it a guard? It doesn't appear on any register I know."],
-			["odile", "It's Ash. Ash isn't on any register, Mother. That's rather the point of Ash."],
-			["penhallow", "I came to discuss the return of Concord property. The Lowmere ledger. And your post, which is still open. Nobody need ever know."],
-			["odile", "I'm not here to give anything back. I'm here to audit you."],
+			["penhallow", "Odile. You are thinner. And you have brought a guard. Is it a guard? It does not appear on any register I know."],
+			["odile", "It is Ash. Ash is not on any register, Mother. That is rather the point of Ash."],
+			["penhallow", "I came to discuss the return of Concord property. The Lowmere ledger. And your post, which remains open. Nobody need ever know."],
+			["odile", "I am not here to give anything back. I am here to audit you."],
 			["penhallow", "Audit. Me."],
-			["odile", "Forty years of perfect books. Let's see them.", "angry"],
+			["odile", "Forty years of perfect books. Let us see them.", "angry"],
 			["", "Outside the window, the scarecrows in the far field lurch upright, one after another, and turn toward the inn. Beyond them, the edge of the field has gone white."],
 			["penhallow", "This will take some time. Hold the door, would you, whatever you are."]
 		]},
@@ -221,25 +221,25 @@
 		]},
 		"personal_velvette_intro": {"title": "The Last Performance", "lines": [
 			["", "Saltreed Marsh at dusk. Music carries over the reeds, brass and strings and laughter, from a painted showboat moored at the end of a long dock: the Gilded Heron."],
-			["velvette", "Augustin always did love a full house. Tonight he gets one."],
+			["velvette", "Augustin always did love a full house. Tonight, he gets one."],
 			["velvette", "His deckhands will be on the gangway, his bravos by the stage, and Augustin in his cabin counting tonight's takings. The commissions are in there with him."],
-			["velvette", "I'm going on during the closing act. In costume, naturally. You'll be my supporting cast. Try not to upstage me.", "smug"]
+			["velvette", "I go on during the closing act. In costume, naturellement. You are my supporting cast. Try not to upstage me.", "smug"]
 		]},
 		"personal_velvette_sallow": {"title": "The Closing Act", "lines": [
 			["", "The closing act. A girl in white with a borrowed rapier faces a paying volunteer under the lamps. Fauvette walks out onto the stage between them, and the music stops."],
-			["sallow", "Fauvette? Fauvette! Darling! You're alive! Ladies and gentlemen, the star of the Crimson Encore! Applause!"],
-			["velvette", "Hello, Augustin. I've come to give one last performance. One you didn't book."],
+			["sallow", "Fauvette? Fauvette! Darling! Ma chérie! You're alive! Mesdames et messieurs, the star of the Crimson Encore! Applause!"],
+			["velvette", "Bonsoir, Augustin. I have come to give one last performance. One you did not book."],
 			["sallow", "Now, now. We were all just following the commissions, weren't we? Papers. Signatures. Nobody ever made anyone do anything."],
-			["velvette", "Eleven people, Augustin. You chose them. You counted the takings. And you put my name at the bottom of every page: 'the instrument'.", "angry"],
+			["velvette", "Eleven people, Augustin. You chose them. You counted the takings. And you put my name at the bottom of every page. 'The instrument'.", "angry"],
 			["sallow", "Boys! The lady's had too much champagne. See her off the stage."],
 			["velvette", "Oh good. An encore."]
 		]},
 		"personal_velvette_outro": {"title": "Eleven Names", "lines": [
 			["", "Fauvette steps back out onto the stage with the commission book open in one gloved hand. Augustin Sallow is on his knees by the footlights with her rapier resting, very lightly, on his shoulder."],
-			["velvette", "Ladies and gentlemen. Tonight's closing act. A reading."],
+			["velvette", "Mesdames, messieurs. Tonight's closing act. A reading."],
 			["", "She reads the names. Eleven of them, slowly, with the price beside each. Nobody in the audience cheers. One by one, they take off their hats."],
-			["sallow", "Please. Fauvette. Darling. What do you want?"],
-			["velvette", "Nothing, Augustin. I want you to keep this book pinned to your coat until it reaches the Concord. Let's see how they reward a man who keeps receipts."],
+			["sallow", "Please. Fauvette. Darling. Je vous en prie. What do you want?"],
+			["velvette", "Nothing, Augustin. You keep this book pinned to your coat until it reaches the Concord. Let us see how they reward a man who keeps receipts."],
 			["", "She closes the book and bows. It is the best bow you have ever seen."]
 		]}
 	},
@@ -254,10 +254,10 @@
 			"steps": [
 				{"do": "talk", "talk": "personal_bran_intro"},
 				{"do": "goto", "at": "landing", "label": "Walk up the landing to Crane's counting-house",
-					"banter": [["bran", "Tar, rope, river. Smells like my twenties."]]},
+					"banter": [["bran", "Tar, rope, river. Smells like me twenties."]]},
 				{"do": "clear", "at": "yard", "label": "Get past Crane's nephews", "spawn": {"sellsword": 1}, "count": 3,
 					"elite": {"kind": "sellsword", "name": "Big Corrie, the eldest nephew", "hp": 3.5, "damage": 1.4},
-					"banter": [["bran", "Corrie! Still collecting for your uncle? Still bad at it?"]],
+					"banter": [["bran", "Corrie! Still collectin' for your uncle? Still bad at it?"]],
 					"done_banter": [["bran", "Family business. Never works out."]]},
 				{"do": "goto", "at": "house", "label": "Into the counting-house"},
 				{"do": "talk", "talk": "personal_bran_broker"},
@@ -280,7 +280,7 @@
 				{"do": "talk", "talk": "personal_gristle_intro"},
 				{"do": "goto", "at": "treeline", "label": "Walk to the Coven totems"},
 				{"do": "clear", "at": "treeline", "label": "Hester's moths come to look at you", "spawn": {"moth": 1}, "count": 4,
-					"banter": [["gristle", "There they are. Every one of those is a love letter somebody never sent. Hit them anyway."]]},
+					"banter": [["gristle", "There they are. A love letter somebody never sent, every one of those is. Hit them anyway."]]},
 				{"do": "goto", "at": "tree", "label": "Go to the Coven tree"},
 				{"do": "talk", "talk": "personal_gristle_tree"},
 				{"do": "hold", "at": "tree", "seconds": 50, "label": "Defend the Coven tree from the woods",
@@ -302,10 +302,10 @@
 				{"do": "talk", "talk": "personal_ninefingers_intro"},
 				{"do": "use", "at": ["poster1", "poster2", "poster3"], "seconds": 1.5, "label": "Tear down Daro's wanted posters",
 					"work_label": "WANTED: DARO", "spawn": {"enforcer": 1, "sellsword": 2}, "every": 9.0, "first": 6.0,
-					"banter": [["ninefingers", "Twenty Gilt. I'm worth twenty Gilt. I've been insulted by better bounties."]]},
+					"banter": [["ninefingers", "Twenty Gilt. Worth twenty Gilt. Been insulted by better bounties."]]},
 				{"do": "clear", "at": "tollpost", "label": "Get through the toll post", "spawn": {"enforcer": 1, "sellsword": 1}, "count": 2,
 					"elite": {"kind": "enforcer", "name": "Toll-Sergeant Abernathy", "hp": 2.5, "damage": 1.2},
-					"banter": [["ninefingers", "Abernathy. He trained me. He'll recognise the hood. Hit him before he recognises the hood."]]},
+					"banter": [["ninefingers", "Abernathy. Trained me. He'll know the hood. Hit him before he knows the hood."]]},
 				{"do": "goto", "at": "village", "label": "Follow the mill smoke to Hob's Wick"},
 				{"do": "talk", "talk": "personal_ninefingers_village"},
 				{"do": "hold", "at": "village", "seconds": 50, "label": "Keep the white's crawlers out of Hob's Wick",
@@ -348,13 +348,13 @@
 			"steps": [
 				{"do": "talk", "talk": "personal_tobble_intro"},
 				{"do": "goto", "at": "ridge", "label": "Over the ridge toward the Last Drop",
-					"banter": [["tobble", "Used to walk this every morning with a barrel on each shoulder. Now it's me that wants carrying."]]},
+					"banter": [["tobble", "Used to walk this every morning with a barrel on each shoulder. Now it's me as wants carrying."]]},
 				{"do": "clear", "at": "yard", "label": "Clear the old tavern yard", "spawn": {"nibbler": 3, "spitter": 1}, "count": 4},
 				{"do": "goto", "at": "sign", "label": "Get Tobble to the door"},
 				{"do": "talk", "talk": "personal_tobble_ruin"},
 				{"do": "use", "at": "sign", "by": "escort", "seconds": 28.0, "label": "Hold the white back while Tobble gets the sign down",
 					"work_label": "THE LAST DROP", "spawn": {"nibbler": 3, "spitter": 1}, "every": 3.0, "first": 1.0, "from": "edge", "creep": 3.0,
-					"done_banter": [["tobble", "Got her! Run! Well, you run. I'll do something near it."]]},
+					"done_banter": [["tobble", "Got her! Run! Well, tha run. I'll do summat near it."]]},
 				{"do": "exit", "label": "Run for it, before the white catches you", "creep": 7.0},
 				{"do": "talk", "talk": "personal_tobble_outro"}
 			]
@@ -394,7 +394,7 @@
 			"steps": [
 				{"do": "talk", "talk": "personal_ottoline_intro"},
 				{"do": "goto", "at": "row", "label": "Walk down what's left of Lantern Row",
-					"banter": [["ottoline", "That was the gin palace. That was the pawnbroker. That was Pell's mum's. She threw a lovely punch."]]},
+					"banter": [["ottoline", "That were the gin palace. That were the pawnbroker. That were Pell's mam's. She threw a lovely punch."]]},
 				{"do": "clear", "at": "row", "label": "Clear the Row", "spawn": {"nibbler": 3, "moth": 1}, "count": 4},
 				{"do": "goto", "at": "door", "label": "Find the Encore's door"},
 				{"do": "talk", "talk": "personal_ottoline_door"},
