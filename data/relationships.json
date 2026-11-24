@@ -402,7 +402,7 @@
 		{"ids": ["ninefingers", "odile"], "kind": "rivals", "name": "Collector and deserter", "text": "Daro tore up an order to strike a village. Odile used to deliver them. Both quit. Neither has forgiven the other for having been there first.",
 			"effects": {"expedition": -5, "building": -1, "party": {"damage": 2, "guard": -0.05}, "bond": -1},
 			"banter": [
-				[["ninefingers", "How many villages did you collect, ma'am?"], ["odile", "Fewer than your regiment burned, Corporal."]],
+				[["ninefingers", "How many villages did you collect, ma'am?"], ["odile", "Fewer than your regiment struck out, Corporal."]],
 				[["odile", "You had a choice. You tore it up."], ["ninefingers", "So did you. Took the ledger. We're both thieves. Get over it."]]
 			],
 			"truce": {"days": 14, "name": "Same side of the ledger", "text": "Somewhere on the road Daro and Odile compared notes, and found they had both been lied to by the same three men. They are making a list. It is not a kind list.",

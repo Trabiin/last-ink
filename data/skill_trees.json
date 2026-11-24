@@ -267,7 +267,7 @@
 							"id": "bran_thick_hide",
 							"name": "Thick Hide",
 							"cost": 1,
-							"desc": "Armor blocks 8% more of every hit, and knockback moves him half as far.",
+							"desc": "Armour blocks 8% more of every hit, and knockback moves him half as far.",
 							"flavor": "Bran is not pushed. Bran is occasionally relocated.",
 							"effects": {
 								"stats": {
@@ -716,7 +716,7 @@
 							"name": "Light Kit",
 							"cost": 1,
 							"desc": "+6 Speed.",
-							"flavor": "Left the regulation kit in a ditch near Tithe Road.",
+							"flavor": "Left the regulation kit in a ditch near the Tithe Road.",
 							"effects": {
 								"stats": {
 									"speed": 6
@@ -809,7 +809,7 @@
 							"id": "ottoline_coat_check",
 							"name": "Coat Check",
 							"cost": 1,
-							"desc": "Armor blocks 6% more of every hit.",
+							"desc": "Armour blocks 6% more of every hit.",
 							"flavor": "Six tickets in her coat pocket. She never hands them in.",
 							"effects": {
 								"stats": {
@@ -1390,7 +1390,7 @@
 			"branches": [
 				{
 					"id": "duelist",
-					"name": "Duelist",
+					"name": "Duellist",
 					"color": "6a9ae8",
 					"blurb": "Precision, nothing wasted: wider parries, cleaner answers, and the killing thrust on anything that bleeds.",
 					"nodes": [

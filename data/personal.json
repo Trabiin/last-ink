@@ -76,7 +76,7 @@
 			["", "Over the rise: a mill wheel turning, a chapel roof, goats where goats should not be. Hob's Wick. Every house still standing."],
 			["ninefingers", "It's there. It's all... there."],
 			["", "But the fields to the east have gone pale at the edges, and something is crawling out of the white toward the nearest house."],
-			["ninefingers", "No. Not after all this. Didn't spend nine years and one finger keeping this place on the map to watch it get bloody nibbled.", "angry"],
+			["ninefingers", "No. Not after all this. Didn't lose a finger keeping this place on the map to watch it get bloody nibbled.", "angry"],
 			["ninefingers", "Ash. Hold the line at the village. Nothing gets past the well."]
 		]},
 		"personal_ninefingers_outro": {"title": "Roll of Honour", "lines": [
@@ -144,7 +144,7 @@
 			["abeyance", "I'll read to it. The whole page, aloud, as many times as it takes. Like Compline. Don't let anything interrupt me. Doors hate being interrupted."]
 		]},
 		"personal_abeyance_outro": {"title": "The Missing Page", "lines": [
-			["", "Mid-sentence, the door swings open on its own. Inside: dust, a lectern, and a book with every page torn out but one gap."],
+			["", "Mid-sentence, the door swings open on its own. Inside: dust, a lectern, and a book with every page in place but one."],
 			["", "Hild walks in very slowly. The page in her hands goes still for the first time since she stole it."],
 			["abeyance", "You fit. Of course you fit. You were never mine, were you."],
 			["", "She lays the page in the gap. The book closes by itself. When it opens again, there is one new line on the page, and she copies it into her notebook without letting you see."],

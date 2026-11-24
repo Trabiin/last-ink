@@ -53,14 +53,14 @@
 			"summary": "Everyone you have, and the one job each of them does.",
 			"lines": [
 				"Every pair of hands we've got, on one sheet. Each of them does exactly one thing at a time: fight, govern, staff a building, carry messages. Nobody does two. I've tried. You get paid for neither.",
-				"Fighters can join the party. Three go out on missions, Ash always leads. The rest earn their keep here.",
+				"Fighters can join the party. Three go out on missions, and Ash always leads. The rest earn their keep here.",
 				"Match the job to the person. A governor with the right temper holds a province better; a soft touch in the wrong place just bleeds it. The sheet tells you the fit before you commit.",
 				"Hurt people sit out until they mend. Don't take it personally. They don't."
 			],
 			"alt": {
 				"quill": [
 					"Everyone we have, on one sheet. Each does one job at a time: fight, govern, staff a building, carry messages. One. I've checked the arithmetic.",
-					"Three go out with the party, Ash always leads. Match the job to the person; the sheet shows the fit before you commit. Hurt people sit out until they mend."
+					"Three go out with the party, and Ash always leads. Match the job to the person; the sheet shows the fit before you commit. Hurt people sit out until they mend."
 				]
 			}
 		},
@@ -264,7 +264,7 @@
 			],
 			"summary": "Who goes on a mission, and how allies fight.",
 			"lines": [
-				"Three go: Ash and two others. Look at what you're walking into before you pick. Expect lines on the briefing aren't decoration.",
+				"Three go: Ash and two others. Look at what you're walking into before you pick. The 'Expect' lines on the briefing aren't decoration.",
 				"You steer whoever's in front and can swap any time. The others follow orders you set in the quick menu: aggressive, balanced, keep their distance, or look after everyone else.",
 				"Whoever stays home keeps their job. Whoever goes doesn't do it while they're out."
 			]
@@ -401,10 +401,10 @@
 			"when": {
 				"surge": true
 			},
-			"summary": "Warnings, Defense missions and asking for aid.",
+			"summary": "Warnings, Defence missions and asking for aid.",
 			"lines": [
 				"There. The Blank is massing against one of ours. A surge lands as a lump of Fray all at once and leaves a scar that keeps fraying for days.",
-				"We see it coming, which is the only mercy. Days on the clock, marked on the map. Go and stand on it: a Defense mission there means holding the wardstone while the white comes at you.",
+				"We see it coming, which is the only mercy. Days on the clock, marked on the map. Go and stand on it: a Defence mission there means holding the wardstone while the white comes at you.",
 				"Or ask a friendly faction to hold the line with us{tag:diplomacy}. Halves it. Pride is cheaper than land."
 			]
 		},
@@ -512,7 +512,7 @@
 			"summary": "A newcomer waits to be taken on.",
 			"lines": [
 				"Somebody's standing at the south gate with a bag and a look. Go and talk to them, or see them on the Newcomers sheet{tag:newcomers}.",
-				"They won't wait for ever. Nobody waits for ever for a town with no name."
+				"They won't wait forever. Nobody waits forever for a town with no name."
 			]
 		},
 		{
@@ -546,7 +546,7 @@
 			"summary": "High Fray, and how to push it back.",
 			"lines": [
 				"One of ours is over sixty Fray. Past fifty it feeds on itself, and the paler it gets, the less it pays.",
-				"A governor who fits, a Wardlamp, a Defense when it surges, or scouting from the board all pull it back. Doing nothing pulls it to a hundred."
+				"A governor who fits, a Wardlamp, a Defence when it surges, or scouting from the board all pull it back. Doing nothing pulls it to a hundred."
 			]
 		},
 		{

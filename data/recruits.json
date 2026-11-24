@@ -21,11 +21,11 @@
 			"lines": []
 		},
 		{
-			"id": "bran", "name": "Brannoc Tolley", "title": "mercenary", "tier": "field", "start": true,
+			"id": "bran", "name": "Brannoc \"Bran\" Tolley", "short": "Bran", "title": "mercenary", "tier": "field", "start": true,
 			"stats": {"might": 8, "craft": 4, "lore": 2, "charm": 5, "grit": 7}, "traits": ["contract", "greedy"],
 			"blurb": "His contract is tattooed on his arm and tightens if he breaks it. Will sell you out if outbid, and tells you so.",
 			"post": "gate", "look": {"outfit": "warrior", "colors": {"skin": "c98e6a", "metal": "8c7f72", "accent": "b0442f", "boots": "3a2c22"}},
-			"quips": ["Brannoc has submitted an invoice for \"hazard, emotional\".", "Brannoc asks that it be noted he was \"the competent one\"."],
+			"quips": ["Bran has submitted an invoice for \"hazard, emotional\".", "Bran asks that it be noted he was \"the competent one\"."],
 			"lines": ["Contract says I guard you. Doesn't say I have to like the town.", "Point me at something and pay me. That's the whole relationship.", "If someone offers me more, you'll hear it from me first. Professional courtesy."]
 		},
 		{
@@ -68,7 +68,7 @@
 			"blurb": "Deserted the Concord army rather than strike out a village. Sharpest tongue in the Inklands.",
 			"post": "gate", "look": {"outfit": "soldier", "colors": {"skin": "b88866", "metal": "a29e96", "cloth": "6a2a2a", "boots": "2a2220"}},
 			"join": {"type": "rescue", "job": "rescue_daro"},
-			"rumour": "A Concord deserter is being marched back for trial. They have opinions about the march.",
+			"rumour": "A Concord deserter is hiding somewhere along the Tithe Road with a price on their head. They have opinions about the price.",
 			"quips": ["Daro saluted a scarecrow out of habit, then threatened it.", "Daro wants it on record that the plan was bad and they followed it anyway."],
 			"lines": ["Lost the finger to a form. Long story. Paperwork was involved.", "The Concord strikes out villages with a pen. I prefer the sword. More honest."]
 		},
@@ -88,7 +88,7 @@
 			"blurb": "Maps places a week before they exist. Her maps of the Blank are blank, which she finds professionally insulting.",
 			"post": "hall", "look": {"outfit": "mage", "colors": {"skin": "e6c3a3", "cloth": "6a5a3a", "leather": "4a3a2a", "boots": "2e2620", "trim": "c9b890"}},
 			"join": {"type": "claim", "province": "lampwick"}, "hire": {},
-			"rumour": "Someone up in Wickham Hills is drawing roads that aren't there yet. Claim the Hills and you can ask her why.",
+			"rumour": "Someone up in the Wickham Hills is drawing roads that aren't there yet. Claim the Hills and you can ask her why.",
 			"pitch": "I mapped this town a week before your gate went up. You have a road in the wrong place. Take me on and I'll tell you which.",
 			"welcome": "Wonderful. I've already drawn my desk. It's in your hall, so you'd better build one.",
 			"quips": ["Hetty mapped the route home before they left. It was right, which bothered everyone.", "Hetty refused to walk anywhere she hadn't drawn yet. She drew very quickly."],
@@ -167,12 +167,12 @@
 			"lines": ["Uncle Tobble says I'm the muscle. I say he's the mouth. Between us we're one bouncer.", "Name's on the list or it isn't. If it isn't, I can help with that. Painfully.", "Throw a magistrate through a door once and they never let you forget it."]
 		},
 		{
-			"id": "velvette", "name": "Fauvette", "title": "cabaret duelist", "tier": "field", "start": false,
+			"id": "velvette", "name": "Fauvette", "title": "cabaret duellist", "tier": "field", "start": false,
 			"stats": {"might": 6, "craft": 4, "lore": 4, "charm": 9, "grit": 5}, "traits": ["flirt", "night_owl"],
 			"blurb": "Stage name of Colombe Brissot, which she will deny. Star of the Crimson Encore, where the closing act is a real duel with a paying volunteer. Knows every secret told in her dressing room, and charges for each one.",
 			"post": "tavern", "look": {"outfit": "archer", "colors": {"skin": "e8c0a8", "cloth": "201a22", "leather": "5a1f3c", "boots": "1a1418", "trim": "e0b04a"}},
 			"join": {"type": "renown", "amount": 5}, "hire": {"gilt": 60},
-			"rumour": "The Crimson Encore went dark when the Blank took its street. Its star duelist only performs for a crowd worth the trouble. Earn 5 Renown.",
+			"rumour": "The Crimson Encore went dark when the Blank took its street. Its star duellist only performs for a crowd worth the trouble. Earn 5 Renown.",
 			"pitch": "Darling, the whole Inklands is talking about you, and I hate not being the one they talk about. Sixty Gilt, and I'll fight beside you instead. Better seats.",
 			"welcome": "Ottoline used to keep my door. Now she keeps yours. We'll get on famously, you and I, until one of us gets bored.",
 			"quips": ["Fauvette duelled a bandit chief for the road toll and bowed to the survivors. They applauded.", "Fauvette came back from the expedition with three secrets, two love letters and nobody's purse but her own. She says."],

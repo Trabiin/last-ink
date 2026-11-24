@@ -114,7 +114,7 @@
 				], "end": [["", "A personal mission is on the Command Table: \"Collect from Hester Vane\", in the Gutterwoods. Mother Gristle is going, and Ash goes with her."]]},
 				{"rank": 5, "title": "Paid in Full", "lines": [
 					["gristle", "My name's back on the tree. Carved deep, so the white has to work for it."],
-					["gristle", "Hester cried. Billed her for the tissue, I did. We're even now. Horrible, it is. Never been even with anyone."],
+					["gristle", "Hester cried. Billed her for the handkerchief, I did. Half price. We're even now. Horrible, it is. Never been even with anyone."],
 					["", "She opens the ledger to your page and draws a line through every entry."],
 					["gristle", "Don't get used to it. A one-time professional courtesy, this is."]
 				], "choice": [
@@ -271,7 +271,7 @@
 					{"label": "[Nod: you know now]", "bond": 2, "reply": [["tobble", "There. I'm lighter by one. Funny, I reckoned I'd feel worse."]]}
 				], "end": [["tobble", "My regulars talk. I'll pass along owt worth reading. On the house. Mostly."]]},
 				{"rank": 4, "title": "The Old Sign", "lines": [
-					["tobble", "Before Hollowmark I had a place in the Meadow. The Last Drop. Best ale on the Tithe Road, and nowt else close."],
+					["tobble", "Before Hollowmark I had a place in the Meadow. The Last Drop. Best ale this side of the Tithe Road, and nowt else close."],
 					["tobble", "Roof's gone now. The Blank's at the doorstep. But the sign's still hanging. Saw it from the ridge."],
 					["tobble", "I want it. Daft, I know. A board with a mug painted on it. But it's mine."],
 					["tobble", "Knees and all, I'm going. Send someone to carry us back."]
@@ -335,11 +335,11 @@
 					{"label": "[Mime: careful]", "bond": 2, "reply": [["abeyance", "I'm always careful. It's the page that isn't."]]}
 				], "end": [["", "A personal mission is on the Command Table: \"Follow the Page\", in the Wickham Hills. Sister Hild can't fight: the party goes along to keep her alive."]]},
 				{"rank": 5, "title": "Not Yet", "lines": [
-					["abeyance", "The chapel was empty. Just a lectern, and on it, a book with every page torn out but one."],
+					["abeyance", "The chapel was empty. Just a lectern, and on it, a book with every page in place but one."],
 					["abeyance", "My page fit the gap exactly. It went in, and the book wrote one line, and then it was still. Fiat."],
 					["abeyance", "I copied it for you. It's about you, I think. I'm almost sure."],
 					["", "She hands you a slip of paper. In her famous serifs: NOT YET."],
-					["abeyance", "I don't know if it's a warning or a promise. I think it a promise. The Abbot would call that pride."]
+					["abeyance", "I don't know if it's a warning or a promise. I think it's a promise. The Abbot would call that pride."]
 				], "choice": [
 					{"label": "[Fold it into your coat]", "bond": 3, "reply": [["abeyance", "Keep it close. And if it ever changes, tell me. Well. Show me."]]},
 					{"label": "[Take her hand]", "bond": 2, "reply": [["abeyance", "Oh. The voices have gone quiet. All of them. That's never happened. Stay a moment. Please."]]}

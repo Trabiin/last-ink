@@ -14,7 +14,7 @@
 		{
 			"id": "notices", "day": 17, "target": "hollowmark",
 			"label": "Erasure notices, signed V.H.", "per_day": 1, "days": 6, "counter": "lamp",
-			"notice": "Polite erasure notices are nailed to every door in %s. A lit Wardlamp would burn them off."
+			"notice": "Polite Erasure notices are nailed to every door in %s. A lit Wardlamp would burn them off."
 		},
 		{
 			"id": "redraw", "day": 23, "target": "exposed_frayest",
@@ -24,7 +24,7 @@
 		{
 			"id": "cartographers", "day": 29, "target": "frontier_frayest",
 			"label": "Verity's cartographers", "per_day": 2, "days": 5, "counter": "lamp",
-			"notice": "Pale cartographers are re-drawing the map around %s, leaving it blank. A lit Wardlamp would spoil their survey."
+			"notice": "Pale cartographers are redrawing the map around %s, leaving it blank. A lit Wardlamp would spoil their survey."
 		}
 	],
 	"repeat_gap": [7, 10]

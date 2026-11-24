@@ -56,6 +56,16 @@ jobs:
           name: messages-pot
           path: locale/messages.pot
 
+      # The whole script as one readable file per chapter, for proofreading (issue #142).
+      - name: Export the script
+        run: GODOT=~/godot/godot tools/export_script.sh
+
+      - name: Keep the script export
+        uses: actions/upload-artifact@v4
+        with:
+          name: script-export
+          path: build/script/
+
   build:
     runs-on: ubuntu-latest
     steps:
