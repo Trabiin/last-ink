@@ -32,6 +32,7 @@ var flash_t := 0.0
 var _rows: Array = []  # node ids, in branch order
 var _hidden_branches := 0  # chapter branches still behind the fog
 var scroll := 0.0  # how far the list is scrolled down, in pixels
+var _drag := {}  # a finger drag over the list (Prompts.list_steps / list_tap)
 var _row_rects: Array = []
 var font: Font
 
@@ -128,27 +129,43 @@ func _pick(i: int) -> void:
 
 
 func _gui_input(event: InputEvent) -> void:
-	if event is InputEventMouseButton and event.pressed and event.button_index in [MOUSE_BUTTON_WHEEL_UP, MOUSE_BUTTON_WHEEL_DOWN]:
-		scroll += ROW_H * 2 * (1 if event.button_index == MOUSE_BUTTON_WHEEL_DOWN else -1)
-		_clamp_scroll()
+	# The wheel or a finger dragged over the list walks the focus, and the list follows it (issue #192's rule).
+	var on_list: bool = "position" in event and event.position.x < LIST_W + 16 and event.position.y >= LIST_TOP
+	var n := Prompts.list_steps(event, _drag, ROW_H, on_list)
+	if n != 0:
+		var to := clampi(sel + n, 0, maxi(_rows.size() - 1, 0))
+		if to != sel:
+			sel = to
+			_follow_sel()
+			Audio.sfx("ui_move")
+		accept_event()
 		return
-	if event is InputEventScreenDrag:
-		scroll -= event.relative.y
-		_clamp_scroll()
+	if event is InputEventScreenDrag and _drag.get("on_list", false):
+		accept_event()
 		return
 	if event is InputEventMouseMotion:
-		for i in _row_rects.size():
-			if (_row_rects[i] as Rect2).has_point(event.position):
-				sel = i
-	elif Prompts.tapped(event):
-		for i in _row_rects.size():
-			if (_row_rects[i] as Rect2).has_point(event.position):
-				if sel == i:
-					_pick(i)  # tap to select, tap again to act (touch friendly)
-				sel = i
-				return
-		if _close_rect().has_point(event.position):
-			close()
+		var hover := _row_at(event.position)
+		if hover >= 0:
+			sel = hover
+		return
+	var row := _row_at(event.position) if "position" in event else -1
+	match Prompts.list_tap(event, _drag, row, sel):
+		"focus":
+			sel = row
+			return
+		"act":
+			_pick(sel)  # tap to select, tap again to act (touch friendly)
+			return
+	if Prompts.tapped(event) and row < 0 and _close_rect().has_point(event.position):
+		close()
+
+
+## The row under a point, or -1 (rows scrolled out of view are never hit).
+func _row_at(p: Vector2) -> int:
+	for i in _row_rects.size():
+		if (_row_rects[i] as Rect2).has_point(p):
+			return i
+	return -1
 
 
 func _close_rect() -> Rect2:
