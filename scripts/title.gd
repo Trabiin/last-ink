@@ -36,6 +36,7 @@ func _ready() -> void:
 	items.append({"id": "options", "label": tr("Options"), "detail": tr("speed, difficulty, sound, controls")})
 	items.append({"id": "report", "label": tr("Report a bug"), "detail": tr("or send feedback")})
 	items.append_array(Survey.menu_items())  # playtest builds only (issue #168)
+	items.append({"id": "achievements", "label": tr("Achievements"), "detail": tr("%d of %d") % [Achievements.unlocked_count(), Achievements.list.size()]})  # issue #150
 	items.append({"id": "credits", "label": tr("Credits")})
 	if DisplaySettings.is_desktop():  # a browser tab is closed by the browser (issue #145)
 		items.append({"id": "quit", "label": tr("Quit")})
@@ -216,6 +217,9 @@ func _on_choice(id: String) -> void:
 		"error_test":  # issue #146: something for the next launch's report offer to find
 			push_error("Test error from the title screen's test shortcuts (issue #146).")
 			Diag.toast(tr("Logged a test error. Restart the game to see the report offer."))
+		"achievements":  # issue #150: the same list Steam has, for every build
+			menu.visible = false
+			AchievementsView.popup(self).closed.connect(func(): menu.visible = true)
 		"credits":
 			menu.visible = false
 			credits.visible = true

@@ -1,0 +1,24 @@
+{
+  "_comment": "Steam settings (issue #150, docs/STEAM.md). app_id stays 0 until the Steamworks app exists: with 0 the game never starts Steam, even in a build that has GodotSteam (unless Steam itself launched it, which sets SteamAppId). 'presence' is the Rich Presence text Steam shows friends: tools/steam_files.gd writes it to steam/rich_presence_english.vdf, which is uploaded in Steamworks (Community > Rich Presence). Every chapter in data/journal.json needs a 'chapters' entry (tests check). Keys in braces are filled in by the game.",
+  "app_id": 0,
+  "demo_app_id": 0,
+  "presence": {
+    "chapters": {
+      "prologue": "Prologue",
+      "ch1": "Chapter 1",
+      "act1": "Act 1",
+      "ch2": "Chapter 2",
+      "ch3": "Chapter 3",
+      "ch4": "Chapter 4",
+      "ch5": "Chapter 5",
+      "ch6": "Chapter 6"
+    },
+    "states": {
+      "menu": "In the menus",
+      "hub": "{chapter}: walking Hollowmark",
+      "command": "{chapter}: at the Command Table",
+      "mission": "{chapter}: {place}",
+      "boss": "{chapter}: fighting {place}"
+    }
+  }
+}

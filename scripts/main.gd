@@ -30,6 +30,7 @@ var touch  # touch.gd
 var area: Area
 var world := Vector2.ZERO
 var kills := 0
+var downs := 0  # heroes who went down this mission (achievements, issue #150)
 var shake_amount := 0.0
 var respawn_t := 0.0
 var blank_tick := 0.0
@@ -395,6 +396,7 @@ func _on_gear_closed() -> void:
 
 
 func _on_hero_died(a: Actor) -> void:
+	downs += 1
 	var alive := heroes.filter(func(h): return not h.dead)
 	if alive.is_empty():
 		game_over = true
@@ -607,6 +609,7 @@ func snapshot() -> Dictionary:
 		"found_items": found_items,
 		"mission_time": mission_time,
 		"kills": kills,
+		"downs": downs,
 		"leader": heroes.find(leader),
 		"heroes": hs,
 		"banter": banter.to_save(),
@@ -615,6 +618,7 @@ func snapshot() -> Dictionary:
 
 func _apply_snapshot(d: Dictionary) -> void:
 	kills = int(d.get("kills", 0))
+	downs = int(d.get("downs", 0))
 	objective.from_save(d.get("objective", {"progress": kills}))
 	mission_time = float(d.get("mission_time", 0.0))
 	var f: Dictionary = d.get("found", {})
@@ -743,7 +747,7 @@ func _show_results(outcome: String) -> void:
 	quick_menu.close()
 	get_tree().paused = true
 	touch.release_all()
-	var r := Missions.settle(mission, outcome, found, {"kills": kills, "time": mission_time, "objective": objective.text(), "fail": objective.fail_text(), "info": objective.info()})
+	var r := Missions.settle(mission, outcome, found, {"kills": kills, "downs": downs, "skipped": skipping, "time": mission_time, "objective": objective.text(), "fail": objective.fail_text(), "info": objective.info()})
 	_progress_lines(r, outcome)
 	results_view.open(r)
 

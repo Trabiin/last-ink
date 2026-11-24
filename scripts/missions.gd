@@ -199,6 +199,7 @@ static func settle(m: Dictionary, outcome: String, found: Dictionary, stats: Dic
 		"found": found.duplicate(), "pay": pay,
 		"first_clear": outcome == "success" and not cleared(m.get("id", "")),
 		"kills": int(stats.get("kills", 0)), "time": float(stats.get("time", 0.0)),
+		"downs": int(stats.get("downs", 0)), "skipped": bool(stats.get("skipped", false)),  # achievements (#150)
 		"objective": stats.get("objective", ""),
 		"rewards": m.get("rewards", {}) if outcome == "success" else {},
 		"lines": _effect_lines(md, outcome, stats),  # mission-type effects, issue #51
@@ -281,6 +282,7 @@ static func apply(result: Dictionary) -> void:
 	Empire.active_mission = {}
 	Empire.last_mission = result
 	Relationships.note_mission(PartyPicker.mission_party(m), str(result["outcome"]))  # fates for the epilogues (issue #116)
+	Achievements.mission_done(result)  # issue #150
 
 
 ## Pays out, autosaves in Hollowmark and walks the party home.

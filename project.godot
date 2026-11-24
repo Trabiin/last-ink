@@ -19,6 +19,8 @@ Audio="*res://scripts/audio.gd"
 Controls="*res://scripts/controls.gd"
 Saves="*res://scripts/save.gd"
 Empire="*res://scripts/empire.gd"
+SteamLink="*res://scripts/steam_link.gd"
+Achievements="*res://scripts/achievements.gd"
 
 [display]
 

@@ -1,0 +1,56 @@
+{
+  "_comment": "Achievements (issue #150, docs/STEAM.md). One list for Steam and the in-game Achievements page. 'id' is the Steam API name: never rename or remove one once it is live on Steam. 'when' is a Journal.meets/Story.meets condition, 'check' a named check in scripts/achievements.gd (with 'min'), 'event' an event the game reports (Achievements.event), 'counter' a lifetime count kept across saves (with 'min'). 'hidden' keeps the name and description secret until unlocked (story spoilers). 'content' is the chapter that makes it reachable; 'later' entries are designed but wait for content that is not in the game yet (they show as locked and never unlock). 'group' orders the in-game page.",
+  "groups": [
+    {"id": "story", "name": "Story"},
+    {"id": "people", "name": "People"},
+    {"id": "empire", "name": "Empire"},
+    {"id": "fights", "name": "Fights"},
+    {"id": "odd", "name": "Odd jobs"}
+  ],
+  "achievements": [
+    {"id": "ACH_PROLOGUE", "group": "story", "name": "Returned to Sender", "desc": "Survive the Prologue.", "when": {"cleared": ["meadow_prologue"]}, "content": "prologue"},
+    {"id": "ACH_BREAKOUT", "group": "story", "name": "No Such Person", "desc": "Break out of the Hollowmark tax office.", "when": {"cleared": ["ch1_breakout"]}, "content": "ch1"},
+    {"id": "ACH_TITHE_COLUMN", "group": "story", "name": "Outstanding Balance", "desc": "Break the tithe column at Old Mill Crossing.", "when": {"cleared": ["act1_concord"]}, "content": "act1"},
+    {"id": "ACH_AUDITOR", "group": "story", "name": "Struck Out", "desc": "Defeat the Auditor and finish Act 1.", "when": {"cleared": ["auditor_duel"]}, "content": "act1"},
+    {"id": "ACH_CANDLEFORD", "group": "story", "name": "Keep the Lights On", "desc": "Save the last wax barge at Candleford.", "when": {"cleared": ["ch2_candleford"]}, "content": "ch2"},
+    {"id": "ACH_BONEFIELD", "group": "story", "name": "Eleven Thousand Four Hundred and Six", "desc": "Learn what the Abbey was built on.", "hidden": true, "when": {"cleared": ["ch2_crypt"]}, "content": "ch2"},
+    {"id": "ACH_ABBOT", "group": "story", "name": "Ink on His Hands", "desc": "Find the real Abbot among his copies and finish Chapter 2.", "when": {"cleared": ["ch2_abbot"]}, "content": "ch2"},
+    {"id": "ACH_MASQUERADE", "group": "story", "name": "Unmasked", "desc": "Finish Chapter 3: Masquerade.", "later": true, "content": "ch3"},
+    {"id": "ACH_LOW_WATER", "group": "story", "name": "Low Tide", "desc": "Finish Chapter 4: The Sea Stops.", "later": true, "content": "ch4"},
+    {"id": "ACH_VERITY", "group": "story", "name": "Clean Page", "desc": "Finish Chapter 5 at the Great Ledger.", "hidden": true, "later": true, "content": "ch5"},
+    {"id": "ACH_BETRAYAL", "group": "story", "name": "A Fair Offer", "desc": "Settle things with the companion who sold you to the Vacancy.", "hidden": true, "check": "betrayal_settled", "content": "ch5"},
+    {"id": "ACH_ENDING", "group": "story", "name": "The Last Line", "desc": "Finish the story.", "later": true, "content": "ending"},
+    {"id": "ACH_HARD_ENDING", "group": "story", "name": "No Receipts", "desc": "Finish the story on Hard without ever turning the difficulty down.", "later": true, "content": "ending"},
+
+    {"id": "ACH_BOND_TRUSTED", "group": "people", "name": "On a First-Name Basis", "desc": "Raise any bond to Trusted.", "check": "bond_rank", "min": 3, "content": "act1"},
+    {"id": "ACH_BOND_BOUND", "group": "people", "name": "Bound", "desc": "Raise any bond to its last rank.", "check": "bond_rank", "min": 5, "content": "act1"},
+    {"id": "ACH_ALL_BOUND", "group": "people", "name": "Found Family", "desc": "Raise every bond to its last rank.", "check": "all_bonds_bound", "content": "act1"},
+    {"id": "ACH_ROMANCE", "group": "people", "name": "The Good Side of the Candle", "desc": "Begin a romance.", "check": "romance", "content": "act1"},
+    {"id": "ACH_TRUCE", "group": "people", "name": "Grudging Respect", "desc": "Turn a rivalry into a truce.", "check": "truce", "content": "act1"},
+    {"id": "ACH_PERSONAL", "group": "people", "name": "Personal Business", "desc": "See a companion's personal mission through.", "check": "personal_done", "min": 1, "content": "act1"},
+    {"id": "ACH_ALL_PERSONAL", "group": "people", "name": "Loose Ends", "desc": "See every personal mission through.", "check": "all_personal_done", "content": "act1"},
+    {"id": "ACH_RESCUES", "group": "people", "name": "Extraction Fee", "desc": "Bring Mother Gristle, Corporal Daro and Sister Hild home.", "when": {"joined": ["gristle", "ninefingers", "abeyance"]}, "content": "act1"},
+    {"id": "ACH_ROSTER_10", "group": "people", "name": "Payroll", "desc": "Have 10 people on the roster at once.", "check": "roster", "min": 10, "content": "act1"},
+    {"id": "ACH_EVERYONE", "group": "people", "name": "Everyone Counts", "desc": "Recruit every person who can join you.", "check": "everyone_recruited", "content": "ending"},
+
+    {"id": "ACH_FIRST_CLAIM", "group": "empire", "name": "Under New Management", "desc": "Claim your first province beyond Hollowmark.", "check": "held", "min": 2, "content": "act1"},
+    {"id": "ACH_HOLD_10", "group": "empire", "name": "Cartographer's Headache", "desc": "Hold 10 provinces at once.", "check": "held", "min": 10, "content": "ch2"},
+    {"id": "ACH_EVERY_PAGE", "group": "empire", "name": "Every Page", "desc": "Hold every province in the Inklands at once.", "check": "all_provinces", "content": "ending"},
+    {"id": "ACH_RECLAIM", "group": "empire", "name": "Unerased", "desc": "Write an erased province back onto the map.", "event": "reclaimed", "content": "act1"},
+    {"id": "ACH_SURGE_HELD", "group": "empire", "name": "Not Today", "desc": "Break a Blank surge in a Defense mission.", "event": "surge_broken", "content": "act1"},
+    {"id": "ACH_TOP_BUILDING", "group": "empire", "name": "Up to Code", "desc": "Raise a Hollowmark building to its top level.", "check": "top_building", "content": "act1"},
+    {"id": "ACH_ALL_BUILDINGS", "group": "empire", "name": "Hollowmark Restored", "desc": "Raise every Hollowmark building to its top level.", "check": "all_buildings", "content": "ch2"},
+    {"id": "ACH_ALL_RESEARCH", "group": "empire", "name": "Footnotes", "desc": "Finish every study at the Scriptorium.", "check": "all_research", "content": "ending"},
+    {"id": "ACH_ALLIED", "group": "empire", "name": "Friends in Inked Places", "desc": "Become Allied with a faction.", "check": "allied", "content": "act1"},
+    {"id": "ACH_EXPEDITIONS", "group": "empire", "name": "Field Reports", "desc": "Bring home 25 successful expeditions.", "counter": "expeditions_won", "min": 25, "content": "act1"},
+
+    {"id": "ACH_FLAWLESS_BOSS", "group": "fights", "name": "Not a Scratch", "desc": "Defeat a boss without anyone in the party going down.", "event": "boss_flawless", "content": "act1"},
+    {"id": "ACH_HARD_BOSS", "group": "fights", "name": "Audit the Auditor", "desc": "Defeat a boss on Hard.", "event": "boss_hard", "content": "act1"},
+    {"id": "ACH_LEVEL_MAX", "group": "fights", "name": "Seasoned", "desc": "Bring a hero to the top level.", "check": "max_level", "content": "ch2"},
+    {"id": "ACH_ERASED_1000", "group": "fights", "name": "Paperwork Reduction", "desc": "Defeat 1,000 enemies.", "counter": "kills", "min": 1000, "content": "act1"},
+
+    {"id": "ACH_WIPED", "group": "odd", "name": "Returned to the Blank", "desc": "Get your whole party erased.", "event": "wiped", "content": "prologue"},
+    {"id": "ACH_RETREATS", "group": "odd", "name": "Tactical Withdrawal", "desc": "Retreat from 5 missions.", "counter": "retreats", "min": 5, "content": "act1"},
+    {"id": "ACH_HUNGRY", "group": "odd", "name": "Belt Tightening", "desc": "Run Hollowmark out of Supplies.", "check": "hungry", "content": "act1"}
+  ]
+}
