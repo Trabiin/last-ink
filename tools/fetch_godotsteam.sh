@@ -78,5 +78,10 @@ else
 fi
 echo "GodotSteam: installed into addons/godotsteam"
 cat addons/godotsteam/*.gdextension
+# In CI: an annotation and the job summary carry the values to pin (the full log is long).
+if [ -n "${GITHUB_ACTIONS:-}" ]; then
+	echo "::notice title=GodotSteam::$NAME from release $TAG, sha256 $SHA"
+	printf '### GodotSteam\n\n- file: `%s`\n- release: `%s`\n- sha256: `%s`\n' "$NAME" "$TAG" "$SHA" >> "${GITHUB_STEP_SUMMARY:-/dev/null}"
+fi
 echo "tag=$TAG" >> "${GITHUB_OUTPUT:-/dev/null}"
 echo "sha256=$SHA" >> "${GITHUB_OUTPUT:-/dev/null}"

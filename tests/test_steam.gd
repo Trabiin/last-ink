@@ -340,3 +340,11 @@ func test_steam_build_has_godotsteam() -> void:
 	check(not link.start(), "Steam doesn't start without an app id")
 	check(link.status.begins_with("no Steam app id") or link.status.begins_with("Steam didn't start"),
 		"no app id and no client: Steam stays off (%s)" % link.status)
+
+
+func test_deck_answer_matches_the_display_settings() -> void:
+	DisplaySettings._deck_override = 1
+	check(link.on_deck(), "without Steam, SteamLink asks DisplaySettings.on_deck() (issue #149)")
+	DisplaySettings._deck_override = 0
+	check(not link.on_deck(), "and agrees when it says no")
+	DisplaySettings._deck_override = -1

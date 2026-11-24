@@ -149,10 +149,12 @@ func _process(delta: float) -> void:
 		update_presence()
 
 
+## Steam's own answer when it is running, else DisplaySettings.on_deck() (issue #149), the one guess
+## the rest of the game uses.
 func on_deck() -> bool:
 	if active and _api.has_method("isSteamRunningOnSteamDeck"):
 		return bool(_api.call("isSteamRunningOnSteamDeck"))
-	return OS.get_environment("SteamDeck") == "1"
+	return DisplaySettings.on_deck()
 
 
 # ---------------------------------------------------------------- achievements
