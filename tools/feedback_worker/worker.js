@@ -11,6 +11,10 @@
 //   RATE_LIMITER  optional Workers rate-limit binding (wrangler.toml); without it a per-instance limit applies
 //
 // The sender's IP address is used only for the rate limit and never written anywhere.
+//
+// Setup check: open <worker URL>/check?key=<GAME_KEY> in a browser. It tests every setting against GitHub
+// (token valid, repo private, Contents and Issues writable, labels in place, token expiry) and says how to
+// fix whatever fails. It changes nothing except creating the report labels the first time.
 
 const MAX_BODY = 4.5 * 1024 * 1024;
 const KINDS = ["bug", "feedback", "idea", "survey"]; // survey: playtest answers (issue #168, docs/PLAYTEST.md)
@@ -24,7 +28,10 @@ const recent = new Map(); // ip -> [timestamps], per Worker instance only
 export default {
   async fetch(request, env) {
     if (request.method === "OPTIONS") return cors(new Response(null, { status: 204 }));
-    if (request.method === "GET") return cors(json({ ok: true, service: "last-ink reports" }));
+    if (request.method === "GET") {
+      if (new URL(request.url).pathname.replace(/\/+$/, "") === "/check") return cors(await check(request, env));
+      return cors(json({ ok: true, service: "last-ink reports" }));
+    }
     if (request.method !== "POST") return cors(json({ ok: false, error: "method" }, 405));
     try {
       return cors(await handle(request, env));
@@ -82,6 +89,98 @@ async function allowed(ip, env) {
   if (recent.size > 5000) recent.clear();
   return true;
 }
+
+// ------------------------------------------------------------------ setup check
+
+// Labels the worker puts on report issues, with colours so the reports repo reads well.
+export const LABELS = {
+  report: ["5319e7", "Sent from the game"],
+  bug: ["d73a4a", "Something is broken"],
+  feedback: ["0e8a16", "Player feedback"],
+  idea: ["fbca04", "Suggestion"],
+  survey: ["1d76db", "Playtest survey answers"],
+  crash: ["b60205", "The session before crashed or hit errors"],
+};
+const WARN_DAYS = 30;
+
+// GET /check?key=GAME_KEY: every setting tested, with a fix for each failure. ok is true only when a real
+// report would go through. Needs the game key so random visitors don't spend the token's API quota.
+export async function check(request, env, now = Date.now()) {
+  const key = new URL(request.url).searchParams.get("key") || "";
+  if (!env.GAME_KEY) {
+    return json({ ok: false, checks: [fail("settings", "GAME_KEY is not set", "Settings > Variables and Secrets: add text variable GAME_KEY = the game_key in data/feedback.json, then Deploy.")] });
+  }
+  if (key !== env.GAME_KEY) return json({ ok: false, error: "add ?key=<game_key from data/feedback.json> to the URL" }, 403);
+  const checks = [];
+  const out = { ok: false, service: "last-ink reports", checks };
+  const missing = ["REPORTS_REPO", "GITHUB_TOKEN"].filter((n) => !env[n]);
+  if (missing.length) {
+    checks.push(fail("settings", missing.join(" and ") + " not set",
+      "Settings > Variables and Secrets: add REPORTS_REPO as text (Trabiin/last-ink-reports) and GITHUB_TOKEN as a secret, then Deploy."));
+    return json(out);
+  }
+  checks.push(pass("settings", "REPORTS_REPO, GAME_KEY and GITHUB_TOKEN are set"));
+  checks.push(env.RATE_LIMITER ? pass("rate limit", "Cloudflare rate-limit binding in use")
+    : pass("rate limit", "built-in limit (6 reports an hour per address per instance); deploy with wrangler.toml for the stricter shared one"));
+  const repo = env.REPORTS_REPO;
+
+  const info = await gh(env, "GET", `/repos/${repo}`, null, true);
+  const exp = info.headers.get("github-authentication-token-expiration");
+  if (exp) {
+    const t = Date.parse(exp.replace(" UTC", "Z").replace(" ", "T"));
+    if (!Number.isNaN(t)) {
+      out.token_expires = new Date(t).toISOString().slice(0, 10);
+      out.token_days_left = Math.floor((t - now) / 86400e3);
+    }
+  }
+  if (info.status === 401) {
+    checks.push(fail("token", "GitHub refused the token (wrong, revoked or expired)", "Make a new fine-grained token (docs/FEEDBACK.md step 2) and replace the GITHUB_TOKEN secret, then Deploy."));
+    return json(out);
+  }
+  if (info.status === 404 || info.status === 403) {
+    checks.push(fail("repo", `the token cannot see ${repo}`, `Check REPORTS_REPO is spelled exactly ${repo}, the repo exists, and the token's Repository access lists it.`));
+    return json(out);
+  }
+  if (!info.ok) {
+    checks.push(fail("repo", "GitHub answered " + info.status, "Try again in a minute; if it stays, check githubstatus.com."));
+    return json(out);
+  }
+  const meta = await info.json();
+  checks.push(pass("token", out.token_expires ? `valid until ${out.token_expires} (${out.token_days_left} days)` : "valid, no expiry date"));
+  if (out.token_days_left !== undefined && out.token_days_left < WARN_DAYS) {
+    checks.push(warn("token expiry", `the token runs out in ${out.token_days_left} days`, "Regenerate it in GitHub > Settings > Developer settings > Fine-grained tokens and replace the GITHUB_TOKEN secret."));
+  }
+  checks.push(meta.private ? pass("repo", `${repo} is private`)
+    : fail("repo", `${repo} is PUBLIC: player reports would be visible to everyone`, "GitHub > the repo > Settings > Danger Zone > Change visibility > Private."));
+  if (meta.has_issues === false) checks.push(fail("issues", "Issues are turned off in the repo", "Repo > Settings > General > Features: tick Issues."));
+
+  const branch = meta.default_branch || "main";
+  const ref = await gh(env, "GET", `/repos/${repo}/git/ref/heads/${branch}`, null, true);
+  checks.push(ref.ok ? pass("branch", `${branch} exists`)
+    : fail("branch", "the repo is empty", "Add a README (repo page > Add a README > Commit) so it has a main branch."));
+
+  // Contents write: a blob nothing points to is harmless (GitHub drops it later) and proves the permission.
+  const blob = await gh(env, "POST", `/repos/${repo}/git/blobs`, { content: "bGFzdC1pbmsgY2hlY2s=", encoding: "base64" }, true);
+  checks.push(blob.ok ? pass("contents", "the token can write files")
+    : fail("contents", "the token cannot write files (" + blob.status + ")", "Edit the token: Permissions > Repository > Contents: Read and write. Save; the secret stays the same."));
+
+  // Issues write: create the labels (an existing label answers 422, which also proves the permission).
+  let made = 0, labelsOk = true;
+  for (const [name, [color, description]] of Object.entries(LABELS)) {
+    const r = await gh(env, "POST", `/repos/${repo}/labels`, { name, color, description }, true);
+    if (r.status === 201) made++;
+    else if (r.status !== 422) { labelsOk = false; break; }
+  }
+  checks.push(labelsOk ? pass("issues", made ? `the token can open issues (made ${made} label${made === 1 ? "" : "s"})` : "the token can open issues")
+    : fail("issues", "the token cannot write issues", "Edit the token: Permissions > Repository > Issues: Read and write. Save; the secret stays the same."));
+
+  out.ok = checks.every((c) => c.ok);
+  return json(out);
+}
+
+const pass = (name, detail) => ({ name, ok: true, detail });
+const fail = (name, detail, fix) => ({ name, ok: false, detail, fix });
+const warn = (name, detail, fix) => ({ name, ok: true, warning: true, detail, fix });
 
 // ------------------------------------------------------------------ GitHub
 
