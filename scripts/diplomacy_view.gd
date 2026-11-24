@@ -32,6 +32,7 @@ static func _fcolor(fid: String) -> Color:
 	return Color(c) if c != "" else TEXT
 
 
+var _drag := {}  # a finger drag over the list (Prompts.list_steps)
 var page := "list"  # "list" or "envoy" (picking who to send)
 var sel := 0
 var pick_faction := ""
@@ -243,24 +244,35 @@ func _pick(i: int) -> void:
 
 
 func _gui_input(event: InputEvent) -> void:
+	# The wheel or a finger scrolls the list (the focus walks with it, stopping at the ends).
+	var steps := Prompts.list_steps(event, _drag, ROW_H * 2.0, "position" in event and event.position.x < LIST_W + 16)
+	if page != "list":
+		steps = 0
 	if event is InputEventMouseMotion:
 		for i in _row_rects.size():
 			if (_row_rects[i] as Rect2).has_point(event.position) and sel != i:
 				sel = i
 				_confirm = ""
-	elif event is InputEventMouseButton and event.pressed and page == "list" and event.button_index in [MOUSE_BUTTON_WHEEL_UP, MOUSE_BUTTON_WHEEL_DOWN]:
-		sel = posmod(sel + (1 if event.button_index == MOUSE_BUTTON_WHEEL_DOWN else -1), _rows.size())
+	elif steps != 0:
+		sel = clampi(sel + steps, 0, _rows.size() - 1)
 		_confirm = ""
+		accept_event()
+	elif Prompts.list_tap(event, _drag, _row_at(event.position) if "position" in event else -1, sel) != "":
+		var i := _row_at(event.position)  # tap to select, tap again to act (touch friendly)
+		if i == sel:
+			_pick(i)
+		else:
+			sel = i
 	elif Prompts.tapped(event):
-		for i in _row_rects.size():
-			if (_row_rects[i] as Rect2).has_point(event.position):
-				if sel == i:
-					_pick(i)  # tap to select, tap again to act (touch friendly)
-				else:
-					sel = i
-				return
 		if _close_rect().has_point(event.position):
 			_back()
+
+
+func _row_at(p: Vector2) -> int:
+	for i in _row_rects.size():
+		if (_row_rects[i] as Rect2).has_point(p):
+			return i
+	return -1
 
 
 func _close_rect() -> Rect2:
@@ -270,7 +282,8 @@ func _close_rect() -> Rect2:
 # ---------------------------------------------------------------- drawing
 
 func _text(pos: Vector2, s: String, fsize: int, col: Color, width := -1.0) -> void:
-	draw_string(font, pos, s, HORIZONTAL_ALIGNMENT_LEFT, width, Access.fs(fsize), col)
+	# Text cut by its width ends in "..." rather than mid-letter (long names at large text sizes).
+	draw_string(font, pos, Access.fit(font, s, Access.fs(fsize), width) if width > 0.0 else s, HORIZONTAL_ALIGNMENT_LEFT, width, Access.fs(fsize), col)
 
 
 func _text_r(right: Vector2, s: String, fsize: int, col: Color) -> void:
@@ -326,7 +339,8 @@ func _draw_list(vs: Vector2) -> void:
 	var sub := tr("Post an envoy to win standing each day. Deals unlock as standing rises.")
 	if Empire.intel_until > Empire.day:
 		sub = tr("Fresh intel: +1 day of surge warning for %d more day%s.") % [Empire.intel_until - Empire.day, "" if Empire.intel_until - Empire.day == 1 else "s"]
-	_text(Vector2(90, 20), sub, 8, GOLD)
+	var hl := UiSkin.header_line(font, tr("Diplomacy"), 15, sub, 8, vs.x, 90.0)
+	_text(Vector2(hl[0], 20), hl[1], 8, GOLD)
 	if trouble != "":
 		_text(Vector2(8, 34), trouble + tr(" Get them to Neutral (-9) to stop it."), 8, BAD)
 	# Lay the list out first, then scroll so the selected row is on screen.

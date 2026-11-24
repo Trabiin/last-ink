@@ -250,6 +250,7 @@ func _alert_tray() -> Control:
 	tray.origin = MAP_ORIGIN + Vector2(4, MAP_VIEW.y - 16)  # stacks up from just above the legend
 	tray.grow_up = true
 	tray.width = 270.0
+	_tray = tray
 	return tray
 
 
@@ -1645,16 +1646,67 @@ func _draw_region_panel(r: Dictionary, x: float, w: float) -> void:
 	_text_c(Vector2(pr.get_center().x, pr.position.y + 16), tr("No missions past the fog"), 8, Color(0.45, 0.44, 0.47))
 
 
+## The owner legend along the bottom of the map. It keeps clear of the "Next to fall" line in the
+## bottom-right corner (blank_watch.gd): entries that would reach it wrap onto a row above, and the
+## alert tray stacks up from above the top row.
 func _draw_legend() -> void:
-	var x := MAP_ORIGIN.x + 4
-	var y := MAP_ORIGIN.y + MAP_VIEW.y - 8
+	var rows := _legend_rows()
+	var y := MAP_ORIGIN.y + MAP_VIEW.y - 8 - (rows.size() - 1) * Access.px(LEGEND_ROW_H)
+	for row in rows:
+		var x := MAP_ORIGIN.x + 4
+		for k in row:
+			x = _legend_entry(x, y, k, _legend_label(k))
+		y += Access.px(LEGEND_ROW_H)
+	var tray_at := MAP_ORIGIN + Vector2(4, MAP_VIEW.y - 16 - (rows.size() - 1) * Access.px(LEGEND_ROW_H))
+	if _tray != null and _tray.origin != tray_at:
+		_tray.origin = tray_at
+		_tray.queue_redraw()
+
+
+const LEGEND_ROW_H := 12.0
+var _tray: Control  # the alert tray (alert_tray.gd, made in _alert_tray), lifted above the legend when it wraps
+const BLANK_WATCH := preload("res://scripts/blank_watch.gd")
+
+
+func _legend_label(k: String) -> String:
+	return tr("Yours") if k == "you" else (tr("Unclaimed") if k == "free" else str(Empire.faction(k).get("short", k)))
+
+
+## The legend's entries split into rows, top row first. The bottom row holds the first entries, as many
+## as fit beside "Next to fall"; the rest go on rows above, which have the map's whole width.
+func _legend_rows() -> Array:
 	var keys := ["you", "free"]
 	for fid in Empire.faction_ids():  # factions whose home is on the open map (Chapter 2 adds the Abbey, the Erasers)
 		if Journal.faction_known(fid):
 			keys.append(fid)
-	for k in keys:
-		var label: String = tr("Yours") if k == "you" else (tr("Unclaimed") if k == "free" else str(Empire.faction(k).get("short", k)))
-		x = _legend_entry(x, y, k, label)
+	var full := MAP_VIEW.x - 8.0
+	var bottom_w := full
+	var next: Dictionary = BLANK_WATCH.next_to_fall()
+	if not next.is_empty():
+		bottom_w -= font.get_string_size(BLANK_WATCH.next_text(next), HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(8)).x + 14.0
+	# Fill rows from the bottom up: the bottom row takes what fits beside "Next to fall".
+	var widths: Array = keys.map(func(k): return _legend_w(_legend_label(k)))
+	var rows := []
+	var row := []
+	var used := 0.0
+	var limit := bottom_w
+	for i in keys.size():
+		if not row.is_empty() and used + widths[i] > limit:
+			rows.append(row)
+			row = []
+			used = 0.0
+			limit = full
+		row.append(keys[i])
+		used += widths[i]
+	if not row.is_empty():
+		rows.append(row)
+	rows.reverse()  # the first entries stay on the bottom row, read left to right
+	return rows
+
+
+func _legend_w(label: String) -> float:
+	var sw := 8.0 if Access.map_symbols else 6.0
+	return sw + 9 + font.get_string_size(label, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(8)).x + 4
 
 
 func _draw_panel() -> void:

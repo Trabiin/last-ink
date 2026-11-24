@@ -1,7 +1,7 @@
 # Accessibility
 
 Issue #34 (first pass) and #192 (part 2: readable font, map markings, camera motion, rebinding every
-action, assists, captions).
+action, assists, captions, visible focus on every screen, Largest text polish).
 
 ## What the player gets
 
@@ -72,6 +72,19 @@ section `[access]`.
 - **Sounds**: an effect that carries information gets an entry in `Audio.CAPTIONS`, or pass the caption as the
   fourth argument of `Audio.sfx` when the same sound means different things.
 - **Cameras** that follow something use `Access.follow_speed()`, smoothed pans and zooms `Access.ease_k()`.
+- **Focus**: a list screen keeps one `sel` (or equivalent) that the arrow keys / d-pad move and draws exactly
+  one cursor: the gold frame (`UiSkin.highlight` or a gold outline) plus gold text. Nothing else on screen
+  wears gold while unfocused (a default button gets a muted frame). Pointing at a row with the mouse focuses
+  it, like the arrow keys; a click on the focused row acts. The focused row is always drawn on screen: a
+  list taller than the screen scrolls with the focus.
+- **Wheel and touch**: on a scrolling list the wheel and a finger drag walk through it without wrapping
+  round (`Prompts.list_steps`, `Prompts.step_row`), and a finger only picks or acts when it lifts without
+  having dragged (`Prompts.list_tap`), so scrolling never uses an item. Add new list screens to
+  `tests/test_focus.gd` (`_audit_table`), which checks all of this at Normal and at Largest with the
+  readable font.
+- **Room at large sizes**: text beside a title starts after the title (`UiSkin.header_line`), footers
+  slide left rather than off the edge, and a view's `_text(..., width)` trims with "..." instead of
+  cutting mid-letter.
 - Check a new screen at Largest: `ACCESS_SHOTS=/tmp/a11y TEXT_SIZE=2 xvfb-run -a godot --audio-driver Dummy --path . -s tests/run.gd -- access_shots`
   (add it to `tests/test_access_shots.gd`). Add `FONT=1` for the readable font.
 
@@ -81,9 +94,18 @@ section `[access]`.
   mission HUD and the danger markers: owners and Fray read by shape and number, HP and Ink bars carry their
   percentages, danger zones read by their hatching and outline.
 
-## Still open (issue #192)
+- Visible focus (2026-11-24): every list screen on the Command Table, the party picker, Help, the quick
+  menu, Party gear and the skill tree, at Normal and at Largest with the readable font
+  (`tests/test_focus.gd`): arrow keys and d-pad reach every row and the focused row stays on screen, the
+  mouse pointer moves the focus, a tap focuses and a second tap acts, the wheel and a finger drag reach
+  rows out of sight. Screens built from Godot controls (the report form, the playtest survey) use the
+  engine's focus with a gold frame. Single-button cards (results, chapter cards, help cards) take
+  Enter / A / a tap anywhere.
+- Largest text, both fonts, every screen in `tests/test_access_shots.gd`: the title tagline keeps clear
+  of the menu, the Command Table legend wraps above itself instead of running into "Next to fall",
+  headers, footers, Research headings, Journal rows, quick menu tabs and the HUD plates fit.
 
-- Every screen reachable by keyboard, gamepad, mouse and touch with visible focus (audit after #144).
-- Largest text polish (title tagline, conversation heading over the objective; the Command Table legend
-  meets "Next to fall" at Largest) after the final UI pass (#144).
-- The Game Accessibility Guidelines review and Steam accessibility tags (#151).
+## Still open
+
+- The Game Accessibility Guidelines review and Steam accessibility tags wait on the store page (#151).
+- Re-run `tests/test_access_shots.gd` at Largest with both fonts after the final UI pass (#144).

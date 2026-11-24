@@ -228,7 +228,8 @@ func _close_rect() -> Rect2:
 # ---------------------------------------------------------------- drawing
 
 func _text(pos: Vector2, s: String, fsize: int, col: Color, width := -1.0) -> void:
-	draw_string(font, pos, s, HORIZONTAL_ALIGNMENT_LEFT, width, Access.fs(fsize), col)
+	# Text cut by its width ends in "..." rather than mid-letter (long names at large text sizes).
+	draw_string(font, pos, Access.fit(font, s, Access.fs(fsize), width) if width > 0.0 else s, HORIZONTAL_ALIGNMENT_LEFT, width, Access.fs(fsize), col)
 
 
 func _text_r(right: Vector2, s: String, fsize: int, col: Color) -> void:
@@ -281,7 +282,8 @@ func _draw() -> void:
 	_text(Vector2(8, 20), tr("Bonds"), 15, Color("f3efe4"))
 	var ready := Empire.bond_ready_ids().size()
 	var sub := tr("Chat once a day in Hollowmark, put people in roles they like, send them on jobs. Each rank has a scene.")
-	_text(Vector2(62, 20), (tr("%d want%s a word with Ash.") % [ready, "s" if ready == 1 else ""]) if ready > 0 else "", 9, HEART)
+	var hl := UiSkin.header_line(font, tr("Bonds"), 15, (tr("%d want%s a word with Ash.") % [ready, "s" if ready == 1 else ""]) if ready > 0 else "", 9, vs.x, 62.0)
+	_text(Vector2(hl[0], 20), hl[1], 9, HEART)
 	_text(Vector2(8, 34), sub, 8, SOFT, vs.x - 16)
 	var ids := _ids()
 	if ids.is_empty():

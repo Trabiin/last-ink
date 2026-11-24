@@ -35,7 +35,10 @@ var note_t := 0.0
 var _t := 0.0
 var _panel := Rect2()
 var _strip := TabStrip.new()  # the tab row with its switch keys either side
-var _row_rects: Array = []
+var _row_rects: Array = []  # one per row (Rect2() for a row scrolled out of sight)
+var _top := 0  # first row shown when the list is taller than the screen
+var _follow := true  # keep the focused row in view (false after the wheel or a finger scrolled)
+var _drag := {}  # a finger on the list (Prompts.list_steps / list_tap)
 var _sub_rects: Array = []
 var _sub_panel := Rect2()
 var _hero_data := {}
@@ -277,10 +280,13 @@ func _set_tab(i: int) -> void:
 	tab = posmod(i, TABS.size())
 	sub = []
 	sel = 0
+	_top = 0
+	_follow = true
 	_rebuild()
 
 
 func _move(step: int) -> void:
+	_follow = true
 	if sub.size() > 0:
 		for n in sub.size():
 			sub_sel = posmod(sub_sel + step, sub.size())
@@ -470,11 +476,26 @@ func _input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion:
 		_hover(event.position)
 		return
-	if event is InputEventScreenDrag:
+	# A list taller than the screen scrolls under the wheel or a finger; the focus stays put.
+	var on_list: bool = sub.is_empty() and "position" in event and _panel.has_point(event.position)
+	var steps := Prompts.list_steps(event, _drag, ROW_H, on_list)
+	if steps != 0 or event is InputEventScreenDrag:
+		if steps != 0:
+			_top += steps
+			_follow = false
 		get_viewport().set_input_as_handled()
 		return
-	var tap: bool = (event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT) \
-		or (event is InputEventScreenTouch and event.pressed)
+	var tap: bool = event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT
+	if event is InputEventScreenTouch:
+		# A finger acts when it lifts without having dragged, so scrolling the list never uses an item.
+		var row := _row_at(event.position) if sub.is_empty() else -1
+		if event.pressed:
+			_drag["down_row"] = row
+			tap = row < 0  # tabs, the short list and outside the panel answer at once
+		else:
+			if row >= 0 and row == int(_drag.get("down_row", -1)) and float(_drag.get("moved", 0.0)) < 8.0:
+				_pick_row(row)
+			_drag["down_row"] = -1
 	if tap:
 		_tap(event.position)
 	elif event is InputEventScreenTouch or event is InputEventMouseButton:
@@ -515,6 +536,13 @@ func _hover(p: Vector2) -> void:
 	for i in _row_rects.size():
 		if (_row_rects[i] as Rect2).has_point(p) and rows[i].get("enabled", true):
 			sel = i
+
+
+func _row_at(p: Vector2) -> int:
+	for i in _row_rects.size():
+		if (_row_rects[i] as Rect2).has_point(p):
+			return i
+	return -1
 
 
 func _tap(p: Vector2) -> void:
@@ -576,7 +604,19 @@ func _draw() -> void:
 	var font := ThemeDB.fallback_font
 	draw_rect(Rect2(Vector2.ZERO, vs), Color(0.04, 0.03, 0.07, 0.35))
 	var w := minf(W, vs.x - 24.0)
-	var h := 44.0 + maxf(rows.size(), 3) * ROW_H + 30.0
+	# As many rows as fit on the screen; a longer list scrolls with the focus (or the wheel / a finger).
+	var shown := mini(rows.size(), maxi(int((vs.y - 24.0 - 74.0) / ROW_H), 3))
+	if _follow:
+		_top = clampi(_top, sel - shown + 1, sel)
+	_top = clampi(_top, 0, maxi(rows.size() - shown, 0))
+	if not _follow and sub.is_empty() and (sel < _top or sel >= _top + shown):
+		# Scrolled away from the focus: it moves to the nearest row still in view, so it never hides.
+		var order := range(_top, _top + shown) if sel < _top else range(_top + shown - 1, _top - 1, -1)
+		for i in order:
+			if rows[i].get("enabled", true):
+				sel = i
+				break
+	var h := 44.0 + maxf(shown, 3) * ROW_H + 30.0
 	_panel = Rect2((vs.x - w) / 2.0, maxf(12.0, (vs.y - h) / 2.0 - 20.0), w, h)
 	UiSkin.panel(self, _panel, "ledger")
 
@@ -592,6 +632,9 @@ func _draw() -> void:
 	var x0 := _panel.position.x + 22.0
 	var x1 := _panel.end.x - 12.0
 	for i in rows.size():
+		if i < _top or i >= _top + shown:
+			_row_rects.append(Rect2())
+			continue
 		var row: Dictionary = rows[i]
 		var on: bool = row.get("enabled", true)
 		var rr := Rect2(_panel.position.x + 4, y, w - 8, ROW_H - 2)
@@ -608,6 +651,13 @@ func _draw() -> void:
 		if i == sel:
 			_marker(x0 - 12.0, y + 12)
 		y += ROW_H
+	if rows.size() > shown:  # more above or below: small arrows on the frame
+		var ax := _panel.end.x - 14.0
+		if _top > 0:
+			draw_colored_polygon(PackedVector2Array([Vector2(ax - 4, _panel.position.y + 36), Vector2(ax + 4, _panel.position.y + 36), Vector2(ax, _panel.position.y + 31)]), GOLD)
+		if _top + shown < rows.size():
+			var by := _panel.position.y + 34.0 + shown * ROW_H
+			draw_colored_polygon(PackedVector2Array([Vector2(ax - 4, by - 4), Vector2(ax + 4, by - 4), Vector2(ax, by + 1)]), GOLD)
 
 	# Footer: last result, or how to drive it.
 	var fy := _panel.end.y - 9.0
