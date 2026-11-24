@@ -5,7 +5,11 @@
 		"hester": {"name": "Hester Vane", "color": "7a4a8a", "colors": {"skin": "c8a888", "cloth": "3a2a40", "trim": "8a6aa0", "hair": "d0d0c8"}},
 		"marrow": {"name": "Notary Fennick", "color": "4a6a8a", "colors": {"skin": "e0c8b0", "cloth": "2a3040", "trim": "8090a0", "hair": "4a3a2a"}},
 		"penhallow": {"name": "Marguerite Penhallow", "color": "a8343a", "colors": {"skin": "e0c4aa", "cloth": "2a2228", "trim": "b8343a", "hair": "8a8a8a"}},
-		"sallow": {"name": "Augustin Sallow", "color": "c9a54a", "colors": {"skin": "e8cbb0", "cloth": "5a2a3a", "trim": "d8b050", "hair": "3a2a1a"}}
+		"sallow": {"name": "Augustin Sallow", "color": "c9a54a", "colors": {"skin": "e8cbb0", "cloth": "5a2a3a", "trim": "d8b050", "hair": "3a2a1a"}},
+		"berenice": {"name": "Bérénice de Saulx", "color": "6a7ac0", "colors": {"skin": "f0d8c8", "cloth": "8a8a9a", "trim": "4a5ab0", "hair": "3a2a2a"}},
+		"proctor": {"name": "Proctor Dufresne", "color": "3a3a4a", "colors": {"skin": "e0ccb8", "cloth": "26262e", "trim": "a8a8b8", "hair": "8a8a8a"}},
+		"mam": {"name": "Annie Pickering", "color": "b08a5a", "colors": {"skin": "e0c0a0", "cloth": "5a4a3a", "trim": "c8a060", "hair": "b8b0a8"}},
+		"pratt": {"name": "Old Pratt", "color": "5a6a3a", "colors": {"skin": "d8c8a8", "cloth": "2e3424", "trim": "b8a860", "hair": "c8c8c0"}}
 	},
 	"talks": {
 		"personal_bran_intro": {"title": "Buy Back the Paper", "lines": [
@@ -26,13 +30,13 @@
 			["", "Boots on the stairs outside. A lot of them."],
 			["bran", "Right. Ash, keep 'em off the door. I'm gonna stand here and watch him write very slowly."],
 			["crane", "You can't seriously expect me to... 'ere, put that down..."],
-			["bran", "Pen. Paper. Arm. Start writing.", "angry"]
+			["bran", "There's me arm. There's your pen. Start writin'.", "angry"]
 		]},
 		"personal_bran_outro": {"title": "Clause Nine", "lines": [
 			["", "The last Guild sellsword limps down the landing. Inside, Crane has struck his own name from Bran's arm, line by line, his hand shaking hard enough to blot every stroke."],
-			["crane", "There. Satisfied? You're held by nobody. A contract with no holder. It isn't even legal. It's just... ink."],
+			["crane", "There. Satisfied? You're held by nobody. A contract with no holder. No court would 'ear it. You've paid good money for a bit of ink."],
 			["bran", "And this is your money. All of it. I said I'd pay, and I pay."],
-			["", "Bran drops the purse on the desk. Then he takes Crane's pen, looks at it for a long moment, and walks out onto the landing."],
+			["", "Bran drops the purse on the desk. Then he takes Crane's pen, weighs it in his hand, and walks out onto the landing."],
 			["", "There is a small splash."],
 			["bran", "Don't look at me like that. It was a terrible pen.", "smug"],
 			["bran", "Come on. Let's go 'ome before I start feelin' things."]
@@ -51,7 +55,7 @@
 			["hester", "I owe you a grandson. I know. Thought of it every day for eleven years, I have."],
 			["gristle", "Then you've had plenty of time to find a knife, haven't you. Put my name back, Hester. Where it was. Deep."],
 			["hester", "The tree decides, not me. It wants to know you're still one of us. It will test you. The woods will come for the tree, and you will defend it, or you won't."],
-			["gristle", "Ugh. Ceremony. Fine. Ash, dear, hit anything that tries to eat the tree. Anything. The Coven gets the bill.", "smug"]
+			["gristle", "Ceremony, is it. Fine. Ash, dear, hit anything that tries to eat the tree. Anything. The Coven gets the bill.", "smug"]
 		]},
 		"personal_gristle_outro": {"title": "Paid in Full", "lines": [
 			["", "The last moth falls in a flutter of torn envelopes. The woods go quiet, the way a room goes quiet after an argument."],
@@ -178,7 +182,7 @@
 			["", "A rap at the shutter. A rattle of the latch. Notary Fennick opens his window and finds Jessamy's face an inch from his own."],
 			["marrow", "You. You're... I struck you out. You paid me to, duly. I remember the fee. It was a very good fee."],
 			["jessamy", "And now I'd like a refund, Fennick. In ink. Write me back in."],
-			["marrow", "That's not how it works. Once you're out of the Ledger you're out. Per the statute. That's the whole point of being out."],
+			["marrow", "That's not how it works. Once you're out of the Ledger you're out. Per the statute, section nine, which I did not write."],
 			["jessamy", "Then make it how it works. You're a notary. Notarise something.", "angry"],
 			["", "Outside, someone shouts. A lantern swings toward the toll house. Then another."],
 			["marrow", "The clerks! They'll see you! They'll see me! They'll audit me!"],
@@ -215,7 +219,7 @@
 			["odile", "Every account balances. Every one. All but a single line, twenty-six years old. Ninety Gilt, quietly moved, so one village never made it onto the lists."],
 			["penhallow", "Penhallow Mere."],
 			["odile", "Where I was born."],
-			["", "For a long moment neither of them says anything. Then the Chief Assessor caps her red pen, and her black one, and stands."],
+			["", "Neither of them says anything. The tea goes cold. Then the Chief Assessor caps her red pen, and her black one, and stands."],
 			["penhallow", "Keep the ledger, Odile. Use it better than I did.", "sad"],
 			["", "She pays for the tea, and the menu, and leaves. Odile does not cry until she is sure her mother is out of sight. Ash does not look."]
 		]},
@@ -241,6 +245,77 @@
 			["sallow", "Please. Fauvette. Darling. Je vous en prie. What do you want?"],
 			["velvette", "Nothing, Augustin. You keep this book pinned to your coat until it reaches the Concord. Let us see how they reward a man who keeps receipts."],
 			["", "She closes the book and bows. It is the best bow you have ever seen."]
+		]},
+		"personal_hortense_intro": {"title": "The Surety", "lines": [
+			["", "The Vauclair Terraces at dusk. Rows of vines run down to the ink lake, and every grape on them is the grey of old paper."],
+			["hortense", "The Office of Corrections calls it a school. The de Saulx call it a debt. Bérénice is the surety: while she copies their contracts, my family's notes stay unpaid and unpunished."],
+			["hortense", "She was eleven when they took her. She is seventeen now. I have sent her a letter every season and a dress every year, and the dresses come back, because pupils wear grey."],
+			["hortense", "Tonight the Office moves her to the capital. So tonight, sweet, we are going to a school we were not invited to, and we are leaving early, with a pupil."]
+		]},
+		"personal_hortense_proctor": {"title": "Terms of Enrolment", "lines": [
+			["", "The school is an old wine house with bars on every upper window. A thin man in grey stands on the steps with a ledger, as if he expected you."],
+			["proctor", "Marquise. You are four years late with the fees and six years early for the reading of the terms. Pupils leave this house when the debt is settled."],
+			["hortense", "Then settle it, Proctor. Put a price on her. I have a sword, a friend and a very bad temper, and you may choose which of the three pays.", "angry"],
+			["proctor", "Your sister is the finest copyist I have trained. The capital has paid for her already. I am afraid she is sold, Marquise."],
+			["hortense", "Then you have sold something that was never yours to sell. Ash, sweet. The Proctor's bursar is coming round the side with a sword. Do help him find the ground."]
+		]},
+		"personal_hortense_outro": {"title": "Paid in Full", "lines": [
+			["", "The dormitory door gives. Inside, seven girls in grey sit up in seven narrow beds. The one by the window already has her shoes on."],
+			["berenice", "You're late. I spelled it in the first letters. T, O, N, I, G, H, T. I wasn't sure you'd still remember the code."],
+			["hortense", "Bérénice. I remember every code we ever had. The tapping one. The one with the fan. The one Papa never broke.", "sad"],
+			["berenice", "The fan one was stupid. Who is that?"],
+			["hortense", "That is Ash. Ash does not exist, officially, so be polite. And these six are coming with us. All of them. Hollowmark has blankets."],
+			["berenice", "...You came with a whole army for us?"],
+			["hortense", "I came with one very good friend. It turns out to be the same thing.", "happy"]
+		]},
+		"personal_saffron_intro": {"title": "The Last Verse", "lines": [
+			["", "Pendower Shallows. The ink lake lies flat and black under a white sky, and out on the mud flats stands a little brick house that was never built."],
+			["saffron", "There it is. I sang that house when I was nine. Mam was sick on the barge and the cold was getting into her chest, and I sang her four walls and a fire, and they stayed."],
+			["saffron", "Never finished the song, though. Couldn't think of an ending. So the house never finished either. No back door. Stairs that go up into the roof and stop."],
+			["saffron", "She's still in there. Eleven years. She won't come out while the song's still going, she says, because it'd be rude."],
+			["saffron", "The Blank's at the end of the flats. If I'm going to finish it, I'm finishing it today. Keep the eels off me, love."]
+		]},
+		"personal_saffron_mam": {"title": "Annie Pickering", "lines": [
+			["", "The door is open. Inside, a fire burns without wood, and a small woman in a shawl is darning a sock that has been darned many times."],
+			["mam", "Maud. You've let your hair go red. Your father would have had something to say."],
+			["saffron", "Mam, the white's coming. You've got to come out. I'm going to finish the song, and then the house goes, and I'm not having you go with it."],
+			["mam", "Finish it, then. I've been waiting eleven years for the last verse, my girl. I'm not leaving in the middle. Your father walked out in the middle of things. I didn't."],
+			["saffron", "...Right. Ash, love, stand at the door. When I start, they'll come for the singing. They always do."]
+		]},
+		"personal_saffron_outro": {"title": "The Whole Song", "lines": [
+			["", "Saffron sings the last verse. It is not a clever verse. It is about a kettle, and a coal barge called the Mary Rudd, and a woman who stayed."],
+			["", "On the final note the walls go thin as paper, then as smoke. The fire goes out without any ash. Annie Pickering is standing on the mud, holding her sock."],
+			["mam", "Well. That was a proper ending. You took your time."],
+			["saffron", "I did, Mam. I'm sorry. I'm sorry it took so long.", "sad"],
+			["mam", "Don't be sorry. Be warm. Who's this, then? Doesn't say much. Good. Your father talked all the time."],
+			["saffron", "This is Ash. Ash, this is Mam. Mam, you'll like Hollowmark. There's a tavern, and the landlord waters the gin."],
+			["mam", "Does he, now.", "smug"]
+		]},
+		"personal_nan_intro": {"title": "Collections", "lines": [
+			["", "Lantern Quay after dark. Barges knock against the smugglers' wharf, and every lantern on it is hung so that nobody's face is lit."],
+			["nan", "Right. Old Pratt's counting-house is the tall one with no windows on the ground floor. Strongbox is upstairs. My contract's in it, and about four hundred others."],
+			["tally", "Five hundred and twelve. I counted them the night she signed. I had nothing else to do. I had only just been made."],
+			["nan", "Pratt's collectors walk the wharf in pairs. Lamplighters on the barges, swords on the boards. We go in loud, I talk, you hit, Tally holds the door."],
+			["tally", "I cannot hold a door. I am a shadow."],
+			["nan", "Then you'll lean on it meaningfully, love. Off we go."]
+		]},
+		"personal_nan_pratt": {"title": "Old Pratt", "lines": [
+			["", "Upstairs, a little old man in green sits at a desk under a single candle, totting up figures with a pen that squeaks."],
+			["pratt", "Nan Cripps. Fifteen years of age, a thumbprint and a soul, at forty per cent a month. You are behind, my dear. You have always been behind."],
+			["nan", "Mr. Pratt! You look well. Have you lost weight? You've lost weight. I'll take the paper and we'll call it even, shall we?"],
+			["pratt", "The collateral is behind you, Nan. It has been talking to my clerks. It told them the true value of my stock. I have had to let three of them go."],
+			["tally", "They were stealing from you. I was being helpful. It is a habit I cannot break."],
+			["pratt", "Bailiff. Recover the collateral, and the young lady's friend."]
+		]},
+		"personal_nan_outro": {"title": "Settled Accounts", "lines": [
+			["", "The strongbox lid comes up. Five hundred and twelve contracts, tied in bundles with green tape. Nan's is on top, as if Pratt liked to read it."],
+			["nan", "Here it is. Nan Cripps, her conscience, to be held until the debt is paid. Look at that signature. Terrible. I was such a bad forger at fifteen.", "smug"],
+			["tally", "You take the other five hundred and eleven as well."],
+			["nan", "Tally, I am a thief, not a charity."],
+			["tally", "You take them as well."],
+			["nan", "...Fine. Fine! Bundle them up, Ash, love. We'll drop them off at every door on the Quay, and none of them will ever know who to thank. That's how you know it's a proper con.", "happy"],
+			["pratt", "You'll pay for this, Nan Cripps."],
+			["nan", "Put it on my account, Mr. Pratt."]
 		]}
 	},
 	"missions": [
@@ -472,6 +547,70 @@
 					"spawn": {"sellsword": 1}, "every": 6.0, "first": 3.0},
 				{"do": "talk", "talk": "personal_velvette_outro"},
 				{"do": "exit", "label": "Leave the Heron to its audience"}
+			]
+		},
+		{
+			"id": "personal_hortense", "who": "hortense", "name": "The Surety", "province": "terraces",
+			"map": "res://maps/personal_hortense.txt", "threat": 5, "xp": 55,
+			"brief": "The Office of Corrections keeps a 'school' on the Vauclair Terraces where debtors' daughters copy contracts as surety for their families. Bérénice de Saulx has been there six years. Tonight the Office moves its pupils to the capital, so tonight Hortense is fetching her sister, and anybody else who wants to leave.",
+			"enemies": {"duellist": 2, "reveller": 2, "sellsword": 1},
+			"rewards": {"gilt": 30, "renown": 1},
+			"label": "Fetch Bérénice from the Terraces",
+			"steps": [
+				{"do": "talk", "talk": "personal_hortense_intro"},
+				{"do": "goto", "at": "vines", "label": "Climb through the grey vines to the school"},
+				{"do": "clear", "at": "vines", "label": "The Office's night watch", "count": 3, "spawn": {"reveller": 2, "duellist": 1},
+					"banter": [["hortense", "Hired guests. The Office never could throw a party without paying for the company."]]},
+				{"do": "goto", "at": "school", "label": "Go up to the school steps"},
+				{"do": "talk", "talk": "personal_hortense_proctor"},
+				{"do": "clear", "at": "school", "label": "The bursar and his clerks", "count": 3, "spawn": {"sellsword": 1, "duellist": 1},
+					"elite": {"kind": "duellist", "name": "Bursar Thibault", "hp": 3.0, "damage": 1.3}, "done_banter": [["hortense", "Second intention, Bursar. The first was only to make you look."]]},
+				{"do": "use", "at": "dormitory", "seconds": 4.0, "label": "Break the dormitory lock", "work_label": "LOCK",
+					"spawn": {"reveller": 1}, "every": 6.0, "first": 3.0},
+				{"do": "talk", "talk": "personal_hortense_outro"},
+				{"do": "exit", "label": "Take the girls down the Terraces"}
+			]
+		},
+		{
+			"id": "personal_saffron", "who": "saffron", "name": "The Last Verse", "province": "inkmere",
+			"map": "res://maps/personal_saffron.txt", "threat": 5, "xp": 55,
+			"brief": "Eleven years ago a girl on a coal barge sang her sick mother a house on the Pendower Shallows, and it stayed. The song was never finished, and neither was the house. Now the Blank is on the flats, and Saffron has one chance to sing the last verse and bring her mam out.",
+			"enemies": {"inkeel": 3, "lamplighter": 1, "reveller": 1},
+			"rewards": {"gilt": 25, "renown": 1},
+			"label": "Bring Saffron's mam off the Shallows",
+			"steps": [
+				{"do": "talk", "talk": "personal_saffron_intro"},
+				{"do": "goto", "at": "moorings", "label": "Walk out past the old moorings"},
+				{"do": "clear", "at": "flats", "label": "Ink eels on the flats", "count": 4, "spawn": {"inkeel": 3, "lamplighter": 1},
+					"banter": [["saffron", "Eels! I hate eels. They come up for the high notes, the little beggars."]]},
+				{"do": "goto", "at": "house", "label": "Go to the house that was never built"},
+				{"do": "talk", "talk": "personal_saffron_mam"},
+				{"do": "use", "at": "house", "seconds": 8.0, "label": "Keep the eels off while Saffron sings the last verse", "work_label": "LAST VERSE",
+					"spawn": {"inkeel": 1}, "every": 4.0, "first": 2.0},
+				{"do": "talk", "talk": "personal_saffron_outro"},
+				{"do": "exit", "label": "Walk Annie Pickering off the Shallows"}
+			]
+		},
+		{
+			"id": "personal_nan", "who": "nan", "name": "Collections", "province": "lanternquay",
+			"map": "res://maps/personal_nan.txt", "threat": 5, "xp": 55,
+			"brief": "At fifteen Nan Cripps signed her conscience over to Old Pratt, a moneylender on Lantern Quay, and it came out as Tally, her talking shadow. Now the debt is called in, and the collateral is Tally. Pratt's counting-house is on the smugglers' wharf. Nan is going to rob it.",
+			"enemies": {"lamplighter": 2, "duellist": 1, "sellsword": 2, "enforcer": 1},
+			"rewards": {"gilt": 40, "renown": 1},
+			"label": "Rob Old Pratt's counting-house",
+			"steps": [
+				{"do": "talk", "talk": "personal_nan_intro"},
+				{"do": "goto", "at": "wharf", "label": "Walk down the smugglers' wharf"},
+				{"do": "clear", "at": "wharf", "label": "Pratt's collectors", "count": 4, "spawn": {"lamplighter": 2, "sellsword": 2},
+					"banter": [["nan", "Evening, lads! Lovely night for it. No, keep your hands where Tally can see them."]]},
+				{"do": "goto", "at": "counting_house", "label": "Go up into the counting-house"},
+				{"do": "talk", "talk": "personal_nan_pratt"},
+				{"do": "clear", "at": "counting_house", "label": "Pratt's bailiff", "count": 2, "spawn": {"duellist": 1},
+					"elite": {"kind": "enforcer", "name": "Bailiff Grimes", "hp": 3.0, "damage": 1.3}, "done_banter": [["tally", "He has gone down. I am obliged to tell you that it was mostly Ash."]]},
+				{"do": "use", "at": "strongbox", "seconds": 5.0, "label": "Crack Old Pratt's strongbox", "work_label": "STRONGBOX",
+					"spawn": {"sellsword": 1}, "every": 6.0, "first": 3.0},
+				{"do": "talk", "talk": "personal_nan_outro"},
+				{"do": "exit", "label": "Leave the Quay with five hundred and twelve contracts"}
 			]
 		}
 	]

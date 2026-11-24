@@ -17,7 +17,8 @@
 	},
 	"hero_mats": {
 		"ash": "oak_gall", "bran": "scrap_iron", "gristle": "oak_gall", "ninefingers": "scrap_iron",
-		"ottoline": "lamp_brass", "jessamy": "moth_silk", "odile": "tithe_wax", "velvette": "lamp_brass"
+		"ottoline": "lamp_brass", "jessamy": "moth_silk", "odile": "tithe_wax", "velvette": "lamp_brass",
+		"hortense": "lamp_brass", "saffron": "moth_silk", "nan": "scrap_iron"
 	},
 	"recipes": {
 		"padded_coat": {"mats": {"moth_silk": 2, "scrap_iron": 1}, "gilt": 10, "days": 1},
@@ -44,6 +45,7 @@
 		"steady_bell": {"mats": {"bell_bronze": 4, "moth_silk": 1}, "gilt": 80, "days": 2},
 		"bellringers_clapper": {"mats": {"bell_bronze": 5, "scrap_iron": 2}, "gilt": 90, "days": 2},
 		"clockwork_heart": {"mats": {"ink_pearl": 3, "lamp_brass": 4, "velvet_cord": 1}, "gilt": 130, "days": 3},
+		"hosts_napkin": {"mats": {"velvet_cord": 4, "ink_pearl": 2, "moth_silk": 2}, "gilt": 140, "days": 3},
 		"saltglass_eye": {"mats": {"saltglass": 4, "relic_silver": 2}, "gilt": 170, "days": 3},
 		"second_signature": {"mats": {"spire_leaf": 4, "blank_pith": 6, "tithe_wax": 3}, "gilt": 200, "days": 4},
 

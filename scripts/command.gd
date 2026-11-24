@@ -2083,7 +2083,7 @@ const MARK_INK := Color("15111b")
 const UNRAVEL := 0.6  # Fray from which a province counts as Unravelling (and is hatched on the map)
 ## Each owner's shape on the map, the legend and the panel, so ownership never rests on colour alone.
 ## Yours keeps its flag (and the capital its tower). A faction without an entry takes the next spare shape.
-const OWNER_MARKS := {"free": "ring", "erased": "cross", "concord": "square", "coven": "triangle", "guild": "diamond", "abbey": "hex", "erasers": "bar"}
+const OWNER_MARKS := {"free": "ring", "erased": "cross", "concord": "square", "coven": "triangle", "guild": "diamond", "abbey": "hex", "erasers": "bar", "velvet": "mask"}
 const SPARE_MARKS := ["hex", "bar", "dot"]
 
 
@@ -2116,6 +2116,11 @@ func _owner_mark(ci: CanvasItem, owner: String, c: Vector2, r: float, col := MAR
 			ci.draw_colored_polygon(pts, col)
 		"bar":
 			ci.draw_rect(Rect2(c - Vector2(r, r * 0.4), Vector2(r * 2.0, r * 0.8)), col)
+		"mask":  # the Velvet Nobility (issue #29): a domino mask, two eye holes cut out of a band
+			ci.draw_colored_polygon(PackedVector2Array([c + Vector2(-r, -r * 0.45), c + Vector2(0, -r * 0.2), c + Vector2(r, -r * 0.45),
+				c + Vector2(r * 0.8, r * 0.45), c + Vector2(0, r * 0.25), c + Vector2(-r * 0.8, r * 0.45)]), col)
+			ci.draw_circle(c + Vector2(-r * 0.45, 0), r * 0.2, Color(1, 1, 1, 0.85))
+			ci.draw_circle(c + Vector2(r * 0.45, 0), r * 0.2, Color(1, 1, 1, 0.85))
 		_:
 			ci.draw_circle(c, r * 0.7, col)
 

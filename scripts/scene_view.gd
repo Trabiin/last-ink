@@ -274,7 +274,7 @@ func _draw() -> void:
 			var tx := box.position.x + 30
 			var ty := box.position.y + 22
 			if speaker != "":
-				var nm := Empire.short_name(speaker)
+				var nm := Dialogue.display_name(speaker)  # recruits, and non-recruit speakers (Tally)
 				var nw := UiSkin.TITLE_FONT.get_string_size(nm, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(14)).x
 				var np := Vector2(tx, box.position.y + 18)
 				UiSkin.brush(self, np + Vector2(-3, 3), nw + 8, Dialogue.accent(speaker).darkened(0.15))

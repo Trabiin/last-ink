@@ -82,6 +82,28 @@ MAPS = {
         "setpiece": [("~", (54, 34)), ("~", (58, 34)), ("~", (62, 34)), ("q", (53, 28)), ("q", (62, 28)),
                      ("l", (55, 28)), ("l", (60, 28)), ("n", (61, 20))],
     },
+    # Chapter 3 (issue #29): the Causeway heroes
+    "personal_hortense": {
+        "biome": "oldmill", "layout": "b", "name": "Vauclair Terraces: the School",
+        "mood": "grade=0.82,0.78,0.98 mist=1.2 motes=0.9,0.85,1.0",
+        "sign": "OFFICE OF CORRECTIONS|School for the Daughters of Debtors.|Visitors by appointment.",
+        "marks": [("vines", (34, 30)), ("school", (46, 22), 2), ("dormitory", (52, 14), 2)],
+        "setpiece": [("p", (50, 12)), ("q", (45, 18)), ("q", (52, 18)), ("l", (42, 22)), ("l", (55, 20))],
+    },
+    "personal_saffron": {
+        "biome": "lakeshore", "layout": "c", "name": "Pendower Shallows: the Sung House",
+        "mood": "grade=0.86,0.88,1.0 mist=1.9 motes=1.0,0.95,0.75",
+        "sign": "PENDOWER SHALLOWS|Word-nets: no fishing|after dark.",
+        "marks": [("moorings", (30, 20)), ("flats", (44, 34)), ("house", (52, 40), 2)],
+        "setpiece": [("j", (52, 37)), ("~", (26, 23)), ("~", (32, 24)), ("x", (29, 18)), ("l", (48, 41))],
+    },
+    "personal_nan": {
+        "biome": "causeway", "layout": "a", "name": "Lantern Quay: the Smugglers' Wharf",
+        "mood": "grade=0.62,0.64,0.9 mist=1.3 motes=0.95,0.75,0.5",
+        "sign": "J. PRATT & CO.|Loans. Bonds. Collections.|Interest compounded daily.",
+        "marks": [("wharf", (40, 31)), ("counting_house", (54, 28), 2), ("strongbox", (58, 20), 2)],
+        "setpiece": [("z", (56, 18)), ("~", (40, 35)), ("~", (46, 35)), ("x", (44, 28)), ("c", (37, 28)), ("l", (48, 34)), ("l", (60, 26))],
+    },
 }
 
 

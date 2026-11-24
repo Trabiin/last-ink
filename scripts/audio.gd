@@ -184,7 +184,7 @@ func pick_track() -> String:
 static func mission_track(m: Dictionary) -> String:
 	var obj: Dictionary = m.get("objective", {})
 	if str(obj.get("kind", "")) == "boss":
-		return "abbot" if str(obj.get("boss", "")) == "abbot" else "boss"
+		return str(obj["boss"]) if str(obj.get("boss", "")) in ["abbot", "host"] else "boss"
 	if str(m.get("map", "")).contains("tax_office"):
 		return "breakout"
 	if str(m.get("type", "")) in ["reclaim", "defense"]:
@@ -195,6 +195,8 @@ static func mission_track(m: Dictionary) -> String:
 	var emp: Node = tree.root.get_node_or_null("Empire") if tree != null else null
 	if emp != null and str(emp.territory().find(str(m.get("province", ""))).get("region", "")) == "abbey":
 		return "abbey"  # Chapter 2's region track (issue #28)
+	if emp != null and str(emp.territory().find(str(m.get("province", ""))).get("region", "")) == "causeway":
+		return "causeway"  # Chapter 3's region track (issue #29)
 	return "meadow"
 
 

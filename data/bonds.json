@@ -250,7 +250,7 @@
 				], "choice": [
 					{"label": "[Draw a little picture in the foam]", "bond": 3, "reply": [["tobble", "Ha! A goat? A cloud? A goat in a cloud. Worth a drink. Worth two. Don't tell the others."]]},
 					{"label": "[Leave the second drink]", "bond": 1, "reply": [["tobble", "Sensible. Most sensible customer I've had in thirty years. Bit dull."]]},
-					{"label": "[Put a coin down]", "bond": 2, "reply": [["tobble", "Coin's fine. Coin's honest. Secrets are better, but you'll warm up, lad. Or lass. Whichever."]]}
+					{"label": "[Put a coin down]", "bond": 2, "reply": [["tobble", "Coin's fine. Coin's honest. Secrets are better, but you'll warm up, love. They all do."]]}
 				]},
 				{"rank": 2, "title": "Retiring Next Week", "lines": [
 					["tobble", "Retiring next week. Got a cottage picked out. Frayed Meadow, by the brook. Roses."],
@@ -327,9 +327,9 @@
 					{"label": "[Hand her a fresh quill]", "bond": 2, "reply": [["abeyance", "Oh, a good one. I'll use it for the margins. That's where I keep the true things now."]]}
 				], "end": [["abeyance", "I'll work the margins at the Scriptorium. Things go faster when you know what to look for."]]},
 				{"rank": 4, "title": "A Map", "lines": [
-					["abeyance", "The page drew a map last night. Not words. Lines. The Wickham Hills, and a chapel I've never seen."],
+					["abeyance", "The page drew a map last night, all lines and not a single word. The Wickham Hills, and a chapel I've never seen."],
 					["abeyance", "There's an X. The page has never been that direct. It's usually so polite."],
-					["abeyance", "I think it wants to go home. Or it wants me to see something. I must take it. Will you send people with me?"]
+					["abeyance", "I think it wants to go home, or to show me something first. I must take it. Will you send people with me?"]
 				], "choice": [
 					{"label": "[Nod]", "bond": 3, "reply": [["abeyance", "Thank you. The Wickham Hills. I'll pack the notebook. And the page. Obviously the page. You'll have to do the fighting."]]},
 					{"label": "[Mime: careful]", "bond": 2, "reply": [["abeyance", "I'm always careful. It's the page that isn't."]]}
@@ -437,7 +437,7 @@
 					["", "She says it lightly. Then she checks the sky over the rooftops, the way sailors check for weather. Still dark. She relaxes."],
 					["jessamy", "Go on, then. What's in your box?", "smug"]
 				], "choice": [
-					{"label": "[Open your empty hands]", "bond": 3, "reply": [["jessamy", "Nothin'? That's the saddest thing I've ever seen. Or the most suspicious. I'll decide which once I know you better.", "happy"]]},
+					{"label": "[Open your empty hands]", "bond": 3, "reply": [["jessamy", "Nothin'? Not one sweetheart, not one warrant? I'll get a story out of you yet, cully.", "happy"]]},
 					{"label": "[Point back at her: you first]", "bond": 2, "reply": [["jessamy", "Ha. No. Nice try. Mine's nailed shut. ...I'll tell you one day. Not today. Today I'm bein' charmin'."]]}
 				]},
 				{"rank": 3, "title": "Struck Off", "lines": [
@@ -521,10 +521,10 @@
 					["odile", "A letter came. Red ink, then black. She always checks twice."],
 					["odile", "My mother is at Old Mill Crossing. She wishes to discuss \"the return of Concord property\". That means the ledger. I think it also means me."],
 					["odile", "She will offer me my post back. She will offer to pretend none of this happened. She is very good at making lines disappear."],
-					["odile", "I need to go. Not to give her anything. To settle up. Properly. Once."]
+					["odile", "I need to go. I am not giving her anything back. I am going to settle up, properly, once."]
 				], "choice": [
 					{"label": "[Nod]", "bond": 3, "reply": [["odile", "Thank you. Old Mill Crossing. I'll bring a spare pen. She always forgets hers, to see if I'll offer."]]},
-					{"label": "[Hold out a hand: leave the ledger here]", "bond": 2, "reply": [["odile", "Yes. Good. Safer. She cannot take what I have not brought. You would make a decent collector. That is not a compliment.", "smug"]]}
+					{"label": "[Hold out a hand: leave the ledger here]", "bond": 2, "reply": [["odile", "Good. That is safer. She cannot take what I have not brought. You would make a decent collector. That is not a compliment.", "smug"]]}
 				], "end": [["", "A personal mission is on the Command Table: \"Settle the Account\", at Old Mill Crossing. Odile is going, and Ash goes with her."]]},
 				{"rank": 5, "title": "Reconciled", "lines": [
 					["odile", "She came alone. No guards, no clerks. Older than I remembered. She'd brought her own pen this time."],
@@ -553,9 +553,9 @@
 					["", "Her dressing table is a battlefield of powder and rouge, with a rapier laid across it like a hairbrush."],
 					["velvette", "House rules of the Crimson Encore: I tell you a secret, you tell me one. Business, I have done it that way since I was sixteen."],
 					["velvette", "Mine: Bran sleeps with his contract arm under the pillow. He talks to it. Tenderly."],
-					["velvette", "Your turn. ...Oh. You have nothing to tell. No past at all. Tragic, mon petit. Or thrilling. I have not decided.", "surprised"]
+					["velvette", "Your turn. ...Oh. You have nothing to tell. No past at all. Mon petit, a blank page. Anyone could write on you.", "surprised"]
 				], "choice": [
-					{"label": "[Lean in as if to whisper, then say nothing]", "bond": 3, "reply": [["velvette", "Oh, you tease. You absolute professional. Silence is the most expensive secret there is. I put it on your tab.", "happy"]]},
+					{"label": "[Lean in close, then say nothing]", "bond": 3, "reply": [["velvette", "Oh, you tease. You absolute professional. Silence is the most expensive secret there is. I put it on your tab.", "happy"]]},
 					{"label": "[Draw a small X in the powder on her mirror]", "bond": 2, "reply": [["velvette", "An X. A kiss, or a mark on a map? Don't tell me. I'll enjoy guessing.", "smug"]]},
 					{"label": "[Look at the rapier]", "bond": 1, "reply": [["velvette", "Don't touch the sword, darling. It is the only one in the room who isn't flirting with you."]]}
 				]},
@@ -600,6 +600,201 @@
 				], "choice": [
 					{"label": "[Keep it]", "bond": 3, "reply": [["velvette", "Good. Only secret I ever gave away. Don't you dare sell it. ...Well. Not for less than it's worth.", "happy"]]},
 					{"label": "[Kiss her hand]", "bond": 2, "reply": [["velvette", "Oh, now you flirt. Enfin. I was starting to think you were just very polite furniture.", "smug"]]}
+				]}
+			]
+		},
+		"hortense": {
+			"color": "4a5ab0",
+			"likes": ["envoy", "governor"], "likes_text": "a room to work (envoy) and a province to run (governor)",
+			"dislikes": ["expedition", "staff:infirmary"], "dislikes_text": "mud (expeditions), and blood that isn't on a blade (the Infirmary)",
+			"perks": {
+				"3": {"name": "The Dispatch Bag", "desc": "One more day of warning before every surge.", "effect": {"surge_warning": 1}},
+				"5": {"name": "Second Intention", "desc": "The party hits 3 harder on missions.", "effect": {"mission_damage": 3}}
+			},
+			"scenes": [
+				{"rank": 1, "title": "The Good Side", "lines": [
+					["", "Hortense has taken the window seat in the town hall and arranged herself in it, as if a painter were due."],
+					["hortense", "Sweet. Come and sit on my good side. Both sides are good, but this one has the light.", "smug"],
+					["hortense", "I have been here four days and your people have told me everything. The well is cursed, the baker is in love with the smith, and you never speak."],
+					["hortense", "Tell me something nobody knows. You needn't use words. I read faces for a living, and yours is a very open book with no title on the cover."]
+				], "choice": [
+					{"label": "[Hold her gaze until she looks away first]", "bond": 3, "reply": [["hortense", "...Oh. Nobody has ever won that. I let them win, usually. I did not let you.", "surprised"]]},
+					{"label": "[Offer her your arm, as if for a dance]", "bond": 2, "reply": [["hortense", "Gallant. The Causeway would eat you alive. I would very much like to watch.", "happy"]]},
+					{"label": "[Point out that she has said nothing true yet]", "bond": 1, "reply": [["hortense", "Have I not? How clever of me. You will have to come back and try again."]]}
+				]},
+				{"rank": 2, "title": "The House of de Saulx", "lines": [
+					["hortense", "My family has thrown the masquerade for two hundred years. The de Saulx always host. It is what we have instead of money."],
+					["hortense", "My grandfather sold the vineyards to pay for the fireworks. My father sold the paintings to pay for the musicians. I sold the house to pay for the candles, and then I lived at the party."],
+					["hortense", "When the Blank came, the guests decided the masquerade should simply go on until it went away. That was a year ago. Some of them have not taken their masks off since."],
+					["hortense", "One learns to dance very well on an empty stomach.", "sad"]
+				], "choice": [
+					{"label": "[Bring her a plate from the tavern]", "bond": 3, "reply": [["hortense", "Bread. And cheese, of a sort. You have no idea how romantic that is, sweet. Nobody on the Causeway has ever fed me without wanting a favour.", "happy"]]},
+					{"label": "[Ask her to teach you to dance]", "bond": 2, "reply": [["hortense", "Gladly. You lead with the left, and you never look at your feet, and you never, ever let your partner see you count.", "smug"]]}
+				]},
+				{"rank": 3, "title": "Surety", "lines": [
+					["", "No window seat tonight. She is at the table with the Concord's letter open in front of her, the one she read aloud on the wharf."],
+					["hortense", "I told you at the wharf that the Concord paid me. That was true. I did not tell you what they paid me with."],
+					["hortense", "My sister. Bérénice. She is fourteen. The Office of Corrections holds her as surety for the family's debts, at their school on the Vauclair Terraces."],
+					["hortense", "They teach the daughters of bad debtors to be good clerks. They are very well fed, and nobody leaves until the debt is paid."],
+					["hortense", "Bring them the person the Blank spat out, they said, and the debt is cleared. I have been lying to you since the night we met. I would like to stop.", "sad"]
+				], "choice": [
+					{"label": "[Sit down beside her]", "bond": 3, "reply": [["hortense", "That is all? You sit. No speech, no sword. Merci. I did not know how much I wanted exactly that.", "sad"]]},
+					{"label": "[Put the Concord's letter in the fire]", "bond": 2, "reply": [["hortense", "It is a copy, sweet. The Concord keeps the original. But it burns very prettily, and I enjoyed watching you do it.", "happy"]]},
+					{"label": "[Ask whether that is the truth too]", "bond": 0, "reply": [["hortense", "...That is fair. I have earned that. Goodnight, keeper.", "angry"]]}
+				], "end": [["hortense", "Send me to the Causeway salons, or to the Concord's own clerks. I know which dispatches they read first, and I can read them first.", "smug"]]},
+				{"rank": 4, "title": "The Lesson Plan", "lines": [
+					["hortense", "A letter from Bérénice. The school lets them write home once a season. They read every word first, so she writes in our old code: the first letter of every line."],
+					["hortense", "It spells TONIGHT. The Office is moving the girls to the capital before the Terraces fray any further. Once they are in the capital, they are clerks for life."],
+					["hortense", "I know the house. I was a guest there, once, on the Office's invitation. Very good wine. Bars on the upstairs windows."],
+					["hortense", "I am going to fetch my sister. I would rather not go alone, and I would very much rather not ask. So I am not asking. I am telling you where I shall be."]
+				], "choice": [
+					{"label": "[Pick up your coat]", "bond": 3, "reply": [["hortense", "Of course you did. Vauclair Terraces, tonight. Wear something dark. The Office has excellent lamps.", "happy"]]},
+					{"label": "[Mime: what about the other girls?]", "bond": 2, "reply": [["hortense", "All of them, then. You are very bad for my plans, sweet. I find I do not mind."]]}
+				], "end": [["", "A personal mission is on the Command Table: \"The Surety\", on the Vauclair Terraces. Hortense is going, and Ash goes with her."]]},
+				{"rank": 5, "title": "One True Thing", "lines": [
+					["", "The Terraces are quiet. Bérénice de Saulx is asleep in the town hall with six other girls, under every blanket Hollowmark owns."],
+					["hortense", "She asked me who you were. I said you were the person who does not exist. She said that was silly, because she could see you."],
+					["hortense", "Here is my trouble. I have lied to everyone I have ever met, beautifully, for a living. Then you, who never says a word, made it impossible."],
+					["hortense", "So. One true thing, and then I go back to lying to everybody else. I like you more than is useful. There. It has no French in it. I checked."]
+				], "choice": [
+					{"label": "[Take her hand]", "bond": 3, "reply": [["hortense", "Careful. If you keep doing that I shall have to start telling the truth on purpose.", "happy"]]},
+					{"label": "[Bow, the way she taught you]", "bond": 2, "reply": [["hortense", "Left foot, eyes up, no counting. Perfect. You were listening. Nobody listens.", "smug"]]}
+				]}
+			]
+		},
+		"saffron": {
+			"color": "c08a2a",
+			"likes": ["idle", "party"], "likes_text": "a night off (idle), and an audience (the party)",
+			"dislikes": ["staff:inkworks", "researcher"], "dislikes_text": "fumes (the Inkworks are murder on the voice), and sums (research)",
+			"perks": {
+				"3": {"name": "Songs in the Square", "desc": "Hollowmark frays 1 less a day.", "effect": {"fray_home": 1}},
+				"5": {"name": "Top of the Bill", "desc": "The party has 10 more HP on missions.", "effect": {"mission_hp": 10}}
+			},
+			"scenes": [
+				{"rank": 1, "title": "A Song About Mud", "lines": [
+					["", "Saffron is on an upturned crate behind the tavern, singing to nobody. Each time she stops, a small brass lamp beside her goes out, and each time she starts, it lights."],
+					["saffron", "Hollowmark, Hollowmark, mud up to your knees. No. Mud up to your... something. Hollowmark, where the mud is free?"],
+					["saffron", "Oh, it's you, love. Sit down, you're blocking my light. I mean that literally. Watch the lamp."],
+					["saffron", "It's not a real lamp. It's the second verse. When I stop, it stops. Don't tell Nell, she'll want to charge for it."]
+				], "choice": [
+					{"label": "[Hum the tune back to her]", "bond": 3, "reply": [["saffron", "Ooh, flat, but brave. That's the best kind of harmony. Again, and this time do it like you mean it.", "happy"]]},
+					{"label": "[Clap]", "bond": 2, "reply": [["saffron", "One person clapping behind a pub. Story of my life. Thank you, love. Means more than you'd think."]]},
+					{"label": "[Reach out to touch the lamp]", "bond": 1, "reply": [["saffron", "Don't. If you touch it while I'm thinking, it goes funny. Last bloke who did that's still got a verse stuck in his hand."]]}
+				]},
+				{"rank": 2, "title": "Maud Pickering", "lines": [
+					["saffron", "Maud Pickering. Born on the Mary Rudd, coal barge, Pendower Shallows. Seven of us on a boat built for three and a dog."],
+					["saffron", "Mam sang. Not like me. Ordinary singing, the kind that doesn't make anything. Hymns and dirty songs, the same tunes for both."],
+					["saffron", "I found out what my voice does when I was eight. Sang my little brother a boat. He sat in it. It went away halfway out and he had to swim back. He's never let me forget it."],
+					["saffron", "So I went on the stage instead. People pay to see a bridge that isn't there. Nobody pays to see a coal barge that is.", "smug"]
+				], "choice": [
+					{"label": "[Ask with a look: what happened to the Mary Rudd?]", "bond": 3, "reply": [["saffron", "Still there. Sort of. Ask me another night, love. When I've had a drink, and you've had two.", "sad"]]},
+					{"label": "[Mime rowing a boat, badly]", "bond": 2, "reply": [["saffron", "Ha! That's our Dickon to the life. Arms everywhere and going nowhere.", "happy"]]}
+				]},
+				{"rank": 3, "title": "The Last Note", "lines": [
+					["", "She has had a drink. You have had two. The tavern is shut and she has not sung all evening, which is how you know."],
+					["saffron", "I've never finished a song. Not once. Everyone thinks it's a bit. It's not a bit."],
+					["saffron", "When I was twelve, Mam was poorly, and the barge was cold, so I sang her a house. Stone walls, a fire, a proper bed. I sang the whole thing, every verse, all the way to the last note."],
+					["saffron", "And the house stayed. It didn't go away like the boat. Mam got up out of her bunk and walked across the water into it and shut the door."],
+					["saffron", "It's still out there on the Shallows. Lights in the window. Nobody's come out in eleven years. So I stop before the end. Every song. Every time.", "sad"]
+				], "choice": [
+					{"label": "[Stay with her until the candle burns down]", "bond": 3, "reply": [["saffron", "...You're a good audience, you know that? You listen to the bits between the words. Hardly anyone does.", "sad"]]},
+					{"label": "[Squeeze her hand]", "bond": 2, "reply": [["saffron", "Don't go soft on me. I'll write a song about it, and then we'll both be stuck with it."]]},
+					{"label": "[Look away]", "bond": 0, "reply": [["saffron", "Yeah. Most people do, at that bit. Night, love.", "angry"]]}
+				], "end": [["saffron", "Put me in the square some evenings. The town sleeps better with a tune going. Even one I don't finish.", "happy"]]},
+				{"rank": 4, "title": "Lights in the Window", "lines": [
+					["saffron", "Gaspard says the word-nets came up wrong this week. Full of one word. 'Home'. A hundredweight of it, off the Shallows."],
+					["saffron", "The house is going, love. The Blank's eating the Shallows and the house is going with it, and whoever's in it."],
+					["saffron", "I can't finish a song to save my life. But I might finish one to get her out. Or to say goodbye properly, if that's all there is."],
+					["saffron", "I need you there. Somebody's got to keep the ink off me while I get to the end."]
+				], "choice": [
+					{"label": "[Nod]", "bond": 3, "reply": [["saffron", "Pendower Shallows. Bring a coat. It's always cold by the Mary Rudd.", "happy"]]},
+					{"label": "[Mime: you'll finish it]", "bond": 2, "reply": [["saffron", "Ha. Cheeky. All right. Somebody has to believe that, and it isn't me yet."]]}
+				], "end": [["", "A personal mission is on the Command Table: \"The Last Verse\", at Pendower Shallows. Saffron is going, and Ash goes with her."]]},
+				{"rank": 5, "title": "The Whole Song", "lines": [
+					["saffron", "She came out. She came out, love, and she was cross, because I'd left the kettle on eleven years ago."],
+					["saffron", "The house is gone now. It went when the song went, like songs do. Mam's at the tavern telling Tobble he's watering the gin, and he is."],
+					["saffron", "I finished a song. First one ever. I thought it'd feel like dying. It felt like getting off a stage and somebody's waiting with your coat."],
+					["saffron", "I've started another one. It's about a quiet sort who never says anything and somehow gets the whole room listening. I'm going to finish this one too."]
+				], "choice": [
+					{"label": "[Ask her to sing it]", "bond": 3, "reply": [["saffron", "Not yet. When it's done. You'll be the first to hear it. Front row. Best seat.", "happy"]]},
+					{"label": "[Put your coat round her shoulders]", "bond": 2, "reply": [["saffron", "There it is. Somebody waiting with the coat. Told you.", "happy"]]}
+				]}
+			]
+		},
+		"nan": {
+			"color": "6a5a8a",
+			"likes": ["expedition", "staff:market"], "likes_text": "a road with marks on it (expeditions), and a stall (the Market)",
+			"dislikes": ["envoy:concord", "governor"], "dislikes_text": "Concord clerks (envoy to the Concord), and being responsible for anything (governor)",
+			"perks": {
+				"3": {"name": "House Edge", "desc": "+3 Gilt a day from Nan's card table.", "effect": {"gilt": 3}},
+				"5": {"name": "Honest Measure", "desc": "Every expedition is 5% more likely to succeed.", "effect": {"all_odds": 5}}
+			},
+			"scenes": [
+				{"rank": 1, "title": "Find the Lady", "lines": [
+					["", "Nan has three cards face down on a barrel and a small crowd that has already lost its boots."],
+					["nan", "Find the lady! Easy as breathing. You, the quiet one. Pick a card. Any card. Not that one."],
+					["tally", "The lady is up her sleeve. She is always up her sleeve."],
+					["nan", "Tally! We've talked about this. He's my shadow. He talks. It's a medical thing. Ignore him."]
+				], "choice": [
+{"label": "[Tap her sleeve]", "bond": 3, "reply": [
+						["nan", "Ha! Oh, I like you. Nobody ever believes Tally. Except you, apparently. Dangerous.", "happy"],
+						["tally", "Thank you."]
+					]},
+					{"label": "[Pick the middle card anyway]", "bond": 2, "reply": [["nan", "The two of clubs! So close. Unlucky. Lovely boots, those.", "smug"]]},
+					{"label": "[Walk off and take the crowd with you]", "bond": 1, "reply": [["nan", "Oi! That's my living, that is. Fine. FINE. Respect, though.", "angry"]]}
+				]},
+				{"rank": 2, "title": "References", "lines": [
+					["nan", "People ask how I got into the trade. I tell 'em I was born in a Frayed Meadow hedge and raised by a travelling bishop. It's half true."],
+					["tally", "None of it is true. She was born in Hollowmark, over the cobbler's. Her mother taught arithmetic."],
+					["nan", "The arithmetic's the important bit. Every con's just sums with a smile on."],
+					["nan", "I've sold bridges, titles, a dead man's horse, and seven thousand Gilt in word-futures that don't exist. Never hurt anyone who couldn't afford it.", "smug"],
+					["tally", "She has hurt several people who could not afford it."]
+				], "choice": [
+{"label": "[Ask Tally for his side]", "bond": 3, "reply": [
+						["tally", "Nobody asks me. ...She gave most of it away, at the end of every season. To the people she took it from. Don't tell her I said."],
+						["nan", "I can hear you, Tally.", "angry"]
+					]},
+					{"label": "[Applaud the seven thousand]", "bond": 2, "reply": [["nan", "Thank you! Somebody appreciates craft.", "happy"]]}
+				]},
+				{"rank": 3, "title": "The Original", "lines": [
+					["", "Nan is sober and Tally is silent. In this house that is an emergency."],
+					["nan", "Fifteen, I was. Wanted a stake for my first proper job. Went to Old Pratt on Lantern Quay. Pratt lends to anyone, against anything."],
+					["nan", "I didn't have anything. So I signed over the one thing I'd no use for. My conscience. Pratt has the paper in his strongbox, with my thumb on it."],
+					["nan", "Next morning my shadow started talking. Honest as a church clock. Pratt says that's what happens. The conscience goes, but it can't go far, so it hides where it can watch."],
+					["tally", "And I watch. That is all I am allowed to do. Watch, and sign for her, and be right about everything.", "sad"],
+					["nan", "Pratt can call the debt in whenever he likes. When he does, Tally goes in the strongbox with the paper. And I'm just Nan. Nothing behind me.", "sad"]
+				], "choice": [
+{"label": "[Look at Tally, then at her, and nod]", "bond": 3, "reply": [
+						["tally", "...It nodded at me. Nobody nods at me."],
+						["nan", "Don't get used to it.", "happy"]
+					]},
+					{"label": "[Shake her hand, the way she shakes on a deal]", "bond": 2, "reply": [["nan", "Firm grip. Warm hand. You've still got your rings. Didn't even try. I must be losing my touch."]]},
+					{"label": "[Count your purse]", "bond": 0, "reply": [["nan", "Fair. Fair. I'd have done the same. Still stings.", "angry"]]}
+				], "end": [["nan", "Put me on the market stall now and then. I'll keep it honest. Tally will make sure. It's very annoying.", "smug"]]},
+				{"rank": 4, "title": "Collections", "lines": [
+					["nan", "Pratt's sent a letter. Typed. Pratt never types unless it's serious."],
+					["tally", "'The debt falls due at the new moon. The collateral will be recovered.' The collateral is me."],
+					["nan", "So I'm going to do what I'm best at. I'm going to rob a moneylender. His counting-house is on the smugglers' wharf at Lantern Quay, and the paper's in the strongbox."],
+					["nan", "Can't do it alone. Pratt's got bruisers. And I need someone with an honest face to stand at the front. You haven't got a face at all, legally, so you're perfect."]
+				], "choice": [
+					{"label": "[Nod]", "bond": 3, "reply": [["nan", "Lovely. Lantern Quay, the night of the new moon. Bring nothing worth stealing. Pratt's people are thorough.", "happy"]]},
+{"label": "[Mime: and give it back to him?]", "bond": 2, "reply": [
+						["tally", "It means the contract. You mean to give me back to yourself."],
+						["nan", "...Shut up, Tally.", "sad"]
+					]}
+				], "end": [["", "A personal mission is on the Command Table: \"Collections\", at Lantern Quay. Nan is going, and Ash goes with her."]]},
+				{"rank": 5, "title": "Torn in Two", "lines": [
+					["", "The contract is on the table between them: Nan Cripps, age fifteen, a thumbprint in brown ink. Tally lies across it like a cat."],
+					["nan", "So here's the thing. I tear it up, I get my conscience back. Proper, inside, where it goes. And Tally's just a shadow again."],
+					["tally", "Shadows do not talk. I would not mind. I have said everything I needed to say. Mostly about her."],
+					["nan", "But I'll mind. Eighteen years he's been the only one who tells me the truth. Apart from you. And you don't say anything, which is somehow worse."],
+					["nan", "So I'm keeping it. The paper. I'll keep it in my own strongbox, and Tally stays out, and talks, and I'll put up with being honest by proxy. That's a deal."]
+				], "choice": [
+{"label": "[Shake on it, with both of them]", "bond": 3, "reply": [
+						["tally", "It shook my hand. I do not have hands."],
+						["nan", "It shook your hand, Tally. Don't spoil it.", "happy"]
+					]},
+					{"label": "[Smile]", "bond": 2, "reply": [["nan", "Look at that. A smile. Now I know you're a mark.", "smug"]]}
 				]}
 			]
 		}

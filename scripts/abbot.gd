@@ -243,7 +243,7 @@ func _swing() -> void:
 		var to := hero.global_position - global_position
 		if to.length() < SWING_REACH + hero.radius and absf(aim_dir.angle_to(to)) <= SWING_HALF:
 			swing_hit.append(hero)
-			hero.take_hit(Empire.damage_to_party(damage), global_position, 230.0)
+			hero.take_hit(Empire.damage_to_party(roundi(damage * hit_mult())), global_position, 230.0)
 	var scene := get_tree().current_scene
 	if scene != null and scene.has_method("shake"):
 		scene.shake(2.0)
@@ -289,7 +289,7 @@ func _burst_gilt() -> void:
 	for h in get_tree().get_nodes_in_group("heroes"):
 		var hero := h as Hero
 		if hero and not hero.dead and hero.global_position.distance_to(global_position) < ILLUM_R + hero.radius:
-			hero.take_hit(Empire.damage_to_party(illum_damage), global_position, 260.0)
+			hero.take_hit(Empire.damage_to_party(roundi(illum_damage * hit_mult())), global_position, 260.0)
 	var scene := get_tree().current_scene
 	if scene != null and scene.has_method("shake"):
 		scene.shake(3.5)

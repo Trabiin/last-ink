@@ -1118,7 +1118,7 @@
 							"name": "Contraband",
 							"cost": 2,
 							"desc": "Knife Fan's knives go through every enemy on their line and poison for 2 a second.",
-							"flavor": "Imported. Undeclared. Lethal.",
+							"flavor": "Never declared at customs. Never opened, either.",
 							"effects": {
 								"abilities": {
 									"knife_fan": {
@@ -1557,6 +1557,572 @@
 								"perks": {
 									"kill_ink_party": 2,
 									"tech_mult": 0.2
+								}
+							},
+							"capstone": true
+						}
+					]
+				}
+			]
+		},
+		"hortense": {
+			"root": {
+				"id": "hortense_court_manners",
+				"name": "Court Manners",
+				"cost": 1,
+				"desc": "+4 Speed.",
+				"flavor": "A lady never runs. She arrives slightly sooner.",
+				"effects": {
+					"stats": {
+						"speed": 4
+					}
+				}
+			},
+			"branches": [
+				{
+					"id": "duellist",
+					"name": "Duellist",
+					"color": "7a9cf0",
+					"blurb": "The blade under the fan: Masked Step again and again, and the clean line through whatever she has already disarmed.",
+					"nodes": [
+						{
+							"id": "hortense_inside_line",
+							"name": "Inside Line",
+							"cost": 1,
+							"desc": "Masked Step hits 6 harder.",
+							"flavor": "The shortest way to a heart is under the fourth rib.",
+							"effects": {
+								"abilities": {
+									"masked_step": {
+										"add": {
+											"damage": 6
+										}
+									}
+								}
+							}
+						},
+						{
+							"id": "hortense_reprise",
+							"name": "Reprise",
+							"cost": 1,
+							"desc": "A kill resets Masked Step's cooldown.",
+							"flavor": "Encore, sweet. You were wonderful.",
+							"effects": {
+								"perks": {
+									"kill_reset": "masked_step"
+								}
+							}
+						},
+						{
+							"id": "hortense_second_glance",
+							"name": "Second Glance",
+							"cost": 2,
+							"desc": "She deals 25% more to stunned enemies, Beguiled ones included.",
+							"flavor": "They looked. They always look.",
+							"effects": {
+								"perks": {
+									"dmg_stunned": 0.25
+								}
+							}
+						},
+						{
+							"id": "hortense_vanishing_act",
+							"name": "Vanishing Act",
+							"cost": 3,
+							"desc": "After Masked Step she stays out of sight for 1.5 s, and as an ally she goes for the toughest enemy nearby.",
+							"flavor": "Leave before the applause. It keeps them wanting.",
+							"bond": 2,
+							"effects": {
+								"abilities": {
+									"masked_step": {
+										"set": {
+											"vanish": 1.5
+										}
+									}
+								},
+								"ai": {
+									"focus": "elite"
+								}
+							}
+						},
+						{
+							"id": "hortense_dernier_mot",
+							"name": "Dernier Mot",
+							"cost": 3,
+							"desc": "35% more damage to enemies under 35% HP, and her charged techs hit 15% harder.",
+							"flavor": "The last word is always hers. It is a family tradition.",
+							"bond": 3,
+							"effects": {
+								"perks": {
+									"dmg_wounded": 0.35,
+									"tech_mult": 0.15
+								}
+							},
+							"capstone": true
+						}
+					]
+				},
+				{
+					"id": "coquette",
+					"name": "Coquette",
+					"color": "d880b8",
+					"blurb": "The flirt as a weapon: a longer, wider Beguile, a crowd too busy looking to hit her, and a room that guards her for free.",
+					"nodes": [
+						{
+							"id": "hortense_lingering_look",
+							"name": "Lingering Look",
+							"cost": 1,
+							"desc": "Beguile lasts 0.8 s longer.",
+							"flavor": "Hold the eye one breath past polite.",
+							"effects": {
+								"abilities": {
+									"beguile": {
+										"add": {
+											"time": 0.8
+										}
+									}
+								}
+							}
+						},
+						{
+							"id": "hortense_wide_smile",
+							"name": "Wide Smile",
+							"cost": 1,
+							"desc": "Beguile's cone is 15 degrees wider and reaches 10 px further.",
+							"flavor": "One smile, and the whole back row thinks it was for them.",
+							"effects": {
+								"abilities": {
+									"beguile": {
+										"add": {
+											"arc": 15,
+											"radius": 10
+										}
+									}
+								}
+							}
+						},
+						{
+							"id": "hortense_admirers",
+							"name": "Admirers",
+							"cost": 2,
+							"desc": "10% of blows aimed at her miss.",
+							"flavor": "Hard to aim at someone while you are admiring them.",
+							"effects": {
+								"perks": {
+									"evade": 0.1
+								}
+							}
+						},
+						{
+							"id": "hortense_name_card",
+							"name": "Name Card",
+							"cost": 3,
+							"desc": "Beguiled enemies are marked too: 25% more damage from everyone for 4 s.",
+							"flavor": "She writes her name on their dance card. Then everyone else does.",
+							"bond": 2,
+							"effects": {
+								"abilities": {
+									"beguile": {
+										"set": {
+											"mark": 4,
+											"mark_mult": 1.25
+										}
+									}
+								}
+							}
+						},
+						{
+							"id": "hortense_belle_of_the_ball",
+							"name": "Belle of the Ball",
+							"cost": 3,
+							"desc": "Allies within 70 px of her take 10% less damage, and every kill she lands puts her out of sight for 1 s.",
+							"flavor": "Every room has a centre. She brought it with her.",
+							"bond": 3,
+							"effects": {
+								"perks": {
+									"aura_guard": 0.1,
+									"kill_vanish": 1.0
+								}
+							},
+							"capstone": true
+						}
+					]
+				}
+			]
+		},
+		"saffron": {
+			"root": {
+				"id": "saffron_warm_up",
+				"name": "Warm-up",
+				"cost": 1,
+				"desc": "+4 Ink.",
+				"flavor": "Scales, scales, scales. A sip of something. Scales.",
+				"effects": {
+					"stats": {
+						"ink": 4
+					}
+				}
+			},
+			"branches": [
+				{
+					"id": "headliner",
+					"name": "Headliner",
+					"color": "f0c040",
+					"blurb": "Top of the bill: a Torch Song that lasts longer, carries further, lifts harder and mends what it reaches.",
+					"nodes": [
+						{
+							"id": "saffron_breath_control",
+							"name": "Breath Control",
+							"cost": 1,
+							"desc": "Torch Song lasts 1.5 s longer.",
+							"flavor": "From the belly, Maud. From the belly.",
+							"effects": {
+								"abilities": {
+									"torch_song": {
+										"add": {
+											"time": 1.5
+										}
+									}
+								}
+							}
+						},
+						{
+							"id": "saffron_belt_it_out",
+							"name": "Belt It Out",
+							"cost": 1,
+							"desc": "Torch Song reaches 20 px further.",
+							"flavor": "The back row paid too.",
+							"effects": {
+								"abilities": {
+									"torch_song": {
+										"add": {
+											"radius": 20
+										}
+									}
+								}
+							}
+						},
+						{
+							"id": "saffron_middle_eight",
+							"name": "Middle Eight",
+							"cost": 2,
+							"desc": "Torch Song lifts damage 5% more and the gauge 10% faster.",
+							"flavor": "The bit where it goes somewhere you didn't expect.",
+							"effects": {
+								"abilities": {
+									"torch_song": {
+										"add": {
+											"boost": 0.05,
+											"rate": 0.1
+										}
+									}
+								}
+							}
+						},
+						{
+							"id": "saffron_hymn",
+							"name": "Hymn",
+							"cost": 3,
+							"desc": "Torch Song also heals everyone it reaches 8.",
+							"flavor": "Her mam sang this one on the coal barge. Saffron sings it faster.",
+							"bond": 2,
+							"effects": {
+								"abilities": {
+									"torch_song": {
+										"set": {
+											"heal": 8
+										}
+									}
+								}
+							}
+						},
+						{
+							"id": "saffron_encore",
+							"name": "Encore",
+							"cost": 3,
+							"desc": "Every kill she lands gives 2 Ink to each ally within 90 px, and she gets 0.15 more Ink a second.",
+							"flavor": "They won't let her off. She doesn't want to go.",
+							"bond": 3,
+							"effects": {
+								"perks": {
+									"kill_ink_party": 2,
+									"ink_regen": 0.15
+								}
+							},
+							"capstone": true
+						}
+					]
+				},
+				{
+					"id": "ringmistress",
+					"name": "Ringmistress",
+					"color": "c0603a",
+					"blurb": "The whip and the chorus line: swings that stop them in their tracks and a chorus girl who holds the stage longer and leaves with a bang.",
+					"nodes": [
+						{
+							"id": "saffron_long_lash",
+							"name": "Long Lash",
+							"cost": 1,
+							"desc": "Full-power swings stun for 0.25 s.",
+							"flavor": "Crack. Everyone looks. That's showbusiness.",
+							"effects": {
+								"perks": {
+									"swing_stun": 0.25
+								}
+							}
+						},
+						{
+							"id": "saffron_understudy",
+							"name": "Understudy",
+							"cost": 1,
+							"desc": "The chorus girl has 25 more HP and stays 1 s longer.",
+							"flavor": "Somebody always has to go on in her place. Better it's paper.",
+							"effects": {
+								"abilities": {
+									"showstopper": {
+										"add": {
+											"hp": 25,
+											"time": 1
+										}
+									}
+								}
+							}
+						},
+						{
+							"id": "saffron_big_finish",
+							"name": "Big Finish",
+							"cost": 2,
+							"desc": "The chorus girl's bow hits 8 harder and 10 px wider.",
+							"flavor": "Ta-daaa.",
+							"effects": {
+								"abilities": {
+									"showstopper": {
+										"add": {
+											"damage": 8,
+											"reach": 10
+										}
+									}
+								}
+							}
+						},
+						{
+							"id": "saffron_curtain_up",
+							"name": "Curtain Up",
+							"cost": 3,
+							"desc": "When the chorus girl bows out, the party nearby gets 4 s of Torch Song.",
+							"flavor": "Then the band comes back in.",
+							"bond": 2,
+							"effects": {
+								"abilities": {
+									"showstopper": {
+										"set": {
+											"song": 4
+										}
+									}
+								}
+							}
+						},
+						{
+							"id": "saffron_star_turn",
+							"name": "Star Turn",
+							"cost": 3,
+							"desc": "Allies within 70 px of her deal 10% more damage, her charged techs hit 15% harder, and as an ally she goes for whatever is on the leader.",
+							"flavor": "Everyone plays up when the star's in the wings.",
+							"bond": 3,
+							"effects": {
+								"perks": {
+									"aura_damage": 0.1,
+									"tech_mult": 0.15
+								},
+								"ai": {
+									"focus": "leader_threat"
+								}
+							},
+							"capstone": true
+						}
+					]
+				}
+			]
+		},
+		"nan": {
+			"root": {
+				"id": "nan_shake_on_it",
+				"name": "Shake on It",
+				"cost": 1,
+				"desc": "+6 HP.",
+				"flavor": "Firm grip. Warm hand. Check your rings after.",
+				"effects": {
+					"stats": {
+						"hp": 6
+					}
+				}
+			},
+			"branches": [
+				{
+					"id": "con",
+					"name": "The Con",
+					"color": "9a86c0",
+					"blurb": "Paperwork as a weapon: a Small Print that lasts, bites and covers the whole room, and a profit on everything that falls over.",
+					"nodes": [
+						{
+							"id": "nan_standard_terms",
+							"name": "Standard Terms",
+							"cost": 1,
+							"desc": "Small Print lasts 1.5 s longer.",
+							"flavor": "Nobody reads past the first page.",
+							"effects": {
+								"abilities": {
+									"small_print": {
+										"add": {
+											"time": 1.5
+										}
+									}
+								}
+							}
+						},
+						{
+							"id": "nan_hidden_clause",
+							"name": "Hidden Clause",
+							"cost": 1,
+							"desc": "Small Print also hits each of them for 6.",
+							"flavor": "Clause nineteen: the signatory agrees to be punched.",
+							"effects": {
+								"abilities": {
+									"small_print": {
+										"set": {
+											"damage": 6
+										}
+									}
+								}
+							}
+						},
+						{
+							"id": "nan_cheap_shot",
+							"name": "Cheap Shot",
+							"cost": 2,
+							"desc": "She deals 30% more to enemies still at full HP.",
+							"flavor": "First one's free. For her.",
+							"effects": {
+								"perks": {
+									"dmg_fresh": 0.3
+								}
+							}
+						},
+						{
+							"id": "nan_collections",
+							"name": "Collections",
+							"cost": 3,
+							"desc": "Every kill she lands puts 2 Gilt in the mission's loot, and as an ally she goes for marked enemies first.",
+							"flavor": "Pockets first. Questions never.",
+							"bond": 2,
+							"effects": {
+								"perks": {
+									"kill_gilt": 2
+								},
+								"ai": {
+									"focus": "marked"
+								}
+							}
+						},
+						{
+							"id": "nan_ironclad",
+							"name": "Ironclad",
+							"cost": 3,
+							"desc": "Small Print reaches 20 px further and takes 10% more off their blows.",
+							"flavor": "Tally read this one. Tally says it's airtight. Tally is upset about it.",
+							"bond": 3,
+							"effects": {
+								"abilities": {
+									"small_print": {
+										"add": {
+											"radius": 20,
+											"mult": -0.1
+										}
+									}
+								}
+							},
+							"capstone": true
+						}
+					]
+				},
+				{
+					"id": "shadow",
+					"name": "Shadow",
+					"color": "4a3e6a",
+					"blurb": "Tally's half of the act: a shadow who stays out longer, hits harder and signs people up with every punch.",
+					"nodes": [
+						{
+							"id": "nan_long_shadow",
+							"name": "Long Shadow",
+							"cost": 1,
+							"desc": "Tally's Turn lasts 1.5 s longer.",
+							"flavor": "Late afternoon. Tally's at his best.",
+							"effects": {
+								"abilities": {
+									"tallys_turn": {
+										"add": {
+											"time": 1.5
+										}
+									}
+								}
+							}
+						},
+						{
+							"id": "nan_heavy_hands",
+							"name": "Heavy Hands",
+							"cost": 1,
+							"desc": "Tally punches 2 harder.",
+							"flavor": "He doesn't want to. He's very good at it.",
+							"effects": {
+								"abilities": {
+									"tallys_turn": {
+										"add": {
+											"damage": 2
+										}
+									}
+								}
+							}
+						},
+						{
+							"id": "nan_two_against_one",
+							"name": "Two Against One",
+							"cost": 2,
+							"desc": "Enemies that hit her take 20% of it back.",
+							"flavor": "You hit Nan, Tally hits you. He hates it. He does it every time.",
+							"effects": {
+								"perks": {
+									"thorns": 0.2
+								}
+							}
+						},
+						{
+							"id": "nan_witness",
+							"name": "Witness",
+							"cost": 3,
+							"desc": "Every punch of Tally's puts its target under the Small Print for 3 s.",
+							"flavor": "Tally signs as witness. The contract holds.",
+							"bond": 2,
+							"effects": {
+								"abilities": {
+									"tallys_turn": {
+										"set": {
+											"weaken_hits": 3
+										}
+									}
+								}
+							}
+						},
+						{
+							"id": "nan_nobodys_shadow",
+							"name": "Nobody's Shadow",
+							"cost": 3,
+							"desc": "12% of blows aimed at her miss, and every kill she lands puts her out of sight for 1.5 s.",
+							"flavor": "For a moment there are two shadows and no Nan.",
+							"bond": 3,
+							"effects": {
+								"perks": {
+									"evade": 0.12,
+									"kill_vanish": 1.5
 								}
 							},
 							"capstone": true

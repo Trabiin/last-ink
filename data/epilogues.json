@@ -123,6 +123,38 @@
 		"default": [
 			{"when": {"lost": true}, "text": "{name} went into the white with the squad and did not come back. Their name is on the wall in Hollowmark, with the others. The white gave nothing back."},
 			{"text": "{name} stayed on in Hollowmark when it was over. Ask about the old days and {short} will tell you, at length, that they were there for all of it."}
+		],
+		"hortense": [
+			{"when": {"romance": "partner"}, "text": "Hortense de Saulx gave up the masquerade and threw one party a year in Hollowmark, which the whole Causeway now rows across the lake for. She hosts it with Ash, and tells everyone it is a political arrangement. She has told nobody the truth about it except Ash, and she never lies to Ash."},
+			{"when": {"romance": "ex"}, "text": "Hortense went back to the Causeway and became the most sought-after hostess in the Inklands. Every year she sends Hollowmark an invitation addressed to the person who does not exist, and Guests. It is never answered. It is always sent."},
+			{"when": {"rank_min": 5}, "text": "Bérénice de Saulx grew up to run the Causeway's first school where the daughters of debtors learn to read contracts instead of copy them. Her sister teaches deportment, fencing and lying, and is very good at all three. The marquise says she has one true friend, and does not name them, and does not have to."},
+			{"when": {"personal": "lost"}, "text": "The Vauclair Terraces went white with the Office's school still on them. Hortense never spoke of her sister again. She went on dancing, beautifully, and the Causeway never noticed that she had stopped counting."},
+			{"when": {"rank_min": 3}, "text": "Hortense went home to the Causeway and charmed the new council into existence, then into doing what she wanted. Nobody is entirely sure which side she is on. She likes it that way."},
+			{"text": "Hortense de Saulx left one morning with a borrowed horse and a stolen map, and was reported, over the next ten years, at every court and masquerade in the Inklands, under nine names. All of them were lies. All of them were her."}
+		],
+		"saffron": [
+			{"when": {"romance": "partner"}, "text": "Saffron Kiss finished every song she ever started after Hollowmark, and none of them went away. The love song is the one everybody asks for. She only sings it to one person, at the front, in the best seat."},
+			{"when": {"romance": "ex"}, "text": "Saffron went back on the bill and wrote the saddest song in the Inklands, about a quiet sort. She finished it. People cried on three Causeway bridges at once. She was very pleased with that."},
+			{"when": {"rank_min": 5}, "text": "Maud Pickering opened a music hall on the Pendower Shallows, on the moorings where the Mary Rudd used to lie. Her mam runs the bar. Every song she sings there is finished, and the hall is the warmest building on the lake."},
+			{"when": {"personal": "lost"}, "text": "The Shallows went white with the sung house still standing on them. Saffron never got to the last verse. She still sings, and stops before the end of every song, and the lights in a window that isn't there go on and off over the lake."},
+			{"when": {"rank_min": 3}, "text": "Saffron Kiss went back to the Causeway cabarets and topped every bill. She sings a song about Hollowmark mud that has a different ending every night, because she still has not chosen one."},
+			{"text": "Saffron took a contract with a showboat and sang her way down every river in the Inklands. Bargemen say that on still nights you can see a bridge across the water that only lasts as long as the song."}
+		],
+		"nan": [
+			{"when": {"rank_min": 5, "choice": {"rank": 5, "pick": 0}}, "text": "Nan Cripps went straight, more or less. She runs a card room in Hollowmark where the games are honest because her shadow deals. Tally keeps the contract in his pocket, which is a trick nobody has worked out, and tells every customer the odds before they sit down."},
+			{"when": {"rank_min": 5}, "text": "Nan kept her own contract in her own strongbox and her shadow out in the open, talking. She became the Inklands' most trusted grifter, which she says is a contradiction, and which Tally says is the only honest thing about her."},
+			{"when": {"personal": "lost"}, "text": "Lantern Quay went white with Old Pratt's strongbox in it, and the contract, and then one morning Tally was gone with them. Nan still talks to her shadow sometimes. It does not answer. She does not cheat at cards any more, and she does not know why."},
+			{"when": {"rank_min": 3}, "text": "Nan Cripps sold the Concord a bridge across the Blank and spent the proceeds on rebuilding Hollowmark's market. Tally signed the receipt. The Concord is still trying to find the bridge."},
+			{"text": "Nan took her share and left by the back door, with three decks of cards and somebody else's horse. Tally sent a letter a month later apologising for the horse. Nan did not sign it."}
+		],
+		"anselme": [
+			{"text": "Anselme Brugière kept the old presses running on the Vauclair Terraces, and the year after the Blank was driven back the wine tasted of grapes again. He named the vintage after Hollowmark. It is terrible. He is very proud of it."}
+		],
+		"margot": [
+			{"text": "Margot Vasseur stopped making masks and started making faces: portraits of everyone who came home from the war with the Blank, so there would be a record nobody could strike out. She made one of Ash. It is the only picture of the person who does not exist."}
+		],
+		"gaspard": [
+			{"text": "Gaspard Pellerin went back to the Shallows when the ink fell, and the nets came up full of ordinary words again: 'bread', 'tomorrow', 'perhaps'. He sold them cheap to anyone who had run out."}
 		]
 	}
 }

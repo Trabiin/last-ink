@@ -1,5 +1,5 @@
 {
-	"_comment": "Hotkeyed abilities (issue #7). Heroes list theirs in data/heroes.json under abilities (up to 4, keys 1-4). short: label on the touch button. cost: Ink spent. cooldown: seconds before it can be used again. kind picks the code in scripts/abilities.gd: heal (patch everyone in radius, optional shield that soaks damage), arc (wide weapon swing: damage, reach, arc = degrees either side of facing, knock), dash (rush forward distance px, hitting everything on the way), taunt (pull enemies in radius onto the user for time s and cut the user's damage taken by guard), bolt (throw count blades spread degrees apart: damage, speed, range px, pierce), vanish (out of sight for time s: nearby enemies in radius lose track, speed multiplier, next landed swing deals crit times damage), drain (damage enemies in radius, then heal allies within heal_radius by heal_ratio of the damage taken, up to heal_cap each), mark (enemies in radius take mult times damage for time s), parry (for time s the next hit taken is cancelled and the nearest enemy to its source within reach takes damage, is stunned, and refund Ink comes back). arc and dash can also stun (seconds; bosses only flinch). ai: when an ally uses it on its own. windup = an enemy within 'range' is winding up an attack on the user; self_hurt = the user is below 'below' HP with an enemy within 'range'; hurt = someone in radius below 'below' HP; crowd = at least 'count' enemies within 'range' of the user; target = its target is within 'range'; threat = at least 'count' enemies within 'range' of the leader. Issue #9 adds player-set presets on top. Ink colours (issue #24): ink names the ability's colour (inks: red, blue, gold, green, black). Each hero has a skill level 1-5 in every colour, raised by spending Ink on that colour's abilities (ink_skill.xp = Ink to spend from level L to L+1). tiers: at colour level 2 and 4 the ability takes these values instead of its own. cooldown_cut: from colour level 3 and 5 that colour's cooldowns are this much shorter. desc is a template: {key} shows the current value; {guard_pct}, {heal_pct}, {mult_pct}, {stun_text}, {shield_text} and {pierce_text} are filled in by scripts/abilities.gd.",
+	"_comment": "Hotkeyed abilities (issue #7). Heroes list theirs in data/heroes.json under abilities (up to 4, keys 1-4). short: label on the touch button. cost: Ink spent. cooldown: seconds before it can be used again. kind picks the code in scripts/abilities.gd: heal (patch everyone in radius, optional shield that soaks damage), arc (wide weapon swing: damage, reach, arc = degrees either side of facing, knock), dash (rush forward distance px, hitting everything on the way), taunt (pull enemies in radius onto the user for time s and cut the user's damage taken by guard), bolt (throw count blades spread degrees apart: damage, speed, range px, pierce), vanish (out of sight for time s: nearby enemies in radius lose track, speed multiplier, next landed swing deals crit times damage), drain (damage enemies in radius, then heal allies within heal_radius by heal_ratio of the damage taken, up to heal_cap each), mark (enemies in radius take mult times damage for time s), parry (for time s the next hit taken is cancelled and the nearest enemy to its source within reach takes damage, is stunned, and refund Ink comes back). Chapter 3 (issue #29): charm (enemies in a cone, radius and arc, stop fighting for time s and take mult times damage from the user; bosses only flinch), blink (behind the target within range, then a strike for damage with optional stun), song (the party within radius deal boost more damage and fill the gauge rate faster for time s; optional heal), conjure (a chorus girl, scripts/chorus.gd, with hp, standing time s, pulling enemies within radius, bursting for damage within reach as she bows out), weaken (enemies in radius deal mult of their damage and move at slow of their speed for time s; bosses half), shadow (the user's shadow, scripts/tally_shadow.gd, fights for time s, punching for damage every s). The Chapter 3 kinds use their own ai rule under every ally preset. arc and dash can also stun (seconds; bosses only flinch). ai: when an ally uses it on its own. windup = an enemy within 'range' is winding up an attack on the user; self_hurt = the user is below 'below' HP with an enemy within 'range'; hurt = someone in radius below 'below' HP; crowd = at least 'count' enemies within 'range' of the user; target = its target is within 'range'; threat = at least 'count' enemies within 'range' of the leader. Issue #9 adds player-set presets on top. Ink colours (issue #24): ink names the ability's colour (inks: red, blue, gold, green, black). Each hero has a skill level 1-5 in every colour, raised by spending Ink on that colour's abilities (ink_skill.xp = Ink to spend from level L to L+1). tiers: at colour level 2 and 4 the ability takes these values instead of its own. cooldown_cut: from colour level 3 and 5 that colour's cooldowns are this much shorter. desc is a template: {key} shows the current value; {guard_pct}, {heal_pct}, {mult_pct}, {stun_text}, {shield_text}, {pierce_text}, {boost_pct}, {rate_pct}, {weak_pct} and {slow_pct} are filled in by scripts/abilities.gd.",
 	"abilities": {
 		"rewrite": {
 			"name": "Rewrite",
@@ -477,6 +477,189 @@
 					"damage": 32,
 					"distance": 100,
 					"stun": 0.6
+				}
+			}
+		},
+		"beguile": {
+			"name": "Beguile",
+			"short": "Beguile",
+			"kind": "charm",
+			"cost": 4,
+			"cooldown": 9,
+			"color": "8fb0ff",
+			"radius": 70,
+			"arc": 50,
+			"time": 3.0,
+			"mult": 1.5,
+			"desc": "A blown kiss down a cone in front of her. Everything it reaches forgets to fight for {time} s, and her own hits on them land {mult_pct}% harder. Bosses are flattered for a moment and carry on.",
+			"ai": {
+				"when": "crowd",
+				"count": 2,
+				"range": 64
+			},
+			"ink": "blue",
+			"tiers": {
+				"2": {
+					"time": 3.5,
+					"mult": 1.6
+				},
+				"4": {
+					"time": 4.0,
+					"mult": 1.7,
+					"radius": 84,
+					"arc": 60
+				}
+			}
+		},
+		"masked_step": {
+			"name": "Masked Step",
+			"short": "Step",
+			"kind": "blink",
+			"cost": 3,
+			"cooldown": 5,
+			"color": "6a7ce8",
+			"range": 110,
+			"damage": 18,
+			"knock": 140,
+			"stun": 0.4,
+			"desc": "Gone, and back behind the enemy she is looking at, the point already in: {damage} damage.{stun_text} Nobody in reach: a quick step forward.",
+			"ai": {
+				"when": "target",
+				"range": 110
+			},
+			"ink": "blue",
+			"tiers": {
+				"2": {
+					"damage": 22
+				},
+				"4": {
+					"damage": 28,
+					"range": 130,
+					"stun": 0.7
+				}
+			}
+		},
+		"torch_song": {
+			"name": "Torch Song",
+			"short": "Song",
+			"kind": "song",
+			"cost": 5,
+			"cooldown": 14,
+			"color": "f0c040",
+			"radius": 90,
+			"time": 6,
+			"boost": 0.2,
+			"rate": 0.3,
+			"desc": "Saffron sings, and for {time} s everyone in the party within earshot hits {boost_pct}% harder and fills the gauge {rate_pct}% faster. Her too.",
+			"ai": {
+				"when": "threat",
+				"count": 2,
+				"range": 80
+			},
+			"ink": "gold",
+			"tiers": {
+				"2": {
+					"time": 7,
+					"boost": 0.25
+				},
+				"4": {
+					"time": 8,
+					"boost": 0.3,
+					"rate": 0.4,
+					"radius": 110
+				}
+			}
+		},
+		"showstopper": {
+			"name": "Showstopper",
+			"short": "Chorus",
+			"kind": "conjure",
+			"cost": 5,
+			"cooldown": 12,
+			"color": "ffd36a",
+			"time": 5,
+			"hp": 40,
+			"radius": 90,
+			"reach": 46,
+			"damage": 14,
+			"knock": 200,
+			"desc": "She sings a chorus girl into being in front of her. For {time} s every enemy within earshot goes for the chorus girl instead; when the number ends she bows out with a bang: {damage} to everything round her.",
+			"ai": {
+				"when": "threat",
+				"count": 2,
+				"range": 70
+			},
+			"ink": "gold",
+			"tiers": {
+				"2": {
+					"time": 6,
+					"damage": 18
+				},
+				"4": {
+					"time": 7,
+					"damage": 24,
+					"hp": 70
+				}
+			}
+		},
+		"small_print": {
+			"name": "Small Print",
+			"short": "Print",
+			"kind": "weaken",
+			"cost": 4,
+			"cooldown": 10,
+			"color": "9a86c0",
+			"radius": 70,
+			"time": 6,
+			"mult": 0.6,
+			"slow": 0.7,
+			"desc": "Nan slaps a contract on everything nearby. For {time} s their blows land {weak_pct}% softer and they walk {slow_pct}% slower. Bosses read it more carefully: half that.",
+			"ai": {
+				"when": "crowd",
+				"count": 2,
+				"range": 60
+			},
+			"ink": "black",
+			"tiers": {
+				"2": {
+					"time": 7,
+					"mult": 0.55
+				},
+				"4": {
+					"time": 8,
+					"mult": 0.5,
+					"slow": 0.6,
+					"radius": 84
+				}
+			}
+		},
+		"tallys_turn": {
+			"name": "Tally's Turn",
+			"short": "Tally",
+			"kind": "shadow",
+			"cost": 5,
+			"cooldown": 12,
+			"color": "6a5a8a",
+			"time": 6,
+			"damage": 6,
+			"every": 0.7,
+			"knock": 90,
+			"desc": "Her shadow peels off the ground and fights on his own for {time} s: he goes for the nearest enemy and punches for {damage} every {every} s. Nothing can hit a shadow.",
+			"ai": {
+				"when": "crowd",
+				"count": 1,
+				"range": 90
+			},
+			"ink": "black",
+			"tiers": {
+				"2": {
+					"time": 7,
+					"damage": 7
+				},
+				"4": {
+					"time": 8,
+					"damage": 9,
+					"every": 0.55
 				}
 			}
 		}

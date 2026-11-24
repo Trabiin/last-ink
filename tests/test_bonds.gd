@@ -99,7 +99,8 @@ func test_every_bond_is_complete() -> void:
 ## it from 22 px below the box top, 12 px lower under a name, and the box is BOX_H tall).
 func _check_line(where: String, id: String, l: Array, font: Font) -> void:
 	var sp := str(l[0])
-	check(sp == "" or sp == id or Empire.recruits.has(sp) or not Empire.recruit(sp).is_empty(), "%s: unknown speaker %s" % [where, sp])
+	check(sp == "" or sp == id or Empire.recruits.has(sp) or not Empire.recruit(sp).is_empty() or not Dialogue.speaker_info(sp).is_empty(),
+		"%s: unknown speaker %s" % [where, sp])
 	if l.size() > 2:
 		check(str(l[2]) in EXPRESSIONS, "%s: unknown expression %s" % [where, l[2]])
 	var text := str(l[1])

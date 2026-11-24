@@ -57,7 +57,9 @@ SIZE = {"fortree": (3, 4), "tree": (3, 4), "fungus": (2, 2), "log": (2, 2), "fer
         "house_f": (6, 6), "house_g": (6, 6), "house_h": (6, 6), "stall": (4, 4), "garden": (3, 2),
         "fountain": (3, 3), "produce": (3, 2),
         # Chapter 2 (issue #28): the Abbey's lands
-        "yew": (3, 4), "pine": (3, 4), "ruin": (2, 2), "candles": (1, 2), "chapel": (6, 6), "grave": (1, 2)}
+        "yew": (3, 4), "pine": (3, 4), "ruin": (2, 2), "candles": (1, 2), "chapel": (6, 6), "grave": (1, 2),
+        # Chapter 3 (issue #29): the Velvet Causeway
+        "townhall": (7, 7), "lamppost": (1, 3), "mask_stall": (4, 4), "balustrade": (3, 2)}
 
 BIOMES = {
     # The Frayed Meadow's own layout "a" is hand-made (maps/frayed_meadow.txt); b and c are generated.
@@ -185,6 +187,21 @@ BIOMES = {
         # Landmarks: a ruined wayside shrine, lamps along the pilgrims' road.
         "landmarks": [("U", (38, 22)), ("U", (41, 23)), ("A", (22, 30)), ("A", (36, 30)), ("A", (48, 28))],
         "groves": [("I", 6, 6, 10), ("Q", 3, 4, 5), ("P", 3, 5, 6)],
+    },
+    # Chapter 3 (issue #29): the Velvet Causeway, a bridge-city on the ink lake. Ground set, balustrades and mask
+    # stalls are tracked placeholders (data/placeholders.json) until the art batch replaces them under the same ids.
+    "causeway": {
+        "name": "The Velvet Causeway", "mood": "grade=0.9,0.86,1.0 mist=1.2 motes=1.0,0.88,0.65", "ground": "causeway", "seed": 101,
+        "sign": "THE VELVET CAUSEWAY|Mind the steps.|There are fewer than yesterday.",
+        "props": {"L": "lamppost", "K": "balustrade", "M": "mask_stall", "X": "crates", "B": "barrels", "J": "dock",
+                  "Q": "banner", "H": "house_d", "E": "house_e", "W": "fountain"},
+        "border": ["H", "K", "E"],
+        "scatter": [("K", 0.05, 0.4), ("L", 0.03, 0.35), ("X", 0.02, 0.4), ("B", 0.02, 0.4), ("M", 0.008, 0.3)],
+        "path_r": 1.8, "patches": (7, 0.6),
+        # Landmarks: a fountain square under lamps, a mask market, a landing stage on the lake.
+        "landmarks": [("W", (30, 22)), ("L", (26, 20)), ("L", (35, 20)), ("M", (40, 40)), ("M", (46, 41)), ("Q", (43, 37)),
+                      ("J", (22, 44)), ("J", (27, 45)), ("X", (24, 40))],
+        "groves": [("K", 4, 4, 6), ("L", 3, 4, 5), ("X", 2, 4, 4)],
     },
 }
 
@@ -519,3 +536,6 @@ if __name__ == "__main__":
     if not only or "chapter2" in only:
         import make_chapter2  # Chapter 2's story maps (issue #28)
         make_chapter2.build_all(build, BIOMES)
+    if not only or "chapter3" in only:
+        import make_chapter3  # Chapter 3's story maps (issue #29)
+        make_chapter3.build_all(build, BIOMES)
