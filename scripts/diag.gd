@@ -425,7 +425,7 @@ func take_screenshot() -> String:
 	var name := "last-ink_%s.png" % Time.get_datetime_string_from_system().replace(":", "-").replace("T", "_")
 	if OS.has_feature("web"):
 		JavaScriptBridge.download_buffer(img.save_png_to_buffer(), name, "image/png")
-		toast(tr("Screenshot downloaded: ") + name)
+		toast(tr("Screenshot downloaded: %s") % name)
 		return name
 	DirAccess.make_dir_recursive_absolute(SHOT_DIR)
 	var path := SHOT_DIR.path_join(name)
@@ -433,7 +433,7 @@ func take_screenshot() -> String:
 		toast(tr("Could not save the screenshot."))
 		return ""
 	breadcrumb("screenshot " + name)
-	toast(tr("Screenshot saved: ") + ProjectSettings.globalize_path(path))
+	toast(tr("Screenshot saved: %s") % ProjectSettings.globalize_path(path))
 	return path
 
 

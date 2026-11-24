@@ -205,7 +205,7 @@ func _draw() -> void:
 	# The pinned story goal.
 	if not g.is_empty():
 		goal_target = g.get("target", {})
-		var gs := tr("Story: ") + str(g["text"])
+		var gs := tr("Story: %s") % str(g["text"])
 		var hint := Prompts.fill(str(g.get("hint", "")))
 		var gw := font.get_string_size(gs, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(8)).x
 		var key := ""

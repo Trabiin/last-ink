@@ -279,7 +279,7 @@ static func effect_text(e: Dictionary) -> String:
 	if pe.has("guard"):
 		pp.append(Loc.t("%s %s damage taken") % [pct(float(pe["guard"])), Loc.t("less") if float(pe["guard"]) > 0 else Loc.t("more")])
 	if not pp.is_empty():
-		parts.append(Loc.t("in the party ") + Loc.t(" and ").join(pp))
+		parts.append(Loc.t("in the party %s") % Loc.list(pp))
 	if e.has("bond"):
 		parts.append(Loc.t("bond %+d a day") % int(e["bond"]))
 	return ", ".join(parts)
@@ -393,7 +393,7 @@ static func _make_truce(p: Dictionary) -> void:
 	ps["truce"] = true
 	var t := pair_between(p["ids"][0], p["ids"][1])
 	Empire.notice.emit(Loc.t("%s and %s have made peace: %s. (Bonds: H)") % [Empire.short_name(p["ids"][0]), Empire.short_name(p["ids"][1]), t["name"]], false)
-	_history(Loc.t("%s and %s: %s") % [Empire.short_name(p["ids"][0]), Empire.short_name(p["ids"][1]), t["name"]], [t["text"], Loc.t("From now on: ") + effect_text(t["effects"]) + "."])
+	_history(Loc.t("%s and %s: %s") % [Empire.short_name(p["ids"][0]), Empire.short_name(p["ids"][1]), t["name"]], [t["text"], Loc.t("From now on: %s.") % effect_text(t["effects"])])
 
 
 ## A banter exchange from a pair among `present` ([] if none), for the start of a mission.
@@ -412,7 +412,7 @@ static func banter_quote(squad: Array) -> String:
 	var ex := banter_for(squad)
 	if ex.is_empty():
 		return ""
-	return Loc.t("On the road: ") + " ".join(ex.map(func(l): return "%s: \"%s\"" % [Empire.short_name(str(l[0])), str(l[1])]))
+	return Loc.t("On the road: %s") % " ".join(ex.map(func(l): return "%s: \"%s\"" % [Empire.short_name(str(l[0])), str(l[1])]))
 
 
 # ---------------------------------------------------------------- fates
@@ -489,7 +489,7 @@ static func fate_facts(id: String) -> Array:
 	if int(f["missions"]) > 0:
 		out.append([Loc.t("Missions with Ash"), Loc.t("%d (%d won)") % [int(f["missions"]), int(f["wins"])]])
 	if int(f["injuries"]) > 0:
-		out.append([Loc.t("Badly hurt"), Loc.t("%d time%s") % [int(f["injuries"]), "" if int(f["injuries"]) == 1 else "s"]])
+		out.append([Loc.t("Badly hurt"), Loc.n("%d time", "%d times", int(f["injuries"])) % int(f["injuries"])])
 	if can_romance(id) and romance_of(id) != "":
 		out.append([Loc.t("With Ash"), {"partner": Loc.t("a romance"), "ex": Loc.t("it's over"), "friends": "friends"}[romance_of(id)]])
 	for pr in pairs_of(id):

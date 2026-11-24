@@ -313,7 +313,7 @@ static func offer(fid: String, id: String) -> bool:
 	var days := int(rules().get("offer_days", 3))
 	state()["offers"][fid] = {"id": id, "day": Empire.day, "until": Empire.day + days}
 	var fa := Empire.faction(fid)
-	_say(Loc.t("The %s ask a favour: %s. Answer in Diplomacy%s within %d days.") % [fa.get("short", fid), a["name"], Prompts.tag("diplomacy"), days],
+	_say(Loc.n("The %s ask a favour: %s. Answer in Diplomacy%s within %d day.", "The %s ask a favour: %s. Answer in Diplomacy%s within %d days.", days) % [fa.get("short", fid), a["name"], Prompts.tag("diplomacy"), days],
 		false, {"view": "diplomacy"})
 	return true
 
@@ -369,7 +369,7 @@ static func accept(fid: String) -> String:
 			Empire.change_standing(rival, int(a.get("rival_hit", -4)), Loc.t("You broke off the trade pact for the %s") % fa.get("short", fid), true)
 			_log_diplo(rival, Loc.t("Trade pact torn up: you promised the %s") % fa.get("short", fid), 0)
 			said += Loc.t(" Your trade pact with the %s is torn up.") % Empire.faction(rival).get("short", rival)
-	_log_diplo(fid, Loc.t("Accepted their request: ") + a["name"], 0)
+	_log_diplo(fid, Loc.t("Accepted their request: %s") % a["name"], 0)
 	return said
 
 
@@ -401,7 +401,7 @@ static func deliver_blocker(fid: String) -> String:
 	if a.is_empty() or a["kind"] != "deliver":
 		return Loc.t("nothing to hand over")
 	if not Empire.can_afford(a.get("cost", {})):
-		return Loc.t("not enough ") + Empire._missing(a.get("cost", {}))
+		return Loc.t("not enough %s") % Empire._missing(a.get("cost", {}))
 	return ""
 
 
@@ -588,7 +588,7 @@ static func _fail(fid: String, why: String) -> void:
 		for pid in near_home(fid):
 			_effect("hex", fid, pid, int(f["hex"].get("per_day", 2)), int(f["hex"].get("days", 3)))
 		if not near_home(fid).is_empty():
-			bits.append(Loc.t("a hex on your land by their home (+%d Fray a day for %d days, a Wardlamp burns it off)") % [int(f["hex"].get("per_day", 2)), int(f["hex"].get("days", 3))])
+			bits.append(Loc.n("a hex on your land by their home (+%d Fray a day for %d day, a Wardlamp burns it off)", "a hex on your land by their home (+%d Fray a day for %d days, a Wardlamp burns it off)", int(f["hex"].get("days", 3))) % [int(f["hex"].get("per_day", 2)), int(f["hex"].get("days", 3))])
 	_log_diplo(fid, Loc.t("Failed their request: %s. %s") % [a["name"], why], 0, true)
 	_say(Loc.t("The %s's request failed: %s. %s%s") % [short, a["name"], why, (" " + ", ".join(bits).substr(0, 1).to_upper() + ", ".join(bits).substr(1) + ".") if not bits.is_empty() else ""],
 		true, {"view": "diplomacy"})
@@ -671,18 +671,18 @@ static func fray_sources(p: Dictionary) -> Array:
 static func _days(n: int) -> String:
 	if n <= 0:
 		return Loc.t("less than a day")
-	return Loc.t("%d day%s") % [n, "" if n == 1 else "s"]
+	return Loc.days(n)
 
 
 static func boon_text(fid: String, b: Dictionary) -> String:
 	var days := int(b.get("days", 5))
 	match str(b.get("kind", "")):
 		"intel":
-			return Loc.t("+1 day of surge warning for %d days") % days
+			return Loc.n("+1 day of surge warning for %d day", "+1 day of surge warning for %d days", days) % days
 		"truce":
-			return Loc.t("no %s trouble for %d days") % [Empire.faction(fid).get("short", fid), days]
+			return Loc.n("no %s trouble for %d day", "no %s trouble for %d days", days) % [Empire.faction(fid).get("short", fid), days]
 		"ward":
-			return Loc.t("your land by the %s's home frays %d less a day for %d days") % [Empire.faction(fid).get("short", fid), absi(int(b.get("per_day", -1))), days]
+			return Loc.n("your land by the %s's home frays %d less a day for %d day", "your land by the %s's home frays %d less a day for %d days", days) % [Empire.faction(fid).get("short", fid), absi(int(b.get("per_day", -1))), days]
 	return ""
 
 
@@ -716,7 +716,7 @@ static func fail_text(a: Dictionary) -> String:
 	if f.get("trouble", false):
 		bits.append(Loc.t("%s trouble at the next dawn") % Empire.faction(str(a.get("faction", "concord"))).get("short", Loc.t("Concord")))
 	if f.has("hex"):
-		bits.append(Loc.t("a hex: +%d Fray a day for %d days on your land by their home") % [int(f["hex"].get("per_day", 2)), int(f["hex"].get("days", 3))])
+		bits.append(Loc.n("a hex: +%d Fray a day for %d day on your land by their home", "a hex: +%d Fray a day for %d days on your land by their home", int(f["hex"].get("days", 3))) % [int(f["hex"].get("per_day", 2)), int(f["hex"].get("days", 3))])
 	return ", ".join(bits) if not bits.is_empty() else Loc.t("nothing but their opinion of you")
 
 

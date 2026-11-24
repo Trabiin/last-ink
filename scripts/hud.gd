@@ -174,11 +174,11 @@ func _draw() -> void:
 		found = (found + ", " if found != "" else "") + ", ".join(gear_found)
 	if found != "":
 		var lit: bool = party.found_flash > 0.0
-		_text(Vector2(8, yy0), tr("Found: ") + found, 8, Color("ffe7a3") if lit else Color(0.75, 0.75, 0.75))
+		_text(Vector2(8, yy0), tr("Found: %s") % found, 8, Color("ffe7a3") if lit else Color(0.75, 0.75, 0.75))
 		yy0 += 12.0
 	var perks: Array = party.boosts.get("lines", [])
 	if not perks.is_empty():
-		_text(Vector2(8, yy0), tr("Research: ") + ", ".join(perks), 8, Color("d7b8f0"))
+		_text(Vector2(8, yy0), tr("Research: %s") % ", ".join(perks), 8, Color("d7b8f0"))
 
 	if banter_t > 0.0:
 		var a := clampf(banter_t / 0.4, 0.0, 1.0)
@@ -194,12 +194,12 @@ func _draw() -> void:
 		var dev := Prompts.PAD if pad else Prompts.KEYS
 		var abil := "%s %s %s %s" % [Prompts.key("ability_1", dev), Prompts.key("ability_2", dev), Prompts.key("ability_3", dev), Prompts.key("ability_4", dev)]
 		var lines_h := [
-			tr("Move: ") + (tr("left stick / D-pad") if pad else tr("WASD / arrows")),
+			tr("Move: %s") % (tr("left stick / D-pad") if pad else tr("WASD / arrows")),
 			Techs.how_to(dev),
-			tr("Swap hero: ") + Prompts.key("swap", dev),
-			tr("Pause: ") + Prompts.key("pause", dev),
-			tr("Abilities: ") + abil.strip_edges(),
-			tr("Quick menu: ") + Prompts.key("quick_menu", dev),
+			tr("Swap hero: %s") % Prompts.key("swap", dev),
+			tr("Pause: %s") % Prompts.key("pause", dev),
+			tr("Abilities: %s") % abil.strip_edges(),
+			tr("Quick menu: %s") % Prompts.key("quick_menu", dev),
 			"" if pad else tr("F1: show or hide this"),
 		]
 		for li in lines_h.size():

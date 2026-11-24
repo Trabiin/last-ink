@@ -10,7 +10,7 @@ extends RefCounted
 ## Text must sit directly in tr(...), Loc.t(...), tr_n / Loc.n(...) or in a const / static var
 ## (translated where it is shown, e.g. Loc.t(STAT_NAMES[k])).
 
-const WRAPS := ["tr(", "Loc.t(", "tr_n(", "Loc.n(", "TranslationServer.translate("]
+const WRAPS := ["tr(", "Loc.t(", "tr_n(", "Loc.n(", "Loc.count(", "TranslationServer.translate("]
 const LOG_CALLS := ["print", "printerr", "print_rich", "push_error", "push_warning", "assert", "breadcrumb",
 	"_print", "_log", "allow_log", "print_debug"]
 const NAME_CALLS := [
@@ -88,8 +88,8 @@ func script_texts(path: String) -> Array:
 			for w in WRAPS:
 				if before.ends_with(w):
 					wrapped = true
-			# tr_n / Loc.n: the plural form is the second argument
-			if not wrapped and RegEx.create_from_string("(tr_n|Loc\\.n)\\(\"(?:[^\"\\\\]|\\\\.)*\",\\s*$").search(before):
+			# tr_n / Loc.n / Loc.count: the plural form is the second argument
+			if not wrapped and RegEx.create_from_string("(tr_n|Loc\\.n|Loc\\.count)\\(\"(?:[^\"\\\\]|\\\\.)*\",\\s*$").search(before):
 				wrapped = true
 			out.append({"line": n + 1, "text": v, "wrapped": wrapped, "const": is_func})
 	return out

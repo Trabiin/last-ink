@@ -105,7 +105,7 @@ func _offer_report() -> void:
 	var prev: Dictionary = Diag.previous
 	var n := int(prev.get("errors", 0))
 	var what := tr("Last Ink closed unexpectedly last time.") if prev.get("crashed", false) \
-		else tr("Last Ink ran into %d error%s last time.") % [n, "" if n == 1 else "s"]
+		else Loc.n("Last Ink ran into %d error last time.", "Last Ink ran into %d errors last time.", n) % n
 	var offer := InkMenu.new()
 	offer.dim = 0.85
 	offer.top = 0.28
@@ -115,7 +115,7 @@ func _offer_report() -> void:
 		{"id": "logs", "label": tr("Download the logs") if OS.has_feature("web") else tr("Open log folder")},
 		{"id": "later", "label": tr("Not now")},
 		{"id": "mute", "label": tr("Don't ask again"), "detail": tr("until the next update")},
-	], what + tr(" A report with the log from then helps fix it.") + _first_error(prev))
+	], what + " " + tr("A report with the log from then helps fix it.") + _first_error(prev))
 	menu.visible = false
 	Diag.previous = {}  # asked once per launch
 	offer.chosen.connect(_on_offer.bind(offer, prev))
@@ -302,7 +302,7 @@ func _credit_lines() -> String:
 			var cols := row.split("|", false)
 			if cols.size() >= 4:
 				var asset := cols[0].strip_edges().get_slice(" (", 0)
-				lines.append_array(_wrap("%s  -  %s  (%s)" % [asset, cols[1].strip_edges(), cols[3].strip_edges()], 96))
+				lines.append("%s  -  %s  (%s)" % [asset, cols[1].strip_edges(), cols[3].strip_edges()])
 	lines.append("")
 	lines.append_array(ai_use_lines())
 	lines.append(tr("Made with Godot Engine"))
@@ -311,14 +311,14 @@ func _credit_lines() -> String:
 	return "\n".join(lines)
 
 
-## Godot's MIT notice, which every copy of the game must show (issue #157), wrapped for the credits box,
-## then where the other licence texts are. The notice stays in English: it is a legal text.
+## Godot's MIT notice, which every copy of the game must show (issue #157), one paragraph per line
+## (the credits box wraps them to its width in any language), then where the other licence texts are. The notice stays in English: it is a legal text.
 static func licence_lines() -> Array:
 	var out := []
 	for para in Engine.get_license_text().split("\n\n", false):
-		out.append_array(_wrap(para.replace("\n", " ").strip_edges(), 96))
+		out.append(para.replace("\n", " ").strip_edges())
 		out.append("")
-	out.append_array(_wrap(TranslationServer.translate("Licences for the libraries inside Godot and for the fonts: THIRD_PARTY_LICENSES.md, included with the game."), 96))
+	out.append(TranslationServer.translate("Licences for the libraries inside Godot and for the fonts: THIRD_PARTY_LICENSES.md, included with the game."))
 	return out
 
 
@@ -333,23 +333,8 @@ static func ai_use_lines() -> Array:
 	var out := []
 	for key in ["heading", "short", "more"]:
 		if d.has(key):
-			out.append_array(_wrap(TranslationServer.translate(str(d[key])), 96))
+			out.append(TranslationServer.translate(str(d[key])))
 	out.append("")
-	return out
-
-
-## Breaks text into lines of at most `width` characters at spaces (the credits box doesn't wrap).
-static func _wrap(text: String, width: int) -> Array:
-	var out := []
-	var line := ""
-	for word in text.split(" ", false):
-		if line != "" and line.length() + 1 + word.length() > width:
-			out.append(line)
-			line = word
-		else:
-			line = word if line == "" else line + " " + word
-	if line != "":
-		out.append(line)
 	return out
 
 

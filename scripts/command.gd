@@ -1237,29 +1237,29 @@ func _open_brief(m: Dictionary) -> void:
 		lines.append(line)
 	lines.append("")
 	lines.append(tr("%s mission   ·   Threat %s") % [Missions.type_name(m), Missions.threat_text(m)])  # #113
-	lines.append(tr("Objective: ") + Objective.describe(m.get("objective", {})))
+	lines.append(tr("Objective: %s") % Objective.describe(m.get("objective", {})))
 	if m.has("force"):
 		lines.append(tr("Personal: %s comes along, whoever else you pick.") % Empire.short_name(m["force"]))
 	elif m.has("escort"):
 		lines.append(tr("Escort: %s can't fight. Keep them on their feet.") % Empire.short_name(m["escort"]))
-	lines.append(tr("Expect: ") + EnemyKinds.names(m))
+	lines.append(tr("Expect: %s") % EnemyKinds.names(m))
 	var rew := Missions.reward_text(m)
 	if rew != "":
-		lines.append(tr("Reward: ") + rew)
+		lines.append(tr("Reward: %s") % rew)
 	if int(m.get("until_day", -1)) >= Empire.day:
 		var left := int(m["until_day"]) - Empire.day
-		lines.append(tr("Offered today only.") if left == 0 else tr("Offered for %d more day%s.") % [left, "" if left == 1 else "s"])
+		lines.append(tr("Offered today only.") if left == 0 else Loc.n("Offered for %d more day.", "Offered for %d more days.", left) % left)
 	if int(m.get("fray", 0)) < 0:
 		lines.append(tr("Pushes the Blank back: %d Fray in %s") % [int(m["fray"]), territory.find(m.get("province", "")).get("name", "")])
 	if m.has("cost_text"):
-		lines.append(tr("Cost: ") + m["cost_text"])
+		lines.append(tr("Cost: %s") % m["cost_text"])
 	lines.append(tr("The clock stops while you are away."))
 	var blocker: String = str(m.get("blocker", ""))
 	var items := [{"id": "go", "label": tr("Set out"), "enabled": blocker == "", "note": "(%s)" % blocker}]
 	# Other missions in the same province: switch the briefing to them.
 	var others := Missions.list_for_province(m.get("province", "")).filter(func(o): return o.get("id", "") != m.get("id", ""))
 	for o in others:
-		items.append({"id": "other:" + str(o["id"]), "label": tr("Instead: ") + str(o["name"])})
+		items.append({"id": "other:" + str(o["id"]), "label": tr("Instead: %s") % str(o["name"])})
 	items.append({"id": "back", "label": tr("Back")})
 	brief_menu.setup(m.get("name", tr("Mission")), items, "\n".join(lines))
 	brief_menu.visible = true
@@ -1800,7 +1800,7 @@ func _draw_labels() -> void:
 		if Empire.surge.get("id", "") == p["id"]:
 			# A gathering surge: a pulsing red ring and the countdown over it (both on pulse_canvas).
 			var dl := Empire.surge_days_left()
-			_pulses.append(["surge", pos, tr("Surge %s") % (tr("today") if dl <= 0 else tr("in %d day%s") % [dl, "" if dl == 1 else "s"]), false])
+			_pulses.append(["surge", pos, tr("Surge %s") % (tr("today") if dl <= 0 else Loc.n("in %d day", "in %d days", dl) % dl), false])
 		# Type missions on offer: Reclaim, Rescue, Raid, Salvage, Personal (Defense already shows as the surge ring).
 		var tags := []
 		for tm in MissionTypes.for_province(p["id"]):
@@ -1849,7 +1849,7 @@ func _draw_region_names() -> void:
 		_text_c(pos, str(r["name"]).to_upper(), big, Color("f6f1e4"), 5)
 		var ch := int(r.get("chapter", 0))
 		var sub := (tr("Chapter %d") % ch) if ch > 0 else tr("Later in the story")
-		_text_c(pos + Vector2(0, 12), sub + tr("  ·  beyond the fog"), 8, Color(0.25, 0.2, 0.16, 0.95), 0)
+		_text_c(pos + Vector2(0, 12), tr("%s  ·  beyond the fog") % sub, 8, Color(0.25, 0.2, 0.16, 0.95), 0)
 
 
 ## A province under the fog: what the region is, what is rumoured there, and when the story opens it.
@@ -1985,7 +1985,7 @@ func _draw_panel() -> void:
 		var rcol := Color("ff8a7a") if rate > 0 else (Color("9fd18b") if rate < 0 else Color(0.7, 0.68, 0.7))
 		var eta := ""
 		if rate > 0:
-			eta = tr("   erased in ~%d days") % ceili((100.0 - fray) / rate)
+			eta = "   " + Loc.n("erased in ~%d day", "erased in ~%d days", ceili((100.0 - fray) / rate)) % ceili((100.0 - fray) / rate)
 		_text(Vector2(x, y), tr("Per day: %s%d%s") % ["+" if rate > 0 else "", rate, eta], 9, rcol)
 		y += 11
 		for src in Empire.fray_sources(p):
@@ -2068,9 +2068,9 @@ func _draw_panel() -> void:
 		var blocked: bool = str(m.get("blocker", "")) != ""
 		_cv.draw_rect(r, Color(0.22, 0.17, 0.08) if not blocked else Color(0.12, 0.11, 0.13))
 		_cv.draw_rect(r, GOLD if not blocked else Color(0.45, 0.42, 0.4), false, 1.0)
-		var label: String = m["name"] if m.has("type") else tr("Play: ") + m["name"]
+		var label: String = m["name"] if m.has("type") else tr("Play: %s") % m["name"]
 		_text_c(Vector2(r.get_center().x, r.position.y + 12), label + (tr("  (+%d more)") % more if more > 0 else ""), 9, GOLD if not blocked else Color(0.7, 0.67, 0.62))
-		var sub := (tr("Tap again") if Prompts.touch() else Prompts.key("ui_accept")) if not blocked else tr("Locked: ") + str(m["blocker"])
+		var sub := (tr("Tap again") if Prompts.touch() else Prompts.key("ui_accept")) if not blocked else tr("Locked: %s") % str(m["blocker"])
 		_text_c(Vector2(r.get_center().x, r.position.y + 22), sub, 8, Color(0.75, 0.7, 0.55) if not blocked else Color(1, 0.6, 0.5))
 	else:
 		var note := tr("No missions here right now")

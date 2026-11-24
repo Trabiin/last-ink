@@ -9,7 +9,7 @@ extends SceneTree
 const Scan := preload("res://tools/loc_scan.gd")
 const OUT := "res://locale/messages.pot"
 ## tr("x"), Loc.t("x"), tr("x", "ctx"), Loc.n("one", "many", ...), tr_n("one", "many", ...)
-const CALL_RE := "(\\btr|Loc\\.t|TranslationServer\\.translate|tr_n|Loc\\.n)\\(\\s*(\"(?:[^\"\\\\]|\\\\.)*\")(?:\\s*,\\s*(\"(?:[^\"\\\\]|\\\\.)*\"))?"
+const CALL_RE := "(\\btr|Loc\\.t|TranslationServer\\.translate|tr_n|Loc\\.n|Loc\\.count)\\(\\s*(\"(?:[^\"\\\\]|\\\\.)*\")(?:\\s*,\\s*(\"(?:[^\"\\\\]|\\\\.)*\"))?"
 
 var _frame := 0
 var _entries := {}  # key (ctx + "\u0004" + msgid) -> {"id", "ctx", "plural", "refs": []}
@@ -69,7 +69,7 @@ func _scripts() -> void:
 			for m in call_re.search_all(line):
 				var id := _unq(m.get_string(2))
 				var second := _unq(m.get_string(3)) if m.get_string(3) != "" else ""
-				if m.get_string(1) in ["tr_n", "Loc.n"]:
+				if m.get_string(1) in ["tr_n", "Loc.n", "Loc.count"]:
 					add(id, "scripts/%s:%d" % [f, n + 1], "", second)
 				else:
 					add(id, "scripts/%s:%d" % [f, n + 1], second)

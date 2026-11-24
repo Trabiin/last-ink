@@ -344,7 +344,10 @@ func test_mission_types() -> void:
 		_res_keys(w + " cache", fc.get("cache", {}), true)
 		for r in fc.get("rival", {}):
 			check(factions.has(r), "%s: rival %s is not a faction" % [w, r])
-		check(str(fc.get("brief", "")).count("%d") == 2, "%s: brief needs two %%d (need, caches)" % w)
+		var brief := str(fc.get("brief", ""))
+		check(brief.count("%d") == 1 and brief.count("%s") == 1 and brief.find("%d") < brief.find("%s"),
+			"%s: brief needs %%d (need) then %%s (the counted caches, issue #183)" % w)
+		check(str(fc.get("noun", "")) in ["box", "crate", "cache", "chest", "pile"], "%s: noun must be one MissionTypes.counted() knows" % w)
 	_res_keys("mission_types.json raid rewards", mt["raid"].get("rewards", {}))
 	_res_keys("mission_types.json salvage pile", mt["salvage"].get("pile", {}), true)
 	_res_keys("mission_types.json salvage rewards", mt["salvage"].get("rewards", {}))

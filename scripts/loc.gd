@@ -5,7 +5,7 @@ extends RefCounted
 ## stay readable and English needs no catalogue at all. docs/LOCALIZATION.md has the rules.
 ##
 ## - Script text: "..." in instance code, "..." in static code. Translate BEFORE
-##   formatting: tr("Day %d") % day, never tr("Day %d" % day). Plurals: Loc.n().
+##   formatting: tr("Day %d") % day, never tr("Day %d" % day). Plurals: Loc.n() / Loc.count().
 ## - Data text: data/*.json is read through Loc.load_json(), which translates the player-facing
 ##   fields named in TEXT_KEYS / LINE_KEYS / VOICE_KEYS as it loads. Ids, colours and the like are
 ##   left alone. A new player-facing key must be added here (tests/test_loc.gd fails otherwise).
@@ -154,7 +154,31 @@ static func t(message: String, ctx := "") -> String:
 ## Plural: Loc.n("%d day", "%d days", n) % n. English picks by n == 1; catalogues know their rules.
 static func n(one: String, many: String, count: int, ctx := "") -> String:
 	setup()
-	return TranslationServer.translate_plural(one, many, count, ctx)
+	var s := TranslationServer.translate_plural(one, many, count, ctx)
+	# translate() pseudo-localises on its own; translate_plural() doesn't, so plurals would hide
+	# from the longer-language test without this.
+	return TranslationServer.pseudolocalize(s) if TranslationServer.pseudolocalization_enabled else s
+
+
+## A counted phrase, formatted: Loc.count("%d day", "%d days", 3) -> "3 days". Use it for the count
+## inside a longer sentence ("Surge in %s." % Loc.count(...)), so each count picks its own form.
+static func count(one: String, many: String, amount: int, ctx := "") -> String:
+	return n(one, many, amount, ctx) % amount
+
+
+## "1 day" / "3 days": the most common counted phrase.
+static func days(amount: int) -> String:
+	return count("%d day", "%d days", amount)
+
+
+## "A", "A and B", "A, B and C": a list of names or phrases joined the way the language joins them.
+static func list(items: Array) -> String:
+	var parts := items.map(func(x): return str(x))
+	if parts.is_empty():
+		return ""
+	if parts.size() == 1:
+		return parts[0]
+	return Loc.t("%s and %s") % [Loc.t(", ", "list separator").join(parts.slice(0, parts.size() - 1)), parts[-1]]
 
 
 ## Translates every string in a list (labels kept in a const, translated where they are shown).

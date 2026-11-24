@@ -52,9 +52,11 @@ func test_lines_split_speaker_and_text() -> void:
 func test_pseudo_locale_reaches_scripts_and_data() -> void:
 	TranslationServer.pseudolocalization_enabled = true
 	var s := Loc.t("Close")
+	var pl := Loc.days(3)
 	var data = Loc.data({"name": "Gristle", "id": "gristle", "lines": [["bran", "Hello.", "smug"]]}, "test.json")
 	TranslationServer.pseudolocalization_enabled = false
 	check(s != "Close" and s.length() > 5, "script text is pseudo-localised: %s" % s)
+	check(pl != "3 days" and pl.contains("3"), "plurals are pseudo-localised too: %s" % pl)
 	check(data["name"] != "Gristle", "data text is pseudo-localised: %s" % data["name"])
 	check_eq(data["id"], "gristle", "ids are untouched")
 	check_eq(data["lines"][0][0], "bran", "speaker stays an id")
@@ -87,3 +89,67 @@ func test_fonts_cover_accented_latin() -> void:
 			if not f.has_char(c.unicode_at(0)):
 				missing += c
 		check(missing == "", "%s has no glyph for: %s" % [path.get_file(), missing])
+
+
+## Issue #183: no English plural tricks. A count picks its words through Loc.n / Loc.count, which
+## follow each language's plural rules, never a "s" suffix glued on in code.
+func test_no_english_plural_suffixes() -> void:
+	var suffix := RegEx.create_from_string("\"\" if [^\"]+ else \"(s|es)\"|\"(s|es)\" if [^\"]+ else \"\"")
+	for f in DirAccess.get_files_at("res://scripts/"):
+		if not f.ends_with(".gd"):
+			continue
+		var lines := FileAccess.get_file_as_string("res://scripts/" + f).split("\n")
+		for n in lines.size():
+			if suffix.search(lines[n]) and not "no-tr" in lines[n]:
+				check(false, "scripts/%s:%d: plural built with a suffix; use Loc.n(\"%%d day\", \"%%d days\", n) %% n" % [f, n + 1])
+
+
+## Issue #183: no sentences glued from translated pieces. A fragment like tr("Likes ") + x or
+## x + tr(" to resume.") can't be reordered by a translator; write tr("Likes %s") % x instead.
+## Whole sentences may still follow each other, and key hints (Prompts.tag) may be appended.
+func test_no_glued_fragments() -> void:
+	var lead := RegEx.create_from_string("(\\btr|Loc\\.t)\\(\"(?:[^\"\\\\]|\\\\.)*[ :]\"\\)\\s*\\+")
+	var tail := RegEx.create_from_string("\\+\\s*(\\btr|Loc\\.t)\\(\" *[a-z.,;:(]")
+	var join := RegEx.create_from_string("(\\btr|Loc\\.t)\\(\" and \"\\)\\.join")
+	for f in DirAccess.get_files_at("res://scripts/"):
+		if not f.ends_with(".gd"):
+			continue
+		var lines := FileAccess.get_file_as_string("res://scripts/" + f).split("\n")
+		for n in lines.size():
+			var l: String = lines[n]
+			if l.strip_edges().begins_with("#") or "no-tr" in l:
+				continue
+			if lead.search(l) or tail.search(l) or join.search(l):
+				check(false, "scripts/%s:%d: sentence glued from pieces; give it one string with %%s (or Loc.list for lists)" % [f, n + 1])
+
+
+## Counted phrases and lists (issue #183).
+func test_counts_and_lists() -> void:
+	check_eq(Loc.days(1), "1 day", "one day")
+	check_eq(Loc.days(4), "4 days", "several days")
+	check_eq(Loc.count("%d pile", "%d piles", 0), "0 piles", "zero is plural in English")
+	check_eq(Loc.n("%d wants a word.", "%d want a word.", 1) % 1, "1 wants a word.", "Loc.n singular")
+	check_eq(Loc.list(["Bran"]), "Bran", "one name")
+	check_eq(Loc.list(["Bran", "Quill"]), "Bran and Quill", "two names")
+	check_eq(Loc.list(["Bran", "Quill", "Tobble"]), "Bran, Quill and Tobble", "three names")
+	check_eq(MissionTypes.counted("box", 1), "1 box", "raid loot noun, singular")
+	check_eq(MissionTypes.counted("box", 5), "5 boxes", "raid loot noun, plural")
+
+
+## Issue #183: names go by the short form data gives them, so a translation can rename people
+## without code knowing English titles ("Old", "Mother", "Brother"...).
+func test_short_names_come_from_data() -> void:
+	check_eq(Empire.short_name("tobble"), "Old Tobble", "title kept")
+	check_eq(Empire.short_name("ninefingers"), "Daro", "rank dropped")
+	check_eq(Empire.short_name("cuthbert"), "Brother Cuthbert", "Brother is a title, not a first name")
+	check_eq(Empire.short_name("jessamy"), "Jessamy", "first name")
+
+
+## Engine key names (English) go through the catalogue; letters stay as they are.
+func test_key_names_are_translatable() -> void:
+	check_eq(Prompts.key_label(KEY_ESCAPE), "Esc", "short name")
+	check_eq(Prompts.key_label(KEY_K), "K", "letters as they are")
+	TranslationServer.pseudolocalization_enabled = true
+	var space := Prompts.key_label(KEY_SPACE)
+	TranslationServer.pseudolocalization_enabled = false
+	check(space != "Space", "named keys reach the catalogue: %s" % space)

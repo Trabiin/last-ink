@@ -599,7 +599,7 @@ func _person_blocks(row: Dictionary) -> Array:
 		"roster":
 			var status := tr("%s. Now: %s.") % [tier, Empire.role_label(id)]
 			if int(Empire.recruits[id].get("injured", 0)) > 0:
-				status += tr(" Hurt: out for %d more days.") % int(Empire.recruits[id]["injured"])
+				status += " " + Loc.n("Hurt: out for %d more day.", "Hurt: out for %d more days.", int(Empire.recruits[id]["injured"])) % int(Empire.recruits[id]["injured"])
 			b.append(["sub", status, INK])
 		"gate":
 			b.append(["sub", tr("Waiting at the south gate. Talk to them in town, or use Newcomers."), INK_GREEN])

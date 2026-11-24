@@ -70,7 +70,7 @@ func _draw() -> void:
 	_centered(vs.y * 0.5 - 10, heading, 18, Color(GOLD, a))
 	_centered(vs.y * 0.5 + 14, line, 10, Color(TEXT, a))
 	if _t >= 0.6:
-		_centered(vs.y * 0.5 + 34, Prompts.confirm() + tr(" to continue"), 8, Color(0.7, 0.68, 0.66, a))
+		_centered(vs.y * 0.5 + 34, tr("%s to continue") % Prompts.confirm(), 8, Color(0.7, 0.68, 0.66, a))
 
 
 func _centered(y: float, s: String, fsize: int, col: Color) -> void:

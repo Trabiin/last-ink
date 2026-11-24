@@ -162,7 +162,7 @@ func _draw() -> void:
 	var p := _province()
 	UiSkin.screen(self, vs)
 	var claiming: bool = p["owner"] != "you"
-	_text(Vector2(8, 20), (tr("Claim ") if claiming else tr("Govern ")) + p["name"], 15, Color("f3efe4"))
+	_text(Vector2(8, 20), (tr("Claim %s") if claiming else tr("Govern %s")) % p["name"], 15, Color("f3efe4"))
 	var cr := _close_rect()
 	UiSkin.panel(self, cr, "button")
 	_text(cr.position + Vector2(9, 12), tr("Close"), 9, Color(0.75, 0.72, 0.7))

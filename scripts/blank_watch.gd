@@ -153,7 +153,7 @@ func _draw() -> void:
 
 ## The bottom-right line on the map; the legend (command.gd) wraps to leave it room.
 static func next_text(next: Dictionary) -> String:
-	return Loc.t("Next to fall: %s in ~%d day%s") % [next["name"], next["days"], "" if next["days"] == 1 else "s"]
+	return Loc.n("Next to fall: %s in ~%d day", "Next to fall: %s in ~%d days", next["days"]) % [next["name"], next["days"]]
 
 
 ## The province the Blank will finish first at today's rates: {"name", "owner", "days"} or {}.

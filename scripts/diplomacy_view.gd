@@ -338,11 +338,11 @@ func _draw_list(vs: Vector2) -> void:
 	var trouble := " ".join(troubles)
 	var sub := tr("Post an envoy to win standing each day. Deals unlock as standing rises.")
 	if Empire.intel_until > Empire.day:
-		sub = tr("Fresh intel: +1 day of surge warning for %d more day%s.") % [Empire.intel_until - Empire.day, "" if Empire.intel_until - Empire.day == 1 else "s"]
+		sub = Loc.n("Fresh intel: +1 day of surge warning for %d more day.", "Fresh intel: +1 day of surge warning for %d more days.", Empire.intel_until - Empire.day) % (Empire.intel_until - Empire.day)
 	var hl := UiSkin.header_line(font, tr("Diplomacy"), 15, sub, 8, vs.x, 90.0)
 	_text(Vector2(hl[0], 20), hl[1], 8, GOLD)
 	if trouble != "":
-		_text(Vector2(8, 34), trouble + tr(" Get them to Neutral (-9) to stop it."), 8, BAD)
+		_text(Vector2(8, 34), trouble + " " + tr("Get them to Neutral (-9) to stop it."), 8, BAD)
 	# Lay the list out first, then scroll so the selected row is on screen.
 	var top := 38.0
 	var bottom := vs.y - 22.0
@@ -467,7 +467,7 @@ func _draw_head(fid: String, fa: Dictionary, y: float) -> void:
 ## "2 days left" / "last day" to a deadline day.
 func _left(until: int) -> String:
 	var d := until - Empire.day
-	return tr("last day") if d <= 1 else tr("%d days left") % d
+	return tr("last day") if d <= 1 else Loc.n("%d day left", "%d days left", d) % d
 
 
 func _draw_details(vs: Vector2) -> void:
@@ -491,7 +491,7 @@ func _draw_details(vs: Vector2) -> void:
 		var summ := Empire.deal_summary(fid, k)
 		y += _wrap(Vector2(x, y + 9), summ.substr(0, 1).to_upper() + summ.substr(1) + ".", w, 8, GOLD) + 2
 		var need: String = Empire.DEAL_TIER[k]
-		_text(Vector2(x, y + 9), tr("Needs %s standing%s.") % [Empire.tier_name(need), "" if k == "trade" else tr(" and an envoy posted")] if need != "hostile" else tr("Any standing, with an envoy posted."), 8, SOFT, w)
+		_text(Vector2(x, y + 9), (tr("Needs %s standing.") if k == "trade" else tr("Needs %s standing and an envoy posted.")) % Empire.tier_name(need) if need != "hostile" else tr("Any standing, with an envoy posted."), 8, SOFT, w)
 		y += 12
 		if k == "trade":
 			_text(Vector2(x, y + 9), tr("The pact holds while standing stays at %d or more.") % Empire.trade_breaks, 8, SOFT, w)
@@ -509,7 +509,7 @@ func _draw_details(vs: Vector2) -> void:
 	else:
 		_text(Vector2(x, y), fa["name"], 12, Color("f3efe4"), w)
 		y += 4
-		y += _wrap(Vector2(x, y + 9), tr("Wants: ") + fa["wants"], w, 8, GOLD) + 2
+		y += _wrap(Vector2(x, y + 9), tr("Wants: %s") % fa["wants"], w, 8, GOLD) + 2
 		y += _wrap(Vector2(x, y + 9), fa["blurb"], w, 8, Color(0.78, 0.76, 0.74)) + 6
 	# Standing and why it moves
 	var v := Empire.standing_of(fid)
@@ -533,7 +533,7 @@ func _draw_details(vs: Vector2) -> void:
 			y += 9
 	y += 6
 	var perk_col := GOOD if Empire.has_perk(fid) else DIM
-	y += _wrap(Vector2(x, y + 9), (tr("Friendly perk (on): ") if Empire.has_perk(fid) else tr("At Friendly: ")) + fa["perk"]["text"] + ".", w, 8, perk_col) + 6
+	y += _wrap(Vector2(x, y + 9), (tr("Friendly perk (on): %s.") if Empire.has_perk(fid) else tr("At Friendly: %s.")) % fa["perk"]["text"], w, 8, perk_col) + 6
 	# Lately
 	var log := Empire.diplo_log.filter(func(e): return e["faction"] == fid)
 	if not log.is_empty() and y < vs.y - 50:

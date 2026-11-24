@@ -282,7 +282,7 @@ func _draw() -> void:
 	_text(Vector2(8, 20), tr("Bonds"), 15, Color("f3efe4"))
 	var ready := Empire.bond_ready_ids().size()
 	var sub := tr("Chat once a day in Hollowmark, put people in roles they like, send them on jobs. Each rank has a scene.")
-	var hl := UiSkin.header_line(font, tr("Bonds"), 15, (tr("%d want%s a word with Ash.") % [ready, "s" if ready == 1 else ""]) if ready > 0 else "", 9, vs.x, 62.0)
+	var hl := UiSkin.header_line(font, tr("Bonds"), 15, (Loc.n("%d wants a word with Ash.", "%d want a word with Ash.", ready) % ready) if ready > 0 else "", 9, vs.x, 62.0)
 	_text(Vector2(hl[0], 20), hl[1], 9, HEART)
 	_text(Vector2(8, 34), sub, 8, SOFT, vs.x - 16)
 	var ids := _ids()
@@ -327,7 +327,7 @@ func _draw() -> void:
 		_scroll_arrow(Vector2(8 + LIST_W / 2, y + 1), false)
 	var missing := Empire.bond_cast().size() - ids.size()
 	if missing > 0 and scroll + fits >= ids.size():
-		_text(Vector2(10, y + 10), tr("%d more people Ash could get close to haven't joined yet.") % missing, 7, DIM, LIST_W)
+		_text(Vector2(10, y + 10), Loc.n("%d more person Ash could get close to hasn't joined yet.", "%d more people Ash could get close to haven't joined yet.", missing) % missing, 7, DIM, LIST_W)
 	_draw_details(vs, ids[sel])
 	_text(Vector2(8, vs.y - 8), Prompts.help([["updown", "choose"], ["ui_accept", tr("talk / scenes")], ["leftright", tr("people / scenes")], [["ui_cancel", "bonds"], "close"]], tr("Tap a name, tap again to talk   Tap a scene twice to play it")), 7, Color(0.5, 0.48, 0.52))
 	if flash_t > 0.0:
@@ -349,7 +349,7 @@ func _draw_details(vs: Vector2, id: String) -> void:
 	var y := top + 14
 	_text(Vector2(x, y), "%s, %s" % [r["name"], r.get("title", "")], 11, Color("f3efe4"), w)
 	y += 12
-	var pts := tr("%d bond points") % Empire.bond_points(id)
+	var pts := Loc.count("%d bond point", "%d bond points", Empire.bond_points(id))
 	if rank < Empire.BOND_MAX:
 		pts += tr(" (rank %d at %d)") % [rank + 1, Empire.bond_threshold(rank + 1)]
 	_text(Vector2(x, y), tr("Rank %d, %s.  %s") % [rank, Empire.bond_rank_name(rank), pts], 8, HEART, w)
@@ -409,7 +409,7 @@ func _draw_details(vs: Vector2, id: String) -> void:
 		if not kin[k].is_empty():
 			bits.append("%s: %s" % [{"friends": tr("Gets on with"), "truce": tr("Made peace with"), "rivals": tr("Can't stand")}[k], ", ".join(kin[k])])
 	if not bits.is_empty():
-		y += _wrap(Vector2(x, y + 9), ".  ".join(bits) + tr(".  (Posting them together matters: see Roster, Buildings, Expeditions, party.)"), w, 8, Color("b9c4d8")) + 1
+		y += _wrap(Vector2(x, y + 9), tr("%s.  (Posting them together matters: see Roster, Buildings, Expeditions, party.)") % ".  ".join(bits), w, 8, Color("b9c4d8")) + 1
 	y += 8
 	# Scenes
 	_text(Vector2(x, y + 8), tr("Scenes"), 9, Color(0.75, 0.72, 0.7))

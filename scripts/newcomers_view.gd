@@ -216,10 +216,10 @@ func _draw_details(vs: Vector2, id: String) -> void:
 		y += _wrap(Vector2(x, y + 9), "\"%s\"" % r.get("pitch", tr("I'm looking for work.")), w, 8, GOLD) + 4
 	else:
 		y += _wrap(Vector2(x, y + 9), r.get("rumour", ""), w, 8, RUMOUR) + 4
-		y += _wrap(Vector2(x, y + 9), tr("How: ") + Empire.hook_text(id), w, 8, Color("e8d9a8")) + 2
+		y += _wrap(Vector2(x, y + 9), tr("How: %s") % Empire.hook_text(id), w, 8, Color("e8d9a8")) + 2
 	var prog: Array = Empire.hook_progress(id)
 	if prog[0] != "":
-		y += _wrap(Vector2(x, y + 9), tr("Now: ") + prog[0], w, 8, GOOD if prog[1] else SOFT) + 2
+		y += _wrap(Vector2(x, y + 9), tr("Now: %s") % prog[0], w, 8, GOOD if prog[1] else SOFT) + 2
 	if Empire.join_hook(id).get("type", "") != "rescue":
 		var cost := Empire.hire_cost(id)
 		var price := "free" if cost.is_empty() else Empire.cost_text(cost)

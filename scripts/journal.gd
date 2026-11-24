@@ -266,7 +266,7 @@ static func story_quests() -> Array:
 			next = Prompts.fill(str(g.get("hint", "")))
 			var why := _story_blocker(g.get("done", {}))
 			if why != "" and next != "":
-				next += Loc.t(". For now: ") + why + "."
+				next = Loc.t("%s. For now: %s.") % [next, why]
 		out.append({"id": "story_%d" % i, "section": "story", "title": str(g.get("text", "")), "state": "done" if done else "open",
 			"sub": ch.get("title", Loc.t("Main story")), "text": "", "next": next, "target": target, "where": _where(target), "days": -1})
 	if not Story.active() and out.is_empty():
@@ -375,7 +375,7 @@ static func faction_quests() -> Array:
 				if Empire.DEAL_TIER.get(k, "") == nxt and f.get("deals", {}).has(k):
 					opens.append("\"%s\" (%s)" % [str(f["deals"][k].get("name", k)), Loc.t(DEAL_WORDS.get(k, k))])
 			if nxt == "friendly" and f.has("perk"):
-				opens.append(Loc.t("their perk: ") + str(f["perk"].get("text", "")))
+				opens.append(Loc.t("their perk: %s") % str(f["perk"].get("text", "")))
 			steps.append(Loc.t("Next: %s at %d standing (now %d).") % [Empire.tier_name(nxt), Empire.tier_min(nxt), v])
 			if not opens.is_empty():
 				steps.append(Loc.t("That opens %s.") % "; ".join(opens))
@@ -452,7 +452,7 @@ static func open_quests() -> Array:
 static func _days(n: int) -> String:
 	if n <= 0:
 		return Loc.t("less than a day")
-	return Loc.t("%d day%s") % [n, "" if n == 1 else "s"]
+	return Loc.days(n)
 
 
 static func _where(target: Dictionary) -> String:
@@ -582,7 +582,7 @@ static func _codex_entry(c: Dictionary) -> Dictionary:
 			if p.get("region", "") == c["region"]:
 				total += 1
 				held += 1 if p["owner"] == "you" else 0
-		e["facts"].append([Loc.t("Held"), Loc.t("%d of %d provinces") % [held, total]])
+		e["facts"].append([Loc.t("Held"), Loc.n("%d of %d province", "%d of %d provinces", total) % [held, total]])
 		if r.has("pressure"):
 			e["facts"].append([Loc.t("Pressure"), Loc.t("%s: +%d Fray a day everywhere here") % [r["pressure"].get("label", ""), int(r["pressure"].get("per_day", 0))]])
 	return e
@@ -632,9 +632,9 @@ static func _enemy_facts(c: Dictionary, e: Dictionary) -> void:
 	var kind := str(c["enemy"])
 	var k := EnemyKinds.kind(kind)
 	var beaten := meets(c["defeat"]) if c.has("defeat") else kills(kind) > 0
-	e["paras"].append(Loc.t("Habits: ") + str(c.get("habits", "")))
+	e["paras"].append(Loc.t("Habits: %s") % str(c.get("habits", "")))
 	if beaten:
-		e["paras"].append(Loc.t("Weakness: ") + str(c.get("weakness", "")))
+		e["paras"].append(Loc.t("Weakness: %s") % str(c.get("weakness", "")))
 	else:
 		e["paras"].append(Loc.t("Weakness: beat one to learn it."))
 	if not k.is_empty():
