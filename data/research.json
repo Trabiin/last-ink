@@ -1,11 +1,14 @@
 {
-	"_comment": "The research tree, studied in the Scriptorium. Each branch is a short chain: a node needs the one before it (needs), sometimes a Scriptorium level (scriptorium), and for chapter branches a point in the story (when: Story.meets conditions, issue #28). cost is paid once, when you first start the node (Insight, sometimes Ink); days is study time at 100% pace (researchers' Lore speeds it up, see Empire.research_pace). effect is the one-line promise shown on the screen; the numbers themselves live in scripts/empire.gd (search for the node id) so the text and the game stay in step.",
+	"_comment": "The research tree, studied in the Scriptorium. Each branch is a short chain: a node needs the one before it (needs), sometimes a Scriptorium level (scriptorium), and for chapter branches a point in the story (when: Story.meets conditions, issue #28) or an open region of the map (region on the branch: the whole branch stays hidden until the chapter opens that region, issue #189). ranks: a study that can be repeated that many times; each rank costs step more than the last and takes days_step more days, and its mods count once per rank. mods: what a node does, by name, summed over everything known (Empire.research_mod): damage, hp (party max HP), guard (share of damage the party no longer takes), revive and power_rate (extra share), ink_regen (extra share), surge_fray (surges hit for this much less), expedition_odds (percent), expedition_slots, envoy_standing (per envoy a day), claim_discount (share off a claim's Gilt), lamp_fray (every Wardlamp slows Fray this much more), calm_region (that region's own pressure stops). Older nodes keep their numbers in scripts/empire.gd (search for the node id). cost is paid once, when you first start the node (Insight, sometimes Ink); days is study time at 100% pace (researchers' Lore speeds it up, see Empire.research_pace). effect is the one-line promise shown on the screen; the numbers themselves live in scripts/empire.gd (search for the node id) so the text and the game stay in step.",
 	"branches": [
 		{"id": "wardcraft", "name": "Wardcraft", "blurb": "Holding the line against the Blank."},
 		{"id": "logistics", "name": "Logistics", "blurb": "Feeding people and moving them about."},
 		{"id": "inkcraft", "name": "Inkcraft", "blurb": "What Ink can do, in the works and in a fight."},
 		{"id": "arms", "name": "Arms", "blurb": "Better kit for the party."},
-		{"id": "abbey", "name": "The Abbey's Learning", "blurb": "What the brothers of Saint Ledger's know, once they will tell you."}
+		{"id": "abbey", "name": "The Abbey's Learning", "blurb": "What the brothers of Saint Ledger's know, once they will tell you."},
+		{"id": "causeway", "name": "Masquerade Arts", "blurb": "What the Velvet Causeway knows about masks, money and duels.", "region": "causeway"},
+		{"id": "coast", "name": "Tide Reckoning", "blurb": "How the Unfinished Coast lives beside a sea that stopped.", "region": "coast"},
+		{"id": "spire", "name": "The Great Ledger", "blurb": "The capital's own methods, copied from the margins of the Ledger itself.", "region": "spire"}
 	],
 	"nodes": [
 		{
@@ -70,6 +73,64 @@
 		},
 		{"id": "bell_wards", "branch": "abbey", "name": "Bell Wards", "cost": {"insight": 18}, "days": 3, "when": {"cleared": ["ch2_hall"]}, "effect": "Surges hit for 3 less Fray", "blurb": "The Abbey's bells were cast with the hours written into the bronze. Rung one at a time, the right hour at the right moment, they make the Blank lose its place."},
 		{"id": "second_copy", "branch": "abbey", "name": "The Second Copy", "cost": {"insight": 26, "ink": 2}, "days": 4, "needs": ["bell_wards"], "when": {"cleared": ["ch2_crypt"]}, "effect": "Reclaims cost 1 less Ink and bring a province back at Fray 45, not 60", "blurb": "How the monks meant to write the world back if the capital's Ledger burned. It works better on land that was there yesterday."},
-		{"id": "tally_of_names", "branch": "abbey", "name": "The Tally of Names", "cost": {"insight": 34}, "days": 5, "needs": ["second_copy"], "scriptorium": 2, "when": {"cleared": ["ch2_abbot"]}, "effect": "Every province you hold with a governor: Fray -1 a day", "blurb": "Sister Osyth's method: count everyone, by name, and say the number out loud each night. It is very hard to erase something that is being counted."}
+		{"id": "tally_of_names", "branch": "abbey", "name": "The Tally of Names", "cost": {"insight": 34}, "days": 5, "needs": ["second_copy"], "scriptorium": 2, "when": {"cleared": ["ch2_abbot"]}, "effect": "Every province you hold with a governor: Fray -1 a day", "blurb": "Sister Osyth's method: count everyone, by name, and say the number out loud each night. It is very hard to erase something that is being counted."},
+
+		{
+			"id": "ward_beacons", "branch": "wardcraft", "name": "Beacon Script", "cost": {"insight": 45, "ink": 4}, "days": 5, "needs": ["ward_longwatch"], "scriptorium": 2,
+			"effect": "Wardlamps can be raised to level 3: Fray -3 a day, burning 1 Ink a day",
+			"blurb": "A lamp that writes its light across the sky in letters three miles high. The Blank reads it from the far edge and keeps its distance."
+		},
+		{
+			"id": "ward_study", "branch": "wardcraft", "name": "Readings of the Edge", "cost": {"insight": 40, "ink": 2}, "days": 4, "needs": ["ward_beacons"], "scriptorium": 2,
+			"ranks": 5, "step": {"insight": 15, "ink": 1}, "days_step": 1, "mods": {"surge_fray": 1},
+			"effect": "Each rank: surges hit for 1 less Fray",
+			"blurb": "Night after night, someone sits at the white edge and writes down what it does. The notebooks fill a wall now. The Blank has habits, it turns out."
+		},
+		{
+			"id": "log_relays", "branch": "logistics", "name": "Relay Riders", "cost": {"insight": 45}, "days": 5, "needs": ["log_fieldmaps"], "scriptorium": 2,
+			"mods": {"expedition_slots": 1},
+			"effect": "One more expedition can be out at a time",
+			"blurb": "Fresh horses at every waystation and riders who sleep in the saddle. Two squads can be fed and found at once."
+		},
+		{
+			"id": "log_study", "branch": "logistics", "name": "Quartermaster's Ledgers", "cost": {"insight": 40, "ink": 2}, "days": 4, "needs": ["log_relays"], "scriptorium": 2,
+			"ranks": 5, "step": {"insight": 15, "ink": 1}, "days_step": 1, "mods": {"expedition_odds": 4},
+			"effect": "Each rank: every expedition +4% success chance",
+			"blurb": "Every expedition that ever went out, what it carried, who came back and why. Read enough of them and you stop packing the wrong rope."
+		},
+		{
+			"id": "ink_wells", "branch": "inkcraft", "name": "Deep Wells", "cost": {"insight": 45, "ink": 4}, "days": 5, "needs": ["ink_skin"], "scriptorium": 2,
+			"mods": {"ink_regen": 0.25},
+			"effect": "Missions: heroes refill Ink 25% faster again",
+			"blurb": "The twins found a seam of older ink under the springs. It flows like it remembers being words."
+		},
+		{
+			"id": "ink_study", "branch": "inkcraft", "name": "Marginal Inks", "cost": {"insight": 40, "ink": 2}, "days": 4, "needs": ["ink_wells"], "scriptorium": 2,
+			"ranks": 5, "step": {"insight": 15, "ink": 1}, "days_step": 1, "mods": {"guard": 0.02},
+			"effect": "Each rank: missions, the party takes 2% less damage",
+			"blurb": "Recipes from the margins of old books: inks for warding, inks for mending, one ink nobody will admit to having made."
+		},
+		{
+			"id": "arms_temper", "branch": "arms", "name": "Tempered Edges", "cost": {"insight": 45, "ink": 5}, "days": 5, "needs": ["arms_steel"], "scriptorium": 2,
+			"mods": {"damage": 3, "hp": 10},
+			"effect": "Missions: the party hits for +3 damage and starts with +10 max HP",
+			"blurb": "Steel folded with a page of the Ledger between each layer. It holds an edge the way a contract holds a debtor."
+		},
+		{
+			"id": "arms_study", "branch": "arms", "name": "Drill Manuals", "cost": {"insight": 40, "ink": 2}, "days": 4, "needs": ["arms_temper"], "scriptorium": 2,
+			"ranks": 5, "step": {"insight": 15, "ink": 1}, "days_step": 1, "mods": {"damage": 1},
+			"effect": "Each rank: missions, the party hits for +1 damage",
+			"blurb": "Every fight the party has survived, drawn out move by move in the margins. Mostly arrows. Some of the arrows are rude."
+		},
+
+		{"id": "cw_masks", "branch": "causeway", "name": "Masked Envoys", "cost": {"insight": 32}, "days": 4, "mods": {"envoy_standing": 1}, "effect": "Every envoy you post: standing +1 more a day", "blurb": "Nobody on the Causeway says anything true without a mask on. Your envoys learn to wear one and are suddenly very well liked."},
+		{"id": "cw_charts", "branch": "causeway", "name": "Ink-Lake Charts", "cost": {"insight": 40, "ink": 3}, "days": 5, "needs": ["cw_masks"], "mods": {"claim_discount": 0.2}, "effect": "Claiming a province costs 20% less Gilt", "blurb": "Charts of the ink lake that show where the deeds are buried. Land is cheaper when you already know who owned it."},
+		{"id": "cw_duels", "branch": "causeway", "name": "Duelling Forms", "cost": {"insight": 48, "ink": 4}, "days": 5, "needs": ["cw_charts"], "scriptorium": 3, "mods": {"damage": 2, "power_rate": 0.15}, "effect": "Missions: +2 damage and the attack gauge refills 15% faster", "blurb": "The bridge duellists fight to first blood, then to the second, then to whoever is still dancing. Their footwork transfers surprisingly well to monsters."},
+		{"id": "co_seawalls", "branch": "coast", "name": "Sea-Walls of Sentences", "cost": {"insight": 36}, "days": 4, "mods": {"calm_region": "coast"}, "effect": "The Unfinished Coast stops fraying on its own (its sea pressure ends)", "blurb": "A wall of written sentences along the tideline, each one finished properly, full stop and all. The sea remembers where it is supposed to stop."},
+		{"id": "co_wrecks", "branch": "coast", "name": "Wreck Rights", "cost": {"insight": 44, "ink": 3}, "days": 5, "needs": ["co_seawalls"], "mods": {"expedition_odds": 10}, "effect": "Every expedition: +10% success chance", "blurb": "Salvagers' law, three hundred clauses long. Mostly about who gets the cargo. A little about how everyone gets home."},
+		{"id": "co_sentences", "branch": "coast", "name": "Unfinished Sentences", "cost": {"insight": 52, "ink": 5}, "days": 6, "needs": ["co_wrecks"], "scriptorium": 3, "mods": {"surge_fray": 3}, "effect": "Surges hit for 3 less Fray", "blurb": "The coast folk leave every sentence unfinished, so the Blank never knows where one ends and it can start. It is maddening to talk to them. It works."},
+		{"id": "sp_errata", "branch": "spire", "name": "Errata Slips", "cost": {"insight": 40}, "days": 4, "mods": {"lamp_fray": 1}, "effect": "Every Wardlamp: Fray -1 more a day", "blurb": "Little slips of correction pasted over the Blank's work, in the Ledger's own hand. Lamplight makes them legible from a long way off."},
+		{"id": "sp_countersign", "branch": "spire", "name": "Countersignatures", "cost": {"insight": 50, "ink": 4}, "days": 5, "needs": ["sp_errata"], "mods": {"guard": 0.1}, "effect": "Missions: the party takes 10% less damage", "blurb": "Every hero's name, countersigned by a Ledger clerk. Harming a countersigned person is a filing error, and the world hates filing errors."},
+		{"id": "sp_last_word", "branch": "spire", "name": "The Last Word", "cost": {"insight": 60, "ink": 6}, "days": 6, "needs": ["sp_countersign"], "scriptorium": 3, "mods": {"revive": 0.4, "hp": 10}, "effect": "Missions: downed allies get back up 40% faster and the party starts with +10 max HP", "blurb": "Whoever has the last word in the Ledger is still alive. The scribes write yours in very small letters at the bottom of every page."}
 	]
 }

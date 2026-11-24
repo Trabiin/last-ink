@@ -461,7 +461,7 @@ static func building_effect(id: String, level: int, staff: Array) -> Dictionary:
 
 
 static func forge_effect() -> Dictionary:
-	return building_effect("forge", forge_level(), Empire.staff_of("forge"))
+	return building_effect("forge", Sinks.working_level("forge"), Empire.staff_of("forge"))  # level 3 while upkeep is unpaid (#189)
 
 
 ## A hero's weapon line, tier 1 first.
@@ -716,7 +716,7 @@ static func market_spec(level: int) -> Dictionary:
 
 
 static func market_effect() -> Dictionary:
-	return building_effect("market", market_level(), Empire.staff_of("market"))
+	return building_effect("market", Sinks.working_level("market"), Empire.staff_of("market"))  # level 3 while upkeep is unpaid (#189)
 
 
 static func _market_sells_mats() -> bool:

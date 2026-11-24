@@ -13,8 +13,9 @@ const PLOT := Vector2(80, 80)
 
 ## The art pass sprite for this look at this level.
 static func art_path(look_id: String, lv: int) -> String:
-	return "res://assets/buildings/%s_%d.png" % [look_id, clampi(lv, 1, 3)]
-const ROMAN := ["", "I", "II", "III", "IV"]
+	return "res://assets/buildings/%s_%d.png" % [look_id, clampi(lv, 1, MAX_ART_LEVEL)]
+const ROMAN := ["", "I", "II", "III", "IV", "V"]
+const MAX_ART_LEVEL := 5  # levels 4 and 5 (issue #189) are made from level 3 by tools/make_building_tiers.py
 
 var id := ""
 var look := ""
@@ -88,7 +89,7 @@ func footprint_key(lv: int) -> String:
 	if look == "":
 		return ""
 	if lv > 0:
-		return "%s_%d" % [look, clampi(lv, 1, 3)]
+		return "%s_%d" % [look, clampi(lv, 1, MAX_ART_LEVEL)]
 	if Empire.construction.get("id", "") == id:
 		return "%s_1" % look
 	return ""

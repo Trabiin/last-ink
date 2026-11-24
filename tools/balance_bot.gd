@@ -5,7 +5,7 @@ extends RefCounted
 ##
 ## Policies (what kind of player):
 ##   idle    plays the story only: no jobs, no buildings, no missions. How fast the Blank wins.
-##   casual  posts governors, builds, studies, one mission every other day. No expeditions or diplomacy.
+##   casual  posts governors, builds, studies, feasts, one mission every other day. No expeditions or diplomacy.
 ##   steady  everything, one mission a day, Wardlamps where Fray climbs, claims when it can afford them.
 ##   rush    like steady, but claims every province it can and never builds lamps.
 ##
@@ -20,6 +20,10 @@ var log := []  # one Dictionary per day (see snapshot())
 var events := []  # [day, text] for firsts: buildings, research, claims, erasures, story
 var missions_run := 0
 var forge_gilt := 0
+var feasts := 0
+var hurries := 0
+const FEAST_SUPPLIES := 120  # a feast only when the larder holds at least this much
+const SELL_ABOVE := 300  # Supplies past this go to the Market
 var missions_by_type := {}
 var _seen_built := {}
 
@@ -52,6 +56,8 @@ func play_day() -> void:
 		_build()
 		_research()
 		_forge()
+		_feast()
+		_sell_surplus()
 		if policy in ["steady", "rush"]:
 			_lamps()
 			_expeditions()
@@ -231,8 +237,15 @@ func _affordable_with_reserve(cost: Dictionary) -> bool:
 	return true
 
 
+const HURRY_ABOVE := 300  # Gilt a player keeps before paying to hurry the builders
+
+
 func _build() -> void:
 	if not Empire.construction.is_empty():
+		# Spare Gilt buys extra hands (issue #189): one hurry a day while the purse is full.
+		if policy != "casual" and int(Empire.res["gilt"]) > HURRY_ABOVE and Sinks.hurry_blocker() == "" and _affordable_with_reserve(Sinks.hurry_cost()):
+			Sinks.hurry()
+			hurries += 1
 		return
 	# Roughly what the help cards steer a new player to: income and study first, then the rest.
 	var order := ["scriptorium", "guildhall", "inkworks", "market", "barracks", "infirmary", "command_table", "forge"]
@@ -247,7 +260,7 @@ func _build() -> void:
 		if _affordable_with_reserve(wl["cost"]):
 			Empire.start_build(bid)
 		return  # save up for it rather than spend on something else
-	for pass_i in 3:  # first raise everything to 1, then 2, then 3
+	for pass_i in 5:  # first raise everything to 1, then 2, then 3; 4 and 5 once the chapters open them (issue #189)
 		for bid in order:
 			if Empire.level_of(bid) != pass_i:
 				continue
@@ -288,7 +301,7 @@ func _research() -> void:
 	for id in Empire.research_ids():
 		if Empire.research_blocker(id) != "":
 			continue
-		var c := int(Empire.research_node(id).get("cost", {}).get("insight", 0))
+		var c := int(Empire.research_cost(id).get("insight", 0))
 		if c < cost:
 			best = id
 			cost = c
@@ -307,6 +320,22 @@ func _forge() -> void:
 		if Armory.start(r):
 			events.append([Empire.day, "forge " + str(r["result"])])
 			forge_gilt += int(r["gilt"])
+
+
+## A feast when the larder is well stocked and nothing is short (issue #189): what a player does with
+## spare Supplies once Act 1 is over.
+func _feast() -> void:
+	if Sinks.feast_blocker() != "" or int(Empire.res["supplies"]) < FEAST_SUPPLIES:
+		return
+	if _affordable_with_reserve(Sinks.feast_cost()) and Sinks.hold_feast():
+		feasts += 1
+
+
+## A full granary goes to the Market (issue #189); the Gilt goes on to the builders.
+func _sell_surplus() -> void:
+	for i in 20:
+		if int(Empire.res["supplies"]) <= SELL_ABOVE or not Sinks.sell_supplies():
+			return
 
 
 func _lamps() -> void:

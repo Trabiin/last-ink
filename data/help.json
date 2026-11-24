@@ -567,6 +567,27 @@
 			]
 		},
 		{
+			"id": "tip_after_act1",
+			"kind": "tip",
+			"group": "events",
+			"title": "What the money is for now",
+			"voice": [
+				"quill",
+				"tobble"
+			],
+			"when": {
+				"cleared": ["auditor_duel"],
+				"command": true
+			},
+			"summary": "Feasts, Ink lessons, bigger buildings and hurrying the builders, after Act 1.",
+			"lines": [
+				"With the Auditor gone, the coffers will start to fill. Coin in a chest does nothing. Here is where it does something.",
+				"The builders can go past level 3 now, one chapter at a time. Bigger buildings eat a little Gilt, Supplies and Ink every dawn, and sulk back to level 3 on any morning we can't pay. The Buildings screen{tag:buildings} shows each upkeep.",
+				"Spare Gilt also buys extra hands: pick the building going up and hurry it a day. Spare Ink pays for lessons at the Scriptorium for whoever is sitting on the bench.",
+				["tobble", "And spare Supplies go on a feast. Every few days, if you like. People work harder after a pig, and they heal faster too."]
+			]
+		},
+		{
 			"id": "field_basics",
 			"kind": "manual",
 			"group": "field",

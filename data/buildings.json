@@ -1,5 +1,5 @@
 {
-	"_comment": "Hollowmark buildings and the Wardlamp. levels: one entry per level, in order: cost (gilt, supplies, ink), days to build, staff slots at that level. start_level: built on a new game (0 = not built). stat: which recruit stat drives the staff effect. site: the @mark in maps/hollowmark.txt where it stands in town. look: sprite kind in scripts/building_site.gd. Effects are computed in scripts/empire.gd (building_effect) so the text always matches the numbers.",
+	"_comment": "Hollowmark buildings and the Wardlamp. levels: one entry per level, in order: cost (gilt, supplies, ink), days to build, staff slots at that level; the late levels (issue #189) also have region (that region of the map must be open: the chapter that opens it unlocks the level) and upkeep (paid every dawn while the building stands at that level; if a resource runs out, the building works as level 3 until the next dawn that pays). start_level: built on a new game (0 = not built). stat: which recruit stat drives the staff effect. site: the @mark in maps/hollowmark.txt where it stands in town. look: sprite kind in scripts/building_site.gd. Effects are computed in scripts/empire.gd (building_effect) so the text always matches the numbers.",
 	"buildings": [
 		{
 			"id": "command_table", "name": "Command Table", "start_level": 1, "stat": "craft", "site": "", "look": "table",
@@ -8,7 +8,9 @@
 			"levels": [
 				{"cost": {}, "days": 0, "slots": 1},
 				{"cost": {"gilt": 90, "supplies": 15, "ink": 2}, "days": 2, "slots": 1},
-				{"cost": {"gilt": 150, "supplies": 20, "ink": 4}, "days": 3, "slots": 2}
+				{"cost": {"gilt": 150, "supplies": 20, "ink": 4}, "days": 3, "slots": 2},
+				{"cost": {"gilt": 240, "supplies": 30, "ink": 6}, "days": 5, "slots": 2, "region": "abbey", "upkeep": {"gilt": 3, "supplies": 1, "ink": 1}},
+				{"cost": {"gilt": 360, "supplies": 40, "ink": 10}, "days": 6, "slots": 3, "region": "causeway", "upkeep": {"gilt": 5, "supplies": 2, "ink": 2}}
 			]
 		},
 		{
@@ -18,7 +20,9 @@
 			"levels": [
 				{"cost": {"gilt": 60, "supplies": 10}, "days": 2, "slots": 1},
 				{"cost": {"gilt": 100, "supplies": 15, "ink": 1}, "days": 3, "slots": 2},
-				{"cost": {"gilt": 160, "supplies": 20, "ink": 3}, "days": 4, "slots": 2}
+				{"cost": {"gilt": 160, "supplies": 20, "ink": 3}, "days": 4, "slots": 2},
+				{"cost": {"gilt": 250, "supplies": 30, "ink": 6}, "days": 5, "slots": 2, "region": "abbey", "upkeep": {"gilt": 3, "supplies": 1, "ink": 1}},
+				{"cost": {"gilt": 380, "supplies": 40, "ink": 10}, "days": 6, "slots": 3, "region": "causeway", "upkeep": {"gilt": 5, "supplies": 2, "ink": 2}}
 			]
 		},
 		{
@@ -28,7 +32,9 @@
 			"levels": [
 				{"cost": {"gilt": 50, "supplies": 10}, "days": 2, "slots": 1},
 				{"cost": {"gilt": 80, "supplies": 15, "ink": 1}, "days": 2, "slots": 2},
-				{"cost": {"gilt": 130, "supplies": 20, "ink": 2}, "days": 3, "slots": 3}
+				{"cost": {"gilt": 130, "supplies": 20, "ink": 2}, "days": 3, "slots": 3},
+				{"cost": {"gilt": 210, "supplies": 30, "ink": 5}, "days": 4, "slots": 3, "region": "abbey", "upkeep": {"gilt": 3, "supplies": 1, "ink": 1}},
+				{"cost": {"gilt": 320, "supplies": 40, "ink": 8}, "days": 5, "slots": 3, "region": "causeway", "upkeep": {"gilt": 5, "supplies": 2, "ink": 2}}
 			]
 		},
 		{
@@ -38,7 +44,9 @@
 			"levels": [
 				{"cost": {"gilt": 70, "supplies": 10}, "days": 2, "slots": 1},
 				{"cost": {"gilt": 110, "supplies": 15}, "days": 3, "slots": 2},
-				{"cost": {"gilt": 170, "supplies": 20, "ink": 3}, "days": 4, "slots": 3}
+				{"cost": {"gilt": 170, "supplies": 20, "ink": 3}, "days": 4, "slots": 3},
+				{"cost": {"gilt": 260, "supplies": 30, "ink": 4}, "days": 5, "slots": 3, "region": "abbey", "upkeep": {"gilt": 3, "supplies": 1}},
+				{"cost": {"gilt": 380, "supplies": 40, "ink": 8}, "days": 6, "slots": 3, "region": "causeway", "upkeep": {"gilt": 5, "supplies": 2}}
 			]
 		},
 		{
@@ -48,7 +56,9 @@
 			"levels": [
 				{"cost": {"gilt": 60, "supplies": 5, "ink": 2}, "days": 2, "slots": 1},
 				{"cost": {"gilt": 100, "supplies": 10, "ink": 3}, "days": 3, "slots": 2},
-				{"cost": {"gilt": 150, "supplies": 15, "ink": 5}, "days": 4, "slots": 3}
+				{"cost": {"gilt": 150, "supplies": 15, "ink": 5}, "days": 4, "slots": 3},
+				{"cost": {"gilt": 240, "supplies": 25, "ink": 8}, "days": 5, "slots": 3, "region": "abbey", "upkeep": {"gilt": 3, "supplies": 1, "ink": 1}},
+				{"cost": {"gilt": 360, "supplies": 35, "ink": 12}, "days": 6, "slots": 3, "region": "causeway", "upkeep": {"gilt": 5, "supplies": 2, "ink": 2}}
 			]
 		},
 		{
@@ -58,7 +68,9 @@
 			"levels": [
 				{"cost": {"gilt": 80, "supplies": 10}, "days": 2, "slots": 1},
 				{"cost": {"gilt": 120, "supplies": 15, "ink": 1}, "days": 3, "slots": 2},
-				{"cost": {"gilt": 180, "supplies": 20, "ink": 3}, "days": 4, "slots": 2}
+				{"cost": {"gilt": 180, "supplies": 20, "ink": 3}, "days": 4, "slots": 2},
+				{"cost": {"gilt": 280, "supplies": 30, "ink": 6}, "days": 5, "slots": 2, "region": "abbey", "upkeep": {"gilt": 3, "supplies": 1, "ink": 1}},
+				{"cost": {"gilt": 420, "supplies": 40, "ink": 10}, "days": 6, "slots": 3, "region": "causeway", "upkeep": {"gilt": 5, "supplies": 2, "ink": 2}}
 			]
 		},
 		{
@@ -68,7 +80,9 @@
 			"levels": [
 				{"cost": {"gilt": 70, "supplies": 15}, "days": 2, "slots": 1},
 				{"cost": {"gilt": 130, "supplies": 20, "ink": 2}, "days": 3, "slots": 2},
-				{"cost": {"gilt": 200, "supplies": 25, "ink": 4}, "days": 4, "slots": 3}
+				{"cost": {"gilt": 200, "supplies": 25, "ink": 4}, "days": 4, "slots": 3},
+				{"cost": {"gilt": 300, "supplies": 35, "ink": 7}, "days": 5, "slots": 3, "region": "abbey", "upkeep": {"gilt": 3, "supplies": 1, "ink": 1}},
+				{"cost": {"gilt": 440, "supplies": 45, "ink": 12}, "days": 6, "slots": 3, "region": "causeway", "upkeep": {"gilt": 5, "supplies": 2, "ink": 2}}
 			]
 		},
 		{
@@ -78,16 +92,21 @@
 			"levels": [
 				{"cost": {"gilt": 60, "supplies": 10}, "days": 2, "slots": 1},
 				{"cost": {"gilt": 110, "supplies": 15, "ink": 1}, "days": 3, "slots": 2},
-				{"cost": {"gilt": 170, "supplies": 20, "ink": 3}, "days": 4, "slots": 2}
+				{"cost": {"gilt": 170, "supplies": 20, "ink": 3}, "days": 4, "slots": 2},
+				{"cost": {"gilt": 260, "supplies": 30, "ink": 6}, "days": 5, "slots": 2, "region": "abbey", "upkeep": {"gilt": 3, "supplies": 1, "ink": 1}},
+				{"cost": {"gilt": 400, "supplies": 40, "ink": 10}, "days": 6, "slots": 3, "region": "causeway", "upkeep": {"gilt": 5, "supplies": 2, "ink": 2}}
 			]
 		}
 	],
 	"wardlamp": {
 		"name": "Wardlamp",
 		"blurb": "A tall lamp burning Ink. The Blank does not like to be looked at. Built in a province you hold; slows its Fray.",
+		"_comment": "levels: cost, days, fray a day. research: a node that must be known first. upkeep: paid every dawn (a level 3 beacon burns Ink; without it the lamp works as level 2 that day). region_cost: lamp costs (Gilt and Ink) grow by this share for every chapter past the first, so lamps in later regions cost more (issue #189).",
+		"region_cost": 0.25,
 		"levels": [
 			{"cost": {"gilt": 30, "ink": 2}, "days": 1, "fray": -1},
-			{"cost": {"gilt": 50, "supplies": 5, "ink": 4}, "days": 2, "fray": -2}
+			{"cost": {"gilt": 50, "supplies": 5, "ink": 4}, "days": 2, "fray": -2},
+			{"cost": {"gilt": 90, "supplies": 10, "ink": 8}, "days": 3, "fray": -3, "research": "ward_beacons", "upkeep": {"ink": 1}}
 		]
 	}
 }

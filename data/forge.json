@@ -1,9 +1,11 @@
 {
-	"_comment": "The Forge (issue #112): upgrading and crafting gear from mission materials, in scripts/armory.gd. Gear tiers (data/gear.json 'tier'): 1 what a hero starts with, 2-3 the Brack Marches, 4 Saint Ledger's Abbey, 5 the Velvet Causeway, 6 the Unfinished Coast and the Gilded Spire. levels: per Forge level, the highest tier its smiths can work and how many jobs run at once (benches). A job needs at least one smith at work; the smiths' Craft cuts its days (days x 10 / (10 + Craft of everyone working there), at least 1), and it is done at dawn. weapon_upgrades: every hero's weapon line is one tier after another: the tier N weapon is forged from the tier N-1 one (taken from the bag, or worked on while the hero still carries it and swapped in when done) plus these materials and Gilt; hero_mat adds that many of the hero's own material (hero_mats) to tiers 2 and 3. recipes: everything else, by result id (gear from data/gear.json, items from data/items.json, or a satchel upgrade from data/market.json): mats, gilt, days, makes (how many; items only), tier (sets the Forge level it needs; gear uses its own tier). Gear and items found or bought still work as before.",
+	"_comment": "The Forge (issue #112): upgrading and crafting gear from mission materials, in scripts/armory.gd. Gear tiers (data/gear.json 'tier'): 1 what a hero starts with, 2-3 the Brack Marches, 4 Saint Ledger's Abbey, 5 the Velvet Causeway, 6 the Unfinished Coast and the Gilded Spire. levels: per Forge level, the highest tier its smiths can work and how many jobs run at once (benches); levels 4 and 5 open with Chapters 2 and 3 (issue #189). A job needs at least one smith at work; the smiths' Craft cuts its days (days x 10 / (10 + Craft of everyone working there), at least 1), and it is done at dawn. weapon_upgrades: every hero's weapon line is one tier after another: the tier N weapon is forged from the tier N-1 one (taken from the bag, or worked on while the hero still carries it and swapped in when done) plus these materials and Gilt; hero_mat adds that many of the hero's own material (hero_mats) to tiers 2 and 3. recipes: everything else, by result id (gear from data/gear.json, items from data/items.json, or a satchel upgrade from data/market.json): mats, gilt, days, makes (how many; items only), tier (sets the Forge level it needs; gear uses its own tier). Gear and items found or bought still work as before.",
 	"levels": [
 		{"tier": 3, "benches": 1},
 		{"tier": 5, "benches": 1},
-		{"tier": 6, "benches": 2}
+		{"tier": 6, "benches": 2},
+		{"tier": 6, "benches": 3},
+		{"tier": 6, "benches": 4}
 	],
 	"craft_base": 10,
 	"weapon_upgrades": {
