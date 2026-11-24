@@ -1,6 +1,6 @@
 // Tests for the report worker with a fake GitHub API: node tools/feedback_worker/test.mjs
 import assert from "node:assert/strict";
-import worker, { validate, surveyRound } from "./worker.js";
+import worker, { validate, surveyRound, check, LABELS } from "./worker.js";
 
 const env = { GITHUB_TOKEN: "t", REPORTS_REPO: "o/reports", GAME_KEY: "k" };
 let calls = [];
@@ -95,5 +95,50 @@ assert.equal(surveyRound(report()), "", "only surveys have a round");
 let last;
 for (let i = 0; i < 7; i++) last = await post(report(), { ip: "9.9.9.9" });
 assert.equal(last.status, 429);
+
+// Setup check (GET /check?key=...): a fake GitHub per scenario.
+const gh = (o) => async (url, init) => {
+  const path = url.replace("https://api.github.com", "");
+  const hdr = { "github-authentication-token-expiration": o.expires || "2027-11-20 08:00:00 UTC" };
+  const r = (status, body = {}) => new Response(JSON.stringify(body), { status, headers: hdr });
+  if (path === "/repos/o/reports" && init.method === "GET") return o.repo ? r(o.repo) : r(200, { private: o.public ? false : true, default_branch: "main", has_issues: true });
+  if (path === "/repos/o/reports/git/ref/heads/main") return r(o.empty ? 404 : 200, { object: { sha: "p" } });
+  if (path === "/repos/o/reports/git/blobs") return r(o.noContents ? 403 : 201, { sha: "b" });
+  if (path === "/repos/o/reports/labels") { o.labels = (o.labels || 0) + 1; return r(o.noIssues ? 403 : o.labelsExist ? 422 : 201); }
+  throw new Error("unexpected " + init.method + " " + path);
+};
+const now = Date.parse("2026-11-24T00:00:00Z");
+const runCheck = async (o, e = env, key = "k") => {
+  globalThis.fetch = gh(o);
+  const res = await check(new Request("https://w.example/check?key=" + key), e, now);
+  return { status: res.status, body: await res.json() };
+};
+const failed = (b) => b.checks.filter((c) => !c.ok).map((c) => c.name);
+
+let c = await runCheck({});
+assert.equal(c.body.ok, true, JSON.stringify(c.body));
+assert.equal(c.body.token_expires, "2027-11-20");
+assert.equal(c.body.token_days_left, 361);
+assert.ok(c.body.checks.find((x) => x.name === "issues").detail.includes("made 6 labels"));
+const o = { labelsExist: true };
+c = await runCheck(o);
+assert.equal(c.body.ok, true, "labels already there is fine");
+assert.equal(o.labels, Object.keys(LABELS).length);
+assert.equal((await runCheck({}, env, "wrong")).status, 403, "needs the game key");
+assert.deepEqual(failed((await runCheck({}, { GAME_KEY: "k" })).body), ["settings"]);
+assert.deepEqual(failed((await runCheck({ repo: 401 })).body), ["token"]);
+assert.deepEqual(failed((await runCheck({ repo: 404 })).body), ["repo"]);
+assert.deepEqual(failed((await runCheck({ public: true })).body), ["repo"], "a public repo fails the check");
+assert.deepEqual(failed((await runCheck({ empty: true })).body), ["branch"]);
+assert.deepEqual(failed((await runCheck({ noContents: true })).body), ["contents"]);
+assert.deepEqual(failed((await runCheck({ noIssues: true })).body), ["issues"]);
+c = await runCheck({ expires: "2026-12-10 08:00:00 UTC" });
+assert.equal(c.body.ok, true, "a token running out soon still works");
+assert.ok(c.body.checks.some((x) => x.warning && x.name === "token expiry"));
+for (const x of (await runCheck({ noIssues: true })).body.checks) if (!x.ok) assert.ok(x.fix, "every failure says how to fix it");
+// Routed through fetch: /check and /check/ reach it, / stays the plain health answer.
+globalThis.fetch = gh({ labelsExist: true });
+assert.equal((await (await worker.fetch(new Request("https://w.example/check/?key=k"), env)).json()).ok, true);
+assert.deepEqual(await (await worker.fetch(new Request("https://w.example/"), env)).json(), { ok: true, service: "last-ink reports" });
 
 console.log("worker tests passed");
