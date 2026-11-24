@@ -6,6 +6,9 @@ extends Control
 ## and is not busy governing, staffing, envoying or out on an expedition (free them in the
 ## Roster first; R jumps there). Picks are the same "party" role the Roster uses, so they stick
 ## between missions. Combat stats come from data/heroes.json, looks from data/recruits.json.
+## Only heroes who have joined get a row: the ones still out there are a single "not found yet" card
+## under the list, with the rumours the player can act on and no names or stats (no spoilers).
+## Rows grow with the text size and the list scrolls once it outgrows the screen.
 ## The static helpers at the bottom are what main.gd uses to put the party on the field.
 
 signal confirmed(mission: Dictionary)
@@ -15,11 +18,15 @@ signal roster_requested
 const HEROES_FILE := "res://data/heroes.json"
 const GOLD := Color("ffd166")
 const PAPER := Color("f3efe4")
-const ROW_H := 40.0
+const DIM := Color(0.45, 0.44, 0.47)
+const RUMOUR := Color("c9b6e8")
+const ROW_PAD := 4.0  # above the name and below the last status line
+const ROW_GAP := 3.0
 const LIST_X := 8.0
 const LIST_W := 300.0
 const DETAIL_X := 322.0
 const DOLL_SCALE := 3.0
+const DOLL_HEAD := 34.0  # how far the dolls' heads stand above their box: the detail text stops above them
 
 static var _data := {}
 
@@ -30,11 +37,18 @@ var opened_frame := -1
 var flash := ""
 var flash_t := 0.0
 var font: Font
-var _row_rects: Array = []
+var _row_rects: Array = []  # one per joined hero; Rect2() for rows scrolled out of sight
+var scroll := 0  # first hero row drawn
+var _list_drag := {}  # a finger dragged over the list (Prompts.list_steps)
+var _row_px := 30.0  # a typical row's height, for drags
+var _card_rect := Rect2()  # the "not found yet" card
+## Every line of text drawn last frame as [text rect, the box it belongs in, what it is] (for tests).
+var drawn_text: Array = []
 var _go_rect := Rect2()
 var _back_rect := Rect2()
 var _dolls: Array = []  # [body Sprite2D, outfit Sprite2D, art pass Sprite2D] per preview slot
 var _doll_ids: Array = []
+var _doll_y := 0.0  # where the dolls stand, set by _draw
 var t := 0.0
 
 
@@ -81,12 +95,41 @@ func close() -> void:
 	closed.emit()
 
 
-## Every field hero in the game, joined or not, in roster order (Ash first).
+## The field heroes who have joined, in roster order (Ash first): the rows of the list.
 func _ids() -> Array:
+	return _field_ids().filter(func(id): return Empire.recruits.has(id))
+
+
+## Field heroes nobody has found yet. They stay off the list (no names, no stats) and only show as a count
+## and the rumours that point the way.
+func _unfound() -> Array:
+	return _field_ids().filter(func(id): return not Empire.recruits.has(id))
+
+
+static func _field_ids() -> Array:
 	var out := []
 	for id in Empire.recruit_data:
 		if Empire.recruit_data[id].get("tier", "") == "field":
 			out.append(id)
+	return out
+
+
+## The lines on the "not found yet" card: a count, then one line per rescue rumour on the Expeditions board.
+func _unfound_lines() -> Array:
+	var lost := _unfound()
+	if lost.is_empty():
+		return []
+	var out := [[Loc.n("%d more hero is out there, not found yet.", "%d more heroes are out there, not found yet.", lost.size()) % lost.size(), DIM]]
+	for id in lost:
+		var how := Empire.join_hook(id)
+		if how.get("type", "") != "rescue":
+			continue
+		var jid := str(how.get("job", ""))
+		var rumour := str(Empire.job(jid).get("name", "?"))
+		if not Empire.expedition_running(jid).is_empty():
+			out.append([tr("%s. A squad is on its way.") % rumour, RUMOUR])
+		else:
+			out.append([tr("%s. Rescue job on the Expeditions board%s.") % [rumour, Prompts.tag("expeditions")], RUMOUR])
 	return out
 
 
@@ -100,6 +143,7 @@ func _process(delta: float) -> void:
 	if Engine.get_process_frames() == opened_frame:
 		return  # the key that opened the picker must not also act inside it
 	var n := _ids().size() + 1  # the last row is "Set out"
+	sel = clampi(sel, 0, n - 1)  # someone left the roster while the picker was shut
 	if Input.is_action_just_pressed("move_up") or Input.is_action_just_pressed("ui_up"):
 		sel = posmod(sel - 1, n)
 	elif Input.is_action_just_pressed("move_down") or Input.is_action_just_pressed("ui_down"):
@@ -160,43 +204,80 @@ func _say(s: String) -> void:
 
 
 func _gui_input(event: InputEvent) -> void:
+	var rows := _ids().size()
+	var on_list := Rect2(LIST_X, 0, LIST_W, _go_rect.position.y).has_point(event.position) if "position" in event else false
+	var steps := Prompts.list_steps(event, _list_drag, _row_px, on_list)
+	if steps != 0 and rows > 0:
+		sel = clampi(mini(sel, rows - 1) + steps, 0, rows - 1)
+		return
 	if event is InputEventMouseMotion:
-		for i in _row_rects.size():
-			if (_row_rects[i] as Rect2).has_point(event.position):
-				sel = i
+		var hit := _row_at(event.position)
+		if hit >= 0:
+			sel = hit
 		if _go_rect.has_point(event.position):
-			sel = _ids().size()
-	elif Prompts.tapped(event):
-		for i in _row_rects.size():
-			if (_row_rects[i] as Rect2).has_point(event.position):
-				sel = i
-				_press(i)
-				return
-		if _go_rect.has_point(event.position):
-			_set_out()
-		elif _back_rect.has_point(event.position):
-			close()
+			sel = rows
+	elif event is InputEventScreenTouch or event is InputEventMouseButton:
+		# A finger acts when it lifts without having dragged the list; a click acts at once.
+		var hit := _row_at(event.position)
+		if hit >= 0 and Prompts.list_tap(event, _list_drag, hit, sel) != "":
+			sel = hit
+			_press(hit)
+			return
+		if Prompts.tapped(event):
+			if _go_rect.has_point(event.position):
+				_set_out()
+			elif _back_rect.has_point(event.position):
+				close()
+
+
+func _row_at(p: Vector2) -> int:
+	for i in _row_rects.size():
+		if (_row_rects[i] as Rect2).has_point(p):
+			return i
+	return -1
 
 
 # ---------------------------------------------------------------- drawing
 
-func _text(pos: Vector2, s: String, fsize: int, col: Color) -> void:
-	draw_string(font, pos, s, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(fsize), col)
+## One line of text with its top-left at `pos`, trimmed with "..." to max_w, kept for the layout tests.
+func _text(pos: Vector2, s: String, fsize: int, col: Color, max_w := -1.0, box := Rect2()) -> void:
+	if max_w >= 0.0:
+		s = Access.fit(font, s, Access.fs(fsize), max_w)
+	if s == "":
+		return
+	draw_string(font, pos + Vector2(0, font.get_ascent(Access.fs(fsize))), s, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(fsize), col)
+	var r := Rect2(pos, Vector2(font.get_string_size(s, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(fsize)).x, _lh(fsize)))
+	drawn_text.append([r, box if box.size != Vector2.ZERO else Rect2(Vector2.ZERO, size), s])
 
 
-func _wrap(pos: Vector2, s: String, width: float, fsize: int, col: Color) -> float:
-	draw_multiline_string(font, pos, s, HORIZONTAL_ALIGNMENT_LEFT, width, Access.fs(fsize), -1, col)
-	return font.get_multiline_string_size(s, HORIZONTAL_ALIGNMENT_LEFT, width, Access.fs(fsize)).y + (Access.fs(fsize) - fsize)  # bigger text (issue #34) also sits lower on its baseline
+## Height of one line at this (unscaled) size, as the text size and font draw it now.
+func _lh(fsize: int) -> float:
+	return font.get_height(Access.fs(fsize))
 
 
-## What the row under a hero's name says.
+func _lines(s: String, fsize: int, w: float) -> PackedStringArray:
+	return InkMenu.wrap_px(font, s, Access.fs(fsize), w)
+
+
+## Wrapped text from `top` down, never past `bottom`: the last line that fits ends in "..." when more
+## was cut. Returns the height used.
+func _wrap(top: float, x: float, s: String, w: float, fsize: int, col: Color, bottom: float, box := Rect2()) -> float:
+	var lines := _lines(s, fsize, w)
+	var lh := _lh(fsize)
+	var y := top
+	for i in lines.size():
+		if y + lh > bottom:
+			break
+		var line := lines[i]
+		if i < lines.size() - 1 and y + 2.0 * lh > bottom:
+			line = Access.fit(font, line + " ...", Access.fs(fsize), w)  # the next line won't fit
+		_text(Vector2(x, y), line, fsize, col, w, box)
+		y += lh
+	return y - top
+
+
+## What the line under a joined hero's name says.
 func _status(id: String) -> Array:
-	if not Empire.recruits.has(id):
-		var how: Dictionary = Empire.recruit(id).get("join", {})
-		var where := ""
-		if how.get("type", "") == "rescue":
-			where = tr("Rescue job on the Expeditions board%s: %s") % [Prompts.tag("expeditions"), str(Empire.job(how.get("job", "")).get("name", "?"))]
-		return [(tr("Not found yet. %s") % where) if where != "" else tr("Not found yet."), Color(0.45, 0.44, 0.47)]
 	if Empire.recruit(id).get("locked_party", false):
 		return [tr("Leads the party"), GOLD]
 	if id == str(mission.get("force", "")):
@@ -209,24 +290,91 @@ func _status(id: String) -> Array:
 	return [tr("Ready, stays home unless picked"), Color(0.75, 0.72, 0.7)]
 
 
+func _row_height(id: String) -> float:
+	return ROW_PAD * 2.0 + _lh(10) + _lines(str(_status(id)[0]), 8, LIST_W - 34).size() * _lh(8)
+
+
+## A small gold arrow over/under the list when more rows are scrolled out of sight.
+func _scroll_arrow(at: Vector2, up: bool) -> void:
+	var d := -3.0 if up else 3.0
+	draw_colored_polygon(PackedVector2Array([at + Vector2(-5, -d / 3), at + Vector2(5, -d / 3), at + Vector2(0, d)]), Color(GOLD, 0.8))
+
+
 func _draw() -> void:
 	var vs := size
+	drawn_text.clear()
 	draw_rect(Rect2(Vector2.ZERO, vs), Color(0.05, 0.04, 0.07, 0.985))
-	_text(Vector2(LIST_X, 20), tr("Choose your party"), 15, PAPER)
+	var screen := Rect2(Vector2.ZERO, vs)
 	var party := mission_party(mission)
-	_text(Vector2(LIST_X + 148, 19), "%s   %d/%d" % [mission.get("name", tr("Mission")), party.size(), Empire.PARTY_SIZE], 9, Color(0.75, 0.7, 0.55))
+	_text(Vector2(LIST_X, 4), tr("Choose your party"), 15, PAPER, vs.x - 16)
+	var hl := UiSkin.header_line(font, tr("Choose your party"), 15, "%s   %d/%d" % [mission.get("name", tr("Mission")), party.size(), Empire.PARTY_SIZE], 9, vs.x, 0.0, null, LIST_X)
+	_text(Vector2(hl[0], 4 + font.get_ascent(Access.fs(15)) - font.get_ascent(Access.fs(9))), hl[1], 9, Color(0.75, 0.7, 0.55))
+	var list_top := 4.0 + _lh(15) + 6.0
+
+	# The buttons sit at the bottom; the "not found yet" card above them; the hero rows fill the rest.
+	var bh := maxf(22.0, _lh(10) + 8.0)
+	var gy := vs.y - 6.0 - bh
+	var go_label := tr("Set out with %d") % party.size()
+	var go_w := maxf(150.0, font.get_string_size(go_label, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(10)).x + 20.0)
+	var back_w := maxf(70.0, font.get_string_size(tr("Back"), HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(9)).x + 24.0)
+	go_w = minf(go_w, LIST_W - back_w - 8.0)
+	_go_rect = Rect2(LIST_X, gy, go_w, bh)
+	_back_rect = Rect2(LIST_X + go_w + 8.0, gy, back_w, bh)
+	var list_bottom := gy - 6.0
+	var card := _unfound_lines()
+	_card_rect = Rect2()
+	if not card.is_empty():
+		var wrapped := []
+		var ch := 8.0
+		for c in card:
+			var ls := _lines(str(c[0]), 8, LIST_W - 16)
+			wrapped.append([ls, c[1]])
+			ch += ls.size() * _lh(8)
+		ch = minf(ch, (list_bottom - list_top) * 0.45)  # rows come first: a long card is cut short
+		_card_rect = Rect2(LIST_X, list_bottom - ch, LIST_W, ch)
+		list_bottom = _card_rect.position.y - 5.0
+		draw_rect(_card_rect, Color(0.07, 0.06, 0.09))
+		draw_rect(_card_rect, Color(0.2, 0.19, 0.23), false, 1.0)
+		var cy := _card_rect.position.y + 4.0
+		for c in wrapped:
+			for line in c[0]:
+				if cy + _lh(8) > _card_rect.end.y - 2.0:
+					break
+				_text(Vector2(LIST_X + 8, cy), line, 8, c[1], LIST_W - 16, _card_rect)
+				cy += _lh(8)
 
 	var ids := _ids()
 	_row_rects.clear()
-	# Rows shrink to fit once the roster outgrows the screen (eight field heroes since 2026-11-20).
-	var rh := minf(ROW_H, (vs.y - 32.0 - 30.0) / maxf(ids.size(), 1.0))
+	var heights := []
+	for id in ids:
+		heights.append(_row_height(id))
+	_row_px = _lh(10) + _lh(8) + ROW_PAD * 2.0
+	var area := list_bottom - list_top
+	var span := func(a: int, b: int) -> float:  # height of rows a..b drawn together
+		var h := 0.0
+		for k in range(a, b + 1):
+			h += heights[k] + ROW_GAP
+		return h - ROW_GAP
+	scroll = clampi(scroll, 0, maxi(ids.size() - 1, 0))
+	if sel < ids.size():
+		scroll = mini(scroll, sel)
+		while scroll < sel and span.call(scroll, sel) > area:
+			scroll += 1
+	while scroll > 0 and span.call(scroll - 1, ids.size() - 1) <= area:
+		scroll -= 1  # no empty space under the last row while rows above are hidden
+	var y := list_top
+	var last := scroll - 1
 	for i in ids.size():
+		if i < scroll or y + heights[i] > list_bottom + 0.5:
+			_row_rects.append(Rect2())
+			continue
+		last = i
 		var id: String = ids[i]
 		var r := Empire.recruit(id)
-		var row := Rect2(LIST_X, 32 + i * rh, LIST_W, rh - 3)
+		var row := Rect2(LIST_X, y, LIST_W, heights[i])
 		_row_rects.append(row)
+		y += heights[i] + ROW_GAP
 		var on := i == sel
-		var joined := Empire.recruits.has(id)
 		draw_rect(row, Color(0.16, 0.13, 0.09) if on else Color(0.09, 0.08, 0.11))
 		if on:
 			draw_rect(row, GOLD, false, 1.0)
@@ -236,93 +384,138 @@ func _draw() -> void:
 		draw_rect(box, GOLD if picked else Color(0.35, 0.32, 0.38), false, 1.0)
 		if picked:
 			draw_rect(box.grow(-3), GOLD)
-		var name_col := (GOLD if on else Color("ece6da")) if joined else Color(0.45, 0.44, 0.47)
-		_text(row.position + Vector2(28, 15), r["name"], 10, name_col)
-		var nw := font.get_string_size(r["name"], HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(10)).x
-		_text(row.position + Vector2(34 + nw, 15), r["title"], 8, Color(0.6, 0.58, 0.6) if joined else Color(0.38, 0.37, 0.4))
+		var tx := row.position.x + 28.0
+		var tw := LIST_W - 34.0
+		var ny := row.position.y + ROW_PAD
+		var name_s: String = Access.fit(font, str(r["name"]), Access.fs(10), tw)
+		_text(Vector2(tx, ny), name_s, 10, GOLD if on else Color("ece6da"), tw, row)
+		var nw := font.get_string_size(name_s, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(10)).x + 6.0
+		# The title sits on the name's baseline; it is the first thing to give way on a narrow row.
+		var title_y := ny + font.get_ascent(Access.fs(10)) - font.get_ascent(Access.fs(8))
+		if tw - nw > 24.0:
+			_text(Vector2(tx + nw, title_y), str(r["title"]), 8, Color(0.6, 0.58, 0.6), tw - nw, row)
 		var st := _status(id)
-		draw_string(font, row.position + Vector2(28, 28), st[0], HORIZONTAL_ALIGNMENT_LEFT, LIST_W - 34, Access.fs(8), st[1])
+		var sy := ny + _lh(10)
+		for line in _lines(str(st[0]), 8, tw):
+			_text(Vector2(tx, sy), line, 8, st[1], tw, row)
+			sy += _lh(8)
+	if scroll > 0:
+		_scroll_arrow(Vector2(LIST_X + LIST_W / 2.0, list_top - 3.0), true)
+	if last < ids.size() - 1:
+		_scroll_arrow(Vector2(LIST_X + LIST_W / 2.0, list_bottom + 2.0), false)
 
-	var gy := 32 + ids.size() * rh + 3
-	_go_rect = Rect2(LIST_X, gy, 150, 22)
 	var go_on := sel == ids.size()
 	# Only the focused row or button wears the gold frame, so there is never a second cursor on screen.
 	draw_rect(_go_rect, Color(0.26, 0.2, 0.08) if go_on else Color(0.13, 0.11, 0.09))
 	draw_rect(_go_rect, GOLD if go_on else Color(0.45, 0.38, 0.24), false, 2.0 if go_on else 1.0)
-	_text(_go_rect.position + Vector2(10, 15), tr("Set out with %d") % party.size(), 10, GOLD if go_on else Color("ece6da"))
-	_back_rect = Rect2(LIST_X + 158, gy, 70, 22)
+	_text(_go_rect.position + Vector2(10, (bh - _lh(10)) / 2.0), go_label, 10, GOLD if go_on else Color("ece6da"), go_w - 14, _go_rect)
 	draw_rect(_back_rect, Color(0.1, 0.09, 0.12))
 	draw_rect(_back_rect, Color(0.3, 0.27, 0.33), false, 1.0)
-	_text(_back_rect.position + Vector2(12, 15), tr("Back"), 9, Color(0.75, 0.72, 0.7))
+	_text(_back_rect.position + Vector2(12, (bh - _lh(9)) / 2.0), tr("Back"), 9, Color(0.75, 0.72, 0.7), back_w - 16, _back_rect)
 
-	# Detail: how the highlighted hero fights
+	# The party, standing in a row, above the controls line
 	var x := DETAIL_X
 	var w := vs.x - DETAIL_X - 8
-	if sel < ids.size():
-		var id: String = ids[sel]
-		var r := Empire.recruit(id)
-		var hd := hero_data(id)
-		_text(Vector2(x, 46), r["name"], 13, PAPER)
-		_text(Vector2(x, 58), tr("Weapon: %s") % str(hd.get("weapon", "?")), 9, Color("e8c66a"))
-		var y := 70.0
-		for bar in [[tr("HP"), float(hd.get("hp", 40)), 70.0], [tr("Damage"), float(hd.get("damage", 10)), 16.0],
-				[tr("Reach"), float(hd.get("reach", 20)), 30.0], [tr("Speed"), float(hd.get("speed", 68)), 80.0],
-				[tr("Recovery"), float(hd.get("power_rate", 0.95)) * 100.0, 110.0]]:
-			_text(Vector2(x, y + 7), bar[0], 8, Color(0.72, 0.7, 0.72))
-			var bw := 120.0
-			draw_rect(Rect2(x + 52, y, bw, 7), Color(0.18, 0.16, 0.2))
-			draw_rect(Rect2(x + 52, y, bw * clampf(bar[1] / bar[2], 0.05, 1.0), 7), Color(0.85, 0.78, 0.6))
-			_text(Vector2(x + 178, y + 7), str(int(bar[1])), 8, Color(0.85, 0.83, 0.78))
-			y += 11
-		var style: Dictionary = _load().get("styles", {}).get(AllyAI.preset_id(str(hd.get("ai", "balanced"))), {})
-		y += 6
-		_text(Vector2(x, y + 8), tr("As an ally: %s") % str(style.get("name", "?")), 9, Color("8fa7e8"))
-		y += _wrap(Vector2(x, y + 19), str(style.get("desc", "")), w, 8, Color(0.68, 0.66, 0.68)) + 14
-		y += _wrap(Vector2(x, y + 9), str(hd.get("special", "")), w, 8, Color("cfe0b0")) + 8
-		var kit := []
-		for a in Abilities.for_ids(hd.get("abilities", [])):
-			kit.append(str(a.get("name", "")))
-		var known := Skills.known_techs(id)
-		var kit_line := tr("Abilities: %s") % ", ".join(kit)
-		if not known.is_empty():  # weapon skill (issue #24): the techs learned so far
-			kit_line += tr("   Techs (%s Lv %d): %s") % [Skills.weapon_name(id), Skills.weapon_level(id), ", ".join(known.map(func(t): return str(t.get("name", ""))))]
-		y += _wrap(Vector2(x, y + 9), kit_line, w, 8, Color(0.78, 0.74, 0.86)) + 4
-		# Friends and rivals among the party (issue #116), as it would be with this hero in it.
-		var with_me := party.filter(func(p): return p != id) + [id]
-		for n in Relationships.notes(with_me, "party"):
-			if Empire.short_name(id) in str(n[0]):
-				y += _wrap(Vector2(x, y + 9), (str(n[0]) if id in party else tr("If picked: %s") % str(n[0])), w, 8, Color("9fe07a") if n[1] else Color("ff9b8a")) + 1
-	else:
-		_text(Vector2(x, 46), tr("Ready?"), 13, PAPER)
-		_wrap(Vector2(x, 62), tr("The clock stops while you are out. Whoever stays home keeps working their post."), w, 8, Color(0.68, 0.66, 0.68))
-
-	# The party, standing in a row
-	var py := vs.y - 76
+	var foot := vs.y - 3.0 - _lh(7)  # the controls line
 	var pn := Relationships.pairs_among(party)  # friends and rivals in this party (issue #116)
 	if not pn.is_empty():
+		foot -= _lh(7)
 		var tip := "   ".join(pn.map(func(p): return Relationships.pair_title(p)))
-		_text(Vector2(x, vs.y - 13), tip, 7, Color("9fe07a") if pn.all(func(p): return p["kind"] != "rivals") else Color("ffc48a"))
-	draw_rect(Rect2(x, py - 10, w, 64), Color(0.08, 0.07, 0.1))
-	draw_rect(Rect2(x, py - 10, w, 64), Color(0.25, 0.22, 0.28), false, 1.0)
+		_text(Vector2(x, foot), tip, 7, Color("9fe07a") if pn.all(func(p): return p["kind"] != "rivals") else Color("ffc48a"), w, screen)
+	var dh := 54.0 + _lh(8)  # the names under the dolls grow with the text; the dolls' feet stay clear of them
+	var doll_box := Rect2(x, foot - 2.0 - dh, w, dh)
+	draw_rect(doll_box, Color(0.08, 0.07, 0.1))
+	draw_rect(doll_box, Color(0.25, 0.22, 0.28), false, 1.0)
 	for i in Empire.PARTY_SIZE:
 		var cx := x + w * (i + 0.5) / Empire.PARTY_SIZE
+		var cw := w / Empire.PARTY_SIZE - 6.0
 		if i < party.size():
-			_text(Vector2(cx - font.get_string_size(short_of(party[i]), HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(8)).x / 2.0, py + 50), short_of(party[i]), 8, Color("ece6da"))
+			var nm := Access.fit(font, short_of(party[i]), Access.fs(8), cw)
+			var nmw := font.get_string_size(nm, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(8)).x
+			_text(Vector2(cx - nmw / 2.0, doll_box.end.y - 3.0 - _lh(8)), nm, 8, Color("ece6da"), cw, doll_box)
 		else:
-			draw_string(font, Vector2(cx - 30, py + 24), Loc.t("empty"), HORIZONTAL_ALIGNMENT_CENTER, 60, Access.fs(8), Color(0.35, 0.33, 0.38))
+			var ew := font.get_string_size(Loc.t("empty"), HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(8)).x
+			_text(Vector2(cx - ew / 2.0, doll_box.get_center().y - _lh(8) / 2.0), Loc.t("empty"), 8, Color(0.35, 0.33, 0.38), cw, doll_box)
+	_doll_y = doll_box.position.y + 10.0  # _update_dolls stands them 18 lower
+
+	# Detail: how the highlighted hero fights
+	var dbox := Rect2(x, list_top, w, doll_box.position.y - DOLL_HEAD - list_top)
+	var bottom := dbox.end.y
+	if sel < ids.size():
+		_draw_detail(ids[sel], party, dbox)
+	else:
+		_text(Vector2(x, list_top + 4), tr("Ready?"), 13, PAPER, w, dbox)
+		_wrap(list_top + 6 + _lh(13), x, tr("The clock stops while you are out. Whoever stays home keeps working their post."), w, 8, Color(0.68, 0.66, 0.68), bottom, dbox)
 
 	var help := Prompts.help([["updown", "choose"], ["ui_accept", tr("pick or drop")], ["roster", "roster"], ["ui_cancel", "back"]], tr("Tap heroes to pick or drop them"))
-	_text(Vector2(DETAIL_X, vs.y - 4), help, 7, Color(0.5, 0.48, 0.52))
-	if flash_t > 0.0:
+	_text(Vector2(DETAIL_X, vs.y - 2.0 - _lh(7)), help, 7, Color(0.5, 0.48, 0.52), w, screen)
+	if flash_t > 0.0:  # a toast over the bottom of the list, just above the buttons
 		var a := clampf(flash_t / 0.4, 0.0, 1.0)
-		_text(Vector2(LIST_X, vs.y - 6), flash, 9, Color(1, 0.9, 0.7, a))
+		var fl := Access.fit(font, flash, Access.fs(9), LIST_W - 12)
+		var fw := font.get_string_size(fl, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(9)).x
+		var fr := Rect2(LIST_X, gy - 6.0 - _lh(9) - 4.0, fw + 12.0, _lh(9) + 4.0)
+		draw_rect(fr, Color(0.1, 0.08, 0.06, 0.95 * a))
+		draw_rect(fr, Color(GOLD, 0.5 * a), false, 1.0)
+		_text(fr.position + Vector2(6, 2), fl, 9, Color(1, 0.9, 0.7, a), LIST_W - 12, fr)
+
+
+func _draw_detail(id: String, party: Array, box: Rect2) -> void:
+	var x := box.position.x
+	var w := box.size.x
+	var bottom := box.end.y
+	var r := Empire.recruit(id)
+	var hd := hero_data(id)
+	var y := box.position.y + 4.0
+	_text(Vector2(x, y), str(r["name"]), 13, PAPER, w, box)
+	y += _lh(13)
+	_text(Vector2(x, y), tr("Weapon: %s") % str(hd.get("weapon", "?")), 9, Color("e8c66a"), w, box)
+	y += _lh(9) + 3.0
+	var bars := [[tr("HP"), float(hd.get("hp", 40)), 70.0], [tr("Damage"), float(hd.get("damage", 10)), 16.0],
+			[tr("Reach"), float(hd.get("reach", 20)), 30.0], [tr("Speed"), float(hd.get("speed", 68)), 80.0],
+			[tr("Recovery"), float(hd.get("power_rate", 0.95)) * 100.0, 110.0]]
+	var lw := 0.0
+	for bar in bars:
+		lw = maxf(lw, font.get_string_size(bar[0], HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(8)).x)
+	lw += 8.0
+	var numw := font.get_string_size("000", HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(8)).x + 6.0
+	var bw := clampf(w - lw - numw, 40.0, 120.0)
+	var step := maxf(11.0, _lh(8) + 1.0)
+	for bar in bars:
+		if y + step > bottom:
+			break
+		_text(Vector2(x, y), bar[0], 8, Color(0.72, 0.7, 0.72), lw, box)
+		var by := y + (_lh(8) - 7.0) / 2.0
+		draw_rect(Rect2(x + lw, by, bw, 7), Color(0.18, 0.16, 0.2))
+		draw_rect(Rect2(x + lw, by, bw * clampf(bar[1] / bar[2], 0.05, 1.0), 7), Color(0.85, 0.78, 0.6))
+		_text(Vector2(x + lw + bw + 6.0, y), str(int(bar[1])), 8, Color(0.85, 0.83, 0.78), numw, box)
+		y += step
+	var style: Dictionary = _load().get("styles", {}).get(AllyAI.preset_id(str(hd.get("ai", "balanced"))), {})
+	y += 6.0
+	if y + _lh(9) <= bottom:
+		_text(Vector2(x, y), tr("As an ally: %s") % str(style.get("name", "?")), 9, Color("8fa7e8"), w, box)
+		y += _lh(9) + 1.0
+	y += _wrap(y, x, str(style.get("desc", "")), w, 8, Color(0.68, 0.66, 0.68), bottom, box) + 4.0
+	y += _wrap(y, x, str(hd.get("special", "")), w, 8, Color("cfe0b0"), bottom, box) + 4.0
+	var kit := []
+	for a in Abilities.for_ids(hd.get("abilities", [])):
+		kit.append(str(a.get("name", "")))
+	var known := Skills.known_techs(id)
+	var kit_line := tr("Abilities: %s") % ", ".join(kit)
+	if not known.is_empty():  # weapon skill (issue #24): the techs learned so far
+		kit_line += tr("   Techs (%s Lv %d): %s") % [Skills.weapon_name(id), Skills.weapon_level(id), ", ".join(known.map(func(t): return str(t.get("name", ""))))]
+	y += _wrap(y, x, kit_line, w, 8, Color(0.78, 0.74, 0.86), bottom, box) + 4.0
+	# Friends and rivals among the party (issue #116), as it would be with this hero in it.
+	var with_me := party.filter(func(p): return p != id) + [id]
+	for n in Relationships.notes(with_me, "party"):
+		if Empire.short_name(id) in str(n[0]):
+			y += _wrap(y, x, (str(n[0]) if id in party else tr("If picked: %s") % str(n[0])), w, 8, Color("9fe07a") if n[1] else Color("ff9b8a"), bottom, box) + 1.0
 
 
 func _update_dolls() -> void:
 	var party := mission_party(mission)
 	var x := DETAIL_X
 	var w := size.x - DETAIL_X - 8
-	var py := size.y - 76
+	var py := _doll_y if _doll_y > 0.0 else size.y - 76
 	var ids := _ids()
 	var hl: String = ids[sel] if sel < ids.size() else ""
 	for i in _dolls.size():
