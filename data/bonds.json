@@ -249,7 +249,7 @@
 					["tobble", "So what's a silent customer pay with, eh?"]
 				], "choice": [
 					{"label": "[Draw a little picture in the foam]", "bond": 3, "reply": [["tobble", "Ha! A goat? A cloud? A goat in a cloud. Worth a drink. Worth two. Don't tell the others."]]},
-					{"label": "[Leave the second drink]", "bond": 1, "reply": [["tobble", "Sensible. Most sensible customer I've had in thirty year. Bit dull."]]},
+					{"label": "[Leave the second drink]", "bond": 1, "reply": [["tobble", "Sensible. Most sensible customer I've had in thirty years. Bit dull."]]},
 					{"label": "[Put a coin down]", "bond": 2, "reply": [["tobble", "Coin's fine. Coin's honest. Secrets are better, but you'll warm up, lad. Or lass. Whichever."]]}
 				]},
 				{"rank": 2, "title": "Retiring Next Week", "lines": [
