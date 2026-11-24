@@ -10,6 +10,8 @@ extends RefCounted
 ##   later regions (wardlamp.region_cost).
 ## - Hurrying the builders: pay extra hands to bring the job on the Hollowmark site a day sooner. The
 ##   one building crew is what limits how fast Gilt turns into buildings, so this is where spare Gilt goes.
+## - Selling Supplies at the Market: a full granary goes to the traders in lots, for a little Gilt
+##   (more with a charming trader), and the Gilt goes on to the builders.
 ## - Feasts at the tavern: once Act 1 is over, every few days. Supplies and Gilt per head; bonds,
 ##   healing, a breather for Hollowmark and a fed party.
 ## - Ink lessons at the Scriptorium: once Act 1 is over, with the Scriptorium at level 2 and someone at the
@@ -258,6 +260,36 @@ static func hurry() -> bool:
 	var now := Empire.day + Empire.day_t
 	c["finish"] = maxf(float(c["finish"]) - 1.0, now + 0.02)
 	c["start"] = minf(float(c["start"]), now - 0.01)
+	return true
+
+
+# ---------------------------------------------------------------- selling Supplies at the Market
+
+const SELL_LOT := 25  # Supplies a sale moves
+const SELL_PRICE := 0.4  # Gilt a Supply, before the traders haggle (Market discount = their markup here)
+
+
+static func sell_gilt() -> int:
+	var disc := float(Armory.market_effect().get("discount", 0.0))
+	return int(floor(SELL_LOT * SELL_PRICE * (1.0 + disc)))
+
+
+static func sell_blocker() -> String:
+	if Empire.level_of("market") <= 0:
+		return Loc.t("build the Market first")
+	if int(Armory.market_effect().get("stalls", 0)) <= 0:
+		return Loc.t("the Market needs a trader")
+	if int(Empire.res.get("supplies", 0)) < SELL_LOT:
+		return Loc.t("not enough Supplies")
+	return ""
+
+
+static func sell_supplies() -> bool:
+	if sell_blocker() != "":
+		return false
+	var g := sell_gilt()
+	Empire.spend({"supplies": SELL_LOT})
+	Empire.gain("gilt", g)
 	return true
 
 

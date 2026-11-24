@@ -23,6 +23,7 @@ var forge_gilt := 0
 var feasts := 0
 var hurries := 0
 const FEAST_SUPPLIES := 120  # a feast only when the larder holds at least this much
+const SELL_ABOVE := 300  # Supplies past this go to the Market
 var missions_by_type := {}
 var _seen_built := {}
 
@@ -56,6 +57,7 @@ func play_day() -> void:
 		_research()
 		_forge()
 		_feast()
+		_sell_surplus()
 		if policy in ["steady", "rush"]:
 			_lamps()
 			_expeditions()
@@ -296,6 +298,13 @@ func _feast() -> void:
 		return
 	if _affordable_with_reserve(Sinks.feast_cost()) and Sinks.hold_feast():
 		feasts += 1
+
+
+## A full granary goes to the Market (issue #189); the Gilt goes on to the builders.
+func _sell_surplus() -> void:
+	for i in 20:
+		if int(Empire.res["supplies"]) <= SELL_ABOVE or not Sinks.sell_supplies():
+			return
 
 
 func _lamps() -> void:

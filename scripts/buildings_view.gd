@@ -135,6 +135,10 @@ func _actions() -> Array:
 		var note := "" if why == "" or why == tr("switched off") else why
 		out.append({"kind": "lessons", "label": on_label + ("  " + tr("(switch off)") if Sinks.lessons_on() else "  " + tr("(switch on)")),
 			"enabled": Sinks.lessons_open(), "note": note, "preview": Sinks.lessons_text()})
+	if id == "market" and lv > 0:  # a full granary goes to the traders (issue #189)
+		var sb := Sinks.sell_blocker()
+		out.append({"kind": "sell", "label": tr("Sell %d Supplies for %d Gilt") % [Sinks.SELL_LOT, Sinks.sell_gilt()], "enabled": sb == "", "note": sb,
+			"preview": tr("The traders take grain off your hands for a little coin; a charming trader gets more. Keep enough for upkeep and field rations.")})
 	if building_now:  # spare Gilt buys extra hands (issue #189)
 		var hb := Sinks.hurry_blocker()
 		out.append({"kind": "hurry", "label": tr("Hurry the builders: a day sooner  (%s)") % _cost_text(Sinks.hurry_cost()), "enabled": hb == "", "note": hb,
@@ -252,6 +256,9 @@ func _do(a: Dictionary) -> void:
 		"lamp":
 			if Empire.start_lamp(row["id"]):
 				_flash(tr("A Wardlamp goes up in %s.") % Empire.territory().find(row["id"])["name"])
+		"sell":
+			if Sinks.sell_supplies():
+				_flash(tr("Sold %d Supplies for %d Gilt.") % [Sinks.SELL_LOT, Sinks.sell_gilt()])
 		"hurry":
 			if Sinks.hurry():
 				_flash(tr("Extra hands on the site. Done in %s.") % Empire.job_left_text(Empire.construction))
