@@ -159,6 +159,11 @@ off-palette colour and pixel-identical copies, and draws contact sheets at game 
 pixel marked. Free fixes live in `tools/prop_icon_fixes.json` and are applied by `python3 tools/fix_props_icons.py`
 (outline, dedither, remap, pixels; safe to replay). Glow, flame, steam and motion arcs keep no outline on purpose.
 
+The same files live in the PixelLab Creator gallery as "Last Ink | icon|prop|building | <name>" so they can be
+edited there. After any change to one of these PNGs run `python3 tools/pixellab_gallery.py push` (free): it replaces
+the matching gallery image (ids in `tools/pixellab_gallery.json`) and adds new files. `pull` brings edits made in
+PixelLab back into the game files.
+
 ## Prop scale (Phase 8)
 
 Props are sized against a 30 px person. Tallest allowed (px): barrels 16, a stack of two crates 22, bench 18, grave
