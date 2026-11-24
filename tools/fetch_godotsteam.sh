@@ -5,7 +5,8 @@
 # (scripts/steam_link.gd). The folder is git-ignored; CI fetches it in .github/workflows/steam.yml.
 #
 # Usage: tools/fetch_godotsteam.sh
-#   GODOTSTEAM_TAG     release tag on github.com/GodotSteam/GodotSteam to use. Empty: the newest
+#   GODOTSTEAM_TAG     release tag on github.com/GodotSteam/GodotSteam to use (unpinned runs also look on
+#                      codeberg.org/godotsteam/godotsteam). Empty: the newest
 #                      release whose GDExtension download loads in our Godot (the tag and checksum
 #                      are printed, so they can be pinned).
 #   GODOTSTEAM_SHA256  checksum the download must have (recommended once pinned).
@@ -30,7 +31,12 @@ else
 	for page in 1 2 3; do
 		curl -fsSL ${AUTH[@]+"${AUTH[@]}"} "$API?per_page=100&page=$page" -o "$TMP/page$page.json"
 	done
-	python3 -c 'import json,sys; print(json.dumps(sum((json.load(open(f)) for f in sys.argv[1:]), [])))' "$TMP"/page*.json > "$TMP/releases.json"
+	# Since 2025 GodotSteam's main home is Codeberg (same release format, Forgejo API); GitHub keeps
+	# mostly the module builds. Codeberg's releases go first.
+	for page in 1 2 3; do
+		curl -fsSL "https://codeberg.org/api/v1/repos/godotsteam/godotsteam/releases?limit=50&page=$page" -o "$TMP/cb$page.json" || echo "[]" > "$TMP/cb$page.json"
+	done
+	python3 -c 'import json,sys; print(json.dumps(sum((json.load(open(f)) for f in sys.argv[1:]), [])))' "$TMP"/cb*.json "$TMP"/page*.json > "$TMP/releases.json"
 	# Diagnostics: the organisation's repositories (GDExtension builds may live in their own one).
 	curl -fsSL ${AUTH[@]+"${AUTH[@]}"} "https://api.github.com/orgs/GodotSteam/repos?per_page=100" 2>/dev/null \
 		| python3 -c 'import json,sys; print("GodotSteam repositories:", ", ".join(r["name"] for r in json.load(sys.stdin)))' || true

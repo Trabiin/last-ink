@@ -45,7 +45,7 @@ def main(releases_path, out, godot):
             break
     sys.stderr.write("releases seen:\n")
     for rel in json.load(open(releases_path)):
-        sys.stderr.write("  %s%s: %s\n" % (rel.get("tag_name"), " (pre)" if rel.get("prerelease") else "",
+        sys.stderr.write("  %s %s%s: %s\n" % ("codeberg" if "codeberg" in str(rel.get("html_url", "")) else "github", rel.get("tag_name"), " (pre)" if rel.get("prerelease") else "",
                                            ", ".join(a["name"] for a in rel.get("assets", []))[:160] or "(no files)"))
     sys.stderr.write("no GodotSteam GDExtension release loads in Godot %s; tried: %s\n" % (godot, ", ".join(tried) or "none"))
     return 1
