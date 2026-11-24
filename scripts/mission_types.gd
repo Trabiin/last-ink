@@ -152,8 +152,8 @@ static func defense(p: Dictionary) -> Dictionary:
 	var m := {
 		"id": "defense_" + p["id"], "type": "defense", "effects": true, "province": p["id"],
 		"name": Loc.t("Defend %s") % p["name"], "threat": 2 + hard / 2 + (1 if days <= 1 else 0),
-		"brief": Loc.t("The Blank is gathering against %s. Hold the wardstone until the surge breaks and it never lands. Every Nibbler you disperse pushes the white back a little. Lands in %d day%s if you do nothing.") \
-			% [p["name"], days, "" if days == 1 else "s"],
+		"brief": Loc.n("The Blank is gathering against %s. Hold the wardstone until the surge breaks and it never lands. Every Nibbler you disperse pushes the white back a little. Lands in %d day if you do nothing.", "The Blank is gathering against %s. Hold the wardstone until the surge breaks and it never lands. Every Nibbler you disperse pushes the white back a little. Lands in %d days if you do nothing.", days) \
+			% [p["name"], days],
 		"rewards": {"renown": 1, "supplies": 4},
 		"blocker": "",
 	}
@@ -282,10 +282,10 @@ static func raid(p: Dictionary) -> Dictionary:
 	var m := {
 		"id": "raid_" + p["id"], "type": "raid", "effects": true, "province": p["id"], "faction": fid,
 		"name": Loc.t("Raid: %s") % fc.get("name", "stores"), "threat": threat,
-		"brief": str(fc.get("brief", Loc.t("Grab at least %d of the %d caches and get out."))) % [need, n],
+		"brief": str(fc.get("brief", Loc.t("Grab at least %d of the %s and get out."))) % [need, counted(str(fc.get("noun", "cache")), n)],
 		"enemies": fc.get("guards", {"sellsword": 1}),
 		"rewards": cfg.get("rewards", {}),
-		"reward_text": Loc.t("%d to %d caches, each %s") % [need, n, _range_text(fc.get("cache", {}))],
+		"reward_text": Loc.t("%d to %s, each %s") % [need, counted(str(fc.get("noun", "cache")), n), _range_text(fc.get("cache", {}))],
 		"cost_text": Loc.t("%s standing %d if unseen, %d once the alarm is up") % [Empire.faction(fid).get("short", fid), int(fc.get("quiet", -4)), int(fc.get("loud", -8))],
 		"until_day": raid_open(p),
 		"blocker": blocker,
@@ -309,9 +309,9 @@ static func salvage(p: Dictionary) -> Dictionary:
 	var m := {
 		"id": "salvage_" + p["id"], "type": "salvage", "effects": true, "province": p["id"],
 		"name": Loc.t("Salvage: %s") % p["name"], "threat": clampi(1 + fray / 30, 1, 4),
-		"brief": str(cfg.get("brief", Loc.t("Salvage %s: %d of %d piles."))) % [p["name"], need, n],
+		"brief": str(cfg.get("brief", Loc.t("Salvage %s: %d of the %s."))) % [p["name"], need, counted("pile", n)],
 		"rewards": cfg.get("rewards", {}),
-		"reward_text": Loc.t("%d to %d piles, each %s (more right at the white)") % [need, n, _range_text(cfg.get("pile", {}))],
+		"reward_text": Loc.t("%d to %s, each %s (more right at the white)") % [need, counted("pile", n), _range_text(cfg.get("pile", {}))],
 		"until_day": salvage_open(p),
 		"blocker": "",
 	}
@@ -333,6 +333,20 @@ static func salvage(p: Dictionary) -> Dictionary:
 
 
 ## {"gilt": [14, 22], "supplies": [2, 5]} -> "14-22 Gilt, 2-5 Supplies".
+## "5 boxes": a raid's or salvage's loot count, by the noun id in data/mission_types.json.
+static func counted(noun: String, amount: int) -> String:
+	match noun:
+		"box":
+			return Loc.count("%d box", "%d boxes", amount)
+		"crate":
+			return Loc.count("%d crate", "%d crates", amount)
+		"chest":
+			return Loc.count("%d chest", "%d chests", amount)
+		"pile":
+			return Loc.count("%d pile", "%d piles", amount)
+	return Loc.count("%d cache", "%d caches", amount)
+
+
 static func _range_text(d: Dictionary) -> String:
 	var parts := []
 	for k in ["gilt", "supplies", "ink", "insight", "renown"]:
@@ -345,7 +359,7 @@ static func _range_text(d: Dictionary) -> String:
 		parts.append(("%d %s" % [hi, nm]) if lo == hi else (Loc.t("up to %d %s") % [hi, nm]) if lo == 0 else ("%d-%d %s" % [lo, hi, nm]))
 	var mats := d.keys().filter(func(k): return Armory.is_mat(str(k))).map(func(k): return Armory.mat_name(str(k)))
 	if not mats.is_empty():  # Forge materials (issue #112)
-		parts.append(Loc.t("some %s") % Loc.t(" and ").join(mats))
+		parts.append(Loc.t("some %s") % Loc.list(mats))
 	return ", ".join(parts)
 
 
@@ -374,7 +388,7 @@ static func apply(m: Dictionary, outcome: String, dry := false) -> Array:
 				if not dry:
 					p["fray"] = clampi(int(p["fray"]) + DEFENSE_FRAY, 0, 100)
 			elif Empire.surge.get("id", "") == p["id"]:
-				lines.append(Loc.t("The surge still lands on %s in %d day%s.") % [p["name"], Empire.surge_days_left(), "" if Empire.surge_days_left() == 1 else "s"])
+				lines.append(Loc.n("The surge still lands on %s in %d day.", "The surge still lands on %s in %d days.", Empire.surge_days_left()) % [p["name"], Empire.surge_days_left()])
 		"reclaim":
 			if won and p["owner"] == "erased":
 				lines.append(Loc.t("%d Ink rewrites %s: back on the map, unclaimed, Fray %d.") % [reclaim_ink(), p["name"], reclaim_fray()])
@@ -406,10 +420,10 @@ static func apply(m: Dictionary, outcome: String, dry := false) -> Array:
 		"salvage":
 			var got := int(info.get("taken", 0))
 			if won:
-				lines.append(Loc.t("You pulled %d pile%s out of the white at %s.") % [got, "" if got == 1 else "s", p["name"]])
+				lines.append(Loc.n("You pulled %d pile out of the white at %s.", "You pulled %d piles out of the white at %s.", got) % [got, p["name"]])
 			elif got > 0:  # the fail reason already says what the white took
-				lines.append(Loc.t("You had %d pile%s out, but not enough to make it worth the run.") % [got, "" if got == 1 else "s"])
-			lines.append(Loc.t("Nothing more to pull out of %s for %d days.") % [p["name"], _cooldown()])
+				lines.append(Loc.n("You had %d pile out, but not enough to make it worth the run.", "You had %d piles out, but not enough to make it worth the run.", got) % got)
+			lines.append(Loc.n("Nothing more to pull out of %s for %d day.", "Nothing more to pull out of %s for %d days.", _cooldown()) % [p["name"], _cooldown()])
 			if not dry:
 				Empire.mission_ready["salvage:" + p["id"]] = Empire.day + _cooldown()
 		"personal":
@@ -436,13 +450,13 @@ static func _apply_raid(m: Dictionary, p: Dictionary, outcome: String, info: Dic
 		if not dry:
 			Empire.change_standing(fid, amount, Loc.t("Raid on %s") % p["name"], true)
 	if outcome == "success":
-		lines.append(Loc.t("You got away with %d cache%s from %s.") % [taken, "" if taken == 1 else "s", p["name"]])
+		lines.append(Loc.n("You got away with %d cache from %s.", "You got away with %d caches from %s.", taken) % [taken, p["name"]])
 		var rival: Dictionary = fc.get("rival", {})
 		for rid in rival:
 			lines.append(Loc.t("%s standing %+d (they enjoyed hearing about it).") % [Empire.faction(rid).get("short", rid), int(rival[rid])])
 			if not dry:
 				Empire.change_standing(rid, int(rival[rid]), Loc.t("Raid on the %s") % short, true)
-	lines.append(Loc.t("%s will be watching their stores for %d days.") % [short, _cooldown()])
+	lines.append(Loc.n("%s will be watching their stores for %d day.", "%s will be watching their stores for %d days.", _cooldown()) % [short, _cooldown()])
 	if not dry:
 		Empire.mission_ready["raid:" + p["id"]] = Empire.day + _cooldown()
 	return lines

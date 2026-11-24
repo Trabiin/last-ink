@@ -157,7 +157,7 @@ static func focus_target(h: Hero, from: Vector2, r: float, leader: Hero) -> Enem
 	var best_score := -INF
 	for e in h.get_tree().get_nodes_in_group("enemies"):
 		var enemy := e as Enemy
-		if enemy == null or enemy.dead:
+		if enemy == null or enemy.dead or enemy.untargetable():
 			continue
 		var d := enemy.global_position.distance_to(from)
 		if d > r:
@@ -229,6 +229,10 @@ static func _follow(h: Hero, leader: Hero, behind: float) -> Vector2:
 
 ## Which ability this preset reaches for right now, or -1. Balanced uses each ability's own
 ## "ai" rule from data/abilities.json; the others bend those rules their way.
+## Ability kinds that follow their own "ai" rule (data/abilities.json) under every preset (Chapter 3, #29).
+const OWN_RULE := ["charm", "blink", "song", "conjure", "weaken", "shadow"]
+
+
 static func pick_ability(h: Hero, id: String, leader: Hero) -> int:
 	if id == "balanced":
 		return Abilities.ai_pick(h)
@@ -238,6 +242,10 @@ static func pick_ability(h: Hero, id: String, leader: Hero) -> int:
 		var a: Dictionary = h.abilities[i]
 		var rule: Dictionary = a.get("ai", {})
 		var kind := str(a.get("kind", ""))
+		if kind in OWN_RULE:  # Chapter 3 kinds: their own rule whatever the preset
+			if Abilities.rule_fires(h, i):
+				return i
+			continue
 		var below := float(rule.get("below", 0.5))
 		var rng := float(rule.get("range", 40))
 		match id:

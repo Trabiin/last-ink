@@ -54,6 +54,24 @@
 			"ai": "balanced", "ink": 12, "abilities": ["riposte", "fleche"],
 			"trail": {"color": "e0405a", "style": "thrust"},
 			"special": "Narrow, quick thrusts. Time Riposte just before a blow lands to turn it back. Her tech finishes off the wounded."
+		},
+		"hortense": {
+			"short": "Hortense", "weapon": "Court rapier", "hp": 38, "speed": 76, "damage": 12, "power_rate": 1.2, "reach": 25, "arc": 40,
+			"ai": "aggressive", "ink": 14, "abilities": ["beguile", "masked_step"],
+			"trail": {"color": "7a9cf0", "style": "thrust"},
+			"special": "Flirts with everything, enemies included. Beguiled enemies forget to fight, and she hits them half again as hard. Masked Step puts her behind whoever she is looking at."
+		},
+		"saffron": {
+			"short": "Saffron", "weapon": "Stage whip", "hp": 36, "speed": 66, "damage": 9, "power_rate": 1.0, "reach": 34, "arc": 55,
+			"ai": "support", "ink": 18, "abilities": ["torch_song", "showstopper"],
+			"trail": {"color": "f0c040", "style": "arc"},
+			"special": "The longest swing in the party, and the songs: Torch Song makes everyone nearby hit harder and charge faster; Showstopper sings a gilded chorus girl into being for the enemies to fight."
+		},
+		"nan": {
+			"short": "Nan", "weapon": "Knuckledusters", "hp": 46, "speed": 70, "damage": 11, "power_rate": 1.15, "reach": 18, "arc": 60,
+			"ai": "balanced", "ink": 14, "abilities": ["small_print", "tallys_turn"],
+			"trail": {"color": "9a86c0", "style": "thrust"},
+			"special": "Two fighters for one fee. Small Print makes everything nearby hit softer and walk slower; Tally's Turn sends her shadow off to punch on his own."
 		}
 	}
 }

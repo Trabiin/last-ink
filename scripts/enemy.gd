@@ -41,6 +41,16 @@ var mark_mult := 1.0
 ## Rallied by a Reader reading a name aloud (scripts/reader.gd, issue #206): hits land harder until then (msec).
 var rally_until := 0
 const RALLY_MULT := 1.35
+## Beguiled by Hortense (abilities.gd kind "charm", Chapter 3): it stands gazing at her (a stun on the clock, so every
+## subclass honours it) and her hits on it land charm_mult times as hard. Bosses only flinch.
+var charm_until := 0
+var charm_by: Node = null
+var charm_mult := 1.0
+## Signed up to Nan's Small Print (kind "weaken"): its hits deal weak_mult of their damage and it moves at
+## slow_by of its speed until then (msec).
+var weak_until := 0
+var weak_mult := 1.0
+var slow_by := 1.0
 
 ## Art pass sprite set (scripts/sprite_set.gd) by id; subclasses with their own drawing set "" before super._ready().
 var art_id := "nibbler"
@@ -148,7 +158,7 @@ func _physics_process(delta: float) -> void:
 
 ## move_and_slide() at the enemy speed assist's pace. Every enemy moves through this.
 func _slide() -> void:
-	var pace := Assists.pace()
+	var pace := Assists.pace() * (slow_by if weakened() else 1.0)  # Small Print drags its feet too
 	if pace >= 1.0:
 		move_and_slide()
 		return
@@ -207,9 +217,56 @@ func rally(t: float) -> void:
 		rally_until = maxi(rally_until, _now() + int(t * 1000.0))
 
 
-## What its hits deal on top of their base damage (a Reader's rally).
+## What its hits deal on top of their base damage (a Reader's rally, Nan's Small Print).
 func hit_mult() -> float:
-	return RALLY_MULT if rallied() else 1.0
+	return (RALLY_MULT if rallied() else 1.0) * (weak_mult if weakened() else 1.0)
+
+
+## Beguiled for t seconds by a hero (Hortense): it stops fighting, and by's hits on it land mult times as hard.
+## Bosses are flattered for a moment and carry on.
+func charm(t: float, by: Node, mult := 1.5) -> void:
+	if dead or t <= 0.0:
+		return
+	if boss:
+		stun(0.25)
+		return
+	charm_until = maxi(charm_until, _now() + int(t * 1000.0))
+	charm_by = by
+	charm_mult = maxf(mult, 1.0)
+	stun(t)
+	if taunter != null:
+		taunt_t = 0.0
+
+
+func charmed() -> bool:
+	return charm_until > _now() and not dead
+
+
+## Is this one beguiled by h right now (her hits land harder)?
+func charmed_by(h: Node) -> bool:
+	return charmed() and charm_by == h
+
+
+## Small Print: for t seconds its hits deal mult of their damage and it moves at slow of its speed.
+## Bosses read the contract more carefully: half the effect.
+func weaken(t: float, mult: float, slow := 1.0) -> void:
+	if dead or t <= 0.0:
+		return
+	if boss:
+		mult = lerpf(1.0, mult, 0.5)
+		slow = lerpf(1.0, slow, 0.5)
+	weak_until = maxi(weak_until, _now() + int(t * 1000.0))
+	weak_mult = clampf(mult, 0.1, 1.0)
+	slow_by = clampf(slow, 0.2, 1.0)
+
+
+func weakened() -> bool:
+	return weak_until > _now() and not dead
+
+
+## Out of reach for now (an Ink Eel under the ink): heroes and allies do not pick it as a target.
+func untargetable() -> bool:
+	return false
 
 
 ## How much its lunge deals before the party's armour (kinds with a "damage" stat override this).

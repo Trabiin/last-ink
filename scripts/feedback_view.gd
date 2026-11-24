@@ -177,8 +177,7 @@ func _build() -> void:
 
 	var privacy := HBoxContainer.new()
 	privacy.add_theme_constant_override("separation", 8)
-	var pnote := _note(tr("Nothing leaves your device until you press Send. A report holds what you type, the things ticked ")
-		+ tr("above, the game version and your system (OS, graphics card, language). No account, name or IP address is kept."), SOFT, true)
+	var pnote := _note(tr("Nothing leaves your device until you press Send. A report holds what you type, the things ticked above, the game version and your system (OS, graphics card, language). No account, name or IP address is kept."), SOFT, true)
 	pnote.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	privacy.add_child(pnote)
 	var link := LinkButton.new()
@@ -222,10 +221,11 @@ func _build() -> void:
 func _previous_line() -> String:
 	var prev: Dictionary = opts["previous"]
 	var n := int(prev.get("errors", 0))
-	var what := tr("The game closed unexpectedly") if prev.get("crashed", false) else tr("The game ran into %d error%s") % [n, "" if n == 1 else "s"]
-	if prev.get("crashed", false) and n > 0:
-		what += tr(" after %d error%s") % [n, "" if n == 1 else "s"]
-	return what + tr(" last time. The logs from then are attached; a line on what you were doing helps a lot.")
+	var what := Loc.n("The game ran into %d error last time.", "The game ran into %d errors last time.", n) % n
+	if prev.get("crashed", false):
+		what = tr("The game closed unexpectedly last time.") if n == 0 \
+			else Loc.n("The game closed unexpectedly last time, after %d error.", "The game closed unexpectedly last time, after %d errors.", n) % n
+	return what + " " + tr("The logs from then are attached; a line on what you were doing helps a lot.")
 
 
 func _note(text: String, col: Color, wrap := false) -> Label:

@@ -151,7 +151,7 @@ static func ledger_lines() -> Array:
 	var lines := upkeep_lines()
 	_lesson_cache = lesson_pupils(true)
 	if not _lesson_cache.is_empty():
-		lines.append({"label": Loc.t("Ink lessons (%d pupils)") % _lesson_cache.size(), "gilt": 0, "supplies": 0,
+		lines.append({"label": Loc.n("Ink lessons (%d pupil)", "Ink lessons (%d pupils)", _lesson_cache.size()) % _lesson_cache.size(), "gilt": 0, "supplies": 0,
 			"ink": -LESSON_INK * _lesson_cache.size(), "note": Loc.t("Scriptorium")})
 	return lines
 
@@ -215,7 +215,7 @@ static func settle(was_hungry: bool) -> void:
 	state()["short"] = short
 	if not short.is_empty() and before.is_empty():
 		var names := short.map(func(k): return Loc.t(Empire.RES_NAMES[k]))
-		Empire.notice.emit(Loc.t("Not enough %s for upkeep: level 4 and 5 buildings work as level 3 (and beacons as level 2) until a dawn that pays.") % Loc.t(" and ").join(names), true)
+		Empire.notice.emit(Loc.t("Not enough %s for upkeep: level 4 and 5 buildings work as level 3 (and beacons as level 2) until a dawn that pays.") % Loc.list(names), true)
 	elif short.is_empty() and not before.is_empty():
 		Empire.notice.emit(Loc.t("Upkeep paid again: every building works at its full level."), false)
 
@@ -247,7 +247,7 @@ static func hurry_blocker() -> String:
 	if float(c["finish"]) - (Empire.day + Empire.day_t) <= HURRY_LEFT:
 		return Loc.t("almost done already")
 	if not Empire.can_afford(hurry_cost()):
-		return Loc.t("not enough ") + Empire._missing(hurry_cost())
+		return Loc.t("not enough %s") % Empire._missing(hurry_cost())
 	return ""
 
 
@@ -348,7 +348,7 @@ static func _teach(pupils: Array) -> void:
 
 
 static func lessons_text() -> String:
-	return Loc.t("Every dawn each benched field hero gets an Ink lesson: %d Ink for %d points in their weakest colour, up to level %d. Lessons only use Ink above %d.") \
+	return Loc.n("Every dawn each benched field hero gets an Ink lesson: %d Ink for %d point in their weakest colour, up to level %d. Lessons only use Ink above %d.", "Every dawn each benched field hero gets an Ink lesson: %d Ink for %d points in their weakest colour, up to level %d. Lessons only use Ink above %d.", LESSON_POINTS) \
 		% [LESSON_INK, LESSON_POINTS, LESSON_CAP, LESSON_FLOOR]
 
 
@@ -375,9 +375,9 @@ static func feast_blocker() -> String:
 		return Loc.t("after Act 1")
 	if Empire.day < feast_ready_day():
 		var d := feast_ready_day() - Empire.day
-		return Loc.t("the tavern is still clearing up (%d more day%s)") % [d, "" if d == 1 else "s"]
+		return Loc.n("the tavern is still clearing up (%d more day)", "the tavern is still clearing up (%d more days)", d) % d
 	if not Empire.can_afford(feast_cost()):
-		return Loc.t("not enough ") + Empire._missing(feast_cost())
+		return Loc.t("not enough %s") % Empire._missing(feast_cost())
 	return ""
 
 
@@ -387,8 +387,8 @@ static func fed() -> bool:
 
 ## What a feast would do, in one line for the preview.
 static func feast_text() -> String:
-	return Loc.t("Everyone with a bond +%d, injuries heal %d days, Hollowmark Fray -%d, and the party leaves on missions with +%d max HP for %d days.") \
-		% [FEAST_BOND, FEAST_HEAL, FEAST_FRAY, FEAST_FED_HP, FEAST_FED_DAYS]
+	return Loc.t("Everyone with a bond +%d, injuries heal %s, Hollowmark Fray -%d, and the party leaves on missions with +%d max HP for %s.") \
+		% [FEAST_BOND, Loc.days(FEAST_HEAL), FEAST_FRAY, FEAST_FED_HP, Loc.days(FEAST_FED_DAYS)]
 
 
 static func hold_feast() -> bool:

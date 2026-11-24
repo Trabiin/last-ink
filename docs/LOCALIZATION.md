@@ -14,7 +14,9 @@ catalogue, and a translation is one `locale/<lang>.po` file.
 | A literal in a script (instance code) | `tr("Close")` |
 | A literal in a static function | `Loc.t("Close")` |
 | Text with numbers or names | translate first, then format: `tr("Day %d begins.") % day`, never `tr("Day %d begins." % day)` |
-| Plurals | `Loc.n("%d day", "%d days", n) % n` |
+| Plurals | the whole sentence: `Loc.n("Surge in %d day.", "Surge in %d days.", n) % n`; a count inside a longer line: `Loc.count("%d pile", "%d piles", n)` ("5 piles"), `Loc.days(n)`. Never glue an `"s"` on in code |
+| Lists of names or things | `Loc.list(names)`: "Bran", "Bran and Quill", "Bran, Quill and Tobble" |
+| A key or button name | `Prompts.key("pause")`, or `Prompts.key_label(keycode)` for a raw key: named keys ("Space", "Enter", "Esc") go through the catalogue |
 | Same English, two meanings | context: `Loc.t("Back", "menu button")` |
 | Labels in a `const` (can't call functions there) | keep the literal, translate where it is shown: `Loc.t(STAT_NAMES[k])` |
 | Prose players never see (logs, node names, HTTP headers, the bug report sent to us) | leave it plain and end the line with `# no-tr: why` |
@@ -22,8 +24,10 @@ catalogue, and a translation is one `locale/<lang>.po` file.
 | Data text that code also matches on (expedition `kind`) | list it in `Loc.KEYED_TEXT`, show it with `tr(value)` |
 | Numbers, percentages, days | `Loc.num(12500)` (12,500 / 12.500), `Loc.pct(35)`, `Loc.day(4)`, `Loc.signed(3)`, `Loc.clock(secs)` |
 
-Don't build sentences from pieces (`tr("Switch tips ") + "on"`); give each whole sentence its own
-string so a translator can reorder it. Keep `%s`, `%d`, `{tag:action}`, `{a}`, `{lead}` and other
+Don't build sentences from pieces (`tr("Likes ") + x`, `x + tr(" to resume.")`, `"%s%s" % [a, tr(" and packed")]`);
+give each whole sentence its own string with `%s` where the pieces go (`tr("Likes %s") % x`), and
+when a part is optional write both sentences out. Whole sentences may follow each other
+(`a + " " + tr("Next sentence.")`), and a key hint from `Prompts.tag()` may be appended. Keep `%s`, `%d`, `{tag:action}`, `{a}`, `{lead}` and other
 tokens exactly as they are in translations.
 
 ## Tests
@@ -37,7 +41,9 @@ tokens exactly as they are in translations.
   does not translate fails, naming the file and key path.
 - Spoken lines keep speaker and expression ids; ids are never translated.
 - Pseudo-localisation reaches both script and data text.
-- Number/day formatting.
+- Number/day formatting, counted phrases and lists.
+- **No plural suffixes** (`"" if n == 1 else "s"`) and **no glued fragments** (`tr("Likes ") + x`,
+  `x + tr(" to resume.")`, `tr(" and ").join(...)`) in `scripts/` (issue #183).
 - The UI fonts (Jersey 10, Jacquard 12, and Atkinson Hyperlegible for the readable font option) have glyphs for accented Latin (German, French, Spanish,
   Portuguese, Italian, Polish, Czech). Chinese, Japanese, Korean or Cyrillic would need a fallback
   font (not planned for launch).
@@ -66,5 +72,16 @@ Text that loses its closing `]` is clipped; text without accents was missed by t
    Options row appears to choose the language once there is more than one (a change restarts the
    game, since data is translated as it loads).
 
-Not translated on purpose: key and button names that come from the engine ("Space", "Enter"),
-character names that are names, and the developer log / bug report text.
+Not translated on purpose: character names that are names (a catalogue may still give them a
+local form, and a recruit with a title or nickname spells its short form out in
+`data/recruits.json` under `"short"`, so no code knows English titles), the Godot licence notice
+(a legal text), and the developer log / bug report text.
+
+Resource names after numbers ("12 Gilt", "4 Supplies", "+3 Fray", "2 Insight") are unit labels and
+stay one form; a translation picks a form that reads after any number.
+
+Raid and Salvage briefs in `data/mission_types.json` take the loot count as a counted phrase
+("at least %d of the %s" + `"noun": "box"`); `MissionTypes.counted()` turns it into "5 boxes".
+
+The credits box wraps by pixel width (`InkMenu.wrap_px`), so the AI statement and licence text
+reflow for any language with spaces between words.

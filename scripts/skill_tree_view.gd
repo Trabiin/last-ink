@@ -349,7 +349,7 @@ func _draw_chips(vs: Vector2) -> void:
 		_text_r(r.position + Vector2(cw - 4, 10), tr("Lv%d") % Progress.level(hid), 8, SOFT)
 		var free := SkillTree.points_free(hid)
 		var spent := SkillTree.points_spent(hid)
-		_text(r.position + Vector2(5, 19), (tr("%d pt%s free") % [free, "" if free == 1 else "s"]) if free > 0 else tr("%d spent") % spent, 7, GOLD if free > 0 else DIM)
+		_text(r.position + Vector2(5, 19), (Loc.n("%d pt free", "%d pts free", free) % free) if free > 0 else tr("%d spent") % spent, 7, GOLD if free > 0 else DIM)
 		if SkillTree.can_spend(hid):
 			draw_circle(r.position + Vector2(cw - 6, 17), 2.0 + 0.6 * sin(_t * 5.0), GOLD)
 		x += cw + 4
@@ -440,13 +440,13 @@ func _draw_node(id: String, node_id: String, r: Rect2) -> void:
 	if known:
 		sub = tr("Learned")
 	elif ready:
-		sub = tr("Learn: %d pt%s") % [SkillTree.cost(node_id), "" if SkillTree.cost(node_id) == 1 else "s"]
+		sub = Loc.n("Learn: %d pt", "Learn: %d pts", SkillTree.cost(node_id)) % SkillTree.cost(node_id)
 	elif locked_gate:
 		sub = SkillTree.gate_text(id, node_id)
 	elif why.begins_with("holds"):
 		sub = tr("Other capstone held")
 	else:
-		sub = tr("%d pt%s") % [SkillTree.cost(node_id), "" if SkillTree.cost(node_id) == 1 else "s"]
+		sub = Loc.n("%d pt", "%d pts", SkillTree.cost(node_id)) % SkillTree.cost(node_id)
 	_text(r.position + Vector2(8, r.size.y - 4), sub, 8, GOOD if known else (GOLD if ready else DIM), r.size.x - 22)
 	# Cost pips, top right.
 	for k in SkillTree.cost(node_id):
@@ -496,7 +496,7 @@ func _draw_details(area: Rect2) -> void:
 	draw_string(UiSkin.TITLE_FONT, Vector2(x, y + 2), str(n.get("name", "?")), HORIZONTAL_ALIGNMENT_LEFT, w, Access.fs(14), col.lightened(0.35))
 	y += 13
 	_text(Vector2(x, y), tag, 8, col.lightened(0.1), w)
-	_text_r(Vector2(area.end.x - 8, y), tr("%d Skill Point%s") % [SkillTree.cost(sel), "" if SkillTree.cost(sel) == 1 else "s"], 8, GOLD)
+	_text_r(Vector2(area.end.x - 8, y), Loc.n("%d Skill Point", "%d Skill Points", SkillTree.cost(sel)) % SkillTree.cost(sel), 8, GOLD)
 	y += 6
 	draw_rect(Rect2(x, y, w, 1), Color(0.63, 0.48, 0.31, 0.6))
 	y += 4
@@ -509,7 +509,7 @@ func _draw_details(area: Rect2) -> void:
 	var gate := SkillTree.gate_text(id, sel)
 	if gate != "":
 		var met := SkillTree.gate_met(id, sel)
-		_text(Vector2(x, y + 8), (tr("Needs ") if not met else tr("Unlocked by ")) + gate, 8, GOOD if met else BAD, w)
+		_text(Vector2(x, y + 8), (tr("Needs %s") if not met else tr("Unlocked by %s")) % gate, 8, GOOD if met else BAD, w)
 		y += 12
 		if not met and id != "ash":
 			y += _wrap(Vector2(x, y + 7), tr("Bonds grow by fighting beside %s, talking in Hollowmark and giving them work they like%s.") % [PartyPicker.short_of(id), Prompts.tag("bonds")], w, 7, DIM) + 4
@@ -522,7 +522,7 @@ func _draw_details(area: Rect2) -> void:
 		_text_c(_learn_rect.position + Vector2(w / 2.0, 11), tr("Learned"), 9, GOOD, w)
 	else:
 		UiSkin.panel(self, _learn_rect, "button", Color(1, 1, 1, 1.0 if why == "" else 0.5))
-		var label := (tr("%s  Learn for %d") % [Prompts.confirm(), SkillTree.cost(sel)]) if why == "" else tr("Can't yet: ") + why
+		var label := (tr("%s  Learn for %d") % [Prompts.confirm(), SkillTree.cost(sel)]) if why == "" else tr("Can't yet: %s") % why
 		_text_c(_learn_rect.position + Vector2(w / 2.0, 11), label, 8, GOLD if why == "" else DIM, w - 8)
 	y = _learn_rect.end.y + 8
 	# The abilities this node changes, as they read with it (a preview until it is learned).

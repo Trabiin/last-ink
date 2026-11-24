@@ -195,8 +195,8 @@ func _status(id: String) -> Array:
 		var how: Dictionary = Empire.recruit(id).get("join", {})
 		var where := ""
 		if how.get("type", "") == "rescue":
-			where = tr("Rescue job on the Expeditions board%s: ") % Prompts.tag("expeditions") + str(Empire.job(how.get("job", "")).get("name", "?"))
-		return [tr("Not found yet. ") + where, Color(0.45, 0.44, 0.47)]
+			where = tr("Rescue job on the Expeditions board%s: %s") % [Prompts.tag("expeditions"), str(Empire.job(how.get("job", "")).get("name", "?"))]
+		return [(tr("Not found yet. %s") % where) if where != "" else tr("Not found yet."), Color(0.45, 0.44, 0.47)]
 	if Empire.recruit(id).get("locked_party", false):
 		return [tr("Leads the party"), GOLD]
 	if id == str(mission.get("force", "")):
@@ -263,7 +263,7 @@ func _draw() -> void:
 		var r := Empire.recruit(id)
 		var hd := hero_data(id)
 		_text(Vector2(x, 46), r["name"], 13, PAPER)
-		_text(Vector2(x, 58), tr("Weapon: ") + str(hd.get("weapon", "?")), 9, Color("e8c66a"))
+		_text(Vector2(x, 58), tr("Weapon: %s") % str(hd.get("weapon", "?")), 9, Color("e8c66a"))
 		var y := 70.0
 		for bar in [[tr("HP"), float(hd.get("hp", 40)), 70.0], [tr("Damage"), float(hd.get("damage", 10)), 16.0],
 				[tr("Reach"), float(hd.get("reach", 20)), 30.0], [tr("Speed"), float(hd.get("speed", 68)), 80.0],
@@ -276,14 +276,14 @@ func _draw() -> void:
 			y += 11
 		var style: Dictionary = _load().get("styles", {}).get(AllyAI.preset_id(str(hd.get("ai", "balanced"))), {})
 		y += 6
-		_text(Vector2(x, y + 8), tr("As an ally: ") + str(style.get("name", "?")), 9, Color("8fa7e8"))
+		_text(Vector2(x, y + 8), tr("As an ally: %s") % str(style.get("name", "?")), 9, Color("8fa7e8"))
 		y += _wrap(Vector2(x, y + 19), str(style.get("desc", "")), w, 8, Color(0.68, 0.66, 0.68)) + 14
 		y += _wrap(Vector2(x, y + 9), str(hd.get("special", "")), w, 8, Color("cfe0b0")) + 8
 		var kit := []
 		for a in Abilities.for_ids(hd.get("abilities", [])):
 			kit.append(str(a.get("name", "")))
 		var known := Skills.known_techs(id)
-		var kit_line := tr("Abilities: ") + ", ".join(kit)
+		var kit_line := tr("Abilities: %s") % ", ".join(kit)
 		if not known.is_empty():  # weapon skill (issue #24): the techs learned so far
 			kit_line += tr("   Techs (%s Lv %d): %s") % [Skills.weapon_name(id), Skills.weapon_level(id), ", ".join(known.map(func(t): return str(t.get("name", ""))))]
 		y += _wrap(Vector2(x, y + 9), kit_line, w, 8, Color(0.78, 0.74, 0.86)) + 4
@@ -291,7 +291,7 @@ func _draw() -> void:
 		var with_me := party.filter(func(p): return p != id) + [id]
 		for n in Relationships.notes(with_me, "party"):
 			if Empire.short_name(id) in str(n[0]):
-				y += _wrap(Vector2(x, y + 9), ("" if id in party else tr("If picked: ")) + str(n[0]), w, 8, Color("9fe07a") if n[1] else Color("ff9b8a")) + 1
+				y += _wrap(Vector2(x, y + 9), (str(n[0]) if id in party else tr("If picked: %s") % str(n[0])), w, 8, Color("9fe07a") if n[1] else Color("ff9b8a")) + 1
 	else:
 		_text(Vector2(x, 46), tr("Ready?"), 13, PAPER)
 		_wrap(Vector2(x, 62), tr("The clock stops while you are out. Whoever stays home keeps working their post."), w, 8, Color(0.68, 0.66, 0.68))
@@ -392,18 +392,18 @@ static func blocker(id: String) -> String:
 		var why := Betrayal.away_label(id)
 		return why if why != "" else Loc.t("gone")
 	if int(st.get("injured", 0)) > 0:
-		return Loc.t("injured, %d days") % int(st["injured"])
+		return Loc.n("injured, %d day", "injured, %d days", int(st["injured"])) % int(st["injured"])
 	match st.get("role", "idle"):
 		"idle", "party":
 			return ""
 		"expedition":
 			return Loc.t("on an expedition")
 		"governor":
-			return Loc.t("governing ") + str(Empire.territory().find(st.get("target", "")).get("name", Loc.t("a province")))
+			return Loc.t("governing %s") % str(Empire.territory().find(st.get("target", "")).get("name", Loc.t("a province")))
 		"staff":
-			return Loc.t("working the ") + str(Empire.building(st.get("target", "")).get("name", "town"))
+			return Loc.t("working the %s") % str(Empire.building(st.get("target", "")).get("name", Loc.t("town")))
 		"envoy":
-			return Loc.t("envoy to the ") + str(Empire.faction(st.get("target", "")).get("short", "?"))
+			return Loc.t("envoy to the %s") % str(Empire.faction(st.get("target", "")).get("short", "?"))
 		_:
 			return Empire.role_label(id).to_lower()
 

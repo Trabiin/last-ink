@@ -122,7 +122,7 @@ func _draw() -> void:
 	y = _row(x, y, iw, tr("Time"), tr("%d:%02d    Nibblers dispersed: %d") % [secs / 60, secs % 60, int(result.get("kills", 0))])
 	var found := Missions.res_text(result.get("found", {}))
 	if outcome == "wiped":
-		y = _row(x, y, iw, tr("Found"), (tr("Dropped it all: ") + found) if found != "" else tr("Nothing"), Color("ff8f7a"))
+		y = _row(x, y, iw, tr("Found"), (tr("Dropped it all: %s") % found) if found != "" else tr("Nothing"), Color("ff8f7a"))
 	else:
 		y = _row(x, y, iw, tr("Found"), found if found != "" else tr("Nothing"))
 	if outcome == "success":

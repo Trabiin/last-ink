@@ -79,6 +79,10 @@ static func desc_of(a: Dictionary) -> String:
 	v["stun_text"] = (Loc.t(" Stuns for %s s.") % _num(a["stun"])) if float(a.get("stun", 0)) > 0.0 else ""
 	v["shield_text"] = (Loc.t(" Adds a %d-point shield for %s s.") % [int(a["shield"]), _num(a.get("shield_time", 5))]) if int(a.get("shield", 0)) > 0 else ""
 	v["pierce_text"] = Loc.t(" They go straight through.") if bool(a.get("pierce", false)) else ""
+	v["boost_pct"] = int(round(float(a.get("boost", 0)) * 100.0))  # Chapter 3 kinds
+	v["rate_pct"] = int(round(float(a.get("rate", 0)) * 100.0))
+	v["weak_pct"] = int(round((1.0 - float(a.get("mult", 1))) * 100.0))
+	v["slow_pct"] = int(round((1.0 - float(a.get("slow", 1))) * 100.0))
 	return str(a.get("desc", "")).format(v) + tree_text(a)
 
 
@@ -110,6 +114,16 @@ static func tree_text(a: Dictionary) -> String:
 		parts.append(Loc.t("Stuns them for %s s.") % _num(a["stun"]))
 	if kind == "parry" and bool(a.get("aoe", false)):
 		parts.append(Loc.t("The answer hits every enemy in reach."))
+	if kind == "song" and int(a.get("heal", 0)) > 0:
+		parts.append(Loc.t("Heals everyone it reaches %d.") % int(a["heal"]))
+	if kind == "weaken" and int(a.get("damage", 0)) > 0:
+		parts.append(Loc.t("Hits each of them for %d.") % int(a["damage"]))
+	if kind == "blink" and float(a.get("vanish", 0)) > 0.0:
+		parts.append(Loc.t("She stays out of sight for %s s after.") % _num(a["vanish"]))
+	if kind == "shadow" and float(a.get("weaken_hits", 0)) > 0.0:
+		parts.append(Loc.t("Every punch signs its target up to the Small Print for %s s.") % _num(a["weaken_hits"]))
+	if kind == "conjure" and float(a.get("song", 0)) > 0.0:
+		parts.append(Loc.t("When it bows out, the party nearby gets %s s of Torch Song.") % _num(a["song"]))
 	return "" if parts.is_empty() else " " + " ".join(parts)
 
 
@@ -185,6 +199,18 @@ static func use(h: Hero, i: int) -> bool:
 		"parry":
 			h.parry_t = float(a.get("time", 0.8))
 			h.parry_ability = a
+		"charm":
+			_charm(h, a, parent)
+		"blink":
+			_blink(h, a, parent)
+		"song":
+			_song(h, a, parent)
+		"conjure":
+			_conjure(h, a, parent)
+		"weaken":
+			_weaken(h, a, parent)
+		"shadow":
+			_shadow(h, a, parent)
 	Fx.damage_number(parent, h.global_position + Vector2(0, -26), str(a.get("name", "")), color_of(a))
 	return true
 
@@ -391,6 +417,161 @@ static func riposte(h: Hero, from: Vector2) -> void:
 		h.party.shake(3.0)
 
 
+# ---------------------------------------------------------------- Chapter 3 kinds (#29)
+
+## Beguile (Hortense): a blown kiss down a cone. Every enemy in it (radius, arc degrees either side of facing) stops
+## fighting for time s and takes mult times damage from her (Enemy.charm). Bosses only flinch.
+static func _charm(h: Hero, a: Dictionary, parent: Node) -> void:
+	var r := float(a.get("radius", 70))
+	var half := deg_to_rad(float(a.get("arc", 50)))
+	var col := color_of(a)
+	Fx.sweep(parent, h.global_position + Vector2(0, -8), h.facing.angle(), half, r, col)
+	for e in h.get_tree().get_nodes_in_group("enemies"):
+		var enemy := e as Enemy
+		if enemy == null or enemy.dead:
+			continue
+		var to := enemy.global_position - h.global_position
+		if to.length() <= r + enemy.radius and absf(h.facing.angle_to(to)) <= half:
+			enemy.charm(float(a.get("time", 3.0)), h, float(a.get("mult", 1.5)))
+			Fx.burst(parent, enemy.global_position + Vector2(0, -14), [col, Color("ffd6e8")], 5, 25.0)
+			if float(a.get("mark", 0)) > 0.0:  # skill tree rider (issue #25)
+				enemy.mark(float(a["mark"]), float(a.get("mark_mult", 1.25)))
+
+
+## Masked Step (Hortense): gone, and back behind her target (the one she is fighting, else the nearest enemy within
+## range, preferring the ones in front), with the point already in: damage, a short stun, a moment untouchable.
+## Nobody near: she steps forward instead.
+static func _blink(h: Hero, a: Dictionary, parent: Node) -> void:
+	var rng := float(a.get("range", 110))
+	var col := color_of(a)
+	var tgt: Enemy = h.ai_target if h.ai_target != null and is_instance_valid(h.ai_target) and not h.ai_target.dead \
+		and h.ai_target.global_position.distance_to(h.global_position) <= rng else null
+	if tgt == null:
+		var best := INF
+		for e in h.get_tree().get_nodes_in_group("enemies"):
+			var enemy := e as Enemy
+			if enemy == null or enemy.dead:
+				continue
+			var to := enemy.global_position - h.global_position
+			if to.length() > rng:
+				continue
+			var score := to.length() * (1.0 if absf(h.facing.angle_to(to)) < 1.6 else 2.2)  # in front first
+			if score < best:
+				best = score
+				tgt = enemy
+	Fx.burst(parent, h.global_position + Vector2(0, -8), [Color("1a1830"), col, Color("e8e2f8")], 14, 50.0)
+	if tgt == null:
+		h.move_and_collide(h.facing.normalized() * 40.0)
+		Fx.burst(parent, h.global_position + Vector2(0, -8), [Color("1a1830"), col], 10, 40.0)
+		h.invuln_t = maxf(h.invuln_t, 0.25)
+		return
+	var dir := (tgt.global_position - h.global_position).normalized()
+	if dir.length() < 0.1:
+		dir = h.facing.normalized()
+	var gap := tgt.radius + h.radius + 6.0
+	var dest := h.global_position
+	for turn in [0.0, PI / 2.0, -PI / 2.0, PI]:  # behind it if the ground is free there, else beside it
+		var p := tgt.global_position + dir.rotated(turn) * gap
+		if not h.test_move(Transform2D(0.0, p), Vector2(0.5, 0.0)):
+			dest = p
+			break
+	h.global_position = dest
+	h.facing = (tgt.global_position - h.global_position).normalized()
+	h.invuln_t = maxf(h.invuln_t, 0.35)
+	h.swing_t = 0.0
+	Fx.burst(parent, h.global_position + Vector2(0, -8), [Color("1a1830"), col, Color("e8e2f8")], 14, 50.0)
+	Fx.sweep(parent, h.global_position + Vector2(0, -6), h.facing.angle(), deg_to_rad(10), h.global_position.distance_to(tgt.global_position) + 8.0, col)
+	if TreePerks.strike(h, tgt, int(a.get("damage", 18)), h.global_position, float(a.get("knock", 140)), a):
+		tgt.stun(float(a.get("stun", 0)))
+	if float(a.get("vanish", 0)) > 0.0:  # skill tree (issue #25)
+		h.vanish(float(a["vanish"]), 1.2, 1.0)
+	if h.party:
+		h.party.shake(2.0)
+
+
+## Torch Song (Saffron): everyone in the party within radius (her too) deals boost more damage and refills the gauge
+## rate faster for time s (Hero.song_t). Optional heal for each of them.
+static func _song(h: Hero, a: Dictionary, parent: Node) -> void:
+	var r := float(a.get("radius", 90))
+	var col := color_of(a)
+	Fx.ring(parent, h.global_position, r, col)
+	for o in h.get_tree().get_nodes_in_group("heroes"):
+		var other := o as Hero
+		if other == null or other.dead or other.party != h.party or other.global_position.distance_to(h.global_position) > r:
+			continue
+		sing_to(other, float(a.get("time", 6.0)), float(a.get("boost", 0.2)), float(a.get("rate", 0.3)))
+		if int(a.get("heal", 0)) > 0:
+			var amount := mini(TreePerks.heal_amount(h, int(a["heal"])), other.max_hp - other.hp)
+			if amount > 0:
+				other.hp += amount
+				Fx.damage_number(parent, other.global_position + Vector2(0, -18), "+%d" % amount, Color("9fe07a"))
+		Fx.burst(parent, other.global_position + Vector2(0, -16), [col, Color("fff1b8")], 6, 30.0)
+
+
+## Puts a hero under the Torch Song (the ability, Saffron's techs and the Chorus bowing out all use it).
+static func sing_to(other: Hero, time: float, boost: float, rate: float) -> void:
+	if other.song_t > 0.0:
+		other.song_boost = maxf(other.song_boost, boost)
+		other.song_rate = maxf(other.song_rate, rate)
+	else:
+		other.song_boost = boost
+		other.song_rate = rate
+	other.song_t = maxf(other.song_t, time)
+
+
+## Showstopper (Saffron): she sings a chorus girl into being in front of her (scripts/chorus.gd). It stands for time s
+## with hp of its own, pulls every enemy within radius onto itself, and bows out with a burst of damage around it.
+static func _conjure(h: Hero, a: Dictionary, parent: Node) -> void:
+	for c in h.get_tree().get_nodes_in_group("chorus"):  # one chorus girl per singer
+		if (c as Chorus).singer == h:
+			(c as Chorus).bow()
+	var c := Chorus.new()
+	c.singer = h
+	c.hero_id = h.hero_id  # wears the singer's own sprite, gilded (chorus.gd)
+	c.hero_name = h.hero_name
+	c.ability = a
+	c.max_hp = int(a.get("hp", 40))
+	c.hp = c.max_hp
+	c.life = float(a.get("time", 5.0))
+	var at := h.global_position + h.facing.normalized() * 26.0
+	if h.test_move(h.global_transform, at - h.global_position):
+		at = h.global_position + h.facing.normalized() * 10.0
+	c.position = at
+	parent.add_child(c)
+	Fx.burst(parent, at + Vector2(0, -12), [color_of(a), Color("fff1b8"), Color.WHITE], 18, 60.0)
+
+
+## Small Print (Nan): a contract slapped on everything within radius. For time s their hits deal mult of their damage
+## and they move at slow of their speed (Enemy.weaken; bosses half that).
+static func _weaken(h: Hero, a: Dictionary, parent: Node) -> void:
+	var r := float(a.get("radius", 70))
+	var col := color_of(a)
+	Fx.ring(parent, h.global_position, r, col)
+	for e in h.get_tree().get_nodes_in_group("enemies"):
+		var enemy := e as Enemy
+		if enemy == null or enemy.dead or enemy.global_position.distance_to(h.global_position) > r:
+			continue
+		enemy.weaken(float(a.get("time", 6.0)), float(a.get("mult", 0.6)), float(a.get("slow", 0.7)))
+		Fx.burst(parent, enemy.global_position + Vector2(0, -12), [Color("e8e2d0"), col], 5, 25.0)
+		if int(a.get("damage", 0)) > 0:  # skill tree rider (issue #25)
+			TreePerks.strike(h, enemy, int(a["damage"]), h.global_position, 40.0, {})
+
+
+## Tally's Turn (Nan): her shadow peels off and fights on its own for time s (scripts/tally_shadow.gd): it darts at
+## the nearest enemy and punches for damage every few tenths of a second. Casting again calls the old one back first.
+static func _shadow(h: Hero, a: Dictionary, parent: Node) -> void:
+	for t in h.get_tree().get_nodes_in_group("shadows"):
+		if (t as TallyShadow).owner_hero == h:
+			(t as TallyShadow).fade()
+	var t := TallyShadow.new()
+	t.owner_hero = h
+	t.ability = a
+	t.life = float(a.get("time", 6.0))
+	t.position = h.global_position + h.facing.normalized().orthogonal() * 10.0
+	parent.add_child(t)
+	Fx.burst(parent, t.position + Vector2(0, -8), [Color("1a1424"), color_of(a)], 14, 45.0)
+
+
 ## Enemies a dash runs through (each one once per dash).
 static func dash_hits(h: Hero) -> void:
 	for e in h.get_tree().get_nodes_in_group("enemies"):
@@ -410,43 +591,65 @@ static func dash_hits(h: Hero) -> void:
 
 ## Which ability an AI-driven ally wants to use right now, or -1.
 static func ai_pick(h: Hero) -> int:
-	var leader: Hero = h.party.leader if h.party else null
 	for i in h.abilities.size():
-		if blocker(h, i) != "":
-			continue
-		var rule: Dictionary = h.abilities[i].get("ai", {})
-		match str(rule.get("when", "")):
-			"hurt":
-				var r := float(h.abilities[i].get("radius", 60))
-				for o in h.get_tree().get_nodes_in_group("heroes"):
-					var other := o as Hero
-					if other and not other.dead and other.party == h.party \
-							and other.global_position.distance_to(h.global_position) <= r \
-							and float(other.hp) / other.max_hp < float(rule.get("below", 0.5)):
-						return i
-			"crowd":
-				if _count_near(h, h.global_position, float(rule.get("range", 32))) >= int(rule.get("count", 2)):
-					return i
-			"target":
-				var tgt: Enemy = h.ai_target
-				if tgt and is_instance_valid(tgt) and not tgt.dead:
-					var d := tgt.global_position.distance_to(h.global_position)
-					if d <= float(rule.get("range", 60)) and d > 20.0:
-						h.facing = (tgt.global_position - h.global_position).normalized()
-						return i
-			"windup":
-				for e in h.get_tree().get_nodes_in_group("enemies"):
-					var enemy := e as Enemy
-					if enemy and not enemy.dead and enemy.target == h and enemy.state == Enemy.State.WINDUP \
-							and enemy.global_position.distance_to(h.global_position) <= float(rule.get("range", 40)):
-						return i
-			"self_hurt":
-				if float(h.hp) / h.max_hp < float(rule.get("below", 0.5)) and _count_near(h, h.global_position, float(rule.get("range", 40))) >= 1:
-					return i
-			"threat":
-				if leader and _count_near(h, leader.global_position, float(rule.get("range", 60))) >= int(rule.get("count", 2)):
-					return i
+		if blocker(h, i) == "" and rule_fires(h, i):
+			return i
 	return -1
+
+
+## Whether ability slot i's own "ai" rule (data/abilities.json) says now. The Chapter 3 kinds (OWN_RULE) use it
+## under every preset (AllyAI.pick_ability); Balanced uses it for everything.
+static func rule_fires(h: Hero, i: int) -> bool:
+	var leader: Hero = h.party.leader if h.party else null
+	var rule: Dictionary = h.abilities[i].get("ai", {})
+	match str(rule.get("when", "")):
+		"hurt":
+			var r := float(h.abilities[i].get("radius", 60))
+			for o in h.get_tree().get_nodes_in_group("heroes"):
+				var other := o as Hero
+				if other and not other.dead and other.party == h.party \
+						and other.global_position.distance_to(h.global_position) <= r \
+						and float(other.hp) / other.max_hp < float(rule.get("below", 0.5)):
+					return true
+		"crowd":
+			if _count_near(h, h.global_position, float(rule.get("range", 32))) >= int(rule.get("count", 2)):
+				_face_crowd(h, float(rule.get("range", 32)))
+				return true
+		"target":
+			var tgt: Enemy = h.ai_target
+			if tgt and is_instance_valid(tgt) and not tgt.dead:
+				var d := tgt.global_position.distance_to(h.global_position)
+				if d <= float(rule.get("range", 60)) and d > 20.0:
+					h.facing = (tgt.global_position - h.global_position).normalized()
+					return true
+		"windup":
+			for e in h.get_tree().get_nodes_in_group("enemies"):
+				var enemy := e as Enemy
+				if enemy and not enemy.dead and enemy.target == h and enemy.state == Enemy.State.WINDUP \
+						and enemy.global_position.distance_to(h.global_position) <= float(rule.get("range", 40)):
+					return true
+		"self_hurt":
+			if float(h.hp) / h.max_hp < float(rule.get("below", 0.5)) and _count_near(h, h.global_position, float(rule.get("range", 40))) >= 1:
+				return true
+		"threat":
+			if leader and _count_near(h, leader.global_position, float(rule.get("range", 60))) >= int(rule.get("count", 2)):
+				return true
+	return false
+
+
+## Cones (Beguile) want to point at the crowd: turn to face the middle of the enemies within r.
+static func _face_crowd(h: Hero, r: float) -> void:
+	if not h.abilities.any(func(a): return str(a.get("kind", "")) == "charm"):
+		return
+	var sum := Vector2.ZERO
+	var n := 0
+	for e in h.get_tree().get_nodes_in_group("enemies"):
+		var enemy := e as Enemy
+		if enemy and not enemy.dead and enemy.global_position.distance_to(h.global_position) <= r:
+			sum += enemy.global_position - h.global_position
+			n += 1
+	if n > 0 and sum.length() > 0.1:
+		h.facing = sum.normalized()
 
 
 static func _count_near(h: Hero, at: Vector2, r: float) -> int:

@@ -115,7 +115,7 @@
 			"needs": {"blank": true},
 			"text": {
 				"success": ["{a} picked letters out of the mud with tongs while {b} read the legible ones aloud to keep them from fading. One was a love letter. Nobody will say who cried.", "{lead} came back with a sack of fallen words and ink to the elbows. Some of the words have been trying to spell {lead}'s name since."],
-				"fail": ["The white moved in overnight and took the letter-field with it. {a} saved a handful. {b} saved a grocery list. The Coven wants more than that.", "{lead} got turned around in a fog full of whispering. Came back with nothing but a word stuck in their head that they refuse to say."]
+				"fail": ["The white moved in overnight and took the letter-field with it. {a} saved a handful. {b} saved a grocery list. The Coven wants more than that.", "{lead} got turned around in a fog full of voices. Came back with nothing but a word stuck in their head that they refuse to say."]
 			}
 		},
 		{

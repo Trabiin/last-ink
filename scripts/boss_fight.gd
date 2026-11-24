@@ -31,6 +31,13 @@ const BOSSES := {
 		"approach": "Find the Abbot in the cloister garth", "done": "The Abbot's copies are blank paper",
 		"phase2_at": 0.5, "adds": "penitent", "adds_max": 3, "adds_every": 15.0, "plural": "the Abbot",
 	},
+	"host": {  # Chapter 3 (issue #29)
+		"script": preload("res://scripts/host.gd"),
+		"name": "THE HOST", "title": "Head of the Table", "phase2_title": "Second Helpings",
+		"phase_say": "It has torn its masks off. Watch for its shadow: it is going to jump.",
+		"approach": "Go up to the head of the table", "done": "The party is over",
+		"phase2_at": 0.5, "adds": "reveller", "adds_max": 3, "adds_every": 14.0, "plural": "the Host",
+	},
 	"turncoat": {  # the climax betrayal (issue #186): the name and title come from who it is
 		"script": preload("res://scripts/turncoat.gd"),
 		"name": "", "title": "Written Over", "phase2_title": "Rewritten",

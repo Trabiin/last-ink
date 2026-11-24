@@ -101,7 +101,7 @@ static func mode_info() -> String:
 	load_settings()
 	if not is_desktop():
 		return Loc.t("Fill the screen with the game, or keep it in the page. Esc leaves fullscreen in a browser.")
-	return Loc.t(MODE_INFO[mode]) + Loc.t("  Alt+Enter or F11 switches between windowed and fullscreen.")
+	return Loc.t(MODE_INFO[mode]) + "  " + Loc.t("Alt+Enter or F11 switches between windowed and fullscreen.")
 
 
 ## Window sizes that fit on the screen the window is on (always at least the smallest).

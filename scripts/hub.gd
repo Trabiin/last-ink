@@ -227,7 +227,7 @@ func _ready() -> void:
 		hud.toast(tr("Back from %s.") % r.get("name", tr("the field")))
 		hud.toast_t = 5.0
 		if pay != "":
-			hud.notice(tr("Brought home: ") + pay, false)
+			hud.notice(tr("Brought home: %s") % pay, false)
 	camera.global_position = leader.global_position
 	camera.reset_smoothing()
 	if Empire.territory().find("hollowmark").get("owner", "") == "erased":
@@ -435,7 +435,7 @@ func _find_target() -> Dictionary:
 		var d: float = (npcs[id] as Node2D).global_position.distance_to(p)
 		if d < best_d:
 			best_d = d
-			best = {"kind": "npc", "id": id, "pos": (npcs[id] as Node2D).global_position, "label": tr("Talk to ") + Empire.recruit(id)["name"]
+			best = {"kind": "npc", "id": id, "pos": (npcs[id] as Node2D).global_position, "label": tr("Talk to %s") % Empire.recruit(id)["name"]
 				+ (tr("  (something on their mind)") if Betrayal.marked(id) else (tr("  (wants a word)") if Empire.bond_next_scene(id) > 0 else "")) + (tr("  (looking for work)") if Empire.is_visitor(id) else "")}
 	# The table is wide: measure to its nearest edge, not its middle.
 	var tr := Rect2(table_pos - Vector2(TABLE_SIZE.x / 2.0, TABLE_SIZE.y), TABLE_SIZE)
@@ -509,7 +509,7 @@ func _use(t: Dictionary) -> void:
 	var short_name := Empire.short_name(id)
 	var line := "..."
 	if int(Empire.recruits[id]["injured"]) > 0:
-		line = tr("Still stitching myself back together. Ask me again in %d days.") % int(Empire.recruits[id]["injured"])
+		line = Loc.n("Still stitching myself back together. Ask me again in %d day.", "Still stitching myself back together. Ask me again in %d days.", int(Empire.recruits[id]["injured"])) % int(Empire.recruits[id]["injured"])
 	elif Empire.role_of(id) == "governor":
 		line = tr("I keep the hall and the ledgers. Hollowmark holds while I'm here. Mostly.")
 	elif Empire.role_of(id) == "staff":

@@ -378,7 +378,7 @@ static func perks_text(item_id: String) -> String:
 	for k in pk:
 		match k:
 			"immune":
-				parts.append(Loc.t("immune to %s") % Loc.t(" and ").join((pk[k] as Array).map(func(s): return Status.name_of(str(s)).to_lower())))
+				parts.append(Loc.t("immune to %s") % Loc.list((pk[k] as Array).map(func(s): return Status.name_of(str(s)).to_lower())))
 			"lifesteal":
 				parts.append(Loc.t("heals %d%% of swing damage") % int(round(float(pk[k]) * 100.0)))
 			"first_strike":
@@ -438,8 +438,8 @@ static func building_effect(id: String, level: int, staff: Array) -> Dictionary:
 		var craft := craft_of(staff)
 		var cut := int(round((1.0 - float(forge_data().get("craft_base", 10)) / (float(forge_data().get("craft_base", 10)) + craft)) * 100.0))
 		return {"tier": int(spec["tier"]), "benches": int(spec["benches"]), "craft": craft,
-			"text": Loc.t("Works gear up to tier %d, %d job%s at a time, %d%% faster for Craft %d") % [int(spec["tier"]), int(spec["benches"]),
-				"" if int(spec["benches"]) == 1 else "s", cut, craft]}
+			"text": Loc.n("Works gear up to tier %d, %d job at a time, %d%% faster for Craft %d", "Works gear up to tier %d, %d jobs at a time, %d%% faster for Craft %d", int(spec["benches"]))
+				% [int(spec["tier"]), int(spec["benches"]), cut, craft]}
 	if id == "market":
 		if _working(staff).is_empty():
 			return {"gilt": 0, "stalls": 0, "tier": 0, "discount": 0.0, "text": Loc.t("Idle: needs a trader")}
@@ -456,7 +456,7 @@ static func building_effect(id: String, level: int, staff: Array) -> Dictionary:
 		var disc := minf(float(cfg.get("discount", 0.01)) * charm, float(cfg.get("max_discount", 0.2)))
 		var lv := market_spec(level)
 		return {"gilt": gilt, "stalls": int(lv["stalls"]), "tier": int(lv["tier"]), "discount": disc,
-			"text": Loc.t("+%d Gilt a day, %d stalls, prices -%d%%") % [gilt, int(lv["stalls"]), int(round(disc * 100.0))]}
+			"text": Loc.n("+%d Gilt a day, %d stall, prices -%d%%", "+%d Gilt a day, %d stalls, prices -%d%%", int(lv["stalls"])) % [gilt, int(lv["stalls"]), int(round(disc * 100.0))]}
 	return {"text": ""}
 
 
@@ -582,7 +582,7 @@ static func craft_blocker(r: Dictionary) -> String:
 		return Loc.t("needs a level %d Forge") % _forge_level_for(int(r["tier"]))
 	var closed := closed_regions(r)
 	if not closed.is_empty():
-		return Loc.t("needs materials from %s") % Loc.t(" and ").join(closed.map(func(x): return region_name(x)))
+		return Loc.t("needs materials from %s") % Loc.list(closed.map(func(x): return region_name(x)))
 	if benches_free() <= 0:
 		return Loc.t("every bench is busy")
 	if r["kind"] == "upgrade" and (has_upgrade(r["result"]) or _queued(r["result"])):
@@ -597,7 +597,7 @@ static func craft_blocker(r: Dictionary) -> String:
 		if mat_count(k) < int(r["mats"][k]):
 			short.append(Loc.t("%d more %s") % [int(r["mats"][k]) - mat_count(k), mat_name(k)])
 	if not short.is_empty():
-		return Loc.t("needs ") + ", ".join(short)
+		return Loc.t("needs %s") % ", ".join(short)
 	if int(Empire.res.get("gilt", 0)) < int(r["gilt"]):
 		return Loc.t("not enough Gilt")
 	return ""
@@ -701,7 +701,7 @@ static func result_blurb(id: String) -> String:
 ## "in 2 days" / "at dawn" for a job.
 static func job_eta(j: Dictionary) -> String:
 	var d := int(j["done"]) - Empire.day
-	return Loc.t("at dawn") if d <= 1 else Loc.t("in %d days") % d
+	return Loc.t("at dawn") if d <= 1 else Loc.n("in %d day", "in %d days", d) % d
 
 
 # ---------------------------------------------------------------- the Market

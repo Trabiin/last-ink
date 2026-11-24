@@ -37,8 +37,9 @@ func test_short_statement_is_in_the_credits() -> void:
 	var text := " ".join(lines)
 	check(text.contains(str(d.get("short", "?"))), "credits don't show the short AI statement")
 	check(text.contains(str(d.get("more", "?"))), "credits don't link the full statement")
-	for line in lines:
-		check(str(line).length() <= 96, "credits line too long for the box: %s" % line)
+	# One paragraph per line: the credits box wraps by pixels (InkMenu.wrap_px, tested in
+	# test_menu_layout), so a longer language reflows instead of being cut at a fixed width (issue #183).
+	check(lines.has(str(d.get("short", "?"))), "the short statement is one paragraph, not pre-wrapped")
 
 
 func test_short_statement_matches_the_doc() -> void:

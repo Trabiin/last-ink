@@ -209,7 +209,7 @@ func _draw_over() -> void:
 	if lv > 0:
 		label += " " + ROMAN[mini(lv, ROMAN.size() - 1)]
 	elif not job.is_empty():
-		label = tr("BUILDING: ") + label
+		label = tr("BUILDING: %s") % label
 	var y := -PLOT.y * 0.5 if lv > 0 else -10.0
 	if highlight or not job.is_empty():
 		var w := font.get_string_size(label, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(6)).x + 8.0

@@ -388,7 +388,7 @@ func _blocks() -> Array:
 			b.append(["gap"])
 			if kind == "unlock" and not _unlock_open(t):
 				var note := Help.locked_note(str(t.get("screens", [""])[0]))
-				b.append(["head", tr("Not open yet") + ((": " + note) if note.begins_with("day") else "")])
+				b.append(["head", (tr("Not open yet: %s") % note) if note.begins_with("day") else tr("Not open yet")])
 				for l in Help.lines(t, "locked"):
 					b.append(["para", l[1], l[0]])
 			else:

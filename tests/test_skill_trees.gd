@@ -20,6 +20,13 @@ const RIDERS := {
 	"drain": ["ink_ratio", "leech"],
 	"mark": ["damage", "stun"],
 	"parry": ["aoe"],
+	# Chapter 3 kinds (#29)
+	"charm": ["mark", "mark_mult"],
+	"blink": ["vanish", "poison", "leech", "mark", "mark_mult", "taunt"],
+	"song": ["heal"],
+	"conjure": ["song", "poison", "leech", "mark", "mark_mult"],
+	"weaken": ["damage"],
+	"shadow": ["weaken_hits", "poison", "leech", "mark", "mark_mult"],
 }
 
 var Empire: Node

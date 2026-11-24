@@ -31,6 +31,10 @@ const TRIGGERS := {
 const DPAD := {JOY_BUTTON_DPAD_UP: "Up", JOY_BUTTON_DPAD_DOWN: "Down",
 	JOY_BUTTON_DPAD_LEFT: "Left", JOY_BUTTON_DPAD_RIGHT: "Right"}
 const KEY_SHORT := {"Escape": "Esc", "Kp Enter": "Enter", "BackSpace": "Backspace", "Equal": "=", "Minus": "-"}
+## Key names the engine gives in English (OS.get_keycode_string), shown through Loc.t so a catalogue
+## can name them in its language. Letters, digits and F-keys stay as they are.
+const KEY_NAMES := ["Space", "Enter", "Esc", "Tab", "Backspace", "Shift", "Ctrl", "Alt", "Up", "Down",
+	"Left", "Right", "Delete", "Insert", "Home", "End", "PageUp", "PageDown", "CapsLock", "Pause", "Menu"]
 
 
 ## Called by Controls for every input event: remembers what the player last touched.
@@ -80,14 +84,20 @@ static func key(action: String, on := "") -> String:
 	return ""
 
 
+## A keyboard key as players read it: short ("Esc") and, for named keys, in the game's language.
+static func key_label(code: int) -> String:
+	var s: String = OS.get_keycode_string(code)
+	s = KEY_SHORT.get(s, s)
+	return Loc.t(s) if s in KEY_NAMES else s
+
+
 static func _event_name(ev: InputEvent, dev: String) -> String:
 	if dev == KEYS and ev is InputEventKey:
 		var code: int = ev.physical_keycode if ev.physical_keycode != 0 else ev.keycode
-		var s := OS.get_keycode_string(code)
-		return KEY_SHORT.get(s, s)
+		return key_label(code)
 	if dev == PAD and ev is InputEventJoypadButton:
 		if DPAD.has(ev.button_index):
-			return Loc.t("D-pad ") + Loc.t(str(DPAD[ev.button_index]))
+			return Loc.t("D-pad %s") % Loc.t(str(DPAD[ev.button_index]))
 		return Loc.t(str(PAD_NAMES[pad_style].get(ev.button_index, "")))
 	if dev == PAD and ev is InputEventJoypadMotion:
 		if ev.axis == JOY_AXIS_TRIGGER_LEFT:

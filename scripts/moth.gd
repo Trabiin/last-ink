@@ -69,7 +69,7 @@ func _physics_process(delta: float) -> void:
 				var hero := h as Hero
 				if hero and not hero.dead and not hit_this_lunge.has(hero) and hero.global_position.distance_to(global_position) < radius + hero.radius + 4.0:
 					hit_this_lunge.append(hero)
-					if hero.take_hit(Empire.damage_to_party(damage), global_position, 120.0):
+					if hero.take_hit(Empire.damage_to_party(roundi(damage * hit_mult())), global_position, 120.0):
 						Status.struck(self, hero)
 			if goal != null and is_instance_valid(goal) and target == null and goal.global_position.distance_to(global_position) < 14.0 and not hit_this_lunge.has(goal):
 				hit_this_lunge.append(goal)

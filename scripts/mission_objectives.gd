@@ -260,7 +260,7 @@ func _update_raid(delta: float) -> void:
 					e.target = main.leader  # they know where you are
 	if taken >= need and main.leader and main.leader.global_position.distance_to(exit_pos) < EXIT_RANGE:
 		end_t = 1.6
-		main.hud.say(tr("Out, with %d cache%s. Nobody followed. Yet.") % [taken, "" if taken == 1 else "s"], 3.0)
+		main.hud.say(Loc.n("Out, with %d cache. Nobody followed. Yet.", "Out, with %d caches. Nobody followed. Yet.", taken) % taken, 3.0)
 	elif time_left <= 0.0:
 		time_left = 0.0
 		fail_why = tr("The garrison closed in. You dropped everything and ran.")
@@ -302,7 +302,7 @@ func _update_salvage(delta: float) -> void:
 	if taken >= need:
 		if main.leader and main.leader.global_position.distance_to(exit_pos) < EXIT_RANGE:
 			end_t = 1.6
-			main.hud.say(tr("Out with %d pile%s. The white can have the rest.") % [taken, "" if taken == 1 else "s"], 3.0)
+			main.hud.say(Loc.n("Out with %d pile. The white can have the rest.", "Out with %d piles. The white can have the rest.", taken) % taken, 3.0)
 	elif taken + left < need:
 		fail_why = tr("The white took the rest before you could reach it.")
 
@@ -363,17 +363,17 @@ func text() -> String:
 		"rescue":
 			if phase == 0:
 				var gap := maxf(main.blank.edge_x(captive.position.y) - captive.position.x, 0.0)
-				return tr("Find %s before the white does   (%d paces)") % [captive.hero_name, int(gap / 4.0)]
+				return Loc.n("Find %s before the white does   (%d pace)", "Find %s before the white does   (%d paces)", int(gap / 4.0)) % [captive.hero_name, int(gap / 4.0)]
 			return tr("Bring %s back to where you came in") % captive.hero_name
 		"raid":
 			var clock := "%d:%02d" % [int(time_left) / 60, int(time_left) % 60]
 			var a := tr("ALARM") if raised else tr("alarm %d%%") % int(alarm)
 			if taken >= need:
-				return tr("Get out with it: %d cache%s   (%s, %s)") % [taken, "" if taken == 1 else "s", a, clock]
+				return Loc.n("Get out with it: %d cache   (%s, %s)", "Get out with it: %d caches   (%s, %s)", taken) % [taken, a, clock]
 			return tr("Take the caches: %d/%d   (%s, %s)") % [taken, need, a, clock]
 		"salvage":
 			if taken >= need:
-				return tr("Get back with it: %d pile%s   (or grab more)") % [taken, "" if taken == 1 else "s"]
+				return Loc.n("Get back with it: %d pile   (or grab more)", "Get back with it: %d piles   (or grab more)", taken) % taken
 			if grace > 0.0:
 				return tr("Pull piles out of the white: %d/%d   (it moves in %ds)") % [taken, need, ceili(grace)]
 			return tr("Pull piles out of the white: %d/%d") % [taken, need]

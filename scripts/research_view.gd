@@ -346,7 +346,7 @@ func _draw() -> void:
 				var cost := Empire.research_cost(id)
 				var days := int(ceil(Empire.research_days(id)))
 				_text(base + Vector2(150, 0), Empire.cost_text(cost), 8, (INSIGHT if Empire.can_afford(cost) else BAD) if state != "locked" else DIM)
-				_text_r(base + Vector2(LIST_W - 6, 0), tr("%d day%s") % [days, "" if days == 1 else "s"], 8, SOFT if state != "locked" else DIM)
+				_text_r(base + Vector2(LIST_W - 6, 0), Loc.days(days), 8, SOFT if state != "locked" else DIM)
 		y += ROW_H
 	if _hidden_branches > 0:
 		y += HEAD_H
@@ -406,13 +406,13 @@ func _draw_details(vs: Vector2) -> void:
 			_bar(Rect2(x, y, w, 6), Empire.research_fraction(id), GOLD if state == "active" else SOFT)
 			y += 8
 			_text(Vector2(x, y + 8), tr("%d%% done. %s") % [int(Empire.research_fraction(id) * 100),
-				(tr("Done in ") + Empire.research_left_text(id) + ".") if state == "active" else Prompts.confirm() + tr(" to resume.")], 8, SOFT, w)
+				(tr("Done in %s.") % Empire.research_left_text(id)) if state == "active" else tr("%s to resume.") % Prompts.confirm()], 8, SOFT, w)
 		_:
 			var cost := Empire.research_cost(id)
 			var days := int(ceil(Empire.research_days(id)))
 			_text(Vector2(x, y + 8), tr("Costs %s, paid when you start.") % Empire.cost_text(cost), 8, INSIGHT if Empire.can_afford(cost) else BAD, w)
 			y += 12
-			_text(Vector2(x, y + 8), tr("Study: %d day%s at 100%% pace.") % [days, "" if days == 1 else "s"], 8, SOFT, w)
+			_text(Vector2(x, y + 8), Loc.n("Study: %d day at 100%% pace.", "Study: %d days at 100%% pace.", days) % days, 8, SOFT, w)
 			var why := Empire.research_blocker(id)
 			if why != "":
 				y += 12

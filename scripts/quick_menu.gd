@@ -114,9 +114,9 @@ func _tech_line(h: Hero) -> String:
 			(tr("%s, hold longer for %d more") % [known[0].get("name", "?"), known.size() - 1] if known.size() > 1 else str(known[0].get("name", "?")))
 		return tr("%s  (hold Attack on a full gauge)") % held
 	var what := (tr("Always %s") % picked.get("name", "?")) if not picked.is_empty() else \
-		(tr("Picks from %d techs") % known.size() if known.size() > 1 else str(known[0].get("name", "?")))
+		(Loc.n("Picks from %d tech", "Picks from %d techs", known.size()) % known.size() if known.size() > 1 else str(known[0].get("name", "?")))
 	var mode := AllyTechs.mode_of(h)
-	var how := (tr("Auto, ") + str(AllyTechs.PRESET_RULE.get(AllyTechs.preset_of(h), ""))) if mode == "auto" else str(AllyTechs.MODE_NAMES[mode])
+	var how := (tr("Auto, %s") % str(AllyTechs.PRESET_RULE.get(AllyTechs.preset_of(h), ""))) if mode == "auto" else Loc.t(str(AllyTechs.MODE_NAMES[mode]))
 	return "%s  (%s, %s)" % [what, how, AllyTechs.state_text(h)]
 
 
@@ -175,8 +175,8 @@ func _open_gear() -> bool:
 func _tree_right(id: String) -> String:
 	var free := SkillTree.points_free(id)
 	if SkillTree.can_spend(id):
-		return tr("%d Skill Point%s to spend") % [free, "" if free == 1 else "s"]
-	return tr("%d/%d nodes") % [SkillTree.learned(id).size(), SkillTree.all_nodes(id).size()]
+		return Loc.n("%d Skill Point to spend", "%d Skill Points to spend", free) % free
+	return Loc.n("%d/%d node", "%d/%d nodes", SkillTree.all_nodes(id).size()) % [SkillTree.learned(id).size(), SkillTree.all_nodes(id).size()]
 
 
 ## The Tree tab's second line: how far along each branch the hero is.
@@ -185,7 +185,7 @@ func _tree_line(id: String) -> String:
 	for b in SkillTree.branches(id):
 		var done := (b["nodes"] as Array).filter(func(n): return SkillTree.knows(id, str(n["id"]))).size()
 		parts.append("%s %d/%d" % [b.get("name", "?"), done, (b["nodes"] as Array).size()])
-	return "  ·  ".join(parts) + tr("  (pick to open the tree)")
+	return tr("%s  (pick to open the tree)") % "  ·  ".join(parts)
 
 
 ## The skill tree screen (issue #25) over the fight, paused underneath until it closes.
@@ -244,7 +244,7 @@ func _rebuild() -> void:
 				var hero: Hero = h
 				var state := tr("  (down)") if hero.dead else (tr("  (you)") if hero.controlled else "")
 				rows.append({"id": hero.hero_id, "label": "%s%s" % [hero.hero_name, state],
-					"right": tr("%s Lv %d  %d/%d techs") % [Skills.weapon_name(hero.hero_id), Skills.weapon_level(hero.hero_id),
+					"right": Loc.n("%s Lv %d  %d/%d tech", "%s Lv %d  %d/%d techs", Skills.all_techs(hero.hero_id).size()) % [Skills.weapon_name(hero.hero_id), Skills.weapon_level(hero.hero_id),
 						Skills.known_techs(hero.hero_id).size(), Skills.all_techs(hero.hero_id).size()],
 					"detail": _tech_line(hero), "enabled": true, "hero": hero})
 		"Tree":  # issue #25: Skill Points to spend; picking a hero opens their tree (the fight pauses)
@@ -256,7 +256,7 @@ func _rebuild() -> void:
 			for h in _heroes():
 				var hero: Hero = h
 				var state := tr("  (down)") if hero.dead else (tr("  (you)") if hero.controlled else "")
-				rows.append({"id": hero.hero_id, "label": hero.hero_name + state, "right": tr("AI: ") + _style_name(hero.ai_style),
+				rows.append({"id": hero.hero_id, "label": hero.hero_name + state, "right": tr("AI: %s") % _style_name(hero.ai_style),
 					"detail": _style_desc(hero.ai_style), "enabled": true, "hero": hero})
 		"Equip":
 			for h in _heroes():
@@ -366,7 +366,7 @@ func _pick_row(i: int) -> void:
 			sub = [{"id": "lead", "label": tr("Take control"), "right": "",
 				"enabled": not hero.dead and not hero.controlled}]
 			for style in Hero.AI_STYLES:
-				sub.append({"id": "ai:" + style, "label": tr("AI: ") + _style_name(style),
+				sub.append({"id": "ai:" + style, "label": tr("AI: %s") % _style_name(style),
 					"right": Loc.t("current") if style == hero.ai_style else "", "enabled": true})
 			sub_sel = 0 if sub[0]["enabled"] else 1 + Hero.AI_STYLES.keys().find(hero.ai_style)
 		"Techs":
@@ -395,9 +395,9 @@ func _tech_sub(hero: Hero) -> void:
 		var why := AllyTechs.order_blocker(hero)
 		var next := Techs.charge_options(hero)
 		var tname := str(next.back().get("name", "tech")) if not picked.is_empty() or next.size() == 1 else tr("best tech")
-		sub.append({"id": "tech_now", "label": tr("Unleash ") + tname, "right": why if why != "" else AllyTechs.state_text(hero), "enabled": why == ""})
+		sub.append({"id": "tech_now", "label": tr("Unleash %s") % tname, "right": why if why != "" else AllyTechs.state_text(hero), "enabled": why == ""})
 		for m in AllyTechs.MODES:
-			sub.append({"id": "tech:" + m, "label": tr("On its own: ") + str(AllyTechs.MODE_NAMES[m]),
+			sub.append({"id": "tech:" + m, "label": tr("On its own: %s") % Loc.t(str(AllyTechs.MODE_NAMES[m])),
 				"right": Loc.t("current") if m == AllyTechs.mode_of(hero) else "", "enabled": true})
 
 

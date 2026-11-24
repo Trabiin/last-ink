@@ -40,7 +40,7 @@
 		"abbey": {"name": "Abbey grounds", "maps": ["abbey", "abbey_b", "abbey_c"]},
 		"lakeshore": {"name": "Lakeshore", "maps": ["lakeshore", "lakeshore_b", "lakeshore_c"]},
 		"mountain": {"name": "Mountain pass", "maps": ["scarth", "scarth_b", "scarth_c"]},
-		"causeway": {"name": "Bridge-city", "maps": []},
+		"causeway": {"name": "Bridge-city", "maps": ["causeway", "causeway_b", "causeway_c"]},
 		"coast": {"name": "Unfinished coast", "maps": []},
 		"capital": {"name": "Capital streets", "maps": []}
 	},
@@ -78,7 +78,7 @@
 		{
 			"id": "saltreed", "name": "Saltreed Marsh", "region": "marches", "biome": "marsh", "pos": [0.83, 0.601], "weight": 1.0,
 			"owner": "free", "fray": 61, "output": {"supplies": 2, "gilt": 1}, "sites": ["Reed-cutters' stilts"],
-			"favors": "grit", "favors_why": "The reeds whisper. Steady nerves only.", "claim": {"gilt": 25, "supplies": 6},
+			"favors": "grit", "favors_why": "Something in the reeds knows your name. Steady nerves only.", "claim": {"gilt": 25, "supplies": 6},
 			"blurb": "Half the reeds have gone white. The other half are whispering about it."
 		},
 		{
@@ -155,7 +155,7 @@
 		},
 		{
 			"id": "causeway", "name": "The Velvet Causeway", "region": "causeway", "biome": "causeway", "pos": [0.293, 0.674], "weight": 1.05,
-			"owner": "concord", "fray": 6, "output": {"gilt": 11}, "sites": ["Masquerade hall", "Duelling bridges"],
+			"owner": "velvet", "fray": 6, "output": {"gilt": 11}, "sites": ["Masquerade hall", "Duelling bridges"],
 			"favors": "charm", "favors_why": "Nobody on the Causeway listens to anyone who can't dance.",
 			"blurb": "A bridge-city on a lake of ink. The elite dance at the masquerade while the water rises."
 		},

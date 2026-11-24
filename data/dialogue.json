@@ -4,7 +4,8 @@
 		"verity": {"name": "Verity Hale", "color": "e8e2d0", "colors": {"skin": "f1d9c6", "cloth": "ece6d6", "trim": "c9a54a", "hair": "d9d2c0"}},
 		"ilse": {"name": "Ilse", "color": "4f7f8f", "colors": {"skin": "d8c2b0", "cloth": "33505c", "trim": "9fc0c8", "hair": "1f2a30"}},
 		"velvette": {"name": "Fauvette", "color": "a03a6a", "colors": {"skin": "e8c0a8", "cloth": "5a1f3c", "trim": "e0b04a", "hair": "2a1420"}},
-		"auditor": {"name": "The Auditor", "color": "26222c", "colors": {"skin": "e6dccd", "cloth": "26222c", "trim": "efe6cf", "hair": "15101a"}}
+		"auditor": {"name": "The Auditor", "color": "26222c", "colors": {"skin": "e6dccd", "cloth": "26222c", "trim": "efe6cf", "hair": "15101a"}},
+		"tally": {"name": "Tally", "color": "6a5a8a", "colors": {"skin": "2a2234", "cloth": "1a1424", "trim": "6a5a8a", "hair": "1a1424"}}
 	},
 	"talks": {
 		"meadow_intro": {"title": "The Frayed Meadow", "lines": [
@@ -104,6 +105,24 @@
 			["velvette", "I don't fight for coin, darling. I fight for an audience. And right now the whole Inklands, it is watching you.", "smug"],
 			["", "She draws the rapier an inch, just to hear it sing, and slides it home."],
 			["velvette", "You may have my sword arm. My back, if you earn it. My secrets cost extra. Everyone pays eventually."]
+		]},
+		"hortense_first": {"title": "A Guest", "lines": [
+			["hortense", "So this is Hollowmark. You did warn me about the mud. You did not warn me about the charm. I mean the town's, sweet, though also yours."],
+			["hortense", "I shall need a room, a mirror and a reason to stay. The first two I can find myself.", "smug"],
+			["", "She looks round the square once, the way a duellist looks round a hall: every door, every window, who is watching."],
+			["hortense", "Lovely. Nobody here is trying to kill me. I may have to start a rumour, or I shall be bored by Thursday."]
+		]},
+		"saffron_first": {"title": "Opening Act", "lines": [
+			["saffron", "Right, love. Where do I sing? Every town's got a spot. A step, a cart, a dead tree. Somewhere folk stop."],
+			["saffron", "The well. Perfect. Good echo, terrible water. Like most of my old dressing rooms.", "happy"],
+			["", "She hums two bars at the well, and for a breath there is a bucket on the rope that nobody put there. Then there isn't."],
+			["saffron", "Don't mind that. Happens when I'm settling in. I'll keep it to sparrows and lamps till everyone's used to me."]
+		]},
+		"nan_first": {"title": "Terms and Conditions", "lines": [
+			["nan", "Nan Cripps, on the payroll! I'll need a stall, a stool and somebody who doesn't count their change. Is Quill spoken for?"],
+			["tally", "Quill counts everything twice. Leave him alone."],
+			["nan", "That's Tally. My shadow. He talks, he's honest and he's not paid. Don't let him tell you different.", "smug"],
+			["tally", "I am not paid. She is right about that one."]
 		]}
 	},
 	"first_talk": {
@@ -116,7 +135,10 @@
 		"ottoline": "ottoline_first",
 		"jessamy": "jessamy_first",
 		"odile": "odile_first",
-		"velvette": "velvette_first"
+		"velvette": "velvette_first",
+		"hortense": "hortense_first",
+		"saffron": "saffron_first",
+		"nan": "nan_first"
 	},
 	"events": {
 		"first_kill": {"once": true, "lines": [["bran", "It popped. Like a thought you weren't supposed to have."]]},
@@ -207,7 +229,7 @@
 		],
 		"saltreed": [
 			{"id": "saltreed_velvette_jessamy", "rect": [0, 0, 130, 90], "needs": ["velvette", "jessamy"], "lines": [
-				["velvette", "Marsh. Reeds. Fog. Darling, it is like a dressing room nobody has cleaned since the war."],
+				["velvette", "Fog on the reeds, reeds in the fog. Darling, it is like a dressing room nobody has cleaned since the war."],
 				["jessamy", "I ran crates through here two years. There's a smugglers' path under the water, if you know where to step."],
 				["velvette", "And do you?"],
 				["jessamy", "Mostly.", "smug"]

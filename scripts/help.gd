@@ -262,5 +262,5 @@ static func play_locked(screen: String, under: Node = null) -> bool:
 	if u.is_empty() or not is_instance_valid(card):
 		return false
 	var note := locked_note(screen)
-	return card.show_talk("%s: %s" % [str(u.get("title", "")).trim_suffix(" open").trim_suffix(" opens"), Loc.t("from ") + note if note.begins_with("day") else Loc.t("not yet")],
+	return card.show_talk("%s: %s" % [str(u.get("title", "")).trim_suffix(" open").trim_suffix(" opens"), Loc.t("from %s") % note if note.begins_with("day") else Loc.t("not yet")],
 		lines(u, "locked"), under)

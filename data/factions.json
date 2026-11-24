@@ -280,6 +280,66 @@
 						"text": "Readers stand in the square at %s and read the unedited drafts aloud all night. By morning half the town believes the white is a mercy. Fray +%d."}
 				]
 			}
+		},
+		{
+			"id": "velvet", "name": "The Velvet Nobility", "short": "Nobility", "province": "causeway",
+			"start": -24, "respects": "charm", "drift": 0, "floor": -100, "color": "4a5ab0", "ui_color": "9aa8f0",
+			"wants": "The music to go on. The water to stay off the bridges. Nobody to ask what it costs.",
+			"blurb": "The old houses of the Velvet Causeway: dukes, marquises and their cousins, who own the bridges, the wine and each other's debts. When the Blank came they decided the masquerade should simply not stop. It has not stopped for a year, and every night a few guests go upstairs and do not come down.",
+			"envoy_title": "Guest at the masquerade",
+			"react": {"claim_near": -2, "erased_near": -6, "lamp_near": 4, "why_claim": "Another upstart flag on the lake shore", "why_erased": "The Blank ate land beside the Causeway", "why_lamp": "A Wardlamp lit beside the Causeway"},
+			"perk": {"text": "The Nobility take you up as their latest fashion: patronage brings in 4 Gilt a day"},
+			"deals": {
+				"gift": {"name": "Send a crate of the Terraces' best", "cost": {"gilt": 30, "supplies": 4}, "standing": 8, "cooldown": 2,
+					"text": "A crate of Vauclair red goes across the lake with your compliments. The Duc de Lantenay sends back a card that says the wine is 'interesting'. From him, that is a sonnet."},
+				"intel": {"name": "Buy gossip at the masquerade", "cost": {"gilt": 25}, "cooldown": 4, "insight": 4, "warning_days": 5,
+					"text": "Your envoy listens behind a fan all night. Most of it is who is sleeping with whom. Some of it is which bridge the ink came up last: +1 day of surge warning for a few days."},
+				"trade": {"name": "Supply the masquerade", "cost": {"gilt": 45}, "daily": {"gilt": 3, "supplies": 1},
+					"text": "Hollowmark sends candles, bread and ribbon across the lake every week, and the Nobility pay on time, which nobody expected."},
+				"aid": {"name": "Borrow the bridge duellists", "standing": -15,
+					"text": "The Causeway's duellists come to hold your line against the surge, in pairs, saluting. The Blank finds them very hard to get past: it lands at half strength."},
+				"cede": {"name": "Ask for the Causeway's deeds", "standing": -35,
+					"text": "The Duc de Lantenay signs the Causeway into your keeping with a flourish, on the understanding that the Nobility keep their houses, their titles and the best box at the opera."}
+			},
+			"asks": [
+				{"id": "velvet_wine", "name": "Keep the masquerade in wine", "tier": "hostile", "below": "neutral", "kind": "deliver",
+					"cost": {"supplies": 10, "gilt": 20}, "days": 5, "repeat": 9, "refuse": -3,
+					"text": "The Duc de Lantenay presents his compliments to the person in charge at Hollowmark. The cellars of the Causeway are running low. Five days, a cart of wine and bread, and the Nobility will remember who kept the glasses full.",
+					"reward": {"standing": 9, "gilt": 10},
+					"fail": {"standing": -5},
+					"done_text": "The cart crosses the lake. That night, for the first time, somebody at the masquerade raises a glass to Hollowmark. Only one somebody, but a duke.",
+					"fail_text": "No cart. The Causeway drank water for a night. The Nobility will be talking about it for a generation."},
+				{"id": "velvet_snub", "name": "Snub the Concord", "tier": "wary", "kind": "shun",
+					"rival": "concord", "rival_hit": -4, "days": 8, "repeat": 14, "refuse": -3,
+					"text": "The Concord sends its clerks to the masquerade to count the guests. The Nobility would like it understood that Hollowmark does not dine with clerks. Hold no pact with the Concord for eight days.",
+					"reward": {"standing": 12, "mats": {"velvet_cord": 2}},
+					"fail": {"standing": -6, "trouble": true},
+					"done_text": "Eight days, not a word to the Concord. The Nobility find this extremely chic. A bolt of velvet cord arrives, wrapped in a scandal sheet with your name in it.",
+					"fail_text": "You were seen dining with clerks. The scandal sheets are merciless."},
+				{"id": "velvet_bridges", "name": "Keep the ink off the bridges", "tier": "neutral", "kind": "fray",
+					"max": 30, "days": 10, "repeat": 16, "refuse": -3,
+					"text": "Now that the masquerade is over, the Causeway must keep its feet dry the ordinary way. Keep the white back from every province of yours beside the Causeway for ten days, and the Nobility will be grateful in writing.",
+					"reward": {"standing": 12, "ink": 2, "boon": {"kind": "ward", "per_day": -1, "days": 5}},
+					"fail": {"standing": -5},
+					"done_text": "Ten dry days. The Nobility send a letter of thanks written on actual paper, which on the Causeway is the highest honour there is.",
+					"fail_text": "The ink came up the steps of the opera house. The Nobility are sure it was your fault, and say so at length."},
+				{"id": "velvet_lamp", "name": "Light the quay", "tier": "neutral", "kind": "lamp",
+					"days": 10, "repeat": 0, "refuse": -2,
+					"text": "Lantern Quay is dark at night now that the Concord barges have stopped paying for the oil. A Wardlamp beside the Causeway would let the Nobility's boats come home without hitting anything, or anyone.",
+					"reward": {"standing": 9, "gilt": 25},
+					"fail": {"standing": -4},
+					"done_text": "The lamp burns all night across the water. The boatmen call it the Keeper's candle, and steer by it.",
+					"fail_text": "No lamp. A Nobility barge hit the quay in the dark, and a marquis went in the lake. He has not forgiven you."}
+			],
+			"trouble": {
+				"hostile_gap": [5, 7], "wary_gap": [8, 11],
+				"events": [
+					{"kind": "fine", "gilt": [12, 22], "tiers": ["hostile", "wary"],
+						"text": "A Causeway scandal sheet prints a story about Hollowmark's keeper and three duchesses. Settling the libel suit costs %d Gilt."},
+					{"kind": "seize", "supplies": [5, 9], "tiers": ["hostile"],
+						"text": "Velvet bravos 'borrow' %d Supplies from a cart out of %s, for a party. They leave a very charming note."}
+				]
+			}
 		}
 	]
 }

@@ -591,7 +591,7 @@ func _draw_equip_body(vs: Vector2) -> void:
 		ry += 18
 		var spare := Progress.options(id, _slot()).size()
 		_text(Vector2(rx + 8, ry), (tr("%s to swap: %d spare that fit.") % [Prompts.confirm(), spare]) if spare > 0 else
-			(Prompts.confirm() + tr(" to take it off.") if iid != "" else tr("No spare gear for this slot.")), 8, GOLD if spare > 0 else SOFT, rw - 16)
+			(tr("%s to take it off.") % Prompts.confirm() if iid != "" else tr("No spare gear for this slot.")), 8, GOLD if spare > 0 else SOFT, rw - 16)
 		ry += 18
 		_text(Vector2(rx + 8, ry), tr("Levels"), 8, Color(0.75, 0.72, 0.7))
 		ry += 2
@@ -600,8 +600,8 @@ func _draw_equip_body(vs: Vector2) -> void:
 		for k in Progress.STAT_ORDER:
 			if gr.has(k) and float(gr[k]) > 0.0:
 				var v := float(gr[k])
-				parts.append(("+%d %s" % [int(v), Loc.t(Progress.STAT_NAMES[k])]) if v >= 1.0 else (tr("+1 %s every %d levels") % [Loc.t(Progress.STAT_NAMES[k]), int(round(1.0 / v))]))
-		ry += _wrap(Vector2(rx + 8, ry + 9), tr("Each level: ") + ", ".join(parts) + tr(". XP comes from every enemy the party drops, shared by all three, plus a bonus for finishing the job. On missions the Barracks and research add their bonuses on top of these numbers."), rw - 16, 8, SOFT)
+				parts.append(("+%d %s" % [int(v), Loc.t(Progress.STAT_NAMES[k])]) if v >= 1.0 else (Loc.n("+1 %s every %d level", "+1 %s every %d levels", int(round(1.0 / v))) % [Loc.t(Progress.STAT_NAMES[k]), int(round(1.0 / v))]))
+		ry += _wrap(Vector2(rx + 8, ry + 9), tr("Each level: %s. XP comes from every enemy the party drops, shared by all three, plus a bonus for finishing the job. On missions the Barracks and research add their bonuses on top of these numbers.") % ", ".join(parts), rw - 16, 8, SOFT)
 
 
 func _stat_shown(k: String, v) -> String:
@@ -667,7 +667,7 @@ func _draw_shop(vs: Vector2) -> void:
 	_text(Vector2(rx + 8, ry), it2["name"], 11, PAPER, rw - 50)
 	ry += 12
 	var owner2 := str(it2.get("hero", ""))
-	_text(Vector2(rx + 8, ry), "%s, %s" % [Loc.t(Progress.SLOT_NAMES[it2["slot"]]), (tr("for ") + PartyPicker.short_of(owner2)) if owner2 != "" else tr("anyone can wear it")], 8, SLOT_COLORS.get(it2["slot"], TEXT))
+	_text(Vector2(rx + 8, ry), "%s, %s" % [Loc.t(Progress.SLOT_NAMES[it2["slot"]]), (tr("for %s") % PartyPicker.short_of(owner2)) if owner2 != "" else tr("anyone can wear it")], 8, SLOT_COLORS.get(it2["slot"], TEXT))
 	ry += 12
 	_text(Vector2(rx + 8, ry), Progress.item_text(k2), 8, GOOD, rw - 16)
 	ry += 4
@@ -737,7 +737,7 @@ func _draw_skills(vs: Vector2) -> void:
 		var tag := tr("ALWAYS") if picked == t["id"] else (tr("LV %d") % lvl)
 		_text_r(r.position + Vector2(r.size.x - 6, 9), tag, 7, GOOD if picked == t["id"] else (col.lightened(0.2) if known else DIM))
 		y += 25
-	_text(Vector2(16, y + 6), tr("Charging: ") + (tr("always %s") % Techs.find(picked).get("name", "?") if picked != "" else tr("by hold length")), 8, GOLD)
+	_text(Vector2(16, y + 6), tr("Charging: %s") % (tr("always %s") % Techs.find(picked).get("name", "?") if picked != "" else tr("by hold length")), 8, GOLD)
 
 	# Right: the highlighted tech, then the Ink colours.
 	var rx := 320.0
@@ -781,7 +781,7 @@ func _draw_skills(vs: Vector2) -> void:
 				if cut > 0.0:
 					bits.append(tr("cooldown -%d%%") % int(round(cut * 100.0)))
 				if nxt != "":
-					bits.append(tr("next ") + nxt)
+					bits.append(tr("next %s") % nxt)
 				if not bits.is_empty():
 					_text(Vector2(rx + 128, ry + 6), "%s: %s" % [a.get("name", "?"), "; ".join(bits)], 7, SOFT, rw - 136)
 					ry += 9
@@ -796,15 +796,15 @@ static func tech_facts(t: Dictionary) -> String:
 		parts.append(Loc.t("x%s damage") % _n(t["mult"]))
 	var k: Dictionary = t.get("knives", {})
 	if not k.is_empty():
-		parts.append(Loc.t("%d knives x%s") % [int(k.get("count", 1)), _n(k.get("mult", 1))])
+		parts.append(Loc.n("%d knife x%s", "%d knives x%s", int(k.get("count", 1))) % [int(k.get("count", 1)), _n(k.get("mult", 1))])
 	if float(t.get("mult", 0)) > 0.0:
 		parts.append(Loc.t("all round") if float(t.get("arc", 90)) >= 179.0 else (Loc.t("a line") if float(t.get("arc", 90)) <= 12.0 else Loc.t("in front")))
 	if int(t.get("hits", 1)) > 1:
-		parts.append(Loc.t("%d hits") % int(t["hits"]))
+		parts.append(Loc.count("%d hit", "%d hits", int(t["hits"])))
 	if int(t.get("chain", 1)) > 1:
 		parts.append(Loc.t("%d in a row") % int(t["chain"]))
 	if (t.get("spread", []) as Array).size() > 1:
-		parts.append(Loc.t("%d lines") % (t["spread"] as Array).size())
+		parts.append(Loc.count("%d line", "%d lines", (t["spread"] as Array).size()))
 	if float(t.get("knock", 0)) < 0.0:
 		parts.append(Loc.t("pulls in"))
 	var stun := maxf(float(t.get("stun", 0)), float(t.get("last", {}).get("stun", 0)))

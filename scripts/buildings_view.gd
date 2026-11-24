@@ -98,7 +98,7 @@ func _actions() -> Array:
 		var why := Sinks.feast_blocker()
 		var heads := Empire.recruits.size()
 		out.append({"kind": "feast", "label": tr("Hold a feast  (%s)") % _cost_text(Sinks.feast_cost()), "enabled": why == "", "note": why,
-			"preview": tr("%d people at the tables: %d Supplies and %d Gilt a head. The next feast can be %d days after this one.") % [heads, Sinks.FEAST_PER_HEAD["supplies"], Sinks.FEAST_PER_HEAD["gilt"], Sinks.FEAST_GAP]})
+			"preview": Loc.n("%d person at the table: %d Supplies and %d Gilt a head. The next feast can be %s after this one.", "%d people at the tables: %d Supplies and %d Gilt a head. The next feast can be %s after this one.", heads) % [heads, Sinks.FEAST_PER_HEAD["supplies"], Sinks.FEAST_PER_HEAD["gilt"], Loc.days(Sinks.FEAST_GAP)]})
 		return out
 	if row["kind"] == "lamp":
 		var pid: String = row["id"]
@@ -111,7 +111,7 @@ func _actions() -> Array:
 			var preview := tr("%s: Fray %d a day from the lamp instead of %d. The province would change by %+d a day.") % [p["name"], nl["fray"], Empire.lamp_fray(lv), Empire.fray_rate(p) - Empire.lamp_fray(lv) + int(nl["fray"])]
 			if not (nl.get("upkeep", {}) as Dictionary).is_empty():
 				preview += " " + tr("A beacon burns %s a day; without it, it burns as level %d.") % [_cost_text(nl["upkeep"]), nl["level"] - 1]
-			out.append({"kind": "lamp", "label": tr("%s  (%s, %d day%s)") % [verb, _cost_text(nl["cost"]), nl["days"], "" if nl["days"] == 1 else "s"],
+			out.append({"kind": "lamp", "label": Loc.n("%s  (%s, %d day)", "%s  (%s, %d days)", nl["days"]) % [verb, _cost_text(nl["cost"]), nl["days"]],
 				"enabled": blocker == "", "note": blocker, "preview": preview})
 		return out
 	var id: String = row["id"]
@@ -123,17 +123,17 @@ func _actions() -> Array:
 		var blocker := Empire.build_blocker(id)
 		var verb := tr("Build") if lv == 0 else tr("Upgrade to level %d") % nl["level"]
 		var next_fx: Dictionary = Empire.building_effect(id, nl["level"], Empire.staff_of(id))
-		var preview := tr("Level %d: %s. %d staff slot%s.") % [nl["level"], next_fx["text"], nl["slots"], "" if nl["slots"] == 1 else "s"]
+		var preview := Loc.n("Level %d: %s. %d staff slot.", "Level %d: %s. %d staff slots.", nl["slots"]) % [nl["level"], next_fx["text"], nl["slots"]]
 		if not (nl.get("upkeep", {}) as Dictionary).is_empty():  # levels 4 and 5 (issue #189)
 			preview += " " + tr("Upkeep %s a day; while a dawn can't pay it, the building works as level 3.") % _cost_text(nl["upkeep"])
-		out.append({"kind": "build", "label": tr("%s  (%s, %d day%s)") % [verb, _cost_text(nl["cost"]), nl["days"], "" if nl["days"] == 1 else "s"],
+		out.append({"kind": "build", "label": Loc.n("%s  (%s, %d day)", "%s  (%s, %d days)", nl["days"]) % [verb, _cost_text(nl["cost"]), nl["days"]],
 			"enabled": blocker == "", "note": blocker, "preview": preview})
 	if id == "scriptorium" and Sinks.feast_open():  # Ink lessons for benched heroes (issue #189)
 		var pupils := Sinks.lesson_pupils().size()
 		var why := Sinks.lessons_blocker()
-		var on_label := tr("Ink lessons: on, %d pupil%s") % [pupils, "" if pupils == 1 else "s"] if why == "" else tr("Ink lessons: off")
+		var on_label := Loc.n("Ink lessons: on, %d pupil", "Ink lessons: on, %d pupils", pupils) % pupils if why == "" else tr("Ink lessons: off")
 		var note := "" if why == "" or why == tr("switched off") else why
-		out.append({"kind": "lessons", "label": on_label + ("  " + tr("(switch off)") if Sinks.lessons_on() else "  " + tr("(switch on)")),
+		out.append({"kind": "lessons", "label": on_label + "  " + (tr("(switch off)") if Sinks.lessons_on() else tr("(switch on)")),
 			"enabled": Sinks.lessons_open(), "note": note, "preview": Sinks.lessons_text()})
 	if id == "market" and lv > 0:  # a full granary goes to the traders (issue #189)
 		var sb := Sinks.sell_blocker()
@@ -183,7 +183,7 @@ func _picks() -> Array:
 		var pairs := Relationships.notes_text(with_me, "building")  # friends and rivals at work (issue #116)
 		out.append({"id": rid, "label": "%s  %s %d" % [r["name"], String(b["stat"]).capitalize(), int(r["stats"][b["stat"]])], "enabled": note == "", "note": note,
 			"role": role, "preview": tr("%s  (now: %s)%s%s") % [Empire.building_effect(id, lv, with_me)["text"], now_text,
-			"" if Empire.role_of(rid) == "idle" else tr(". Leaves their post: ") + role, ("\n" + pairs) if pairs != "" else ""]})
+			"" if Empire.role_of(rid) == "idle" else tr(". Leaves their post: %s") % role, ("\n" + pairs) if pairs != "" else ""]})
 	return out
 
 
@@ -428,7 +428,7 @@ func _row_status(row: Dictionary) -> Array:
 			return [tr("The party is still full"), GOOD]
 		var left := Sinks.feast_ready_day() - Empire.day
 		if left > 0:
-			return [tr("Next feast in %d day%s") % [left, "" if left == 1 else "s"], Color(0.62, 0.6, 0.62)]
+			return [Loc.n("Next feast in %d day", "Next feast in %d days", left) % left, Color(0.62, 0.6, 0.62)]
 		return [tr("Ready: %s") % _cost_text(Sinks.feast_cost()), GOLD]
 	if row["kind"] == "lamp":
 		var pid: String = row["id"]
@@ -524,7 +524,7 @@ func _draw() -> void:
 		dy += _wrap(Vector2(DETAIL_X, dy + 9), Sinks.feast_text(), w, 8, Color("cfe0b0")) + 6
 	elif row["kind"] == "lamp":
 		var p := Empire.territory().find(row["id"])
-		_text(Vector2(DETAIL_X, dy), tr("Wardlamp: ") + p["name"], 15, Color("f3efe4"))
+		_text(Vector2(DETAIL_X, dy), tr("Wardlamp: %s") % p["name"], 15, Color("f3efe4"))
 		dy += 8
 		dy += _wrap(Vector2(DETAIL_X, dy + 9), Empire.lamp_data["blurb"], w, 8, Color(0.62, 0.6, 0.62)) + 6
 		var rate := Empire.fray_rate(p)
@@ -543,7 +543,7 @@ func _draw() -> void:
 		dy += 8
 		dy += _wrap(Vector2(DETAIL_X, dy + 9), Prompts.fill(str(b["blurb"])), w, 8, Color(0.62, 0.6, 0.62)) + 6
 		if lv > 0:
-			_text(Vector2(DETAIL_X, dy + 9), tr("Now: ") + Empire.current_effect(id)["text"], 9, Color("cfe0b0"))
+			_text(Vector2(DETAIL_X, dy + 9), tr("Now: %s") % Empire.current_effect(id)["text"], 9, Color("cfe0b0"))
 			dy += 16
 			var up := Sinks.building_upkeep(id)
 			if not up.is_empty():  # levels 4 and 5 (issue #189)
