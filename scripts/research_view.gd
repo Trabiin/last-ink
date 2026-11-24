@@ -239,8 +239,7 @@ func _wrap(pos: Vector2, s: String, width: float, fsize: int, col: Color) -> flo
 
 
 func _bar(r: Rect2, f: float, col: Color) -> void:
-	draw_rect(r, Color(0.14, 0.12, 0.16))
-	draw_rect(Rect2(r.position, Vector2(r.size.x * clampf(f, 0.0, 1.0), r.size.y)), col)
+	UiSkin.bar(self, r, f, Color(col, 1.0), {"dim": col.a < 0.5})  # pixel bar: ink frame, shaded ramp
 
 
 ## Little status mark at the start of a row.
@@ -318,9 +317,7 @@ func _draw() -> void:
 			continue
 		_row_rects.append(rr)
 		var on := i == sel
-		draw_rect(rr, Color(0.16, 0.13, 0.09) if on else Color(0.09, 0.08, 0.11))
-		if on:
-			draw_rect(rr, GOLD, false, 1.0)
+		UiSkin.row(self, rr, on)
 		var state := Empire.research_state(id)
 		var base := rr.position + Vector2(0, 10)
 		_mark(base + Vector2(6, 0), state)
@@ -357,9 +354,8 @@ func _draw() -> void:
 	var total := _list_height()
 	if total > view:
 		var track := Rect2(LIST_W + 11, LIST_TOP, 3, view)
-		draw_rect(track, Color(0.14, 0.12, 0.16))
 		var th := maxf(view * view / total, 12.0)
-		draw_rect(Rect2(track.position.x, LIST_TOP + (view - th) * scroll / maxf(total - view, 1.0), 3, th), SOFT)
+		UiSkin.scrollbar(self, track, (view - th) * scroll / maxf(total - view, 1.0), th)
 
 	_draw_details(vs)
 	_text(Vector2(8, vs.y - 8), Prompts.help([["updown", "choose"], ["ui_accept", tr("study / set aside")], [["ui_cancel", "research"], "close"]], tr("Tap a node, tap again to study it")), 7, Color(0.5, 0.48, 0.52))
@@ -379,7 +375,7 @@ func _draw_details(vs: Vector2) -> void:
 	var w := vs.x - x - 10
 	var top := 46.0
 	draw_rect(Rect2(x - 8, top, w + 16, vs.y - top - 26), Color(0.08, 0.07, 0.1))
-	draw_rect(Rect2(x - 8, top, 3, vs.y - top - 26), BRANCH_COLORS.get(n["branch"], TEXT))
+	UiSkin.tab(self, Rect2(x - 9, top, 6, vs.y - top - 26), BRANCH_COLORS.get(n["branch"], TEXT))
 	var y := top + 16
 	UiSkin.draw_icon(self, id, Rect2(x + w - 34, top + 6, 32, 32))
 	_text(Vector2(x, y), _row_name(id), 12, Color("f3efe4"), w - 40)

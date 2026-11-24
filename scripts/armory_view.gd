@@ -22,7 +22,7 @@ const PAPER := Color("f3efe4")
 const MAT_COL := Color("c8d8a8")
 const TABS := ["forge", "market", "satchel", "materials"]
 const TAB_NAMES := {"forge": "Forge", "market": "Market", "satchel": "Satchel", "materials": "Materials"}
-const SLOT_COLORS := {"weapon": Color("e89a8a"), "armor": Color("8fa7e8"), "trinket": Color("e8c66a"), "item": Color("9fd18b"), "upgrade": Color("c9a0e8")}
+const SLOT_COLORS := {"weapon": Color("d98a5a"), "armor": Color("8f9cb6"), "trinket": Color("e8c65a"), "item": Color("a3a865"), "upgrade": Color("a990bd")}
 const ROW_H := 14.0
 const LIST_W := 318.0
 
@@ -344,9 +344,7 @@ func _wrap(pos: Vector2, s: String, width: float, fsize: int, col: Color) -> flo
 
 
 func _box(r: Rect2, on: bool) -> void:
-	draw_rect(r, Color(0.16, 0.13, 0.09) if on else Color(0.09, 0.08, 0.11))
-	if on:
-		draw_rect(r, GOLD, false, 1.0)
+	UiSkin.row(self, r, on)
 
 
 # ---------------------------------------------------------------- drawing

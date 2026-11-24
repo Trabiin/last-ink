@@ -1709,8 +1709,7 @@ func _draw_clock() -> void:
 		_cv.draw_circle(Vector2(x, 10), 4.0, GOLD)
 	_text(Vector2(x + 9, 15), tr("Day %d") % Empire.day, 11, Color("ece6da"))
 	_text(Vector2(x + 58, 15), Empire.clock_text(), 9, Color(0.75, 0.72, 0.7))
-	_cv.draw_rect(Rect2(x + 92, 8, 100, 4), Color(0.18, 0.16, 0.2))
-	_cv.draw_rect(Rect2(x + 92, 8, 100 * Empire.day_t, 4), Color(0.75, 0.72, 0.68))
+	UiSkin.bar(_cv, Rect2(x + 92, 8, 100, 4), Empire.day_t, "bone", {"notches": [0.25, 0.5, 0.75]})  # the day: dawn, noon, dusk
 	for i in Empire.SPEEDS.size():
 		var r := _speed_rect(i)
 		var on := i == Empire.speed
@@ -1996,8 +1995,9 @@ func _draw_panel() -> void:
 	if Access.map_symbols and owner != "erased":  # the same box the map shows by the name, so its look is learned here
 		_fray_chip(Vector2(x + 36 + font.get_string_size(ftext, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(9)).x, y), fray)
 	y += 5
-	_cv.draw_rect(Rect2(x, y, w, 5), Color(0.15, 0.13, 0.17))
-	_cv.draw_rect(Rect2(x, y, w * fray / 100.0, 5), Color(0.85, 0.84, 0.8).lerp(PAPER, fray / 100.0))
+	# Fray fills in the Blank's bone-white, notched where it turns Fraying (25), Unravelling (60); striped
+	# once it unravels (with danger patterns), so the state never rests on the shade alone.
+	UiSkin.bar(_cv, Rect2(x, y, w, 5), fray / 100.0, "bone", {"notches": [0.25, 0.6], "hatch": Access.danger_patterns and fray >= 60})
 	y += 16
 	if owner != "erased":
 		var rate := Empire.fray_rate(p)

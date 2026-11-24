@@ -163,10 +163,8 @@ func _draw() -> void:
 		_row_rects.append(rr)
 		var on := i == sel
 		var here := Empire.is_visitor(id)
-		draw_rect(rr, Color(0.16, 0.13, 0.09) if on else Color(0.09, 0.08, 0.11))
-		if on:
-			draw_rect(rr, GOLD, false, 1.0)
-		draw_rect(Rect2(rr.position, Vector2(3, rr.size.y)), GOLD if here else TIER_COLORS.get(r["tier"], SOFT))
+		UiSkin.row(self, rr, on)
+		UiSkin.tab(self, rr, "brass" if here else TIER_COLORS.get(r["tier"], SOFT))
 		_text(rr.position + Vector2(10, 12), r["name"], 9, GOLD if on else TEXT, 120)
 		var tag := tr("at the gate") if here else ("rescue" if Empire.join_hook(id).get("type", "") == "rescue" else "rumour")
 		var tw := font.get_string_size(tag, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(8)).x
@@ -190,7 +188,7 @@ func _draw_details(vs: Vector2, id: String) -> void:
 	var w := vs.x - x - 10
 	var top := 44.0
 	draw_rect(Rect2(x - 8, top, w + 16, vs.y - top - 18), Color(0.08, 0.07, 0.1))
-	draw_rect(Rect2(x - 8, top, 3, vs.y - top - 18), GOLD if here else TIER_COLORS.get(r["tier"], SOFT))
+	UiSkin.tab(self, Rect2(x - 9, top, 6, vs.y - top - 18), "brass" if here else TIER_COLORS.get(r["tier"], SOFT))
 	var y := top + 14
 	_text(Vector2(x, y), r["name"], 13, Color("f3efe4"), w - 80)
 	_text(Vector2(x + w - 74, y), Loc.t(TIER_NAMES.get(r["tier"], "")), 8, TIER_COLORS.get(r["tier"], SOFT))
@@ -203,8 +201,7 @@ func _draw_details(vs: Vector2, id: String) -> void:
 	for k in STAT_KEYS:
 		var v := int(r["stats"][k])
 		_text(Vector2(sx, y + 7), "%s %d" % [Loc.t(Empire.STAT_NAMES[k]), v], 8, Color(0.78, 0.76, 0.74))
-		draw_rect(Rect2(sx, y + 10, 50, 3), Color(0.18, 0.16, 0.2))
-		draw_rect(Rect2(sx, y + 10, 5 * v, 3), Color(0.85, 0.78, 0.6))
+		UiSkin.bar(self, Rect2(sx, y + 10, 50, 3), v / 10.0, "bone", {"notch": 5})
 		sx += minf(62.0, w / 5.0)
 	y += 18
 	for t in r.get("traits", []):

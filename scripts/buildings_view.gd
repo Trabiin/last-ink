@@ -489,9 +489,7 @@ func _draw() -> void:
 			continue
 		_row_rects.append(r)
 		var on := i == sel
-		draw_rect(r, Color(0.16, 0.13, 0.09) if on else Color(0.09, 0.08, 0.11))
-		if on:
-			draw_rect(r, GOLD if focus == 0 else Color(0.55, 0.48, 0.3), false, 1.0)
+		UiSkin.row(self, r, on, focus == 0)
 		var name_s: String = Empire.building(row["id"])["name"] if row["kind"] == "building" else (tr("Tavern feast") if row["kind"] == "feast" else Empire.territory().find(row["id"])["name"])
 		var tx := 8.0
 		if row["kind"] in ["building", "feast"] and UiSkin.draw_icon(self, row["id"], Rect2(r.position + Vector2(5, 3), Vector2(18, 18))):
@@ -500,16 +498,14 @@ func _draw() -> void:
 		var st := _row_status(row)
 		_text(r.position + Vector2(tx, 19), st[0], 7, st[1])
 		if row["kind"] == "building" and Empire.construction.get("id", "") == row["id"]:
-			draw_rect(Rect2(r.position.x + 130, r.position.y + 6, 76, 4), Color(0.18, 0.16, 0.2))
-			draw_rect(Rect2(r.position.x + 130, r.position.y + 6, 76 * Empire.job_progress(Empire.construction), 4), GOLD)
+			UiSkin.bar(self, Rect2(r.position.x + 130, r.position.y + 6, 76, 4), Empire.job_progress(Empire.construction), "brass", {"notches": [0.25, 0.5, 0.75]})
 		y += ROW_H
 	var total := _list_height()
 	if total > bottom - LIST_TOP:  # scroll bar
 		var view := bottom - LIST_TOP
 		var tr_r := Rect2(LIST_X + LIST_W + 3, LIST_TOP, 3, view)
-		draw_rect(tr_r, Color(0.14, 0.12, 0.16))
 		var th := maxf(view * view / total, 12.0)
-		draw_rect(Rect2(tr_r.position.x, LIST_TOP + (view - th) * scroll / maxf(total - view, 1.0), 3, th), Color(0.62, 0.6, 0.62))
+		UiSkin.scrollbar(self, tr_r, (view - th) * scroll / maxf(total - view, 1.0), th)
 	if rows.is_empty():
 		return
 
@@ -562,9 +558,7 @@ func _draw() -> void:
 		var r := Rect2(DETAIL_X, ay, w, 17)
 		_act_rects.append(r)
 		var hl := focus >= 1 and i == act
-		draw_rect(r, Color(0.16, 0.13, 0.09) if hl else Color(0.09, 0.08, 0.11))
-		if hl:
-			draw_rect(r, GOLD if focus == 1 else Color(0.55, 0.48, 0.3), false, 1.0)
+		UiSkin.row(self, r, hl, focus == 1)
 		var col := Color("ece6da") if a["enabled"] else Color(0.42, 0.41, 0.44)
 		_text(r.position + Vector2(8, 12), a["label"], 9, GOLD if hl and a["enabled"] and focus == 1 else col)
 		if not a["enabled"] and a["note"] != "":
@@ -594,8 +588,7 @@ func _draw() -> void:
 
 func _draw_job(job: Dictionary, label: String, dy: float, w: float) -> float:
 	_text(Vector2(DETAIL_X, dy + 9), tr("%s: %s left") % [label, Empire.job_left_text(job)], 9, GOLD)
-	draw_rect(Rect2(DETAIL_X, dy + 13, w, 4), Color(0.18, 0.16, 0.2))
-	draw_rect(Rect2(DETAIL_X, dy + 13, w * Empire.job_progress(job), 4), GOLD)
+	UiSkin.bar(self, Rect2(DETAIL_X, dy + 13, w, 4), Empire.job_progress(job), "brass", {"notches": [0.25, 0.5, 0.75]})
 	return dy + 22
 
 

@@ -269,9 +269,7 @@ func _wrap(pos: Vector2, s: String, width: float, fsize: int, col: Color) -> flo
 
 func _row_box(i: int, rr: Rect2) -> bool:
 	var on := i == sel
-	draw_rect(rr, Color(0.16, 0.13, 0.09) if on else Color(0.09, 0.08, 0.11))
-	if on:
-		draw_rect(rr, GOLD, false, 1.0)
+	UiSkin.row(self, rr, on)
 	return on
 
 
@@ -282,8 +280,7 @@ func _danger_pips(pos: Vector2, n: int) -> void:
 
 
 func _bar(r: Rect2, f: float, col: Color) -> void:
-	draw_rect(r, Color(0.14, 0.12, 0.16))
-	draw_rect(Rect2(r.position, Vector2(r.size.x * clampf(f, 0.0, 1.0), r.size.y)), col)
+	UiSkin.bar(self, r, f, Color(col, 1.0), {"dim": col.a < 0.5})  # pixel bar: ink frame, shaded ramp
 
 
 func _draw() -> void:

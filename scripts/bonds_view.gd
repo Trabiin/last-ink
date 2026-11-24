@@ -243,8 +243,7 @@ func _wrap(pos: Vector2, s: String, width: float, fsize: int, col: Color) -> flo
 
 
 func _bar(r: Rect2, f: float, col: Color) -> void:
-	draw_rect(r, Color(0.14, 0.12, 0.16))
-	draw_rect(Rect2(r.position, Vector2(r.size.x * clampf(f, 0.0, 1.0), r.size.y)), col)
+	UiSkin.bar(self, r, f, Color(col, 1.0), {"dim": col.a < 0.5})  # pixel bar: ink frame, shaded ramp
 
 
 ## Five little hearts: filled up to the rank.
@@ -300,11 +299,9 @@ func _draw() -> void:
 		_row_rects.append(rr)
 		_row_index.append(i)
 		var on := i == sel
-		draw_rect(rr, Color(0.16, 0.13, 0.09) if on else Color(0.09, 0.08, 0.11))
-		if on:
-			draw_rect(rr, GOLD if focus == 0 else Color(0.5, 0.45, 0.35), false, 1.0)
+		UiSkin.row(self, rr, on, focus == 0)
 		var accent := Color(Empire.bond_info(id).get("color", "c9c3b6"))
-		draw_rect(Rect2(rr.position, Vector2(3, rr.size.y)), accent)
+		UiSkin.tab(self, rr, accent)
 		var rank := Empire.bond_rank(id)
 		_text(rr.position + Vector2(10, 12), Empire.recruit(id)["name"], 9, GOLD if on else TEXT, 110)
 		_pips(rr.position + Vector2(130, 9), rank, HEART if not Betrayal.marked(id) else Color(0.55, 0.53, 0.58))
@@ -343,7 +340,7 @@ func _draw_details(vs: Vector2, id: String) -> void:
 	var w := vs.x - x - 10
 	var top := 44.0
 	draw_rect(Rect2(x - 8, top, w + 16, vs.y - top - 18), Color(0.08, 0.07, 0.1))
-	draw_rect(Rect2(x - 8, top, 3, vs.y - top - 18), Color(info.get("color", "c9c3b6")))
+	UiSkin.tab(self, Rect2(x - 9, top, 6, vs.y - top - 18), Color(info.get("color", "c9c3b6")))
 	var r := Empire.recruit(id)
 	var rank := Empire.bond_rank(id)
 	var y := top + 14

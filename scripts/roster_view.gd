@@ -177,13 +177,11 @@ func _draw() -> void:
 		var row := Rect2(LIST_X, 32 + i * row_h, LIST_W, row_h - 3)
 		_row_rects.append(row)
 		var on := i == sel
-		draw_rect(row, Color(0.16, 0.13, 0.09) if on else Color(0.09, 0.08, 0.11))
-		if on:
-			draw_rect(row, GOLD if focus == 0 else Color(0.55, 0.48, 0.3), false, 1.0)
+		UiSkin.row(self, row, on, focus == 0)
 		var injured := int(Empire.recruits[id]["injured"]) > 0
 		var role_col := Color("ff9b8a") if injured else Color(0.62, 0.6, 0.62)
 		if row_h >= 26.0:
-			draw_rect(Rect2(row.position + Vector2(5, 7), Vector2(5, 13)), TIER_COLORS[r["tier"]])
+			UiSkin.swatch(self, Rect2(row.position + Vector2(5, 7), Vector2(5, 13)), TIER_COLORS[r["tier"]])
 			_text(row.position + Vector2(16, 12), r["name"], 10, GOLD if on else Color("ece6da"))
 			var rx := 16.0
 			if UiSkin.draw_icon(self, "role_" + Empire.role_of(id), Rect2(row.position + Vector2(15, 15), Vector2(10, 10))):
@@ -191,7 +189,7 @@ func _draw() -> void:
 			_text(row.position + Vector2(rx, 23), Empire.role_label(id), 8, role_col)
 		else:  # compact: name and role on one line
 			var mid := row.size.y / 2.0
-			draw_rect(Rect2(row.position + Vector2(5, mid - 5), Vector2(5, 10)), TIER_COLORS[r["tier"]])
+			UiSkin.swatch(self, Rect2(row.position + Vector2(5, mid - 5), Vector2(5, 10)), TIER_COLORS[r["tier"]])
 			draw_string(font, row.position + Vector2(16, mid + 3.5), r["name"], HORIZONTAL_ALIGNMENT_LEFT, 92, Access.fs(9), GOLD if on else Color("ece6da"))
 			draw_string(font, row.position + Vector2(110, mid + 3), Empire.role_label(id), HORIZONTAL_ALIGNMENT_LEFT, LIST_W - 114, Access.fs(7), role_col)
 	if n == 0:
@@ -208,9 +206,8 @@ func _draw() -> void:
 	for k in STAT_KEYS:
 		var v := int(r["stats"][k])
 		_text(Vector2(x, y + 7), Loc.t(STAT_NAMES[k]), 9, Color(0.72, 0.7, 0.72))
-		for seg in 10:
-			var c := Color(0.85, 0.78, 0.6) if seg < v else Color(0.18, 0.16, 0.2)
-			draw_rect(Rect2(x + 44 + seg * 11, y, 9, 7), c)
+		for seg in 10:  # ten pips, each a small shaded cell
+			UiSkin.bar(self, Rect2(x + 45 + seg * 11, y + 1, 8, 5), 1.0 if seg < v else 0.0, "bone")
 		_text(Vector2(x + 158, y + 7), str(v), 9, Color(0.85, 0.83, 0.78))
 		y += 13
 	y += 8
@@ -243,9 +240,7 @@ func _draw() -> void:
 		var rr := Rect2(OPT_X, oy, size.x - OPT_X - 8, 17)
 		_opt_rects.append(rr)
 		var hl := focus == 1 and i == opt
-		draw_rect(rr, Color(0.16, 0.13, 0.09) if hl else Color(0.09, 0.08, 0.11))
-		if hl:
-			draw_rect(rr, GOLD, false, 1.0)
+		UiSkin.row(self, rr, hl)
 		var col := Color("ece6da") if o["enabled"] else Color(0.42, 0.41, 0.44)
 		if i == current:
 			draw_circle(rr.position + Vector2(7, 8.5), 2.5, GOLD)

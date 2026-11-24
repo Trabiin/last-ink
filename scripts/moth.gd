@@ -163,8 +163,7 @@ func _draw_overlay() -> void:
 		if state == State.WINDUP:
 			Telegraph.alert(overlay, Vector2(-2, y - 9), 9)
 		if hp < max_hp:
-			overlay.draw_rect(Rect2(-4, y - 11, 8, 1.5), Color(0, 0, 0, 0.6))
-			overlay.draw_rect(Rect2(-4, y - 11, 8.0 * hp / max_hp, 1.5), Color("ff6b6b"))
+			UiSkin.field_bar(overlay, roundf(y - 12), 8, float(hp) / max_hp, "enemy", Access.danger_patterns and hp * 4 <= max_hp)
 		return
 	# A folded letter with flapping wings, hovering above its shadow.
 	var flap := absf(sin(anim_t * (26.0 if state != State.WINDUP else 40.0)))
@@ -184,5 +183,4 @@ func _draw_overlay() -> void:
 	if state == State.WINDUP:
 		Telegraph.alert(overlay, Vector2(-2, y - 5), 9)
 	if hp < max_hp:
-		overlay.draw_rect(Rect2(-4, y - 7, 8, 1.5), Color(0, 0, 0, 0.6))
-		overlay.draw_rect(Rect2(-4, y - 7, 8.0 * hp / max_hp, 1.5), Color("ff6b6b"))
+		UiSkin.field_bar(overlay, roundf(y - 8), 8, float(hp) / max_hp, "enemy", Access.danger_patterns and hp * 4 <= max_hp)

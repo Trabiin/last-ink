@@ -1,7 +1,7 @@
 extends SceneTree
 ## Screenshot helper for art review (not exported: tools/* is excluded).
 ##   xvfb-run -a godot --path . -s tools/shot.gd -- out=/tmp/x.png scene=mission party=ash,bran,gristle,ninefingers frames=90
-## scene: mission (Frayed Meadow patrol), town (Hollowmark), picker (Command Table party picker).
+## scene: mission (Frayed Meadow patrol), town (Hollowmark), command (Command Table), picker (Command Table party picker).
 ## Autoloads exist only after the first frame, so setup happens in _process.
 
 var frame := 0
@@ -54,6 +54,10 @@ func _process(_delta: float) -> bool:
 			var now: float = empire.day + empire.day_t
 			var pr := float(bp[1]) if bp.size() > 1 else 0.5
 			empire.construction = {"id": bp[0], "start": now - pr, "finish": now - pr + 1.0}
+		if args.has("xp"):  # xp=40: every party hero that much XP into level 1 (part-filled XP bars)
+			var prog = load("res://scripts/progress.gd")
+			for id in party:
+				prog.hero(id)["xp"] = int(args["xp"])
 		var scene := str(args.get("scene", "mission"))
 		if scene == "mission":
 			var m: Dictionary = load("res://scripts/missions.gd").find(str(args.get("mission", "meadow_patrol"))).duplicate()
@@ -61,6 +65,8 @@ func _process(_delta: float) -> bool:
 				m["map"] = "res://maps/%s.txt" % args["map"]
 			empire.active_mission = m
 			change_scene_to_file("res://scenes/main.tscn")
+		elif scene == "command":  # the Command Table: act=call:gear_view.open:town opens a screen on it
+			change_scene_to_file("res://scenes/command.tscn")
 		elif scene == "title":
 			change_scene_to_file("res://scenes/title.tscn")
 		elif scene == "town":
@@ -85,6 +91,13 @@ func _process(_delta: float) -> bool:
 				for k in str(args["kinds"]).split(","):
 					load("res://scripts/enemy_kinds.gd").spawn(cur.entities, pos + Vector2(50 + 36 * i, -10 + 24 * (i % 2)), cur.mission, k)
 					i += 1
+	if args.has("hp") and frame == 25 and current_scene != null and "heroes" in current_scene:
+		var fr: PackedStringArray = str(args["hp"]).split(",")  # hp=0.8,0.4,0.15: each hero's HP fraction
+		for i in current_scene.heroes.size():
+			var h = current_scene.heroes[i]
+			h.hp = maxi(1, roundi(h.max_hp * float(fr[mini(i, fr.size() - 1)])))
+		for e in current_scene.get_tree().get_nodes_in_group("enemies"):
+			e.hp = maxi(1, roundi(e.max_hp * 0.55))
 	if args.has("walk") and frame == 21:  # walk=left (up/down/right): Ash walks that way until the shot, into a wall
 		Input.action_press("move_" + str(args["walk"]))
 	if args.has("zoom") and frame == 22 and current_scene != null and "camera" in current_scene:

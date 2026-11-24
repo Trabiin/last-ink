@@ -28,6 +28,7 @@ static func start(parent: Node, h: Hero, tk: Dictionary, later: Array, st: Dicti
 	r.color = Color(str(tk.get("color", "ffe08a")))
 	r.z_index = -1  # on the ground, under the actors
 	parent.add_child(r)
+	FxLayer.adopt(r, true)  # drawn as pixel art on the ground picture (scripts/fx_layer.gd)
 	return r
 
 

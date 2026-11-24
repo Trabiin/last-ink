@@ -21,7 +21,7 @@ const TEXT := Color("ece6da")
 const DIM := Color(0.42, 0.41, 0.44)
 const SOFT := Color(0.62, 0.6, 0.62)
 const PAPER := Color("f3efe4")
-const XP_COL := Color("b9a0e8")
+const XP_COL := Color("b49bcc")
 const NODE := Vector2(156, 32)
 const RESET := "reset"
 
@@ -342,9 +342,7 @@ func _draw_chips(vs: Vector2) -> void:
 		var r := Rect2(x, 30, cw, 22)
 		_hero_rects.append(r)
 		var on := i == hero_i
-		draw_rect(r, Color(0.16, 0.13, 0.09) if on else Color(0.09, 0.08, 0.11))
-		if on:
-			draw_rect(r, GOLD, false, 1.0)
+		UiSkin.row(self, r, on)
 		_text(r.position + Vector2(5, 10), PartyPicker.short_of(hid), 9, GOLD if on else TEXT, cw - 26)
 		_text_r(r.position + Vector2(cw - 4, 10), tr("Lv%d") % Progress.level(hid), 8, SOFT)
 		var free := SkillTree.points_free(hid)
@@ -423,7 +421,7 @@ func _draw_node(id: String, node_id: String, r: Rect2) -> void:
 	var on := sel == node_id
 	var fill := Color(col.darkened(0.62), 0.95) if known else Color(0.09, 0.08, 0.11, 0.95)
 	draw_rect(r, fill)
-	draw_rect(Rect2(r.position, Vector2(3, r.size.y)), col if known or ready else Color(col, 0.35))
+	UiSkin.tab(self, r, col, not (known or ready))
 	if SkillTree.is_capstone(node_id):  # capstones wear a double frame
 		draw_rect(r.grow(2.0), Color(col, 0.55 if known or ready else 0.25), false, 1.0)
 	if ready:

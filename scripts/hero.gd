@@ -23,7 +23,11 @@ var art_sprite: Sprite2D
 var _art_id := ""
 var _anim := ""
 var _anim_t := 0.0
-var overlay: Node2D
+var overlay: Node2D  # over the sprite, crisp: status marks, the revive ring
+var fx_overlay: Node2D  # over the sprite, on the pixel FX layer (FxLayer): weapon trail, guards, tech glow, swap cue
+var ground: Node2D  # under the sprite: the shadow and where a charging tech will land
+var leader_cue_t := 0.0  # seconds left of the small "you are now this hero" cue after a party swap
+const LEADER_CUE := 1.1
 var controlled := false
 var party  # main.gd or hub.gd: gives access to leader, shake()
 var peaceful := false  # in town the attack button talks instead
@@ -458,11 +462,20 @@ func _nearest_enemy(from: Vector2, max_dist: float) -> Enemy:
 # ---------------------------------------------------------------- paper doll
 
 func build_doll() -> void:
+	ground = Node2D.new()  # first child, so it draws under the sprites; the hero itself draws nothing
+	ground.show_behind_parent = true
+	add_child(ground)
+	ground.draw.connect(_draw_ground)
+	FxLayer.adopt.call_deferred(ground, true)  # pixel art on the ground picture, under every actor
 	body_sprite = _layer(Art.BODY, Art.recolor_material("body", colors))
 	outfit_sprite = _layer(Art.OUTFITS[outfit], Art.recolor_material(outfit, colors))
 	art_sprite = Sprite2D.new()
 	art_sprite.visible = false
 	add_child(art_sprite)
+	fx_overlay = Node2D.new()
+	add_child(fx_overlay)
+	fx_overlay.draw.connect(_draw_fx)
+	FxLayer.adopt.call_deferred(fx_overlay)  # once it is in the tree
 	overlay = Node2D.new()
 	add_child(overlay)
 	overlay.draw.connect(_draw_overlay)
@@ -572,72 +585,156 @@ func _update_art() -> void:
 		art.apply(art_sprite, anim, row, _anim_t)
 
 
-func _process(_delta: float) -> void:
+func _process(delta: float) -> void:
 	_update_frame()
-	queue_redraw()
+	leader_cue_t = maxf(leader_cue_t - delta, 0.0)
+	if ground:
+		ground.queue_redraw()
 	if overlay:
 		overlay.queue_redraw()
+	if fx_overlay:
+		fx_overlay.queue_redraw()
 
 
-func _draw() -> void:
-	# Drawn before the child sprites, so it sits underneath them.
-	draw_shadow(5.5)
+func _draw_ground() -> void:
+	# Under the child sprites. Kept off the hero itself: the hero joins the FX layer (for fx_overlay), and
+	# anything it drew would then be drawn a second time as an effect.
+	ground.draw_set_transform(Vector2.ZERO, 0.0, Vector2(1.0, 0.4))
+	ground.draw_circle(Vector2.ZERO, 5.5, Color(0, 0, 0, 0.3))
+	ground.draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 	if not dead:
-		Techs.draw_area(self, self)  # where a charging tech will land, on the ground
+		Techs.draw_area(self, ground)  # where a charging tech will land, on the ground
 
 
 func _draw_overlay() -> void:
 	if dead:
-		if revive_progress > 0.0:
-			overlay.draw_arc(Vector2(0, -6), 10.0, -PI / 2.0, -PI / 2.0 + TAU * revive_progress / REVIVE_TIME, 24, Color("ffe08a"), 1.5)
+		if revive_progress > 0.0:  # reviving: a stepped ring of brass ticks filling clockwise
+			var n := 12
+			var lit := int(floorf(n * revive_progress / REVIVE_TIME))
+			for i in n:
+				var p := (Vector2(0, -6) + Vector2.from_angle(-PI / 2.0 + TAU * i / n) * 10.0).round()
+				overlay.draw_rect(Rect2(p - Vector2(1, 1), Vector2(3, 3)), UiSkin.BAR_INK)
+				overlay.draw_rect(Rect2(p, Vector2(1, 1)), UiSkin.BRASS[3] if i < lit else UiSkin.BRASS[0])
 		return
-	if shield_hp > 0:
-		overlay.draw_arc(Vector2(0, -7), 11.0, 0, TAU, 24, Color("9fd8ff", 0.45 + 0.2 * sin(anim_t * 6.0)), 1.0)
+	Status.draw_marks(overlay, self, -27.0)  # status shapes over the head (issue #112)
+
+
+## Everything effect-like over the hero, drawn on the pixel FX layer.
+func _draw_fx() -> void:
+	if dead:
+		return
+	var o := fx_overlay
+	if shield_hp > 0:  # Rewrite: a ward of ink-blue, brighter along the top where the light catches it
+		var sa := 0.55 + 0.2 * sin(anim_t * 6.0)
+		_ground_ring(o, Vector2(0, -7), 11.0, 0.8, Color("5b84c4", sa), 1.0)
+		o.draw_arc(Vector2(0, -7), 11.0, PI * 1.15, PI * 1.85, 10, Color("b8cff2", sa), 1.0)
 	if parry_t > 0.0:  # Riposte: a crimson guard arc in front of her, ready to turn a blow
 		var fa := facing.angle()
-		overlay.draw_arc(Vector2(0, -7), 12.0, fa - 1.0, fa + 1.0, 12, Color("e0405a", 0.9), 1.5)
-	if guard_t > 0.0:
-		overlay.draw_arc(Vector2(0, -7), 12.5, PI * 0.15, PI * 0.85, 12, Color("f2a65a", 0.7), 1.5)
+		o.draw_arc(Vector2(0, -7), 12.0, fa - 1.0, fa + 1.0, 10, Color("a3243b"), 2.0)
+		o.draw_arc(Vector2(0, -7), 13.0, fa - 0.6, fa + 0.6, 8, Color("c4504a"), 1.0)
+	if guard_t > 0.0:  # Hold the Line: a rust shield arc low in front
+		o.draw_arc(Vector2(0, -7), 12.5, PI * 0.15, PI * 0.85, 10, Color("c2622d", 0.85), 2.0)
+		o.draw_arc(Vector2(0, -7), 12.5, PI * 0.4, PI * 0.6, 4, Color("d98a5a"), 1.0)
 	if song_t > 0.0:  # Torch Song: a gold note drifts up beside the head while the song lasts
-		var ny := -18.0 - fmod(anim_t * 10.0, 10.0)
+		var ny := roundf(-18.0 - fmod(anim_t * 10.0, 10.0))
 		var na := clampf(song_t, 0.0, 1.0) * (1.0 - fmod(anim_t * 10.0, 10.0) / 12.0)
-		var nc := Color("f0c040", na)
-		overlay.draw_circle(Vector2(8, ny), 1.3, nc)
-		overlay.draw_line(Vector2(9.2, ny), Vector2(9.2, ny - 4.0), nc, 1.0)
-		overlay.draw_line(Vector2(9.2, ny - 4.0), Vector2(11.0, ny - 3.0), nc, 1.0)
-	if cast_t > 0.0:
-		overlay.draw_circle(Vector2(0, -22), 2.0 * cast_t / SWING_TIME + 0.5, Color(cast_color, 0.9))
-	Status.draw_marks(overlay, self, -27.0)  # status shapes over the head (issue #112)
-	if dash_t > 0.0:
-		for k in 3:
-			var back := -dash_dir * (6.0 + 6.0 * k)
-			overlay.draw_line(back + Vector2(0, -10), back + Vector2(0, -2), Color(1, 1, 1, 0.5 - 0.15 * k), 2.0)
-	Techs.draw(self, overlay)
-	if controlled:
-		var y := -21.0 + sin(anim_t * 4.0) * 1.0
-		overlay.draw_colored_polygon(PackedVector2Array([Vector2(-2.5, y - 3), Vector2(2.5, y - 3), Vector2(0, y)]), Color("ffd166"))
+		var nc := Color("e8c65a", na)
+		o.draw_rect(Rect2(7, ny - 1, 2, 2), nc)
+		o.draw_rect(Rect2(9, ny - 5, 1, 5), nc)
+		o.draw_rect(Rect2(10, ny - 5, 1, 1), Color("f7e3a6", na))
+		o.draw_rect(Rect2(11, ny - 4, 1, 1), nc)
+	if cast_t > 0.0:  # casting: a mote of the ability's colour gathers over the head, with a bright core
+		var k := cast_t / SWING_TIME
+		var rr := roundf(1.0 + 2.0 * k)
+		o.draw_rect(Rect2(Vector2(-rr, -22.0 - rr), Vector2(rr * 2.0, rr * 2.0)), Color(cast_color, 0.9))
+		o.draw_rect(Rect2(-1, -23, 2, 2), Color(cast_color.lightened(0.5), 0.95))
+	if dash_t > 0.0:  # speed lines streaming off behind
+		for k2 in 3:
+			var back := (-dash_dir * (6.0 + 6.0 * k2)).round()
+			o.draw_line(back + Vector2(0, -11 + 3 * k2), back + Vector2(0, -2 - 2 * k2) - dash_dir * 4.0, Color("d6cdba", 0.8 - 0.22 * k2), 1.0)
+	Techs.draw(self, o)
+	if leader_cue_t > 0.0:
+		_draw_leader_cue(o)
+	elif controlled and Access.leader_marker == 1:  # Options > Accessibility > Leader marker: Always
+		_draw_leader_mark(o, 1.0, 0.0)
 	if swing_t > 0.0:
 		_draw_trail(1.0 - swing_t / SWING_TIME)
 
 
-## The weapon trail: a fading sweep (or a jab) in the hero's colour, gold on a full-power swing.
+## A flat ellipse on the ground plane (rings around a hero are seen from above at this angle).
+static func _ground_ring(o: CanvasItem, c: Vector2, r: float, flat: float, col: Color, width: float) -> void:
+	o.draw_set_transform(c, 0.0, Vector2(1.0, flat))
+	o.draw_arc(Vector2.ZERO, r, 0, TAU, 24, col, width)
+	o.draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
+
+
+## After a party swap (main.gd sets leader_cue_t): a small brass pip drops in over the head and the ground
+## under the new hero rings once, then both fade out. No marker the rest of the time: the hero you play is
+## the one the camera follows, and the HUD plate is framed in brass.
+func _draw_leader_cue(o: CanvasItem) -> void:
+	var t := 1.0 - leader_cue_t / LEADER_CUE  # 0 -> 1
+	var drop := maxf(0.0, 1.0 - t * 5.0)  # falls in over the first fifth
+	var fade := clampf(leader_cue_t / 0.45, 0.0, 1.0)
+	_draw_leader_mark(o, fade, drop)
+	var rt := minf(t * 1.6, 1.0)
+	if rt < 1.0:
+		_ground_ring(o, Vector2.ZERO, 5.0 + 9.0 * rt, 0.45, Color("e8c65a", (1.0 - rt) * 0.9), 1.0)
+
+
+## The marker itself: a 5 px brass chevron with a lit top edge and an ink outline, like a tiny sprite.
+func _draw_leader_mark(o: CanvasItem, a: float, drop: float) -> void:
+	var y := roundf(-27.0 - drop * 8.0 + (0.0 if Access.reduce_motion else roundf(sin(anim_t * 3.0) * 0.6)))
+	var rows := [[-3, 7, "12141f"], [-2, 5, "e8c65a"], [-1, 3, "c9a24a"], [0, 1, "7d5836"]]  # [dy, width, colour]
+	o.draw_rect(Rect2(-4, y - 4, 9, 1), Color("12141f", a))
+	for r in rows:
+		var w: int = r[1]
+		o.draw_rect(Rect2(-floorf(w / 2.0) - 1.0, y + r[0], w + 2, 1), Color("12141f", a))
+		o.draw_rect(Rect2(-floorf(w / 2.0), y + r[0], w, 1), Color(str(r[2]), a))
+	o.draw_rect(Rect2(0, y + 1, 1, 1), Color("12141f", a))
+
+
+## The weapon trail, on the pixel FX layer: a crescent smear (or, for a thrust, a tapered streak) in the
+## hero's colour, gold on a full-power swing. Thick at the leading edge and thinning to the tail, with a lit
+## outer rim and a glint at the head, so the pixel layer turns it into a hand-drawn-looking smear frame.
 func _draw_trail(t: float) -> void:
+	var o := fx_overlay
 	var full := swing_power >= 1.0
-	var col := Color("ffe08a") if full else trail_color
-	var fade := 1.0 - maxf(t - 0.6, 0.0) / 0.4  # the tail fades over the last part of the swing
+	var col := Color("e8c65a") if full else trail_color
+	var rim := col.lightened(0.45)
+	var fade := 1.0 - maxf(t - 0.55, 0.0) / 0.45  # the tail fades over the last part of the swing
 	var c0 := Vector2(0, -8)
 	if trail_thrust:
 		var tip := c0 + facing * lerpf(8.0, reach, minf(t * 1.6, 1.0))
-		var back := c0 + facing * 6.0
-		overlay.draw_line(back, tip, Color(col, 0.35 * fade), 4.0)
-		overlay.draw_line(back.lerp(tip, 0.4), tip, Color(col, 0.8 * fade), 1.5)
-		overlay.draw_circle(tip, 1.5 if full else 1.0, Color(col.lightened(0.4), fade))
+		var back := c0 + facing * 5.0
+		var side := facing.orthogonal()
+		var w := 2.5 if full else 2.0
+		o.draw_colored_polygon(PackedVector2Array([back + side * w, tip, back - side * w]), Color(col, 0.75 * fade))
+		o.draw_line(back.lerp(tip, 0.3), tip, Color(rim, fade), 1.0)
+		o.draw_rect(Rect2(tip.round() - Vector2(1, 1), Vector2(2, 2)), Color(rim, fade))
 		return
 	var a0 := facing.angle() - arc
 	var head := a0 + 2.0 * arc * minf(t * 1.25, 1.0)
-	var tail := maxf(a0, head - arc * 1.2)
-	var r := reach - 4.0
-	# Three strokes: a wide soft band, the main line and a bright edge.
-	overlay.draw_arc(c0, r - 2.0, tail, head, 14, Color(col, 0.22 * fade), 5.0)
-	overlay.draw_arc(c0, r, tail, head, 14, Color(col, 0.65 * fade), 1.5)
-	overlay.draw_arc(c0, r + 1.0, lerpf(tail, head, 0.5), head, 8, Color(col.lightened(0.5), 0.9 * fade), 1.0)
+	var tail := maxf(a0, head - arc * 1.3)
+	if head - tail < 0.05:
+		return
+	var r := reach - 3.0
+	var thick := 5.0 if full else 4.0
+	var n := clampi(int((head - tail) / 0.12), 3, 16)
+	var outer := PackedVector2Array()
+	var inner := PackedVector2Array()
+	for i in n + 1:
+		var u := float(i) / n  # 0 at the tail, 1 at the head
+		var ang := lerpf(tail, head, u)
+		var th := thick * pow(u, 0.6) * (1.0 - 0.35 * maxf(u - 0.85, 0.0) / 0.15)  # blunt, not pointed, head
+		var d := Vector2.from_angle(ang)
+		outer.append(c0 + d * (r + 1.0))
+		inner.append(c0 + d * (r + 1.0 - maxf(th, 0.6)))
+	inner.reverse()
+	var poly := PackedVector2Array()
+	poly.append_array(outer)
+	poly.append_array(inner)
+	o.draw_colored_polygon(poly, Color(col, 0.8 * fade))
+	var front := outer.slice(mini(int(n * 0.35), n - 1))
+	o.draw_polyline(front, Color(rim, fade), 1.0)  # lit rim along the front two thirds
+	var hd := Vector2.from_angle(head)
+	o.draw_rect(Rect2((c0 + hd * (r + 0.5)).round() - Vector2(1, 1), Vector2(2, 2)), Color(rim.lightened(0.3), fade))

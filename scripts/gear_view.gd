@@ -18,9 +18,11 @@ const BAD := Color("ff9b8a")
 const TEXT := Color("ece6da")
 const DIM := Color(0.42, 0.41, 0.44)
 const SOFT := Color(0.62, 0.6, 0.62)
-const XP_COL := Color("b9a0e8")
+const XP_COL := Color("b49bcc")  # the XP ramp's highlight (UiSkin.RAMP["xp"])
 const PAPER := Color("f3efe4")
-const SLOT_COLORS := {"weapon": Color("e89a8a"), "armor": Color("8fa7e8"), "trinket": Color("e8c66a")}
+## Each slot kind's ramp (its bookmark ribbon) and label colour, from the style palette: rust, slate, brass.
+const SLOT_RAMPS := {"weapon": "rust", "armor": "slate", "trinket": "brass"}
+const SLOT_COLORS := {"weapon": Color("d98a5a"), "armor": Color("8f9cb6"), "trinket": Color("e8c65a")}
 
 var party  # main.gd on a mission: live heroes get the new stats right away
 var where := "town"  # "town" (shop open) or "mission"
@@ -396,14 +398,14 @@ func _wrap(pos: Vector2, s: String, width: float, fsize: int, col: Color) -> flo
 
 
 func _bar(r: Rect2, f: float, col: Color) -> void:
-	draw_rect(r, Color(0.14, 0.12, 0.16))
-	draw_rect(Rect2(r.position, Vector2(r.size.x * clampf(f, 0.0, 1.0), r.size.y)), col)
+	if col == XP_COL:  # XP: the plum ramp, notched in quarters
+		UiSkin.bar(self, r, f, "xp", {"notches": [0.25, 0.5, 0.75]})
+	else:
+		UiSkin.bar(self, r, f, Color(col, 1.0), {"dim": col.a < 0.5})  # pixel bar: ink frame, shaded ramp
 
 
 func _box(r: Rect2, on: bool) -> void:
-	draw_rect(r, Color(0.16, 0.13, 0.09) if on else Color(0.09, 0.08, 0.11))
-	if on:
-		draw_rect(r, GOLD, false, 1.0)
+	UiSkin.row(self, r, on)
 
 
 func _draw() -> void:
@@ -474,9 +476,9 @@ func _draw_chips(vs: Vector2) -> void:
 		_box(r, i == hero_i)
 		_text(r.position + Vector2(5, 10), PartyPicker.short_of(id), 9, GOLD if i == hero_i else TEXT, cw - 30)
 		_text_r(r.position + Vector2(cw - 4, 10), tr("Lv%d") % Progress.level(id), 8, SOFT)
-		_bar(Rect2(r.position + Vector2(5, 15), Vector2(cw - 10, 3)), Progress.xp_fraction(id), XP_COL)
+		_bar(Rect2(r.position + Vector2(5, 15), Vector2(cw - 12, 4)), Progress.xp_fraction(id), XP_COL)
 		if Empire.role_of(id) == "party":
-			draw_circle(r.position + Vector2(cw - 5, 19), 1.5, GOOD)
+			UiSkin.swatch(self, Rect2(r.position + Vector2(cw - 6, 18), Vector2(2, 2)), "moss")  # in the party
 		x += cw + 4
 
 
@@ -497,7 +499,7 @@ func _draw_equip_body(vs: Vector2) -> void:
 		where_line += tr(": Barracks drill, +%d XP a day") % Progress.barracks_xp()
 	_text_r(Vector2(left.end.x - 8, y), where_line, 8, SOFT)
 	y += 4
-	_bar(Rect2(16, y, left.size.x - 16, 3), Progress.xp_fraction(id), XP_COL)
+	_bar(Rect2(17, y, left.size.x - 18, 5), Progress.xp_fraction(id), XP_COL)
 	y += 14
 
 	# Stats, with a preview of the highlighted pick
@@ -534,7 +536,7 @@ func _draw_equip_body(vs: Vector2) -> void:
 		var r := Rect2(16, y, left.size.x - 16, 26)
 		_slot_rects.append(r)
 		_box(r, i == slot_i)
-		draw_rect(Rect2(r.position, Vector2(3, r.size.y)), SLOT_COLORS[s])
+		UiSkin.tab(self, r, SLOT_RAMPS[s])
 		var iid := str(g.get(s, ""))
 		var ix := 8.0  # text starts after the item's icon, when it has one
 		if iid != "" and UiSkin.draw_icon(self, iid, Rect2(r.position + Vector2(7, 3), Vector2(20, 20))):
@@ -718,7 +720,7 @@ func _draw_skills(vs: Vector2) -> void:
 		drill = (tr("Barracks drill +%d a day") % Skills.barracks_points()) if wl < Skills.barracks_cap() else tr("Drilled as far as the Barracks can")
 	_text_r(Vector2(left.end.x - 8, y), drill, 8, SOFT)
 	y += 4
-	_bar(Rect2(16, y, left.size.x - 16, 3), Skills.weapon_fraction(id), XP_COL)
+	_bar(Rect2(17, y, left.size.x - 18, 5), Skills.weapon_fraction(id), XP_COL)
 	y += 8
 	var sk: Dictionary = Progress.data().get("skills", {})
 	y += _wrap(Vector2(16, y + 8), tr("Landed full-power swings +%d, techs that land +%d. Each level teaches a tech; hold Attack longer on a full gauge to reach the later ones.") % [int(sk.get("swing", 2)), int(sk.get("tech", 4))], left.size.x - 20, 7, DIM) + 4
@@ -731,7 +733,7 @@ func _draw_skills(vs: Vector2) -> void:
 		_tech_rects.append(r)
 		_box(r, i == tech_i)
 		var col := Color(str(t.get("color", "ffffff")))
-		draw_rect(Rect2(r.position, Vector2(3, r.size.y)), col if known else DIM)
+		UiSkin.tab(self, r, col, not known)
 		_text(r.position + Vector2(8, 9), str(t.get("name", "?")), 9, (GOLD if i == tech_i else TEXT) if known else DIM, 150)
 		_text(r.position + Vector2(8, 19), (tr("Ready after %s s") % Loc.dec(Techs.charge_time(t))) if known else tr("Learned at level %d") % lvl, 7, SOFT if known else DIM)
 		var tag := tr("ALWAYS") if picked == t["id"] else (tr("LV %d") % lvl)
@@ -765,7 +767,7 @@ func _draw_skills(vs: Vector2) -> void:
 		var lv := Skills.ink_level(id, c)
 		var on: bool = c in used
 		var cc := Skills.ink_color(c)
-		draw_rect(Rect2(rx + 8, ry + 3, 6, 6), cc if on else Color(cc, 0.35))
+		UiSkin.swatch(self, Rect2(rx + 8, ry + 3, 6, 6), cc, not on)
 		_text(Vector2(rx + 18, ry + 9), Skills.ink_name(c), 8, TEXT if on else DIM)
 		_text(Vector2(rx + 52, ry + 9), tr("Lv %d") % lv, 8, GOLD if on else DIM)
 		_bar(Rect2(rx + 76, ry + 5, 46, 2), Skills.ink_fraction(id, c), cc if on else Color(cc, 0.3))

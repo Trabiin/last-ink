@@ -298,15 +298,27 @@ func _wrap(pos: Vector2, s: String, width: float, fsize: int, col: Color) -> flo
 
 ## A -100..100 standing bar with tier marks.
 func _standing_bar(r: Rect2, v: int) -> void:
-	draw_rect(r, Color(0.14, 0.12, 0.16))
-	var mid := r.position.x + r.size.x * 0.5
-	var x := r.position.x + r.size.x * (float(v) + 100.0) / 200.0
-	var col: Color = TIER_COLORS[Empire.tier_for(v)]
-	draw_rect(Rect2(Vector2(minf(mid, x), r.position.y), Vector2(absf(x - mid), r.size.y)), col)
+	# A pixel bar that fills out from the middle (left: hostile, right: allied) in the tier's colour,
+	# notched at every tier line, with a brass pin at zero.
+	r = Rect2(r.position.round(), r.size.round())
+	draw_rect(r.grow(1.0), UiSkin.BAR_INK)
+	draw_rect(r, UiSkin.BAR_TROUGH)
+	if r.size.y >= 3.0:
+		draw_rect(Rect2(r.position.x, r.end.y - 1.0, r.size.x, 1.0), UiSkin.BAR_TROUGH_LIT)
+	var mid := roundf(r.position.x + r.size.x * 0.5)
+	var x := roundf(r.position.x + r.size.x * (float(v) + 100.0) / 200.0)
+	var rp := UiSkin.ramp(TIER_COLORS[Empire.tier_for(v)])
+	var fr := Rect2(Vector2(minf(mid, x), r.position.y), Vector2(absf(x - mid), r.size.y))
+	if fr.size.x >= 1.0:
+		draw_rect(fr, rp[1])
+		draw_rect(Rect2(fr.position, Vector2(fr.size.x, 1.0)), rp[2])
+		if r.size.y >= 3.0:
+			draw_rect(Rect2(fr.position.x, fr.end.y - 1.0, fr.size.x, 1.0), rp[0])
 	for t in ["wary", "neutral", "friendly", "allied"]:
-		var tx := r.position.x + r.size.x * (float(Empire.tier_min(t)) + 100.0) / 200.0
-		draw_line(Vector2(tx, r.position.y - 1), Vector2(tx, r.end.y + 1), Color(0.05, 0.04, 0.07), 1.0)
-	draw_line(Vector2(mid, r.position.y - 2), Vector2(mid, r.end.y + 2), Color(0.8, 0.78, 0.72, 0.7), 1.0)
+		var tx := roundf(r.position.x + r.size.x * (float(Empire.tier_min(t)) + 100.0) / 200.0)
+		draw_rect(Rect2(tx, r.position.y, 1.0, r.size.y), UiSkin.BAR_INK)
+	draw_rect(Rect2(mid - 1.0, r.position.y - 2.0, 3.0, 1.0), UiSkin.BRASS[3])
+	draw_rect(Rect2(mid, r.position.y - 1.0, 1.0, r.size.y + 2.0), UiSkin.BRASS[2])
 
 
 func _draw() -> void:
@@ -385,9 +397,7 @@ func _draw_list(vs: Vector2) -> void:
 		var rr := Rect2(14, ry, LIST_W - 6, ROW_H - 1)
 		_row_rects.append(rr)
 		var on := i == sel
-		draw_rect(rr, Color(0.16, 0.13, 0.09) if on else Color(0.09, 0.08, 0.11))
-		if on:
-			draw_rect(rr, GOLD, false, 1.0)
+		UiSkin.row(self, rr, on)
 		var base := rr.position + Vector2(6, 9)
 		if (r["kind"] in ["offer", "refuse"] and FactionAsks.offer_of(fid).is_empty()) or (r["kind"] == "ask" and FactionAsks.active_of(fid).is_empty()):
 			continue  # ended this frame: the list rebuilds next frame
@@ -453,7 +463,7 @@ func _draw_list(vs: Vector2) -> void:
 func _draw_head(fid: String, fa: Dictionary, y: float) -> void:
 	var v := Empire.standing_of(fid)
 	var tier := Empire.tier_of(fid)
-	draw_rect(Rect2(8, y, 3, HEAD_H - 6), _fcolor(fid))
+	UiSkin.tab(self, Rect2(7, y, 6, HEAD_H - 6), _fcolor(fid))
 	var fx := 15.0
 	if UiSkin.draw_icon(self, fid, Rect2(14, y - 1, 12, 12)):
 		fx = 29.0
@@ -480,7 +490,7 @@ func _draw_details(vs: Vector2) -> void:
 	var w := vs.x - x - 10
 	var top := 38.0
 	draw_rect(Rect2(x - 8, top, w + 16, vs.y - top - 24), Color(0.08, 0.07, 0.1))
-	draw_rect(Rect2(x - 8, top, 3, vs.y - top - 24), _fcolor(fid))
+	UiSkin.tab(self, Rect2(x - 9, top, 6, vs.y - top - 24), _fcolor(fid))
 	var y := top + 14
 	if r["kind"] == "deal":
 		var k: String = r["id"]
@@ -593,9 +603,7 @@ func _draw_picker(vs: Vector2) -> void:
 		var rr := Rect2(8, y, LIST_W, ROW_H + 1)
 		_row_rects.append(rr)
 		var on := i == sel
-		draw_rect(rr, Color(0.16, 0.13, 0.09) if on else Color(0.09, 0.08, 0.11))
-		if on:
-			draw_rect(rr, GOLD, false, 1.0)
+		UiSkin.row(self, rr, on)
 		var base := rr.position + Vector2(6, 10)
 		if r["kind"] == "recall":
 			var cur := Empire.envoy_of(pick_faction)
@@ -623,7 +631,7 @@ func _draw_picker(vs: Vector2) -> void:
 	var w := vs.x - x - 10
 	var top := 44.0
 	draw_rect(Rect2(x - 8, top, w + 16, vs.y - top - 24), Color(0.08, 0.07, 0.1))
-	draw_rect(Rect2(x - 8, top, 3, vs.y - top - 24), _fcolor(pick_faction))
+	UiSkin.tab(self, Rect2(x - 9, top, 6, vs.y - top - 24), _fcolor(pick_faction))
 	var yy := top + 14
 	var env := "" if r["kind"] == "recall" else String(r["id"])
 	if env == "":

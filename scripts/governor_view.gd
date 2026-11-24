@@ -206,9 +206,7 @@ func _draw() -> void:
 		var rr := Rect2(8, y, vs.x - 16, row_h - 2)
 		_row_rects.append(rr)
 		var on := i == sel
-		draw_rect(rr, Color(0.16, 0.13, 0.09) if on else Color(0.09, 0.08, 0.11))
-		if on:
-			draw_rect(rr, GOLD, false, 1.0)
+		UiSkin.row(self, rr, on)
 		var base := rr.position + Vector2(0, minf(12.0, row_h - 3.0))
 		if row["kind"] == "recall":
 			_text(base + Vector2(hx[0] - 8, 0), tr("Recall %s (leave %s ungoverned)") % [Empire.recruit(gov)["name"], p["name"]], 9, GOLD if on else Color("ece6da"))

@@ -249,7 +249,7 @@ func _draw() -> void:
 		var col := TEXT
 		if who != "":
 			var acc := Dialogue.accent(who)
-			draw_rect(Rect2(x - 6, y + 2, 2, h - 6), acc)
+			UiSkin.tab(self, Rect2(x - 8, y + 2, 6, h - 6), acc)
 			draw_string(font, Vector2(x, y + Access.px(10.0)), Dialogue.display_name(who), HORIZONTAL_ALIGNMENT_LEFT, text_x - x - 6, Access.fs(9), acc.lightened(0.35))
 		else:
 			col = SOFT  # narration
@@ -257,9 +257,8 @@ func _draw() -> void:
 	# Scroll bar.
 	if _content_h > _view_h:
 		var bar := Rect2(_panel.end.x - 10, top, 2, _view_h)
-		draw_rect(bar, Color(1, 1, 1, 0.08))
 		var frac := _view_h / _content_h
 		var pos := 1.0 - (scroll + _view_h) / _content_h
-		draw_rect(Rect2(bar.position.x, top + _view_h * pos, 2, maxf(_view_h * frac, 6.0)), GOLD)
+		UiSkin.scrollbar(self, Rect2(bar.position.x - 1, bar.position.y, 3, bar.size.y), _view_h * pos, maxf(_view_h * frac, 6.0))
 	var hint := Prompts.help([["updown", "scroll"], ["leftright", "page"], ["ui_cancel", "close"]], tr("Drag to scroll, tap outside to close"))
 	draw_string(font, Vector2(x, _panel.end.y - Access.px(8.0)), hint, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(8), DIM)

@@ -30,6 +30,8 @@ var color := Color.WHITE
 var life := 0.0
 var max_life := 0.45
 var bits: Array = []  # per-motif particles: [pos, vel, size, spin]
+var shown := 0.0  # the life the last drawn frame showed: effects move on held frames (Fx.STEP)
+var _acc := 0.0
 
 
 static func spawn(parent: Node, kind: String, at: Vector2, d: Vector2, r: float, h: float, col: Color, _delayed := false) -> TechFx:
@@ -85,27 +87,60 @@ func _seed() -> void:
 				bits.append([Vector2.ZERO, Vector2.ZERO, rng.randf_range(0.7, 1.0), rng.randf_range(-0.6, 0.6)])
 
 
+func _enter_tree() -> void:
+	FxLayer.adopt(self)  # drawn as pixel art (scripts/fx_layer.gd)
+
+
 func _process(delta: float) -> void:
 	life += delta
 	if life >= max_life:
 		queue_free()
 		return
-	match motif:
-		"burst", "splash", "petals":
-			for b in bits:
-				b[0] += b[1] * delta
-				b[1] *= 0.86
-		"coins":
-			for b in bits:
-				b[0] += b[1] * delta
-				b[1].y += 260.0 * delta
+	_acc += delta
+	if _acc < Fx.STEP and shown > 0.0:
+		return
+	while _acc >= Fx.STEP:
+		_acc -= Fx.STEP
+		_tick(Fx.STEP)
+	shown = life
 	queue_redraw()
 
 
+func _tick(dt: float) -> void:
+	match motif:
+		"burst", "splash", "petals":
+			for b in bits:
+				b[0] += b[1] * dt
+				b[1] *= 0.86 ** (dt * 60.0)
+		"coins":
+			for b in bits:
+				b[0] += b[1] * dt
+				b[1].y += 260.0 * dt
+
+
 func _ground_ring(r: float, col: Color, width := 1.5) -> void:
-	draw_set_transform(Vector2.ZERO, 0.0, Vector2(1.0, FLAT))
-	draw_arc(Vector2.ZERO, r, 0, TAU, 36, col, width)
-	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
+	TechFx.inked_ring(self, Vector2.ZERO, r, FLAT, col, width)
+
+
+## A ring on the ground drawn like an inked band rather than a perfect circle: thicker at the front (nearer
+## the camera), thinner at the back, a lighter tone on the side facing the top-left light, and a few small
+## breaks, so the pixel FX layer turns it into something hand-drawn.
+static func inked_ring(ci: CanvasItem, c: Vector2, r: float, flat: float, col: Color, width := 1.5) -> void:
+	if r < 1.0 or col.a <= 0.0:
+		return
+	var n := clampi(int(r * 0.8), 10, 40)
+	var lit := Color(col.lightened(0.35), col.a)
+	ci.draw_set_transform(c, 0.0, Vector2(1.0, flat))
+	for i in n:
+		if i % 7 == 3:
+			continue  # a break in the band
+		var a0 := TAU * i / n
+		var a1 := TAU * (i + 1) / n
+		var mid := (a0 + a1) * 0.5
+		var front := 0.5 + 0.5 * sin(mid)  # 1 at the front of the ring, 0 at the back
+		var toward_light := cos(mid - PI * 1.25) > 0.35
+		ci.draw_arc(Vector2.ZERO, r, a0, a1, 3, lit if toward_light else col, maxf(1.0, width * (0.6 + 0.9 * front)))
+	ci.draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 
 
 func _wedge(r: float, col: Color, a0: float, a1: float) -> void:
@@ -120,7 +155,7 @@ func _wedge(r: float, col: Color, a0: float, a1: float) -> void:
 
 
 func _draw() -> void:
-	var t := life / max_life
+	var t := shown / max_life
 	var a := 1.0 - t
 	var hi := color.lightened(0.5)
 	match motif:
@@ -160,7 +195,7 @@ func _draw() -> void:
 			draw_line(tip - dir * 4.0 * a, tip + dir * 4.0 * a, Color(Color.WHITE, a), 1.0)
 		"beam":
 			var len2 := reach * minf(t * 6.0, 1.0)
-			var w2 := clampf(tan(minf(half, 0.6)) * reach, 4.0, 9.0) * (1.0 + (0.0 if Access.reduce_flashing else 0.3 * sin(life * 60.0)))  # the beam's crackle is a 10 Hz flicker
+			var w2 := clampf(tan(minf(half, 0.6)) * reach, 4.0, 9.0) * (1.0 + (0.0 if Access.reduce_flashing else 0.3 * sin(shown * 60.0)))  # the beam's crackle is a 10 Hz flicker
 			var side2 := dir.orthogonal()
 			var quad := PackedVector2Array([side2 * w2, side2 * w2 + dir * len2, -side2 * w2 + dir * len2, -side2 * w2])
 			draw_colored_polygon(quad, Color(color.darkened(0.35), 0.9 * a))
@@ -189,7 +224,7 @@ func _draw() -> void:
 					_ground_ring(reach * tk, Color(hi if k == 0 else color, (1.0 - tk) * 0.9), 2.5 - k * 0.5)
 			draw_circle(Vector2.ZERO, reach * 0.25 * a, Color(Color.WHITE, Access.calm(0.5 * a)))
 		"spiral":
-			var spin := life * 9.0
+			var spin := shown * 9.0
 			for k in 6:
 				var pts := PackedVector2Array()
 				for j in 8:
@@ -224,7 +259,7 @@ func _draw() -> void:
 				draw_circle(p, float(b[2]) * (1.0 - t * 0.4), Color(color.lightened(0.15), a))
 		"stars":
 			for b in bits:
-				var tw := 0.5 + 0.5 * sin(life * 14.0 + float(b[3]))
+				var tw := 0.5 + 0.5 * sin(shown * 14.0 + float(b[3]))
 				var s2: float = float(b[2]) * tw * a
 				var p2: Vector2 = b[0] * Vector2(1.0, FLAT)
 				draw_line(p2 - Vector2(s2, 0), p2 + Vector2(s2, 0), Color(hi, a), 1.0)
@@ -235,7 +270,7 @@ func _draw() -> void:
 			_ground_ring(reach * (0.5 + 0.5 * t), Color(color, a * 0.7), 1.5)
 			for b in bits:
 				var p3: Vector2 = b[0] * Vector2(1.0, FLAT)
-				var flip := absf(sin(life * 16.0 + float(b[3])))
+				var flip := absf(sin(shown * 16.0 + float(b[3])))
 				draw_set_transform(p3, 0.0, Vector2(maxf(flip, 0.2), 1.0))
 				draw_circle(Vector2.ZERO, float(b[2]), Color(color, a))
 				draw_circle(Vector2(-0.5, -0.5), float(b[2]) * 0.4, Color(Color.WHITE, a * flip))
@@ -243,7 +278,7 @@ func _draw() -> void:
 		"petals":
 			for b in bits:
 				var p4: Vector2 = b[0] * Vector2(1.0, FLAT) + Vector2(0, 14.0 * t * t)
-				draw_set_transform(p4, float(b[3]) + life * 5.0, Vector2(1.0, 0.5))
+				draw_set_transform(p4, float(b[3]) + shown * 5.0, Vector2(1.0, 0.5))
 				draw_circle(Vector2.ZERO, float(b[2]), Color(color.lightened(0.2 * sin(float(b[3]))), a))
 				draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 			_ground_ring(reach * minf(t * 2.0, 1.0), Color(hi, a * 0.7), 1.5)

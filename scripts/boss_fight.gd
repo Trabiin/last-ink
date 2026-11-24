@@ -200,6 +200,7 @@ class BossBar extends Control:
 	func _process(delta: float) -> void:
 		var on: bool = fight.stage == "fight" or (fight.stage == "outro" and fight.stage_t < 1.5)
 		shown = move_toward(shown, 1.0 if on else 0.0, delta * 3.0)
+		self_modulate.a = shown  # the whole bar fades in and out with the fight
 		var r := 0.0
 		if is_instance_valid(fight.boss):
 			r = clampf(float(fight.boss.hp) / float(fight.boss.max_hp), 0.0, 1.0)
@@ -214,21 +215,23 @@ class BossBar extends Control:
 		var w := minf(240.0, vs.x - 300.0)
 		var x := (vs.x - w) / 2.0
 		var y := vs.y - 58.0
-		var a := shown
+		var a := 1.0
 		var f := ThemeDB.fallback_font
 		var title: String = fight.info["name"]
 		draw_string_outline(f, Vector2(x, y - 4), title, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(10), 3, Color(0, 0, 0, 0.85 * a))
 		draw_string(f, Vector2(x, y - 4), title, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(10), Color(0.96, 0.92, 0.82, a))
-		draw_rect(Rect2(x - 2, y - 1, w + 4, 9), Color(0.05, 0.04, 0.08, 0.8 * a))
 		var r := 0.0
 		var phase := 1
 		if is_instance_valid(fight.boss):
 			r = clampf(float(fight.boss.hp) / float(fight.boss.max_hp), 0.0, 1.0)
 			phase = fight.boss.phase
-		draw_rect(Rect2(x, y + 1, w * lag, 5), Color(1, 1, 1, 0.7 * a))
-		draw_rect(Rect2(x, y + 1, w * r, 5), Color("d2463c" if phase == 1 else "8a1f2a", a))
-		var px := x + w * float(fight.info.get("phase2_at", 0.5))  # where phase 2 starts
-		draw_line(Vector2(px, y - 1), Vector2(px, y + 8), Color(0.96, 0.92, 0.82, 0.8 * a), 1.0)
+		var ramp: Array = UiSkin.RAMP["enemy"] if phase == 1 else [Color("33141a"), Color("5c2a26"), Color("85402f"), Color("a85d3e")]
+		UiSkin.frame(self, Rect2(x - 3, y - 2, w + 6, 11))
+		UiSkin.bar(self, Rect2(x, y + 1, w, 5), r, ramp, {"ghost": lag, "notches": [float(fight.info.get("phase2_at", 0.5))],
+			"hatch": Access.danger_patterns and phase == 2})
+		var px := roundf(x + w * float(fight.info.get("phase2_at", 0.5)))  # where phase 2 starts: a brass pin
+		draw_rect(Rect2(px - 1, y - 3, 3, 1), UiSkin.BRASS[3])
+		draw_rect(Rect2(px, y - 2, 1, 2), UiSkin.BRASS[2])
 		var sub: String = fight.info["title"] if phase == 1 else tr(str(fight.info["phase2_title"]))
 		var sw := f.get_string_size(sub, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(7)).x
 		draw_string_outline(f, Vector2(x + w - sw, y - 4), sub, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(7), 2, Color(0, 0, 0, 0.8 * a))

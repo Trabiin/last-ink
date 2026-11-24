@@ -225,5 +225,4 @@ func _draw_row(r: Rect2, a: Dictionary, on: bool) -> void:
 	if bar:  # how far a counting one has got, under its "12 / 25"
 		var bw := 60.0
 		var br := Rect2(r.end.x - bw - 8.0, line1 + 3.0 + Access.fs(8) - 4.0, bw, 3.0)
-		draw_rect(br, Color(0, 0, 0, 0.35))
-		draw_rect(Rect2(br.position, Vector2(bw * float(prog[0]) / float(prog[1]), 3.0)), BAR)
+		UiSkin.bar(self, br, float(prog[0]) / float(prog[1]), "brass")

@@ -53,6 +53,9 @@ static var readable_font := false
 static var map_symbols := true
 static var reduce_motion := false
 static var captions := false
+## Leader marker over the hero you control: 0 = only for a moment after a swap (default), 1 = always.
+static var leader_marker := 0
+const LEADER_MARKERS := ["After a swap", "Always"]
 
 static var _loaded := false
 
@@ -76,6 +79,7 @@ static func load_settings() -> void:
 	map_symbols = bool(cfg.get_value(SECTION, "map_symbols", map_symbols))
 	reduce_motion = bool(cfg.get_value(SECTION, "reduce_motion", reduce_motion))
 	captions = bool(cfg.get_value(SECTION, "captions", captions))
+	leader_marker = clampi(int(cfg.get_value(SECTION, "leader_marker", leader_marker)), 0, LEADER_MARKERS.size() - 1)
 	# Testers who played before this page existed see it once too: it only asks, never resets anything.
 	first_boot_done = bool(cfg.get_value(SECTION, "first_boot_done", false))
 
@@ -96,6 +100,7 @@ static func save() -> void:
 	cfg.set_value(SECTION, "map_symbols", map_symbols)
 	cfg.set_value(SECTION, "reduce_motion", reduce_motion)
 	cfg.set_value(SECTION, "captions", captions)
+	cfg.set_value(SECTION, "leader_marker", leader_marker)
 	cfg.save(Settings.PATH)
 
 
@@ -113,6 +118,7 @@ static func reset() -> void:
 	map_symbols = true
 	reduce_motion = false
 	captions = false
+	leader_marker = 0
 	apply()
 	save()
 
