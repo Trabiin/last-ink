@@ -162,7 +162,8 @@ pixel marked. Free fixes live in `tools/prop_icon_fixes.json` and are applied by
 The same files live in the PixelLab Creator gallery as "Last Ink | icon|prop|building | <name>" so they can be
 edited there. After any change to one of these PNGs run `python3 tools/pixellab_gallery.py push` (free): it replaces
 the matching gallery image (ids in `tools/pixellab_gallery.json`) and adds new files. `pull` brings edits made in
-PixelLab back into the game files.
+PixelLab back into the game files. After every sync that changed anything, rebuild the Art Review page
+(`tools/build_art_review.py OUT`) and republish it, so the new version shows there and can be OKed.
 
 ## Prop scale (Phase 8)
 

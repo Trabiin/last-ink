@@ -97,6 +97,8 @@ def pull(m):
         print("pulled   %s (%d px differ)" % (path, int(diff.sum())))
         pulled += 1
     print("%d pulled, %d conflicts" % (pulled, conflicts))
+    if pulled:
+        print("Now rebuild the Art Review page (tools/build_art_review.py OUT) and republish it, so the edit can be OKed")
     return 0
 
 
