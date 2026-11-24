@@ -1,5 +1,5 @@
 {
-	"_comment": "Enemy roster (issue #16; Chapter 2 adds the Abbey kinds, issue #28). kinds: stats per enemy type, read by scripts/enemy_kinds.gd (hp, damage, speed, xp; the Nibbler's bite stays in scripts/enemy.gd; pack = how many spawn together (one fewer, sometimes); blank = born of the Blank, so it also crawls out of surges and Blots in Defense and Reclaim missions (the others only roam the land); tip = one-line hint shown the first time one notices the party; inflict = a status its hits can cause: {status, chance, time}, see scripts/status.gd, issue #112). rosters: spawn weights per province (the Act 1 areas); a mission can override with its own \"enemies\" dict; anything not listed uses default.",
+	"_comment": "Enemy roster (issue #16; Chapter 2 adds the Abbey kinds, issue #28). kinds: stats per enemy type, read by scripts/enemy_kinds.gd (hp, damage, speed, xp; the Nibbler's bite stays in scripts/enemy.gd; pack = how many spawn together (one fewer, sometimes); blank = born of the Blank, so it also crawls out of surges and Blots in Defense and Reclaim missions (the others only roam the land); tip = one-line hint shown the first time one notices the party; faction = whose side it fights for (a Reader's reading spurs on the others of its faction, issue #206); names = (reader) the names it reads aloud; inflict = a status its hits can cause: {status, chance, time}, see scripts/status.gd, issue #112). rosters: spawn weights per province (the Act 1 areas); a mission can override with its own \"enemies\" dict; anything not listed uses default.",
 	"kinds": {
 		"nibbler": {"name": "Nibbler", "plural": "Nibblers", "blank": true, "hp": 28, "speed": 40, "xp": 3, "pack": 1,
 			"tip": ""},
@@ -15,14 +15,14 @@
 			"tip": "Mill scarecrow: it twitches before the sickle swings. Step out of reach."},
 		"sellsword": {"name": "Guild sellsword", "plural": "Guild sellswords", "script": "nibbler", "sprite": "sellsword", "hp": 44, "speed": 46, "xp": 6, "pack": 2, "inflict": {"status": "burn", "chance": 0.3, "time": 4},
 			"tip": "Guild sellswords: fast, in pairs, and their lamp-oil blades can set you alight. Watch for the lunge."},
-		"penitent": {"name": "Blotted Penitent", "plural": "Blotted Penitents", "script": "nibbler", "sprite": "penitent", "blank": true, "hp": 38, "speed": 30, "xp": 5, "pack": 2, "inflict": {"status": "erase", "chance": 0.3, "time": 4},
-			"tip": "Blotted Penitents: monks the Blank half-ate. Slow, in pairs, and the scourge can Erase you. They hunch before they swing."},
+		"penitent": {"name": "Blotted Penitent", "plural": "Blotted Penitents", "sprite": "penitent", "blank": true, "hp": 38, "damage": 7, "speed": 30, "xp": 5, "pack": 2, "inflict": {"status": "erase", "chance": 0.3, "time": 4},
+			"tip": "Blotted Penitents: when one hunches with its hands out, step back. If it gets hold of you, an ally's hit makes it let go; alone, press Attack to struggle."},
 		"copyist": {"name": "Copyist", "plural": "Copyists", "blank": true, "hp": 30, "damage": 4, "speed": 26, "xp": 6, "pack": 1,
 			"tip": "Copyist: it kneels and copies a strip of floor out of the world. Step off the dotted line, then run it down. A hit while it kneels spoils the copy."},
-		"reader": {"name": "Eraser Reader", "plural": "Eraser Readers", "script": "nibbler", "sprite": "reader", "hp": 46, "speed": 48, "xp": 7, "pack": 2, "inflict": {"status": "burn", "chance": 0.35, "time": 4},
-			"tip": "Eraser Readers: Verity's followers, in pairs, with burning tapers. They read a line aloud, then lunge. Step aside."},
-		"whitewasher": {"name": "Eraser Whitewasher", "plural": "Eraser Whitewashers", "script": "spitter", "sprite": "whitewasher", "hp": 30, "damage": 6, "speed": 32, "xp": 6, "pack": 1, "inflict": {"status": "erase", "chance": 0.5, "time": 5},
-			"tip": "Eraser Whitewasher: it hangs back and flings whitewash. A splash can Erase you: no abilities or techs for a few seconds. It dips the brush first."}
+		"reader": {"name": "Eraser Reader", "plural": "Eraser Readers", "sprite": "reader", "faction": "erasers", "hp": 46, "damage": 7, "speed": 48, "xp": 7, "pack": 2, "inflict": {"status": "burn", "chance": 0.35, "time": 4},
+			"tip": "Eraser Readers: when one stops to read a name aloud, the Erasers near it hit harder. Hit the Reader to cut it off."},
+		"whitewasher": {"name": "Eraser Whitewasher", "plural": "Eraser Whitewashers", "sprite": "whitewasher", "faction": "erasers", "hp": 30, "damage": 6, "speed": 32, "xp": 6, "pack": 1, "inflict": {"status": "erase", "chance": 0.5, "time": 5},
+			"tip": "Eraser Whitewasher: it flings whitewash and paints wet stripes that slow you and Erase you: no abilities or techs for a few seconds. Go round the white, or hit it while it dips the brush."}
 	},
 	"rosters": {
 		"default": {"nibbler": 3, "spitter": 1},
