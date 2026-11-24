@@ -28,7 +28,7 @@ def main(releases_path, out, godot):
             continue
         for a in rel.get("assets", []):
             n = a["name"].lower()
-            if not ("gdextension" in n and n.endswith(".zip") and "example" not in n):
+            if not (("gdextension" in n or "gde" in n.replace("godot", "")) and n.endswith(".zip") and "example" not in n):
                 continue
             urllib.request.urlretrieve(a["browser_download_url"], out)
             with zipfile.ZipFile(out) as z:
@@ -43,6 +43,10 @@ def main(releases_path, out, godot):
             break
         if len(tried) >= MAX_TRIES:
             break
+    sys.stderr.write("releases seen:\n")
+    for rel in json.load(open(releases_path))[:30]:
+        sys.stderr.write("  %s%s: %s\n" % (rel.get("tag_name"), " (pre)" if rel.get("prerelease") else "",
+                                           ", ".join(a["name"] for a in rel.get("assets", [])) or "(no files)"))
     sys.stderr.write("no GodotSteam GDExtension release loads in Godot %s; tried: %s\n" % (godot, ", ".join(tried) or "none"))
     return 1
 
