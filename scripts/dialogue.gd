@@ -37,13 +37,15 @@ static func data() -> Dictionary:
 			var parsed = Loc.data(JSON.parse_string(f.get_as_text()), f.get_path().get_file())
 			if typeof(parsed) == TYPE_DICTIONARY:
 				_data = parsed
-		# The main story's talks and speakers (data/story.json, issue #18) and the personal missions'
-		# (data/personal.json, issue #113) play like any others.
+		# The main story's talks and speakers (data/story.json, issue #18), the personal missions'
+		# (data/personal.json, issue #113) and the climax betrayal's (data/betrayal.json, issue #186) play
+		# like any others.
 		for k in ["speakers", "talks"]:
 			if not _data.has(k):
 				_data[k] = {}
 			_data[k].merge(Story.data().get(k, {}))
 			_data[k].merge(PersonalMissions.data().get(k, {}))
+			_data[k].merge(Betrayal.data().get(k, {}))
 	return _data
 
 
@@ -66,6 +68,30 @@ static func talk(id: String) -> Array:
 	if typeof(t) == TYPE_DICTIONARY:
 		return lines(t.get("lines", []))
 	return lines(t)
+
+
+## A talk's choice for Ash ([] when it has none): [{"text", "reply": [lines], "betrayal": effect}] (issue #186).
+static func talk_choice(id: String) -> Array:
+	var t = data().get("talks", {}).get(id, {})
+	return t.get("choice", []) if typeof(t) == TYPE_DICTIONARY else []
+
+
+## Ash picked option i of a talk's choice: remembered with the campaign, and its effect applied.
+static func make_choice(talk_id: String, i: int, opt: Dictionary) -> void:
+	for k in seen.keys():
+		if str(k).begins_with("choice:%s:" % talk_id):
+			seen.erase(k)
+	mark_seen("choice:%s:%d" % [talk_id, i])
+	if opt.has("betrayal"):
+		Betrayal.choose(str(opt["betrayal"]))
+
+
+## Which option Ash picked in a talk's choice (-1 if none yet).
+static func choice_made(talk_id: String) -> int:
+	for k in seen:
+		if str(k).begins_with("choice:%s:" % talk_id):
+			return int(str(k).get_slice(":", 2))
+	return -1
 
 
 static func talk_title(id: String) -> String:
@@ -160,6 +186,9 @@ static func portrait(who: String, expr := "") -> Texture2D:
 ## speakers, or (safety net) a head-and-shoulders bust in their colours. dim darkens it (for whoever is not talking).
 ## Portraits face the viewer's left; flip = mirror them to face right (for the left side of the stage).
 static func draw_portrait(ci: CanvasItem, r: Rect2, who: String, expr := "", dim := 0.0, flip := false) -> void:
+	if is_blank(who):
+		draw_blank(ci, r, dim)
+		return
 	if is_letter(who):
 		draw_letter(ci, r, who, dim)
 		return
@@ -210,9 +239,41 @@ static func fitted(tex: Texture2D, h: float) -> Texture2D:
 	return _fitted[key]
 
 
-## Speakers that are a letter read aloud ("stage": "letter" in their speakers entry): no portrait.
+## Speakers that are a letter read aloud ("stage": "letter" in their speakers entry): no portrait. A "blank"
+## speaker (the Vacancy, issue #186) has none either, and counts as staged too.
 static func is_letter(who: String) -> bool:
-	return str(speaker_info(who).get("stage", "")) == "letter"
+	return str(speaker_info(who).get("stage", "")) in ["letter", "blank"]
+
+
+static func is_blank(who: String) -> bool:
+	return str(speaker_info(who).get("stage", "")) == "blank"
+
+
+## The Vacancy on stage: a figure-shaped hole cut out of the scene, pure page-white, its edge an unsteady ink
+## line, a few black bars drifting across it like words being struck out. Nothing to look at, on purpose.
+static func draw_blank(ci: CanvasItem, r: Rect2, dim := 0.0) -> void:
+	var t := Time.get_ticks_msec() / 1000.0
+	var w := minf(r.size.x * 0.4, r.size.y * 0.24)
+	var h := w * 2.4
+	var base := Vector2(r.get_center().x, r.end.y - 92.0)
+	var pts := PackedVector2Array()
+	var steps := 36
+	for i in steps + 1:
+		var a := PI + PI * float(i) / steps  # a doorway arch over the top
+		var wob := sin(t * (1.3 if not Access.reduce_flashing else 0.4) + i * 1.7) * 1.2
+		pts.append(base + Vector2(cos(a) * (w / 2.0 + wob), -h + w / 2.0 + sin(a) * (w / 2.0 + wob)))
+	pts.append(base + Vector2(w / 2.0, 0))
+	pts.append(base + Vector2(-w / 2.0, 0))
+	var white := Color("f6f4ee").darkened(dim * 0.4)
+	ci.draw_colored_polygon(pts, white)
+	ci.draw_polyline(pts + PackedVector2Array([pts[0]]), Color(0.08, 0.06, 0.1, 0.8 * (1.0 - dim * 0.5)), 1.5)
+	var rng := RandomNumberGenerator.new()
+	for i in 5:
+		rng.seed = i * 7919
+		var y := base.y - h * rng.randf_range(0.15, 0.85)
+		var bw := w * rng.randf_range(0.2, 0.55)
+		var x := base.x - w * 0.4 + fmod(t * rng.randf_range(4.0, 9.0) + rng.randf() * w, w * 0.8 - bw * 0.5)
+		ci.draw_rect(Rect2(x, y, bw, 4.0), Color(0.08, 0.06, 0.1, 0.85 * (1.0 - dim * 0.6)))
 
 
 ## A folded letter standing on the stage: a cream sheet with lines of handwriting in the sender's ink,
@@ -390,3 +451,99 @@ static func event_lines(id: String) -> Array:
 	if e.get("once", true) and is_seen("event:" + id):
 		return []
 	return lines(e.get("lines", []))
+
+
+# ---------------------------------------------------------------- redacted words (issue #186)
+
+## Text with black bars: "[[word]]" in a line is drawn as a bar of ink over the word (the Vacancy's speech, and
+## the betrayal's top candidate from Chapter 4 on). plain() is the text as typed and measured: markers gone,
+## the words kept, so the typewriter and wrapping are the same with or without bars. The dialogue log draws
+## the bars too.
+const BAR_OPEN := "[["
+const BAR_CLOSE := "]]"
+
+
+static func has_bars(text: String) -> bool:
+	return text.contains(BAR_OPEN)
+
+
+static func plain(text: String) -> String:
+	return text.replace(BAR_OPEN, "").replace(BAR_CLOSE, "")
+
+
+## Splits text into [[segment, barred], ...] runs.
+static func bar_runs(text: String) -> Array:
+	var runs := []
+	var i := 0
+	while i < text.length():
+		var a := text.find(BAR_OPEN, i)
+		if a < 0:
+			runs.append([text.substr(i), false])
+			break
+		var b := text.find(BAR_CLOSE, a)
+		if b < 0:
+			runs.append([text.substr(i), false])
+			break
+		if a > i:
+			runs.append([text.substr(i, a - i), false])
+		runs.append([text.substr(a + 2, b - a - 2), true])
+		i = b + 2
+	return runs
+
+
+## Draws text like CanvasItem.draw_multiline_string (top-left of the first baseline at pos, wrapped at
+## width), showing only the first `shown` characters of plain(text) (-1 = all), with barred words as ink
+## bars. Lines without bars go straight to draw_multiline_string, so they look exactly as before.
+static func draw_text(ci: CanvasItem, font: Font, pos: Vector2, text: String, width: float, fsize: int, col: Color,
+		shown := -1, bar_col := Color("15101a")) -> void:
+	if not has_bars(text):
+		ci.draw_multiline_string(font, pos, text if shown < 0 else text.substr(0, shown), HORIZONTAL_ALIGNMENT_LEFT, width, fsize, -1, col)
+		return
+	# Words in order, each split into its plain and barred pieces.
+	var words := []  # [[ [piece, barred], ... ], ...]
+	var cur := []
+	for run in bar_runs(text):
+		var parts := str(run[0]).split(" ")
+		for j in parts.size():
+			if j > 0:
+				words.append(cur)
+				cur = []
+			if parts[j] != "":
+				cur.append([parts[j], run[1]])
+	words.append(cur)
+	var line_h := font.get_height(fsize)
+	var space := font.get_string_size(" ", HORIZONTAL_ALIGNMENT_LEFT, -1, fsize).x
+	var x := 0.0
+	var y := 0.0
+	var left := shown if shown >= 0 else 1 << 30
+	var first := true
+	for w in words:
+		var ww := 0.0
+		for piece in w:
+			ww += font.get_string_size(piece[0], HORIZONTAL_ALIGNMENT_LEFT, -1, fsize).x
+		if not first:
+			left -= 1  # the space before this word
+			if x + space + ww > width and x > 0.0:
+				x = 0.0
+				y += line_h
+			elif x > 0.0:
+				x += space
+		first = false
+		if left <= 0:
+			return
+		for piece in w:
+			var s: String = piece[0]
+			var n := mini(s.length(), left)
+			var part := s.substr(0, n)
+			var pw := font.get_string_size(part, HORIZONTAL_ALIGNMENT_LEFT, -1, fsize).x
+			if piece[1]:
+				var asc := font.get_ascent(fsize)
+				var r := Rect2(pos + Vector2(x - 0.5, y - asc * 0.82), Vector2(pw + 1.0, asc * 0.98))
+				ci.draw_rect(r, bar_col)
+				ci.draw_rect(Rect2(r.position + Vector2(1, r.size.y - 1.0), Vector2(maxf(r.size.x - 2.0, 0.0), 1.0)), Color(bar_col, 0.55))
+			else:
+				ci.draw_string(font, pos + Vector2(x, y), part, HORIZONTAL_ALIGNMENT_LEFT, -1, fsize, col)
+			x += pw
+			left -= n
+			if left <= 0:
+				return

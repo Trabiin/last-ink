@@ -644,6 +644,29 @@ or current romance -35 (once); threshold 40, ties go to data order. If Bran is g
 deal whatever their score. Chapters call `Betrayal.top()` (Ch4 foreshadowing), `Betrayal.lock()` (Ch5 scene),
 `Betrayal.away(id)` and `Betrayal.resolve("redeemed"|"let_go")` (Ch6). Bran's con records the fate `faked`.
 
+**Built (chapter pieces, #186):** everything the chapters need is in place, each switched on by one line of
+chapter data, so #30 to #32 only have to call it:
+- *Ch3:* Hortense is never a candidate (a test holds it), so her spy reveal stays the decoy.
+- *Ch4:* a story mission's `"on_success": {"betrayal": "foreshadow"}` starts it. The top candidate's lines get
+  black bars (banter, small talk, the log), their heart in town turns grey ("something on their mind") and talking
+  to them plays three seed talks a few days apart; Verity's letter about them plays once in town; a Verity plan
+  ("Verity's pages drift") leans on their home for six days, halved by a governor. It follows the campaign: fix
+  their home and the mark can move or lift.
+- *Ch5:* `"on_success": {"betrayal": "lock"}`. The betrayer leaves the party and every post (role `away`, not fed,
+  not in town, the party picker says "gone with the Vacancy"), and back in Hollowmark the scene plays: one per
+  candidate, a romance variant for a betraying partner, Bran's con ("Clause Nine"), and "Nobody Home" when
+  nobody is left at all (Ash walks through the door alone; no fate is written). The Vacancy speaks only in
+  black bars with a few plain words, staged as a hole in the page.
+- *Ch6:* the betrayer's fight is a story mission on their home (offered even when it is erased): their own kit
+  as boss moves with their tells (`scripts/turncoat.gd`: Ottoline's charge, slam and Through the Door; Daro's
+  lunge, sweep and Skewer/Twin Prongs; Odile's Levy, Audit seals and Final Demand), a black bar over their eyes,
+  in their home written as words (`@written` maps: ruled paper, every prop its own name). They go down on one
+  knee, never die, and the outro ends on Ash's choice: take them back (`redeemed`, home and idle again) or let
+  them go (`let_go`, gone into the white). Bran's con is paid off by "The Con: Bran's Thursday" (the Vacancy is
+  in breach; hold off its collectors) and brings him home. Chapter 6 adds its own `after` to these missions.
+- Talks, seeds, letters and choices: `data/betrayal.json` "talks". Tests: `tests/test_betrayal_chapters.gd`;
+  screenshots: `tests/test_betrayal_shots.gd`.
+
 ## 11. Roster
 
 Flavor targets: **morally grey mercenaries** and **glamorous/flirty** types, with the weird edge of the setting.

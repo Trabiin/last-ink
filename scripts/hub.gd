@@ -63,6 +63,8 @@ var newcomers_view
 var scene_view  # bond scenes started by talking to someone in town
 var dialogue_box  # dialogue_box.gd: talking to people in town
 var chapter_card  # chapter_card.gd: "Chapter 1 complete" and friends (issue #18)
+## The grey "wants a word" heart over the betrayal's top candidate (issue #186).
+const GREY_HEART := Color(0.55, 0.53, 0.58)
 var story_beat := {}  # the story beat whose talk is playing (data/story.json beats)
 var banter  # banter.gd: people calling out as Ash walks past
 var sites := {}  # building id -> building_site.gd on its plot
@@ -310,8 +312,8 @@ func post_of(id: String) -> String:
 		return "hall" if st.get("target", "") == "hollowmark" else ""  # elsewhere: not in town
 	if st.get("role", "") == "party":
 		return "gate"
-	if st.get("role", "") in ["expedition", "envoy"]:
-		return ""  # out of town: with a squad, or living with a faction
+	if st.get("role", "") in ["expedition", "envoy", Betrayal.AWAY_ROLE]:
+		return ""  # out of town: with a squad, living with a faction, or gone with the Vacancy (issue #186)
 	if st.get("role", "") == "staff":
 		if st.get("target", "") == "command_table":
 			return "table_side"
@@ -434,7 +436,7 @@ func _find_target() -> Dictionary:
 		if d < best_d:
 			best_d = d
 			best = {"kind": "npc", "id": id, "pos": (npcs[id] as Node2D).global_position, "label": tr("Talk to ") + Empire.recruit(id)["name"]
-				+ (tr("  (wants a word)") if Empire.bond_next_scene(id) > 0 else "") + (tr("  (looking for work)") if Empire.is_visitor(id) else "")}
+				+ (tr("  (something on their mind)") if Betrayal.marked(id) else (tr("  (wants a word)") if Empire.bond_next_scene(id) > 0 else "")) + (tr("  (looking for work)") if Empire.is_visitor(id) else "")}
 	# The table is wide: measure to its nearest edge, not its middle.
 	var tr := Rect2(table_pos - Vector2(TABLE_SIZE.x / 2.0, TABLE_SIZE.y), TABLE_SIZE)
 	var nearest := Vector2(clampf(p.x, tr.position.x, tr.end.x), clampf(p.y, tr.position.y, tr.end.y))
@@ -479,6 +481,13 @@ func _use(t: Dictionary) -> void:
 	if Empire.is_visitor(id):
 		_talk_visitor(id)
 		return
+	var seed_talk := Betrayal.seed_talk(id)
+	if seed_talk != "" and int(Empire.recruits[id]["injured"]) <= 0:  # Chapter 4 on: something on their mind (issue #186)
+		(npcs[id] as Hero).facing = (leader.global_position - (npcs[id] as Node2D).global_position).normalized()
+		Empire.bond_talk(id)
+		touch.release_all()
+		dialogue_box.play(seed_talk)
+		return
 	var ready_rank := Empire.bond_next_scene(id)
 	if ready_rank > 0:  # they have something to say: play their bond scene
 		(npcs[id] as Hero).facing = (leader.global_position - (npcs[id] as Node2D).global_position).normalized()
@@ -522,6 +531,8 @@ func _use(t: Dictionary) -> void:
 		if gained > 0:
 			dialogue_box.title += tr("   ·   Bond with %s +%d") % [short_name, gained]
 		return
+	if Betrayal.marked(id):
+		line = Betrayal.redact(line)  # the Vacancy is already at their words (issue #186)
 	dialogue_box.play_lines([[id, line + bond_note]])
 
 
@@ -980,6 +991,9 @@ func _draw_tags(canvas: Node2D) -> void:
 			var bp := npc.global_position + Vector2(-1.5, -35 + bob)
 			canvas.draw_string_outline(font, bp, "!", HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(9), 2, Color(0, 0, 0, 0.8 * a))
 			canvas.draw_string(font, bp, "!", HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(9), Color("ffd166", a))
+		if Betrayal.marked(id):  # the heart goes grey: something else has their attention (issue #186)
+			var gc := npc.global_position + Vector2(0, -38 + sin(Time.get_ticks_msec() * 0.003) * 0.8)
+			Art.draw_heart(canvas, gc, 4.0, Color(GREY_HEART, a))
 		var box := Rect2(p + Vector2(-2, -6), Vector2(w + 4, 8))
 		if drawn.any(func(o): return (o as Rect2).intersects(box)):
 			continue
@@ -987,6 +1001,8 @@ func _draw_tags(canvas: Node2D) -> void:
 		var col := Color("ffd166", a) if target.get("id", "") == id else Color(0.95, 0.93, 0.88, a)
 		canvas.draw_string_outline(font, p, name_s, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(6), 2, Color(0, 0, 0, 0.8 * a))
 		canvas.draw_string(font, p, name_s, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(6), col)
+		if Betrayal.marked(id):
+			continue  # grey heart already drawn above
 		if Empire.bond_next_scene(id) > 0:  # a heart: they want a word
 			var hc := npc.global_position + Vector2(0, -38 + sin(Time.get_ticks_msec() * 0.005) * 1.5)
 			Art.draw_heart(canvas, hc, 4.0, Color("ff8fa3"))

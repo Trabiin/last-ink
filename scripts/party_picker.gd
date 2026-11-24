@@ -388,6 +388,9 @@ static func blocker(id: String) -> String:
 	if Empire.recruit(id).get("tier", "") != "field":
 		return Loc.t("not a fighter")
 	var st: Dictionary = Empire.recruits[id]
+	if str(st.get("role", "")) == Betrayal.AWAY_ROLE:  # the climax betrayal (issue #186)
+		var why := Betrayal.away_label(id)
+		return why if why != "" else Loc.t("gone")
 	if int(st.get("injured", 0)) > 0:
 		return Loc.t("injured, %d days") % int(st["injured"])
 	match st.get("role", "idle"):

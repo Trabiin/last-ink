@@ -55,6 +55,8 @@ static func command_on() -> bool:
 ##   governs: [ids]     provinces you hold with a governor posted (issue #28)
 ##   built: {building id: level}   Hollowmark buildings at that level or higher (issue #190)
 ##   standing: {faction id: tier}   at least that standing tier with each faction (issue #28)
+##   not_seen: [talk ids]           conversations not played yet
+##   betrayal / betrayer / betrayal_top   the climax betrayal's stage (issue #186, Betrayal.blocker)
 static func meets(c: Dictionary) -> bool:
 	return blocker(c) == ""
 
@@ -73,6 +75,9 @@ static func blocker(c: Dictionary) -> String:
 	for id in c.get("seen", []):
 		if not Dialogue.is_seen("talk:" + id):
 			return Loc.t("the story is not there yet")
+	for id in c.get("not_seen", []):
+		if Dialogue.is_seen("talk:" + id):
+			return Loc.t("already done")
 	for id in c.get("joined", []):
 		if not Empire.recruits.has(id):
 			return Loc.t("%s has to join first") % Empire.recruit(id).get("name", id)
@@ -102,6 +107,8 @@ static func blocker(c: Dictionary) -> String:
 			return Loc.t("needs %s standing with the %s") % [Empire.tier_name(str(want[fid])), Empire.faction(fid).get("short", fid)]
 	if Empire.day < int(c.get("day", 0)):
 		return Loc.t("not before day %d") % int(c["day"])
+	if c.has("betrayal") or c.has("betrayer") or c.has("betrayal_top"):
+		return Betrayal.blocker(c)
 	return ""
 
 
@@ -117,8 +124,13 @@ static func held() -> int:
 
 ## The beat to play in town right now ({} for none): the first one whose conditions hold and whose
 ## talk has not been seen (beats with repeat: true play every time their conditions hold).
+## A beat with "pick" instead of "talk" asks the betrayal which talk it is (Betrayal.beat_talk, issue #186).
 static func next_beat() -> Dictionary:
-	for b in data().get("beats", []):
+	for b0 in data().get("beats", []):
+		var b: Dictionary = b0
+		if b.has("pick"):
+			b = b.duplicate()
+			b["talk"] = Betrayal.beat_talk(str(b["pick"]))
 		var talk: String = b.get("talk", "")
 		if talk == "" or not meets(b.get("when", {})):
 			continue

@@ -227,7 +227,7 @@ func _draw() -> void:
 	if Empire.has_bond(id):
 		var br := Empire.bond_rank(id)
 		y += 6
-		_text(Vector2(x, y + 9), tr("Bond rank %d, %s%s") % [br, Empire.bond_rank_name(br), tr("  (wants a word: H)") if Empire.bond_next_scene(id) > 0 else ""], 8, Color("ff8fa3"))
+		_text(Vector2(x, y + 9), tr("Bond rank %d, %s%s") % [br, Empire.bond_rank_name(br), tr("  (something on their mind)") if Betrayal.marked(id) else (tr("  (wants a word: H)") if Empire.bond_next_scene(id) > 0 else "")], 8, Color("ff8fa3") if not Betrayal.marked(id) else Color(0.6, 0.58, 0.63))
 		y += 12
 		_wrap(Vector2(x, y + 9), tr("Likes ") + Empire.bond_info(id).get("likes_text", "?") + tr(". Pink heart: a role they like. Grey: one they dislike."), 190, 7, Color(0.6, 0.58, 0.6))
 

@@ -103,7 +103,12 @@ func test_penitent_grabs_and_lets_go_when_an_ally_hits_it() -> void:
 	p.target = hero
 	p.grab_cd = 0.0
 	p._set_state(Enemy.State.CHASE, 0.0)
-	await _physics(2)
+	# Spawned overlapping, the bodies push apart to about LUNGE_RANGE, so the first step can land a hair outside it
+	# (seen on CI at 30.0x px) and the next chase step brings it back in: give it a few steps, not exactly two.
+	for i in 6:
+		await tree.physics_frame
+		if p.state == Penitent.S_HUNCH:
+			break
 	check_eq(p.state, Penitent.S_HUNCH, "in reach and ready: it hunches (the tell)")
 	p.state_t = 0.0
 	for i in 30:

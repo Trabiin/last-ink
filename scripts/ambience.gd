@@ -44,6 +44,8 @@ static func light_at(dt: float) -> Color:
 
 ## The light right now, with the biome's grade on top.
 func lit_now() -> Color:
+	if mood.get("page", false):
+		return Color.WHITE  # a map written as words (issue #186): plain page light, no hour, no weather
 	var c := light_at(day_t) * (mood["grade"] as Color)
 	c.a = 1.0
 	return c
@@ -121,13 +123,14 @@ func _update_effects() -> void:
 	vignette.global_position = cam - vignette.size / 2.0
 	var lit := lit_now()
 	var undo := Vector3(1.0 / lit.r, 1.0 / lit.g, 1.0 / lit.b)
-	var dark := darkness(day_t)
+	var dark := 0.0 if mood.get("page", false) else darkness(day_t)
 	var cm := clouds.material as ShaderMaterial
 	cm.set_shader_parameter("strength", 0.22 * Settings.fxf("clouds") * (1.0 - dark))
 	cm.set_shader_parameter("scale", lerpf(220.0, 900.0, Settings.fxf("cloud_size")))
 	cm.set_shader_parameter("wind", Vector2(2.5, 1.0) * lerpf(0.0, 14.0, Settings.fxf("wind")))
 	cm.set_shader_parameter("undo", undo)
-	clouds.visible = Settings.fx_value("clouds") > 0
+	var page: bool = mood.get("page", false)
+	clouds.visible = Settings.fx_value("clouds") > 0 and not page
 	var mm := mist.material as ShaderMaterial
 	# Mist hangs about all day but thickens towards dawn, dusk and night.
 	var dt := fposmod(day_t, 1.0)
@@ -135,7 +138,7 @@ func _update_effects() -> void:
 	var biome_mist: float = mood["mist"]
 	mm.set_shader_parameter("amount", Settings.fxf("mist") * lerpf(0.2 * biome_mist, 1.0, dusk) * minf(biome_mist, 1.6))
 	mm.set_shader_parameter("wind", Vector2(3.0, 0.6) * lerpf(0.3, 1.0, Settings.fxf("wind")))
-	mist.visible = Settings.fx_value("mist") > 0
+	mist.visible = Settings.fx_value("mist") > 0 and not page
 	var vm := vignette.material as ShaderMaterial
 	vm.set_shader_parameter("amount", Settings.fxf("vignette") * lerpf(0.55, 0.85, dark))
 	vm.set_shader_parameter("undo", undo)
@@ -146,7 +149,7 @@ func _update_effects() -> void:
 		for sh in get_tree().get_nodes_in_group("cast_shadow"):
 			sh.modulate.a = sa
 			sh.visible = sa > 0.0
-	Art.set_lamp(lantern, 0.6 * dark)
+	Art.set_lamp(lantern, 0.0 if page else 0.6 * dark)
 
 
 func _process(delta: float) -> void:
@@ -169,7 +172,7 @@ func _draw() -> void:
 	if party == null or party.camera == null:
 		return
 	var cam: Vector2 = party.camera.get_screen_center_position()
-	var dark := darkness(day_t)
+	var dark := 0.0 if mood.get("page", false) else darkness(day_t)
 	var lit := lit_now()
 	var undo := Color(1.0 / lit.r, 1.0 / lit.g, 1.0 / lit.b)  # motes give off their own light: cancel the dusk tint
 	for m in motes:

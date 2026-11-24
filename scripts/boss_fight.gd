@@ -5,6 +5,8 @@ extends MissionObjectives
 ## once the boss is down. Objective hands the mission's objective here when kind == "boss".
 ##
 ## objective: {"kind": "boss", "boss": "auditor", "label": "Strike out the Auditor"}
+## The betrayer's fight (issue #186): {"kind": "boss", "boss": "turncoat", "who": "ottoline", "talks": "betrayal_fight_ottoline"}:
+## scripts/turncoat.gd with that hero's kit, their name on the bar, and talks under the "talks" prefix.
 ## The map marks where the boss stands with "@mark<char> boss". The arena has no Blank and no
 ## stream of Nibblers; phase 2 calls in a few adds (BOSSES[id].adds).
 ## Talks (data/dialogue.json): <boss>_intro, <boss>_phase2, <boss>_outro. Each plays once per
@@ -29,6 +31,13 @@ const BOSSES := {
 		"approach": "Find the Abbot in the cloister garth", "done": "The Abbot's copies are blank paper",
 		"phase2_at": 0.5, "adds": "penitent", "adds_max": 3, "adds_every": 15.0, "plural": "the Abbot",
 	},
+	"turncoat": {  # the climax betrayal (issue #186): the name and title come from who it is
+		"script": preload("res://scripts/turncoat.gd"),
+		"name": "", "title": "Written Over", "phase2_title": "Rewritten",
+		"phase_say": "The Vacancy is writing over them. Watch their tells: you know every one.",
+		"approach": "Find them", "done": "They are down", "phase2_at": 0.5,
+		"adds": "nibbler", "adds_max": 2, "adds_every": 16.0, "plural": "them",
+	},
 }
 const WAKE_RANGE := 150.0
 
@@ -50,6 +59,14 @@ func setup(p_obj: Dictionary, p_main) -> void:
 	var spots: Array = main.area.markers.get("boss", [])
 	boss = info["script"].new()
 	boss.set_meta("kind", id if BOSSES.has(id) else "auditor")  # Journal, loot tables and codex know it by this
+	if id == "turncoat":
+		var who := str(obj.get("who", "ottoline"))
+		boss.who = who
+		info = info.duplicate()
+		info["name"] = Empire.recruit(who).get("name", Empire.short_name(who)).to_upper()
+		info["approach"] = tr("Find %s") % Empire.short_name(who)
+		info["done"] = tr("%s is down") % Empire.short_name(who)
+		info["plural"] = Empire.short_name(who)
 	boss.position = spots[0] if not spots.is_empty() else Vector2(main.world.x / 2.0, 96.0)
 	boss.facing = Vector2.DOWN
 	main.entities.add_child(boss)
@@ -70,7 +87,7 @@ func setup(p_obj: Dictionary, p_main) -> void:
 
 
 func _talk_id(suffix: String) -> String:
-	return "%s_%s" % [obj.get("boss", "auditor"), suffix]
+	return "%s_%s" % [obj.get("talks", obj.get("boss", "auditor")), suffix]
 
 
 func on_kill() -> void:
