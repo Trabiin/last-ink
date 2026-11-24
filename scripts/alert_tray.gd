@@ -28,6 +28,16 @@ var goal_rect := Rect2()
 var goal_target := {}
 var flash_pid := ""
 var flash_t := 0.0
+# Redrawn only when what it shows changes (issue #191). The map markers bob and pulse, so they sit on
+# their own small layer (behind the rows) that is redrawn every frame from cached lists.
+const REFRESH_EVERY := 0.5  # seconds between looks at the story goal and the story missions
+var markers: Control
+var goal := {}  # Alerts.goal(), looked at twice a second
+var story_pids: Array = []  # provinces with a story mission on offer (gold stars)
+var _refresh_t := 0.0
+var _host_state := -1
+var _key := 0
+var _moving := false
 
 
 func _ready() -> void:
@@ -35,6 +45,14 @@ func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	font = ThemeDB.fallback_font
 	Alerts.inst()
+	if on_map:
+		markers = Control.new()
+		markers.set_anchors_preset(Control.PRESET_FULL_RECT)
+		markers.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		markers.show_behind_parent = true  # the rows stay on top of the pins, as before
+		add_child(markers)
+		markers.draw.connect(_draw_markers_layer)
+	_refresh()
 	if on_map:
 		var f := Alerts.take_focus()  # sent here from town by a "go there"
 		if not f.is_empty():
@@ -46,7 +64,20 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	t += delta
 	flash_t = maxf(flash_t - delta, 0.0)
-	queue_redraw()
+	_refresh_t -= delta
+	var hs = host.get("state_serial") if host != null else null
+	if _refresh_t <= 0.0 or (hs != null and hs != _host_state):
+		_host_state = hs if hs != null else -1
+		_refresh()
+	var key := _rows_key()
+	var moving := _rows_moving()
+	if key != _key or moving or _moving:
+		_key = key
+		queue_redraw()
+	_moving = moving  # one more frame after the motion stops, to clear it
+	if markers != null:
+		markers.visible = not _hidden()
+		markers.queue_redraw()
 	if host == null or host.alerts_blocked():
 		return
 	if Input.is_action_just_pressed("alert_go"):
@@ -95,6 +126,44 @@ func _input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 
 
+## Looks again at what is costly to work out: the story goal and which provinces have a story mission.
+func _refresh() -> void:
+	_refresh_t = REFRESH_EVERY
+	goal = Alerts.goal()
+	if not on_map:
+		return
+	var pids := []
+	for m in Missions.all():
+		if m.get("story", false) and not m.get("province", "") in pids and Missions.offered(m):
+			pids.append(m.get("province", ""))
+	story_pids = pids
+
+
+## Everything the rows show, as one number: they are redrawn when it changes.
+func _rows_key() -> int:
+	var store := Alerts.inst()
+	var ids := []
+	for a in store.alerts:
+		ids.append(a["id"])
+	var plain := []
+	for n in store.plain:
+		plain.append(n[0])
+	return [ids, plain, goal, _hidden(), Prompts.device, Prompts.pad_style, Prompts.key("alert_go"), Access.text_size,
+		Access.readable_font, TranslationServer.get_locale(), visible].hash()
+
+
+## True while a row blinks (a new alert) or a plain notice fades: redrawn every frame then.
+func _rows_moving() -> bool:
+	var store := Alerts.inst()
+	if not store.plain.is_empty():
+		return true
+	var frame := Engine.get_process_frames()
+	for a in store.alerts:
+		if frame - int(a["frame"]) < 240:
+			return true
+	return false
+
+
 func _hidden() -> bool:
 	if host == null:
 		return true
@@ -123,12 +192,10 @@ func _draw() -> void:
 	if _hidden():
 		return
 	var store := Alerts.inst()
-	if on_map:
-		_draw_markers(store)
 	var x := origin.x
 	var pend: Array = store.pending()
 	var tab_hint := Loc.t("tap") if Prompts.touch() else Prompts.key("alert_go")  # follows the device and remaps (issue #115)
-	var g := Alerts.goal()
+	var g := goal
 	var y := origin.y
 	if grow_up:
 		var h := (15.0 if not g.is_empty() else 0.0) + mini(pend.size(), MAX_ROWS) * (ROW_H + 1.0) \
@@ -189,36 +256,38 @@ func _draw() -> void:
 
 
 ## Markers on the territory map: alert pins, story stars, the goal's ring and the "go there" flash.
-func _draw_markers(store: Alerts) -> void:
-	var flagged := store.flagged_provinces()
-	var g := Alerts.goal()
-	var goal_pid: String = g.get("target", {}).get("province", "") if not g.is_empty() else ""
-	for p in host.territory.provinces:
-		var pid: String = p["id"]
+## Drawn every frame on their own layer, from the cached story provinces and goal.
+func _draw_markers_layer() -> void:
+	var ci: CanvasItem = markers
+	var flagged := Alerts.inst().flagged_provinces()
+	var goal_pid: String = goal.get("target", {}).get("province", "") if not goal.is_empty() else ""
+	var marked := {}
+	for pid in story_pids + flagged.keys() + [goal_pid, flash_pid if flash_t > 0.0 else ""]:
+		if pid == "" or marked.has(pid):
+			continue
+		marked[pid] = true
+		var p: Dictionary = host.territory.find(pid)
+		if p.is_empty():
+			continue
 		var pos: Vector2 = host._province_screen_pos(p)
-		var story := false
-		for m in Missions.list_for_province(pid):
-			if m.get("story", false):
-				story = true
-		if story:
-			var c := pos + Vector2(-18, -10)
-			_star(c, 4.5 + 0.6 * sin(t * 4.0), GOLD)
+		if pid in story_pids:
+			_star(ci, pos + Vector2(-18, -10), 4.5 + 0.6 * sin(t * 4.0), GOLD)
 		if pid == goal_pid:
 			var pulse := 0.5 + 0.5 * sin(t * 3.0)
-			draw_arc(pos + Vector2(0, -6), 19.0 + pulse * 2.0, 0, TAU, 40, Color(GOLD, 0.35 + 0.35 * pulse), 1.5)
+			ci.draw_arc(pos + Vector2(0, -6), 19.0 + pulse * 2.0, 0, TAU, 40, Color(GOLD, 0.35 + 0.35 * pulse), 1.5)
 		if flagged.has(pid):
 			var col: Color = WARN if flagged[pid] else GOLD
 			var bob := sin(t * 5.0) * 1.5
 			var tip := pos + Vector2(14, -14 + bob)
-			draw_colored_polygon(PackedVector2Array([tip, tip + Vector2(-4, -6), tip + Vector2(0, -12), tip + Vector2(4, -6)]), Color(0.05, 0.04, 0.07))
-			draw_colored_polygon(PackedVector2Array([tip + Vector2(0, -1.5), tip + Vector2(-3, -6), tip + Vector2(0, -10.5), tip + Vector2(3, -6)]), col)
-			draw_string(font, tip + Vector2(-1.5, -3), "!", HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(7), Color(0.05, 0.04, 0.07))
+			ci.draw_colored_polygon(PackedVector2Array([tip, tip + Vector2(-4, -6), tip + Vector2(0, -12), tip + Vector2(4, -6)]), Color(0.05, 0.04, 0.07))
+			ci.draw_colored_polygon(PackedVector2Array([tip + Vector2(0, -1.5), tip + Vector2(-3, -6), tip + Vector2(0, -10.5), tip + Vector2(3, -6)]), col)
+			ci.draw_string(font, tip + Vector2(-1.5, -3), "!", HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(7), Color(0.05, 0.04, 0.07))
 		if pid == flash_pid and flash_t > 0.0:
 			var k := 1.0 - flash_t / 1.2
-			draw_arc(pos + Vector2(0, -6), 6.0 + 30.0 * k, 0, TAU, 40, Color(1, 1, 1, 1.0 - k), 2.0)
+			ci.draw_arc(pos + Vector2(0, -6), 6.0 + 30.0 * k, 0, TAU, 40, Color(1, 1, 1, 1.0 - k), 2.0)
 
 
-func _star(c: Vector2, r: float, col: Color) -> void:
+func _star(ci: CanvasItem, c: Vector2, r: float, col: Color) -> void:
 	var pts := PackedVector2Array()
 	for i in 10:
 		var ang := -PI / 2.0 + i * PI / 5.0
@@ -226,5 +295,5 @@ func _star(c: Vector2, r: float, col: Color) -> void:
 	var shadow := PackedVector2Array()
 	for q in pts:
 		shadow.append(q + Vector2(1, 1))
-	draw_colored_polygon(shadow, Color(0, 0, 0, 0.7))
-	draw_colored_polygon(pts, col)
+	ci.draw_colored_polygon(shadow, Color(0, 0, 0, 0.7))
+	ci.draw_colored_polygon(pts, col)
