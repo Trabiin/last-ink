@@ -139,8 +139,8 @@ func _draw() -> void:
 			x += 12.0
 		_text(Vector2(x, 34), s, 8, col, false)
 		x += font.get_string_size(s, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(8)).x + 10.0
-	_button(roster_rect(), (tr("Roster  ") + Prompts.key("roster")).strip_edges())
-	_button(buildings_rect(), (tr("Buildings  ") + Prompts.key("buildings")).strip_edges())
+	_button(roster_rect(), (tr("Roster  %s") % Prompts.key("roster")).strip_edges())
+	_button(buildings_rect(), (tr("Buildings  %s") % Prompts.key("buildings")).strip_edges())
 	_button(menu_rect(), tr("Menu"))
 
 	# What the attack button does right now.
@@ -171,7 +171,7 @@ func _draw() -> void:
 	if help_t > 0.0 and not hub.touch_active():
 		var a4 := clampf(help_t, 0.0, 1.0)
 		_text(Vector2(vs.x - Access.px(236.0), 36), tr("Walk: WASD / arrows / stick"), 8, Color(1, 1, 1, a4))
-		_text(Vector2(vs.x - Access.px(236.0), 36 + Access.px(11.0)), tr("Talk / use: ") + Prompts.key("attack"), 8, Color(1, 1, 1, a4))
+		_text(Vector2(vs.x - Access.px(236.0), 36 + Access.px(11.0)), tr("Talk / use: %s") % Prompts.key("attack"), 8, Color(1, 1, 1, a4))
 		if Prompts.pad():  # issue #23: the prompts follow the device in use
 			_text(Vector2(vs.x - Access.px(236.0), 36 + Access.px(22.0)), tr("Clock: %s / %s   Menu: %s") % [Prompts.key("clock_slower"), Prompts.key("clock_faster"), Prompts.key("pause")], 8, Color(1, 1, 1, a4))
 			_text(Vector2(vs.x - Access.px(236.0), 36 + Access.px(33.0)), tr("Roster %s  Buildings %s  Expeditions %s") % [Prompts.key("roster"), Prompts.key("buildings"), Prompts.key("expeditions")], 8, Color(1, 1, 1, a4))

@@ -93,7 +93,7 @@ static func describe(objective: Dictionary) -> String:
 		"kills":
 			return "%s (%d)" % [objective.get("label", Loc.t("Disperse Nibblers")), int(objective.get("count", 10))]
 		"defense":
-			return Loc.t("Hold the wardstone for %d seconds") % int(objective.get("seconds", 75))
+			return Loc.n("Hold the wardstone for %d second", "Hold the wardstone for %d seconds", int(objective.get("seconds", 75))) % int(objective.get("seconds", 75))
 		"reclaim":
 			return Loc.t("Break the Blot")
 		"rescue":
@@ -101,9 +101,9 @@ static func describe(objective: Dictionary) -> String:
 		"boss":
 			return objective.get("label", Loc.t("Defeat the boss"))
 		"raid":
-			return Loc.t("Take at least %d of %d caches and get out before the garrison comes") % [int(objective.get("need", 3)), (objective.get("caches", []) as Array).size()]
+			return Loc.n("Take at least %d of %d cache and get out before the garrison comes", "Take at least %d of %d caches and get out before the garrison comes", (objective.get("caches", []) as Array).size()) % [int(objective.get("need", 3)), (objective.get("caches", []) as Array).size()]
 		"salvage":
-			return Loc.t("Pull at least %d of %d piles out of the white's edge and get back") % [int(objective.get("need", 3)), (objective.get("caches", []) as Array).size()]
+			return Loc.n("Pull at least %d of %d pile out of the white's edge and get back", "Pull at least %d of %d piles out of the white's edge and get back", (objective.get("caches", []) as Array).size()) % [int(objective.get("need", 3)), (objective.get("caches", []) as Array).size()]
 		"script":
 			return objective.get("label", Loc.t("See it through"))
 		_:

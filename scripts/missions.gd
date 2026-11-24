@@ -71,7 +71,7 @@ static func threat_text(m: Dictionary) -> String:
 static func reward_text(m: Dictionary) -> String:
 	var fixed := res_text(m.get("rewards", {}))
 	if m.has("reward_text"):
-		return str(m["reward_text"]) + ((Loc.t(", plus ") + fixed + Loc.t(" on success")) if fixed != "" else "")
+		return (Loc.t("%s, plus %s on success") % [str(m["reward_text"]), fixed]) if fixed != "" else str(m["reward_text"])
 	return fixed
 
 

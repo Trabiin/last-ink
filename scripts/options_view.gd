@@ -81,7 +81,7 @@ func _rebuild() -> void:
 		_rows.append({"id": "battle_speed", "kind": "cycle", "label": tr("Battle speed"), "value": Settings.battle_speed_name(),
 			"detail": tr("How fast fights run. The Command clock is not affected.")})
 		_rows.append({"id": "difficulty", "kind": "cycle", "label": tr("Difficulty"), "value": Loc.t(Settings.DIFFICULTIES[Settings.difficulty]),
-			"detail": Loc.t(Settings.DIFFICULTY_INFO[Settings.difficulty]) + tr("  Change it any time.")})
+			"detail": Loc.t(Settings.DIFFICULTY_INFO[Settings.difficulty]) + "  " + tr("Change it any time.")})
 		_rows.append({"id": "assists_page", "kind": "open", "label": tr("Assists"), "value": tr("some on") if Assists.any_on() else tr("damage, enemy speed, skipping"),
 			"detail": tr("Take less damage, slow enemies down, heal between fights, skip story fights, calm the Blank.")})
 		_rows.append({"id": "text_speed", "kind": "cycle", "label": tr("Text speed"), "value": Dialogue.speed_name(),
@@ -171,7 +171,7 @@ func _assist_rows() -> void:
 	_rows.append({"id": "as:skip", "kind": "cycle", "label": tr("Skip story fights"), "value": tr("On") if S.skip_fights else tr("Off"),
 		"detail": tr("Story missions get Skip this fight in the pause menu. Their conversations still play and the rewards are the same.")})
 	_rows.append({"id": "as:blank", "kind": "cycle", "label": tr("Blank pressure"), "value": Loc.t(S.BLANK[S.blank_i]),
-		"detail": Loc.t(S.BLANK_INFO[S.blank_i]) + tr(" On the Command Table.")})
+		"detail": Loc.t(S.BLANK_INFO[S.blank_i]) + " " + tr("On the Command Table.")})
 	_rows.append({"id": "as:reset", "kind": "button", "label": tr("Reset assists"), "value": "",
 		"detail": tr("Assists never lock anything: every ending, reward and scene stays open.")})
 	_rows.append({"id": "assists_back", "kind": "button", "label": tr("Back"), "value": "",
@@ -205,7 +205,7 @@ func _access_rows(first: bool) -> void:
 			else tr("On: hit flashes, blinking tells, bright bursts and the Blank's flicker are softened or held still.")})
 	if first:
 		_rows.append({"id": "difficulty", "kind": "cycle", "label": tr("Difficulty"), "value": Loc.t(Settings.DIFFICULTIES[Settings.difficulty]),
-			"detail": Loc.t(Settings.DIFFICULTY_INFO[Settings.difficulty]) + tr("  Change it any time.")})
+			"detail": Loc.t(Settings.DIFFICULTY_INFO[Settings.difficulty]) + "  " + tr("Change it any time.")})
 	_rows.append({"id": "a:danger", "kind": "cycle", "label": tr("Danger markers"), "value": tr("Patterned") if A.danger_patterns else tr("Colour only"),
 		"detail": tr("Where an attack will land is striped and outlined, and wind-ups show a warning sign, so nothing relies on red alone.") if A.danger_patterns
 			else tr("Danger zones are a red wash only.")})
@@ -497,9 +497,9 @@ func _back() -> void:
 func _open_save_folder() -> void:
 	var path := ProjectSettings.globalize_path("user://")
 	if OS.shell_show_in_file_manager(path) != OK and OS.shell_open(path) != OK:
-		_say(tr("Could not open it. The saves are in ") + _short_path(path))
+		_say(tr("Could not open it. The saves are in %s") % _short_path(path))
 		return
-	_say(tr("Opened ") + _short_path(path))
+	_say(tr("Opened %s") % _short_path(path))
 
 
 func _say(s: String) -> void:

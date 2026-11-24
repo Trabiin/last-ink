@@ -163,7 +163,7 @@ func _draw() -> void:
 	var ids := _ids()
 	var n := ids.size()
 	_text(Vector2(LIST_X, 20), tr("Roster"), 15, Color("f3efe4"))
-	_text(Vector2(LIST_X + 64, 19), tr("%d people   upkeep %d Supplies a day   party %d/%d") % [n, n * Empire.UPKEEP_SUPPLIES, Empire.party_ids().size(), Empire.PARTY_SIZE], 9, Color(0.7, 0.68, 0.7))
+	_text(Vector2(LIST_X + 64, 19), Loc.n("%d person   upkeep %d Supplies a day   party %d/%d", "%d people   upkeep %d Supplies a day   party %d/%d", n) % [n, n * Empire.UPKEEP_SUPPLIES, Empire.party_ids().size(), Empire.PARTY_SIZE], 9, Color(0.7, 0.68, 0.7))
 	var cr := _close_rect()
 	UiSkin.panel(self, cr, "button")
 	_text(cr.position + Vector2(9, 12), tr("Close"), 9, Color(0.75, 0.72, 0.7))
@@ -229,11 +229,11 @@ func _draw() -> void:
 		y += 6
 		_text(Vector2(x, y + 9), tr("Bond rank %d, %s%s") % [br, Empire.bond_rank_name(br), tr("  (something on their mind)") if Betrayal.marked(id) else (tr("  (wants a word: H)") if Empire.bond_next_scene(id) > 0 else "")], 8, Color("ff8fa3") if not Betrayal.marked(id) else Color(0.6, 0.58, 0.63))
 		y += 12
-		_wrap(Vector2(x, y + 9), tr("Likes ") + Empire.bond_info(id).get("likes_text", "?") + tr(". Pink heart: a role they like. Grey: one they dislike."), 190, 7, Color(0.6, 0.58, 0.6))
+		_wrap(Vector2(x, y + 9), tr("Likes %s. Pink heart: a role they like. Grey: one they dislike.") % Empire.bond_info(id).get("likes_text", "?"), 190, 7, Color(0.6, 0.58, 0.6))
 
 	# Detail: what they could do
 	_text(Vector2(OPT_X, 46), tr("Assign"), 11, Color("f3efe4"))
-	_text(Vector2(OPT_X + 48, 46), tr("now: ") + Empire.role_label(id), 8, Color(0.7, 0.68, 0.7))
+	_text(Vector2(OPT_X + 48, 46), tr("now: %s") % Empire.role_label(id), 8, Color(0.7, 0.68, 0.7))
 	var opts := _options()
 	_opt_rects.clear()
 	var oy := 56.0

@@ -374,7 +374,7 @@ static func bind_pad(id: String, pad: Dictionary) -> String:
 
 static func key_name(id: String) -> String:
 	var k := _primary_key(id)
-	return "-" if k < 0 else OS.get_keycode_string(k)
+	return "-" if k < 0 else Prompts.key_label(k)
 
 
 static func pad_name(id: String) -> String:
@@ -459,7 +459,7 @@ static func locked_text(id: String) -> String:
 	var names := []
 	for k in LOCKED_KEYS.get(id, []):
 		if k != KEY_KP_ENTER:
-			names.append(OS.get_keycode_string(k))
+			names.append(Prompts.key_label(k))
 	return " / ".join(names)
 
 

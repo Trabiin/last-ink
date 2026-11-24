@@ -197,7 +197,7 @@ func _pick(i: int) -> void:
 			elif not row["enabled"]:
 				_say(tr("Can't: %s.") % row["note"])
 			elif squad.size() >= Empire.SQUAD_MAX:
-				_say(tr("A squad is at most %d people.") % Empire.SQUAD_MAX)
+				_say(Loc.n("A squad is at most %d person.", "A squad is at most %d people.", Empire.SQUAD_MAX) % Empire.SQUAD_MAX)
 			else:
 				squad.append(id)
 		"send":
@@ -209,12 +209,12 @@ func _pick(i: int) -> void:
 			var names := squad.map(func(id): return Empire.short_name(id))
 			if Empire.send_expedition(job_id, squad):
 				_go("board")
-				_say(tr("%s set off: %s. Back in %s.") % [tr(" and ").join(names) if names.size() <= 2 else ", ".join(names), j["name"], Empire.job_days_text(job_id)])
+				_say(tr("%s set off: %s. Back in %s.") % [Loc.list(names), j["name"], Empire.job_days_text(job_id)])
 
 
 func _send_blocker() -> String:
 	if squad.size() < Empire.SQUAD_MIN:
-		return tr("pick at least %d people") % Empire.SQUAD_MIN
+		return Loc.n("pick at least %d person", "pick at least %d people", Empire.SQUAD_MIN) % Empire.SQUAD_MIN
 	var why := Empire.job_blocker(job_id)
 	if why != "":
 		return why
@@ -309,8 +309,8 @@ func _draw_board(vs: Vector2) -> void:
 	_text(Vector2(8, 20), tr("Expeditions"), 15, Color("f3efe4"))
 	_draw_tabs()
 	var gh := Empire.level_of("guildhall")
-	var sub := tr("Guildhall level %d: up to %d squad%s out at once (%d out now). Squads of %d to %d. Supplies pay the rations.") % [
-		gh, Empire.expedition_slots(), "" if Empire.expedition_slots() == 1 else "s", Empire.expeditions.size(), Empire.SQUAD_MIN, Empire.SQUAD_MAX]
+	var sub := Loc.n("Guildhall level %d: up to %d squad out at once (%d out now). Squads of %d to %d. Supplies pay the rations.", "Guildhall level %d: up to %d squads out at once (%d out now). Squads of %d to %d. Supplies pay the rations.", Empire.expedition_slots()) % [
+		gh, Empire.expedition_slots(), Empire.expeditions.size(), Empire.SQUAD_MIN, Empire.SQUAD_MAX]
 	if gh > 0 and Empire.expeditions.size() >= Empire.expedition_slots():
 		sub = tr("All squads are out (%d/%d). Wait for them, or upgrade the Guildhall%s to send more at once.") % [Empire.expeditions.size(), Empire.expedition_slots(), Prompts.tag("buildings")]
 	if gh <= 0:
@@ -340,7 +340,7 @@ func _draw_board(vs: Vector2) -> void:
 				_text(base + Vector2(cols[1] - 8, 0), names, 8, SOFT, 180)
 				var bx := Rect2(rr.position + Vector2(cols[4] + 60, 5), Vector2(110, 5))
 				_bar(bx, Empire.job_progress(e), Color(0.85, 0.7, 0.35))
-				_text(Vector2(bx.end.x + 6, base.y), tr("back in ") + Empire.job_left_text(e), 8, SOFT)
+				_text(Vector2(bx.end.x + 6, base.y), tr("back in %s") % Empire.job_left_text(e), 8, SOFT)
 			"job":
 				var j := Empire.job(row["id"])
 				var col := TEXT if row["enabled"] else DIM
@@ -390,7 +390,7 @@ func _draw_board(vs: Vector2) -> void:
 
 func _draw_squad(vs: Vector2) -> void:
 	var j := Empire.job(job_id)
-	_text(Vector2(8, 20), tr("Pick a squad: ") + j["name"], 13, Color("f3efe4"))
+	_text(Vector2(8, 20), tr("Pick a squad: %s") % j["name"], 13, Color("f3efe4"))
 	var wants := []
 	for k in j["stats"]:
 		wants.append(Loc.t(Empire.STAT_NAMES[k]) + ("" if float(j["stats"][k]) >= 1.0 else tr(" (half)")))
@@ -445,7 +445,7 @@ func _draw_squad(vs: Vector2) -> void:
 		for why in odds["why"]:
 			yy += _wrap(Vector2(x, yy), ("+ " if why[1] else "- ") + why[0], w, 8, Color("cfe0b0") if why[1] else BAD) + 1
 		if squad.size() < Empire.SQUAD_MIN:
-			yy += _wrap(Vector2(x, yy), tr("Needs at least %d people to go.") % Empire.SQUAD_MIN, w, 8, BAD)
+			yy += _wrap(Vector2(x, yy), Loc.n("Needs at least %d person to go.", "Needs at least %d people to go.", Empire.SQUAD_MIN) % Empire.SQUAD_MIN, w, 8, BAD)
 		yy += 6
 		var cost := Empire.expedition_cost(job_id, squad.size())
 		_text(Vector2(x, yy + 6), tr("Rations: %d Supplies (you have %d)") % [int(cost["supplies"]), int(Empire.res["supplies"])], 8,
@@ -457,7 +457,7 @@ func _draw_squad(vs: Vector2) -> void:
 			if Empire.role_of(id) != "idle":
 				leaving.append("%s (%s)" % [Empire.short_name(id), Empire.role_label(id)])
 		if not leaving.is_empty():
-			_wrap(Vector2(x, yy + 38), tr("Leaves their job while away: ") + ", ".join(leaving), w, 8, Color(0.85, 0.7, 0.55))
+			_wrap(Vector2(x, yy + 38), tr("Leaves their job while away: %s") % ", ".join(leaving), w, 8, Color(0.85, 0.7, 0.55))
 	_text(Vector2(8, vs.y - 10), Prompts.help([["updown", "choose"], ["ui_accept", tr("tick / send")], ["ui_cancel", "back"]], tr("Tap people to tick them, then tap Send   Close: back")), 7, Color(0.5, 0.48, 0.52))
 
 

@@ -49,7 +49,7 @@ func game_version() -> String:
 
 
 func slot_label(slot: String) -> String:
-	return tr("Autosave") if slot == "auto" else tr("Slot ") + slot
+	return tr("Autosave") if slot == "auto" else tr("Slot %s") % slot
 
 
 func save(slot: String, data: Dictionary) -> bool:
@@ -166,7 +166,7 @@ func _ago(t: int) -> String:
 		return tr("%d min ago") % (s / 60)
 	if s < 86400:
 		return tr("%d h ago") % (s / 3600)
-	return tr("%d days ago") % (s / 86400)
+	return Loc.n("%d day ago", "%d days ago", s / 86400) % (s / 86400)
 
 
 ## Loads a slot and starts the scene it was saved in (a mission or the Command Table).

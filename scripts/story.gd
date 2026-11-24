@@ -84,7 +84,7 @@ static func blocker(c: Dictionary) -> String:
 	if int(Empire.res.get("renown", 0)) < int(c.get("renown", 0)):
 		return Loc.t("needs %d Renown") % int(c["renown"])
 	if held() < int(c.get("held", 0)):
-		return Loc.t("hold %d provinces") % int(c["held"])
+		return Loc.n("hold %d province", "hold %d provinces", int(c["held"])) % int(c["held"])
 	for pid in c.get("owns", []):
 		if Empire.territory().find(pid).get("owner", "") != "you":
 			return Loc.t("take %s first") % Empire.territory().find(pid).get("name", pid)

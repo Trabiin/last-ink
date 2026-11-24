@@ -368,8 +368,10 @@ func skill_up(hero: Hero, kind: String, color: String, level: int) -> void:
 		col = Skills.ink_color(color)
 		var what := Skills.ink_level_text(level)
 		var names := hero.abilities.filter(func(a): return str(a.get("ink", "")) == color).map(func(a): return str(a.get("name", "")))
-		line = tr("%s's %s Ink reached %d%s.") % [hero.hero_name, Skills.ink_name(color), level,
-			(tr(": %s for %s") % [what, tr(" and ").join(names)]) if what != "" and not names.is_empty() else ""]
+		if what != "" and not names.is_empty():
+			line = tr("%s's %s Ink reached %d: %s for %s.") % [hero.hero_name, Skills.ink_name(color), level, what, Loc.list(names)]
+		else:
+			line = tr("%s's %s Ink reached %d.") % [hero.hero_name, Skills.ink_name(color), level]
 		skills_gained.append(tr("%s: %s Ink %d") % [hero.hero_name, Skills.ink_name(color), level])
 	Fx.damage_number(entities, hero.global_position + Vector2(0, -34), label, col.lightened(0.3))
 	Fx.burst(entities, hero.global_position + Vector2(0, -10), [col, col.lightened(0.5), Color.WHITE], 20, 70.0)
@@ -761,18 +763,19 @@ func _progress_lines(r: Dictionary, outcome: String) -> void:
 		var parts := []
 		for id in levels_gained:
 			parts.append(tr("%s Lv %d") % [PartyPicker.short_of(id), levels_gained[id]])
-		lines.append(tr("Level up: ") + ", ".join(parts) + ".")
+		lines.append(tr("Level up: %s.") % ", ".join(parts))
 	if not skills_gained.is_empty():
-		lines.append(tr("Skills: ") + ", ".join(skills_gained) + ".")
+		lines.append(tr("Skills: %s.") % ", ".join(skills_gained))
 		skills_gained = []
 	if not found_items.is_empty():
 		var names := found_items.map(func(i): return Progress.item(i)["name"])
 		if outcome == "wiped":
-			lines.append(tr("Lost on the way: ") + ", ".join(names) + ".")
+			lines.append(tr("Lost on the way: %s.") % ", ".join(names))
 		else:
 			for i in found_items:
 				Progress.add_item(i)
-			lines.append(tr("Gear for the bag: ") + ", ".join(names) + tr(" (equip with K)."))
+			var gk := Prompts.key("gear")
+			lines.append((tr("Gear for the bag: %s (equip with %s).") % [", ".join(names), gk]) if gk != "" else tr("Gear for the bag: %s.") % ", ".join(names))
 		found_items = []
 	r["lines"] = lines
 

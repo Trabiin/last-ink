@@ -158,7 +158,7 @@ static func gate_text(id: String, node_id: String) -> String:
 		return Loc.t("%s bond: %s") % [PartyPicker.short_of(id), Empire.bond_rank_name(int(n["bond"]))]
 	if n.has("bonds"):
 		var g: Array = n["bonds"]
-		return Loc.t("%d bonds at %s or closer") % [int(g[1]), Empire.bond_rank_name(int(g[0]))]
+		return Loc.n("%d bond at %s or closer", "%d bonds at %s or closer", int(g[1])) % [int(g[1]), Empire.bond_rank_name(int(g[0]))]
 	return ""
 
 
@@ -187,9 +187,9 @@ static func blocker(id: String, node_id: String) -> String:
 	if is_capstone(node_id) and other_capstone(id, node_id) != "":
 		return Loc.t("holds %s (one capstone per hero)") % node(other_capstone(id, node_id)).get("name", "")
 	if not gate_met(id, node_id):
-		return Loc.t("needs ") + gate_text(id, node_id)
+		return Loc.t("needs %s") % gate_text(id, node_id)
 	if points_free(id) < cost(node_id):
-		return Loc.t("needs %d Skill Point%s") % [cost(node_id), "" if cost(node_id) == 1 else "s"]
+		return Loc.n("needs %d Skill Point", "needs %d Skill Points", cost(node_id)) % cost(node_id)
 	return ""
 
 

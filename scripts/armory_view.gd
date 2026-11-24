@@ -122,7 +122,7 @@ func _forge_rows() -> void:
 func _market_rows() -> void:
 	var stock := Armory.stock()
 	if not stock.is_empty():
-		rows.append({"head": tr("Stalls  (new stock in %d day%s)") % [Armory.days_to_rotation(), "" if Armory.days_to_rotation() == 1 else "s"]})
+		rows.append({"head": Loc.n("Stalls  (new stock in %d day)", "Stalls  (new stock in %d days)", Armory.days_to_rotation()) % Armory.days_to_rotation()})
 		for i in stock.size():
 			rows.append({"kind": "stall", "i": i, "stall": stock[i]})
 	var have := Armory.materials().keys().filter(func(k): return Armory.mat_count(k) > 0)
@@ -167,7 +167,7 @@ func _act(i: int) -> void:
 			var days := Armory.days_for(r)
 			Armory.start(r)
 			Audio.sfx("heavy", 1.2, -4.0)
-			_say(tr("The smiths start on the %s. Ready %s.") % [Armory.result_name(r["result"]), tr("at dawn") if days <= 1 else tr("in %d days") % days])
+			_say(tr("The smiths start on the %s. Ready %s.") % [Armory.result_name(r["result"]), tr("at dawn") if days <= 1 else Loc.n("in %d day", "in %d days", days) % days])
 		"job":
 			var j: Dictionary = row["job"]
 			_say(tr("%s: ready %s.") % [Armory.result_name(j["result"]), Armory.job_eta(j)])
@@ -193,7 +193,7 @@ func _act(i: int) -> void:
 			_buy_from_tobble(str(row["id"]))
 		"mat":
 			var uses := Armory.uses(str(row["id"]))
-			_say(tr("%s goes into %d recipe%s at the Forge.") % [Armory.mat_name(row["id"]), uses.size(), "" if uses.size() == 1 else "s"])
+			_say(Loc.n("%s goes into %d recipe at the Forge.", "%s goes into %d recipes at the Forge.", uses.size()) % [Armory.mat_name(row["id"]), uses.size()])
 	_rebuild()
 
 
@@ -211,7 +211,8 @@ func _buy_from_tobble(id: String) -> void:
 	Armory.store(id)
 	Armory.restock(false)
 	Audio.sfx("coin")
-	_say(tr("Bought %s from Tobble for %d Gilt. It's in the stores%s.") % [it.get("name", id), p, tr(" and packed") if Satchel.count(id) >= Armory.pack_of(id) and Armory.pack_of(id) > 0 else ""])
+	var packed := Satchel.count(id) >= Armory.pack_of(id) and Armory.pack_of(id) > 0
+	_say((tr("Bought %s from Tobble for %d Gilt. It's in the stores and packed.") if packed else tr("Bought %s from Tobble for %d Gilt. It's in the stores.")) % [it.get("name", id), p])
 
 
 func _pack_step(i: int, step: int) -> void:
@@ -398,7 +399,7 @@ func _status_line() -> String:
 			return tr("Market level %d: %s.") % [Armory.market_level(), Armory.market_effect()["text"]]
 		"satchel":
 			var ups := (Armory.state()["upgrades"] as Array).map(func(u): return Armory.result_name(u))
-			return tr("Satchel: %d of %d slots packed%s. Free rations top up tonics, salts and draughts after every mission; the rest comes from the stores.") % [
+			return Loc.n("Satchel: %d of %d slot packed%s. Free rations top up tonics, salts and draughts after every mission; the rest comes from the stores.", "Satchel: %d of %d slots packed%s. Free rations top up tonics, salts and draughts after every mission; the rest comes from the stores.", Armory.satchel_slots()) % [
 				Armory.pack_total(), Armory.satchel_slots(), (" (" + ", ".join(ups) + ")") if not ups.is_empty() else ""]
 	return tr("Materials come from enemies, Raid caches and Salvage piles, and the Market. The Forge turns them into gear and supplies.")
 
@@ -407,9 +408,10 @@ func _row_label(row: Dictionary) -> Array:  # [icon id, name, right text, colour
 	match str(row["kind"]):
 		"job":
 			var j: Dictionary = row["job"]
-			var who := (tr(" for ") + PartyPicker.short_of(j["hero"])) if str(j.get("hero", "")) != "" else ""
-			var n := "" if int(j["makes"]) <= 1 else " x%d" % int(j["makes"])
-			return [j["result"], Armory.result_name(j["result"]) + n + who, Armory.job_eta(j), TEXT, GOLD]
+			var what := Armory.result_name(j["result"]) + ("" if int(j["makes"]) <= 1 else " x%d" % int(j["makes"]))
+			if str(j.get("hero", "")) != "":
+				what = tr("%s for %s") % [what, PartyPicker.short_of(j["hero"])]
+			return [j["result"], what, Armory.job_eta(j), TEXT, GOLD]
 		"weapon":
 			var r: Dictionary = row["recipe"]
 			var now := Armory.weapon_now(row["hero"])
@@ -443,7 +445,7 @@ func _row_label(row: Dictionary) -> Array:  # [icon id, name, right text, colour
 func _short_why(why: String, r: Dictionary) -> String:
 	if why == "":
 		var d := Armory.days_for(r)
-		return "%d G, %s" % [int(r["gilt"]), tr("1 day") if d <= 1 else tr("%d days") % d]
+		return "%d G, %s" % [int(r["gilt"]), Loc.days(maxi(d, 1))]
 	if why.begins_with("needs materials from"):
 		return tr("Tier %d: later") % int(r["tier"])
 	if why.begins_with("needs a level"):
@@ -566,7 +568,7 @@ func _draw_detail(vs: Vector2) -> void:
 			y += 4
 			if why == "":
 				var d := Armory.days_for(r)
-				_text(Vector2(x, y + 8), tr("%s: forge it. Ready %s.") % [_ok_word(), tr("at dawn") if d <= 1 else tr("in %d days") % d], 8, GOOD, w)
+				_text(Vector2(x, y + 8), tr("%s: forge it. Ready %s.") % [_ok_word(), tr("at dawn") if d <= 1 else Loc.n("in %d day", "in %d days", d) % d], 8, GOOD, w)
 			else:
 				_wrap(Vector2(x, y + 8), tr("Can't yet: %s.") % why, w, 8, BAD)
 		"job":
@@ -618,7 +620,7 @@ func _item_head(id: String, x: float, y: float, w: float) -> float:
 	if not it.is_empty():
 		var owner := str(it.get("hero", ""))
 		var what := tr("%s, tier %d, %s") % [{"weapon": tr("Weapon"), "armor": tr("Armour"), "trinket": tr("Trinket")}.get(it.get("slot", ""), tr("Gear")), int(it.get("tier", 1)),
-			(tr("for ") + PartyPicker.short_of(owner)) if owner != "" else tr("anyone can wear it")]
+			(tr("for %s") % PartyPicker.short_of(owner)) if owner != "" else tr("anyone can wear it")]
 		_text(Vector2(x, y), what, 8, SLOT_COLORS.get(it.get("slot", ""), TEXT), w - 36)
 		y += 11
 		y += _wrap(Vector2(x, y), Progress.item_text(id), w - 36, 8, GOOD)
@@ -662,11 +664,11 @@ func _mat_head(k: String, x: float, y: float, w: float) -> float:
 	y += 6
 	y += _wrap(Vector2(x, y + 8), str(m.get("blurb", "")), w, 8, Color(0.78, 0.76, 0.74)) + 6
 	var src := Armory.sources(k)
-	y += _wrap(Vector2(x, y + 8), tr("Found on: ") + (", ".join(src) if not src.is_empty() else tr("nothing you can reach yet")), w, 8, SOFT) + 4
+	y += _wrap(Vector2(x, y + 8), tr("Found on: %s") % (", ".join(src) if not src.is_empty() else tr("nothing you can reach yet")), w, 8, SOFT) + 4
 	var uses := Armory.uses(k).map(func(u): return Armory.result_name(u))
 	if uses.size() > 8:
 		uses = uses.slice(0, 8) + [tr("and %d more") % (Armory.uses(k).size() - 8)]
-	y += _wrap(Vector2(x, y + 8), tr("Makes: ") + ", ".join(uses), w, 8, SOFT)
+	y += _wrap(Vector2(x, y + 8), tr("Makes: %s") % ", ".join(uses), w, 8, SOFT)
 	return y
 
 
