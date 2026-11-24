@@ -142,6 +142,8 @@ var journal := {}
 var asks := {}
 ## The late economy: feasts, unpaid upkeep, one-time notices (scripts/sinks.gd, issue #189).
 var sinks := {}
+## Per-save facts for achievements (scripts/achievements.gd, issue #150): {"lowest_difficulty"}.
+var feats := {}
 
 
 func territory() -> Territory:
@@ -155,6 +157,7 @@ func territory() -> Territory:
 func reset() -> void:
 	DialogueLog.clear()  # a new game or another save: the log starts empty (issue #34)
 	satchel = Satchel.start_stock()
+	feats = {"lowest_difficulty": Settings.difficulty}  # achievements (issue #150)
 	ai_presets = {}
 	ai_techs = {}
 	day = 1
@@ -2274,6 +2277,7 @@ func to_dict() -> Dictionary:
 		"research_done": research_done, "research_progress": research_progress, "research_active": research_active,
 		"research_paid": research_paid, "research_ranks": research_ranks,
 		"sinks": sinks,
+		"feats": feats,
 		"standing": standing, "pacts": pacts, "deal_ready": deal_ready, "intel_until": intel_until,
 		"next_trouble_day": next_trouble_day, "trouble_days": trouble_days, "diplo_log": diplo_log,
 		"bonds": bonds,
@@ -2373,6 +2377,8 @@ func from_dict(d: Dictionary) -> void:
 			if research_data.has(rid) and int(research_node(rid).get("ranks", 0)) > 0:
 				research_ranks[rid] = clampi(int(saved_rr[rid]), 0, int(research_node(rid)["ranks"]))
 	sinks = Sinks.from_save(d.get("sinks", null))
+	# Saves from before achievements (issue #150) can't prove they were never played below Normal.
+	feats = d["feats"].duplicate() if d.get("feats") is Dictionary else {"lowest_difficulty": mini(1, Settings.difficulty)}
 	var ra: String = d.get("research_active", "")
 	if research_data.has(ra) and not ra in research_done:
 		research_active = ra

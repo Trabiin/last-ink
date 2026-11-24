@@ -1,0 +1,110 @@
+name: Steam build
+
+# The Steam build (issue #150, docs/STEAM.md): the Linux desktop build with GodotSteam added, smoke
+# tested with the real extension loaded but no Steam client (the game must carry on without Steam).
+# Every other build (web, itch.io, the plain desktop builds) has no GodotSteam at all.
+#
+# Waiting for the Steamworks app id: uploading with SteamPipe (steamcmd, depots for Windows, macOS
+# and Linux, the beta branch and the demo app). See docs/STEAM.md "Still to do".
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: steam-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  GODOT_VERSION: "4.3"
+  # Pin these once the first run prints them (docs/STEAM.md "Updating GodotSteam").
+  GODOTSTEAM_TAG: ""
+  GODOTSTEAM_SHA256: ""
+
+jobs:
+  linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - id: ver
+        name: Read the game version
+        run: echo "version=$(sed -n 's/^config\/version="\(.*\)"/\1/p' project.godot)" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Godot and the Linux export template
+        id: cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/godot
+            ~/.local/share/godot/export_templates
+          key: godot-${{ env.GODOT_VERSION }}-steam-linux
+
+      - name: Download Godot and the Linux export template
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: |
+          set -e
+          base="https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-stable"
+          mkdir -p ~/godot
+          curl -sSL -o /tmp/godot.zip "$base/Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip"
+          unzip -q /tmp/godot.zip -d ~/godot
+          mv ~/godot/Godot_v${GODOT_VERSION}-stable_linux.x86_64 ~/godot/godot
+          curl -sSL -o /tmp/templates.tpz "$base/Godot_v${GODOT_VERSION}-stable_export_templates.tpz"
+          dest=~/.local/share/godot/export_templates/${GODOT_VERSION}.stable
+          mkdir -p "$dest"
+          unzip -q -j /tmp/templates.tpz templates/linux_release.x86_64 templates/version.txt -d "$dest"
+          rm /tmp/templates.tpz
+
+      - id: gs
+        name: Fetch GodotSteam
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: tools/fetch_godotsteam.sh
+
+      - name: Import project
+        run: timeout 600 ~/godot/godot --headless --import || true
+
+      - name: Export the Steam build and a test pack
+        run: |
+          set -e
+          mkdir -p build/steam build/smoke
+          ~/godot/godot --headless --export-release "Linux" build/steam/LastInk.x86_64
+          test -x build/steam/LastInk.x86_64
+          ls -la build/steam
+          cp export_presets.cfg /tmp/presets.bak
+          python3 tools/smoke_pack.py
+          ~/godot/godot --headless --export-pack "Linux" build/smoke/linux.pck
+          cp /tmp/presets.bak export_presets.cfg
+
+      # The Steam tests check the extension really loaded in this build (LASTINK_EXPECT_GODOTSTEAM).
+      - name: Smoke test with GodotSteam loaded
+        env:
+          LASTINK_EXPECT_GODOTSTEAM: "1"
+        run: tools/smoke_build.sh build/steam/LastInk.x86_64 build/smoke/linux.pck steam scenes
+
+      # With an app id but no Steam client, Steam must fail to start quietly and the game go on.
+      - name: Boot with an app id and no Steam client
+        run: |
+          set -o pipefail
+          SteamAppId=480 timeout 120 build/steam/LastInk.x86_64 --headless --audio-driver Dummy --quit-after 300 2>&1 | tee /tmp/boot.log
+          grep -q "Steam: Steam didn't start" /tmp/boot.log
+
+      - name: Package
+        run: |
+          set -e
+          mkdir -p dist
+          cp CREDITS.md THIRD_PARTY_LICENSES.md build/steam/
+          cp addons/godotsteam/GODOTSTEAM_LICENSE.txt build/steam/ 2>/dev/null || echo "::warning::no GodotSteam licence file to package"
+          tar -C build/steam -czf "dist/LastInk-${{ steps.ver.outputs.version }}-steam-linux-x86_64.tar.gz" .
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: LastInk-${{ steps.ver.outputs.version }}-steam-linux
+          path: dist/*
+          retention-days: ${{ github.event_name == 'pull_request' && 14 || 90 }}

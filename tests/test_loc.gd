@@ -8,7 +8,7 @@ const Scan := preload("res://tools/loc_scan.gd")
 ## No player-facing literal in scripts/ skips tr() / Loc.t(). Fix: wrap it, move it to a const that is
 ## translated where shown, or end the line with "# no-tr" if players never see it.
 ## Data files the game never loads or shows (tools and tests read them), so nothing in them is translated.
-const DEV_ONLY := ["placeholders.json"]  # the art batch's to-do list (issue #28)
+const DEV_ONLY := ["placeholders.json", "steam.json"]  # the art batch's to-do list (issue #28); Rich Presence text, translated in Steamworks (#150)
 
 func test_script_text_is_wrapped() -> void:
 	var scan := Scan.new()

@@ -8,6 +8,7 @@ Contents:
 1. Godot Engine (MIT), with the notices for the libraries built into Godot
 2. Jersey 10, Jacquard 12 and Atkinson Hyperlegible fonts (SIL Open Font License 1.1)
 3. CC0 art and audio (no licence text required; listed for completeness)
+4. Steam builds only: GodotSteam (MIT) and the Steamworks API library
 
 ---
 
@@ -2343,3 +2344,14 @@ No licence text or credit is required; we credit them anyway.
 - Puny Characters by Shade: https://opengameart.org/content/puny-characters
 - JRPG Music Packs #1 to #5 by Juhani Junkala (SubspaceAudio): https://opengameart.org/content/jrpg-pack-1-exploration and packs 2 to 5
 - The Essential Retro Video Game Sound Effects Collection by Juhani Junkala: https://opengameart.org/content/512-sound-effects-8-bit-style
+
+---
+
+## 4. Steam builds only: GodotSteam and the Steamworks API
+
+The Steam version of Last Ink adds GodotSteam (https://godotsteam.com, MIT licence), which connects
+Godot to Steam, and Valve's Steamworks API library (`libsteam_api` / `steam_api64.dll`), redistributed
+under the Steamworks SDK Access Agreement. GodotSteam's licence text ships next to the Steam build as
+`GODOTSTEAM_LICENSE.txt`, copied from the GodotSteam release the build was made with. Other builds
+(web, itch.io, the plain desktop downloads) contain neither.
+

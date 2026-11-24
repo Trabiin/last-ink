@@ -1,0 +1,22 @@
+"lang"
+{
+	"english"
+	{
+		"tokens"
+		{
+			"#Status_menu"	"In the menus"
+			"#Status_hub"	"{#Chapter_%chapter%}: walking Hollowmark"
+			"#Status_command"	"{#Chapter_%chapter%}: at the Command Table"
+			"#Status_mission"	"{#Chapter_%chapter%}: %place%"
+			"#Status_boss"	"{#Chapter_%chapter%}: fighting %place%"
+			"#Chapter_prologue"	"Prologue"
+			"#Chapter_ch1"	"Chapter 1"
+			"#Chapter_act1"	"Act 1"
+			"#Chapter_ch2"	"Chapter 2"
+			"#Chapter_ch3"	"Chapter 3"
+			"#Chapter_ch4"	"Chapter 4"
+			"#Chapter_ch5"	"Chapter 5"
+			"#Chapter_ch6"	"Chapter 6"
+		}
+	}
+}
