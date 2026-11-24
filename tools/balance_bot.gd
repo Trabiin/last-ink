@@ -209,8 +209,8 @@ func _claims() -> void:
 		var cost := Empire.claim_cost(p["id"])
 		if not _affordable_with_reserve(cost):
 			continue
-		if policy != "rush" and int(p["fray"]) >= 60:
-			continue  # a careful player does not buy land that is about to go
+		if policy != "rush" and int(p["fray"]) >= 60 and Story.held() >= _gate_held():
+			continue  # a careful player does not buy land that is about to go, unless the story asks for land
 		var best := ""
 		var score := -999
 		for id in _idle():
@@ -238,6 +238,15 @@ func _build() -> void:
 	var order := ["scriptorium", "guildhall", "inkworks", "market", "barracks", "infirmary", "command_table", "forge"]
 	if policy == "casual":
 		order = ["market", "scriptorium", "barracks", "inkworks", "infirmary", "guildhall", "command_table", "forge"]
+	# A story mission locked behind a building (issue #190) goes first: the briefing and the goal line say so.
+	var wanted := _gate_buildings()
+	for bid in wanted:
+		var wl := Empire.next_level(bid)
+		if wl.is_empty() or Empire.build_blocker(bid) != "":
+			continue
+		if _affordable_with_reserve(wl["cost"]):
+			Empire.start_build(bid)
+		return  # save up for it rather than spend on something else
 	for pass_i in 3:  # first raise everything to 1, then 2, then 3
 		for bid in order:
 			if Empire.level_of(bid) != pass_i:
@@ -247,6 +256,28 @@ func _build() -> void:
 				continue
 			Empire.start_build(bid)
 			return
+
+
+## Provinces a story mission on the map wants held before it opens (0 for none, issue #190).
+func _gate_held() -> int:
+	var n := 0
+	for m in Missions.all():
+		if m.get("story", false) and m.has("gate") and Missions.offered(m):
+			n = maxi(n, int(m["gate"].get("held", 0)))
+	return n
+
+
+## Buildings a story mission on the map is still waiting for (its "gate", issue #190).
+func _gate_buildings() -> Array:
+	var out := []
+	for m in Missions.all():
+		if not m.get("story", false) or not m.has("gate") or not Missions.offered(m):
+			continue
+		var built: Dictionary = m["gate"].get("built", {})
+		for bid in built:
+			if Empire.level_of(bid) < int(built[bid]) and not bid in out:
+				out.append(bid)
+	return out
 
 
 func _research() -> void:
