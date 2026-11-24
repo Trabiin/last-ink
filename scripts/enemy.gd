@@ -38,6 +38,9 @@ var boss := false
 var stun_until := 0
 var mark_until := 0
 var mark_mult := 1.0
+## Rallied by a Reader reading a name aloud (scripts/reader.gd, issue #206): hits land harder until then (msec).
+var rally_until := 0
+const RALLY_MULT := 1.35
 
 ## Art pass sprite set (scripts/sprite_set.gd) by id; subclasses with their own drawing set "" before super._ready().
 var art_id := "nibbler"
@@ -193,6 +196,33 @@ func mark(t: float, mult: float) -> void:
 	mark_mult = maxf(mult, 1.0)
 
 
+## Is a Reader's reading spurring this one on? (scripts/reader.gd)
+func rallied() -> bool:
+	return rally_until > _now()
+
+
+## Spurs it on for t seconds (a Reader reading nearby).
+func rally(t: float) -> void:
+	if not dead:
+		rally_until = maxi(rally_until, _now() + int(t * 1000.0))
+
+
+## What its hits deal on top of their base damage (a Reader's rally).
+func hit_mult() -> float:
+	return RALLY_MULT if rallied() else 1.0
+
+
+## How much its lunge deals before the party's armour (kinds with a "damage" stat override this).
+func lunge_damage() -> int:
+	return DAMAGE
+
+
+## How badly the ally AI wants to hit this one right now (scripts/ally_ai.gd): 0 = like any other enemy,
+## 1 = break what it is doing (a Reader reading), 2 = it has hold of a hero (a Penitent's grab).
+func priority() -> int:
+	return 0
+
+
 func _adjust_damage(amount: int) -> int:
 	if marked():
 		return roundi(amount * mark_mult)
@@ -233,7 +263,7 @@ func _check_lunge_hits() -> void:
 			continue
 		if hero.global_position.distance_to(global_position) < radius + hero.radius + 4.0:
 			hit_this_lunge.append(hero)
-			if hero.take_hit(Empire.damage_to_party(DAMAGE), global_position, 200.0):
+			if hero.take_hit(Empire.damage_to_party(roundi(lunge_damage() * hit_mult())), global_position, 200.0):
 				Status.struck(self, hero)  # what this kind inflicts (data/enemies.json, issue #112)
 
 
@@ -337,6 +367,8 @@ func _draw_overlay() -> void:
 	for i in 3:
 		var p := Vector2(rng.randf_range(-8, 8), rng.randf_range(-12, 2))
 		overlay.draw_rect(Rect2(p, Vector2(1, 1)), Color(1, 1, 1, 0.9) if i % 2 else Color(0, 0, 0, 0.7))
+	if rallied():  # spurred on by a Reader: two small chevrons over the head, pointing up
+		Telegraph.rally(overlay, Vector2(0, -21))
 	if taunt_t > 0.0:  # Hold the Line: a little orange tag shows who it is locked onto
 		overlay.draw_rect(Rect2(-1.5, -19, 3, 3), Color("f2a65a"))
 	if state == State.WINDUP:

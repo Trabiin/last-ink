@@ -8,6 +8,9 @@ extends RefCounted
 ##   moth     - scripts/moth.gd: Gutterwoods letter-moths, in packs; circle, flash, dive
 ##   enforcer - scripts/enforcer.gd: Concord heavy; front shield, slow ground-slam with a red ring
 ##   copyist  - scripts/copyist.gd: Chapter 2 scribe-monk; keeps its distance, copies strips of floor out
+##   penitent - scripts/penitent.gd: Chapter 2 Blank monk; lunges, and grabs and holds a hero (issue #206)
+##   reader   - scripts/reader.gd: Eraser; lunges, and reads a name aloud that spurs other Erasers on (#206)
+##   whitewasher - scripts/whitewasher.gd: Eraser; spits like a Spitter, and paints stripes that slow and Erase (#206)
 ## A kind can reuse another's behaviour with its own art: "script" names the behaviour (a key of
 ## SCRIPTS), "sprite" the sprite set (data/sprites.json). The marsh reedling spits like a Spitter;
 ## the mill scarecrow and the Guild sellsword chase and lunge like a Nibbler.
@@ -18,6 +21,9 @@ const SCRIPTS := {
 	"moth": preload("res://scripts/moth.gd"),
 	"enforcer": preload("res://scripts/enforcer.gd"),
 	"copyist": preload("res://scripts/copyist.gd"),
+	"penitent": preload("res://scripts/penitent.gd"),
+	"reader": preload("res://scripts/reader.gd"),
+	"whitewasher": preload("res://scripts/whitewasher.gd"),
 }
 
 static var _data := {}
