@@ -91,6 +91,29 @@ static func alert(ci: CanvasItem, pos: Vector2, size := 10) -> void:
 	ci.draw_rect(Rect2(c + Vector2(-0.5, s * 0.3), Vector2(1.2, 1.2)), INK)
 
 
+## An enemy spurred on by a Reader (issue #206): two stacked chevrons pointing up, ink-edged, so the shape
+## says "stronger" without relying on colour.
+static func rally(ci: CanvasItem, pos: Vector2) -> void:
+	for k in 2:
+		var y := pos.y - 3.0 * k
+		var pts := PackedVector2Array([Vector2(pos.x - 2.5, y + 1.5), Vector2(pos.x, y - 1.0), Vector2(pos.x + 2.5, y + 1.5)])
+		ci.draw_polyline(pts, Color(INK, 0.8), 2.5)
+		ci.draw_polyline(pts, SIGN if patterned() else RED.lightened(0.2), 1.0)
+
+
+## The reach of a spoken spur (a Reader reading a name aloud): every enemy inside it hits harder while it lasts.
+## A slow dashed ring on the ground that fills as the reading goes on (k 0..1). Not hatched: standing in it is
+## not what hurts, the enemies in it are.
+static func aura(ci: CanvasItem, center: Vector2, r: float, k: float) -> void:
+	ci.draw_set_transform(center, 0.0, Vector2(1.0, 0.5))  # lying on the ground
+	ci.draw_circle(Vector2.ZERO, r, Color(SIGN if patterned() else RED, 0.06 + 0.06 * k))
+	if patterned():
+		ci.draw_arc(Vector2.ZERO, r, 0, TAU, 40, Color(INK, 0.6), 2.5)
+	_dashed_arc(ci, Vector2.ZERO, r, Color(SIGN if patterned() else EDGE, 0.5 + 0.4 * k))
+	ci.draw_arc(Vector2.ZERO, r - 3.0, -PI / 2.0, -PI / 2.0 + TAU * k, 32, Color(INK, 0.45), 1.5)  # how far the reading has got
+	ci.draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
+
+
 static func _dashed_arc(ci: CanvasItem, center: Vector2, r: float, col: Color) -> void:
 	var n := 16
 	for i in n:

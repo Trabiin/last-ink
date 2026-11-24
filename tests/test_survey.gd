@@ -25,7 +25,7 @@ func before_each() -> void:
 	Saves.current_slot = ""
 	Empire.reset()
 	Diag.previous = {}
-	Feedback.override = {}
+	Feedback.override = {"endpoint": ""}  # tests never reach the real inbox
 	Survey.override = {}
 	Survey.as_release = false
 	Survey.state_path = STATE
@@ -38,7 +38,7 @@ func before_each() -> void:
 
 func after_each() -> void:
 	Diag.scripted = true
-	Feedback.override = {}
+	Feedback.override = {"endpoint": ""}  # tests never reach the real inbox
 	Survey.override = {}
 	Survey.as_release = false
 	Survey.state_path = STATE

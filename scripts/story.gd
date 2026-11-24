@@ -53,6 +53,7 @@ static func command_on() -> bool:
 ##   renown: n          at least n Renown        held: n              at least n provinces held
 ##   owns: [ids]        provinces you hold       day: n               on day n or later
 ##   governs: [ids]     provinces you hold with a governor posted (issue #28)
+##   built: {building id: level}   Hollowmark buildings at that level or higher (issue #190)
 ##   standing: {faction id: tier}   at least that standing tier with each faction (issue #28)
 static func meets(c: Dictionary) -> bool:
 	return blocker(c) == ""
@@ -88,6 +89,13 @@ static func blocker(c: Dictionary) -> String:
 			return Loc.t("take %s first") % gp.get("name", pid)
 		if Empire.governor_of(pid) == "":
 			return Loc.t("put a governor in %s") % gp.get("name", pid)
+	var built: Dictionary = c.get("built", {})
+	for bid in built:
+		if Empire.level_of(bid) < int(built[bid]):
+			var bname: String = Empire.building(bid).get("name", bid)
+			if int(built[bid]) <= 1:
+				return Loc.t("build the %s") % bname
+			return Loc.t("raise the %s to level %d") % [bname, int(built[bid])]
 	var want: Dictionary = c.get("standing", {})
 	for fid in want:
 		if not Empire.at_least(fid, str(want[fid])):

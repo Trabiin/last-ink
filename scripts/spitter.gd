@@ -96,7 +96,7 @@ func _spit() -> void:
 	shot.kind = Journal.kind_of(self)  # what the glob inflicts (Status, issue #112)
 	shot.position = global_position + Vector2(0, -6)
 	shot.dir = aim.normalized() if aim.length() > 0.1 else facing
-	shot.damage = damage
+	shot.damage = roundi(damage * hit_mult())  # a Reader's rally (issue #206)
 	if target == null and goal != null and is_instance_valid(goal):
 		shot.goal = goal
 	get_parent().add_child(shot)

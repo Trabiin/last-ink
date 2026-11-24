@@ -55,10 +55,38 @@ Filed:
 - #189 Insight, Ink and (after every building is done) Gilt pile up once Act 1 is over: research
   runs out about day 25. The chapters need sinks.
 - #190 A player heading for the story can beat the Auditor on day 6 or 7 (about 9 missions). Decision
-  for Ojon: empire gates on the story missions.
+  for Ojon: empire gates on the story missions. Done, see "Act 1 pacing" below.
 
 Fine as it is: Gilt is the tight resource through Act 1 (it stays near the reserve while buildings go
 up until about day 40), and a player who does nothing loses Hollowmark on day 19 to 22.
+
+### Act 1 pacing (issue #190), 2026-11-24
+
+The two Act 1 story missions now wait for the empire, through the `gate` field in `data/missions.json`
+(shown on the map, locked, with what is missing; the story checklist names the goal in between):
+
+| Mission | Gate |
+|---|---|
+| The Concord Answers | 4 provinces held, 8 Renown |
+| The Auditor | 15 Renown, an Infirmary (`built` condition, new in `Story.blocker`) |
+
+Renown comes almost only from missions and expeditions, so it tracks time played; land and the
+Infirmary make the player use the Command Table. The bot reads the gates like a player reads the
+briefing: it saves up for a building a gate asks for and stops skipping high-Fray land while a gate
+wants more provinces.
+
+Act 1 boss day (40 days, 4 seeds each):
+
+| Policy | Before | After | Boss Lv after |
+|---|---|---|---|
+| steady | 6 to 7 | 14 | 8 to 9 |
+| casual | 17 to 25 | 21 to 29 | 8 |
+| rush | 8 to 11 | 12 to 16 | 8 to 9 |
+
+About twice the missions to the Auditor for a player heading straight for the story (roughly 18
+instead of 9), and the party still meets him at level 8 to 9, inside the band the XP curve was tuned
+for. Higher gates were tried (10 and 20 Renown): steady then reaches him around day 20 at level 10,
+too strong for a boss tuned for level 6 to 8. `tests/test_act1_pacing.gd` guards day 10 to 20.
 
 ## Performance probe
 

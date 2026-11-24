@@ -96,7 +96,8 @@ static func grant_immunity(t: Node, ids: Array, seconds: float) -> void:
 	t.set_meta("status_immune", im)
 
 
-## Puts a status on an actor for `seconds`. opts: {"dps": HP a second for poison/burn, "source": Hero}.
+## Puts a status on an actor for `seconds`. opts: {"dps": HP a second for poison/burn, "source": Hero,
+## "label": the word that pops up instead of the status's name (a Penitent's grab is a stun that says "Held!")}.
 ## Re-applying refreshes the time and keeps the stronger dps. Returns false if it didn't take.
 static func apply(t: Node, id: String, seconds: float, opts := {}) -> bool:
 	if t == null or not is_instance_valid(t) or not t is Actor or (t as Actor).dead or seconds <= 0.0:
@@ -118,6 +119,7 @@ static func apply(t: Node, id: String, seconds: float, opts := {}) -> bool:
 		e["source"] = opts["source"]
 	s[id] = e
 	if fresh:
+		e["label"] = str(opts.get("label", ""))
 		_on_start(t, id, e)
 	return true
 
@@ -146,7 +148,8 @@ static func _on_start(t: Node, id: String, e: Dictionary) -> void:
 				h.power_rate += pr
 				e["undo"] = [sp, pr]
 	if id in AILMENTS and t is Hero:
-		Fx.damage_number(t.get_parent(), pos + Vector2(0, -26), name_of(id), color_of(id))
+		var word := str(e.get("label", ""))
+		Fx.damage_number(t.get_parent(), pos + Vector2(0, -26), word if word != "" else name_of(id), color_of(id))
 		Audio.sfx("hurt" if id != "stun" else "alert", 1.2, -8.0)
 
 
