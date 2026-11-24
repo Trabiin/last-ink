@@ -21,7 +21,7 @@
 			"lines": []
 		},
 		{
-			"id": "bran", "name": "Brannoc \"Bran\" Tolley", "title": "mercenary", "tier": "field", "start": true,
+			"id": "bran", "name": "Brannoc \"Bran\" Tolley", "short": "Bran", "title": "mercenary", "tier": "field", "start": true,
 			"stats": {"might": 8, "craft": 4, "lore": 2, "charm": 5, "grit": 7}, "traits": ["contract", "greedy"],
 			"blurb": "His contract is tattooed on his arm and tightens if he breaks it. Will sell you out if outbid, and tells you so.",
 			"post": "gate", "look": {"outfit": "warrior", "colors": {"skin": "c98e6a", "metal": "8c7f72", "accent": "b0442f", "boots": "3a2c22"}},
