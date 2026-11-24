@@ -207,7 +207,7 @@
 		],
 		"saltreed": [
 			{"id": "saltreed_velvette_jessamy", "rect": [0, 0, 130, 90], "needs": ["velvette", "jessamy"], "lines": [
-				["velvette", "Marsh. Reeds. Fog. Darling, it is like a dressing room nobody has cleaned since the war."],
+				["velvette", "Fog on the reeds, reeds in the fog. Darling, it is like a dressing room nobody has cleaned since the war."],
 				["jessamy", "I ran crates through here two years. There's a smugglers' path under the water, if you know where to step."],
 				["velvette", "And do you?"],
 				["jessamy", "Mostly.", "smug"]

@@ -3,8 +3,8 @@ extends "res://tests/test_case.gd"
 ##
 ## - test_no_banned_phrases: the hard ban list (docs/VOICES.md 2.1) in data/ values and script strings. Fails.
 ## - test_one_punctuation_style: no em/en dashes, curly quotes or the single-character ellipsis (VOICES.md 3). Fails.
-## - test_voice_report: the softer tells (VOICES.md 2.2), counted and printed. Advisory until the rewrite in
-##   #167 step two sets WATCH_STRICT; VOICE_REPORT=1 lists every hit:
+## - test_voice_report: the softer tells (VOICES.md 2.2), counted against a per-tell limit. Fails over the
+##   limit (WATCH_STRICT, on since #167 step two); VOICE_REPORT=1 lists every hit:
 ##     VOICE_REPORT=1 godot --headless --audio-driver Dummy --path . -s tests/run.gd -- voice
 
 ## Hard bans: model-prose fingerprints. Case-insensitive.
@@ -22,7 +22,7 @@ const BANNED := [
 	"\\bonly time will tell\\b", "\\bin a world where\\b", "\\bserves? as a reminder\\b", "\\ba reminder that\\b",
 	"\\bat the end of the day\\b", "\\band that'?s okay\\b", "\\bmaybe that'?s enough\\b",
 	"\\b(it|this|that)('s| is| was) not about\\b[^.!?]{1,50}\\babout\\b", "\\bnot just\\b[^.!?;]{1,40}\\bbut\\b",
-	"\\bmore than just\\b", "\\beyes (glint|sparkl|gleam)\\w*\\b", "\\bsomething shifted\\b",
+	"\\bmore than just\\b", "\\beyes (glint|sparkl|gleam)\\w*\\b", "\\bsomething shifted\\b", "\\ba long moment\\b",
 ]
 
 ## Deliberate uses of a banned phrase: [where (substring of the location, "" for anywhere), text (substring of
@@ -35,16 +35,17 @@ const PUNCT := "[—–…‘’“”]| -- "
 const DATA_DASH := " - "
 
 ## Softer tells (VOICES.md 2.2), counted. "owners" are speakers for whom the move is a tic on their sheet;
-## their lines don't count. "limit" applies once WATCH_STRICT is on (#167 step two sets the numbers).
+## their lines don't count. "limit" is the whole script's budget for that tell (VOICES.md 2.2 gives the reasons);
+## a new line over budget means rewriting it, or an older one, not raising the number.
 const WATCH := [
-	{"id": "people think", "re": "\\bpeople (think|say|assume)\\b", "limit": 1},
-	{"id": "correction", "re": "(^|[.!?] )Not (a |an |the )?\\w+[.,] (\\w+ )?\\w+\\.|\\b(it|that|this) (isn't|wasn't|is not)\\b[^.!?]{0,30}[.!?]+ (it|that|this)('s| is| was)\\b", "limit": 4},
+	{"id": "people think", "re": "\\bpeople (think|say|assume)\\b", "limit": 1},  # one in the whole script
+	{"id": "correction", "re": "(^|[.!?] )Not (a |an |the )?\\w+[.,] (\\w+ )?\\w+\\.|\\b(it|that|this) (isn't|wasn't|is not)\\b[^.!?]{0,30}[.!?]+ (it|that|this)('s| is| was)\\b", "limit": 6},  # one a chapter
 	{"id": "either/or verdict", "re": "\\beither\\b[^.!?]{1,50}\\bor\\b|[.!?] Or (terrifying|tragic|stupid|smart|brilliant|the most \\w+)\\b", "owners": ["bran"], "limit": 0},
 	{"id": "'Or X.' afterthought", "re": "[.!?] Or [^.!?]{1,30}[.!?]", "owners": ["jessamy", "bran"], "limit": 2},
-	{"id": "fragment triplet", "re": "(^|[.!?] )\\w+\\. \\w+\\. \\w+\\.( |$)", "limit": 10},
+	{"id": "fragment triplet", "re": "(^|[.!?] )\\w+\\. \\w+\\. \\w+\\.( |$)", "limit": 4},
 	{"id": "stated feeling", "re": "\\bI (feel|felt)\\b|\\bI'?m (so )?(sad|angry|grateful|scared|hurt|lonely|happy|heartbroken|devastated)\\b|\\bI'?m not crying\\b", "limit": 0},
-	{"id": "moral tag", "re": "\\bnow you know\\b|\\bthat'?s the whole (art|point|trick)\\b|\\bthat isn'?t nothing\\b|\\bthat'?s how it works\\b", "limit": 1},
-	{"id": "soft-fantasy word", "re": "\\b(journey|realm|embark\\w*|unravel\\w*|whisper\\w*|truly|deeply)\\b", "limit": 3},
+	{"id": "moral tag", "re": "\\bnow you know\\b|\\bthat'?s the whole (art|point|trick)\\b|\\bthat isn'?t nothing\\b|\\bthat'?s how it works\\b", "limit": 0},
+	{"id": "soft-fantasy word", "re": "\\b(journey|realm|embark\\w*|unravel\\w*|whisper\\w*|truly|deeply)\\b", "owners": ["tobble"], "limit": 3},
 	{"id": "therapy-speak", "re": "\\b(closure|boundaries|healing journey|process (this|it|that)|trauma|toxic|validate|valid feelings)\\b", "limit": 0},
 ]
 
@@ -66,8 +67,16 @@ const OWNED := {
 	"chérie": ["velvette", "sallow"],
 }
 
-## Step two of #167 flips this: watched tells over their limit fail the run.
-const WATCH_STRICT := false
+## Watched tells over their limit fail the run (on since #167 step two). Turn off only to take a count.
+const WATCH_STRICT := true
+
+## Deliberate uses of a watched tell that don't count against its limit: [tell id, text (substring), why].
+## Same rule as ALLOW: short, and every entry has a reason a reader would accept.
+const WATCH_ALLOW := [
+	["fragment triplet", "Coat. Ticket. Out.", "Ottoline's door rule (VOICES.md 5): a refrain the betrayal scene is built on"],
+	["fragment triplet", "Knock. Knock. Knock.", "a sound, written out"],
+	["stated feeling", "I felt that. I felt that.", "Jessamy feeling a touch for the first time, not naming an emotion"],
+]
 
 var _texts: Array = []  # [where, text, speaker id or ""]
 
@@ -126,6 +135,13 @@ func _allowed(where: String, text: String) -> bool:
 	return false
 
 
+func _watch_allowed(id: String, text: String) -> bool:
+	for a in WATCH_ALLOW:
+		if a[0] == id and text.contains(a[1]):
+			return true
+	return false
+
+
 ## No banned phrase anywhere a player can read (docs/VOICES.md 2.1).
 func test_no_banned_phrases() -> void:
 	var res := []
@@ -165,6 +181,8 @@ func test_voice_report() -> void:
 		var hits := []
 		for t in _texts:
 			if t[3] or (t[2] in w.get("owners", [])):  # script strings are UI, not prose
+				continue
+			if _watch_allowed(w["id"], t[1]):
 				continue
 			for m in re.search_all(t[1]):
 				hits.append("%s [%s] \"%s\"" % [t[0], t[2] if t[2] != "" else "-", t[1].left(100)])

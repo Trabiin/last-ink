@@ -1118,7 +1118,7 @@
 							"name": "Contraband",
 							"cost": 2,
 							"desc": "Knife Fan's knives go through every enemy on their line and poison for 2 a second.",
-							"flavor": "Imported. Undeclared. Lethal.",
+							"flavor": "Never declared at customs. Never opened, either.",
 							"effects": {
 								"abilities": {
 									"knife_fan": {

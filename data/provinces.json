@@ -78,7 +78,7 @@
 		{
 			"id": "saltreed", "name": "Saltreed Marsh", "region": "marches", "biome": "marsh", "pos": [0.83, 0.601], "weight": 1.0,
 			"owner": "free", "fray": 61, "output": {"supplies": 2, "gilt": 1}, "sites": ["Reed-cutters' stilts"],
-			"favors": "grit", "favors_why": "The reeds whisper. Steady nerves only.", "claim": {"gilt": 25, "supplies": 6},
+			"favors": "grit", "favors_why": "Something in the reeds knows your name. Steady nerves only.", "claim": {"gilt": 25, "supplies": 6},
 			"blurb": "Half the reeds have gone white. The other half are whispering about it."
 		},
 		{
