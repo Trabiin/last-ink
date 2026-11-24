@@ -319,7 +319,7 @@
 			["saffron", "There's a barge that ties up at Lantern Quay after midnight. No lights. Concord colours under the tarpaulin. It takes on crates of people in masks, and it sails for the Causeway's back stairs."],
 			["hortense", "Gossip, sweet. The quay is full of it. I know a quicker way onto that wharf, if you insist on going. I insist on coming."],
 			["bran", "She insists. She insists a lot. I don't like a woman who knows the quick way into a trap."],
-			["hortense", "Bran, darling. A trap is just a party you weren't told about."]
+			["hortense", "Bran, sweet. A trap is just a party you weren't told about."]
 		]},
 		"ch3_wharf_intro": {"title": "The Night Wharf", "lines": [
 			["", "Lantern Quay after midnight, every lamp out. A long black barge rides low at the end of the smugglers' wharf, and men in Concord grey are lifting crates aboard."],
@@ -476,15 +476,15 @@
 		{"text": "Win the Abbey's friendship", "chapter": "ch2", "hint": "a Friendly Abbey speeds up research, and a lost brother waits at its gate", "done": {"standing": {"abbey": "friendly"}}, "show": {"seen": ["ch2_end"]}},
 		{"text": "Hold Scarth Pass", "chapter": "ch2", "hint": "claim it from the Command Table once a neighbour is yours", "done": {"owns": ["quillpine"]}, "show": {"seen": ["ch2_end"]}},
 		{"text": "Hold nine provinces", "chapter": "ch2", "hint": "claim, reclaim or win land by treaty", "done": {"held": 9}, "show": {"seen": ["ch2_end"]}},
-		{"text": "The Singer on the Quay: get the dockfolk across", "chapter": "ch3", "hint": "story mission at Lantern Quay, in the south-west", "done": {"cleared": ["ch3_quay"]}, "show": {"seen": ["ch3_invitation"]}},
-		{"text": "Take the Vauclair Terraces", "chapter": "ch3", "hint": "claim them from the Command Table: the masquerade only opens for whoever sends the wine", "done": {"owns": ["terraces"]}, "show": {"seen": ["ch3_quay_after"]}},
-		{"text": "The Masquerade: meet the Marquise", "chapter": "ch3", "hint": "story mission at the Velvet Causeway", "done": {"cleared": ["ch3_masquerade"]}, "show": {"seen": ["ch3_quay_after"]}},
-		{"text": "Shadow and Debt: find the grifter on the Shallows (optional)", "chapter": "ch3", "hint": "story mission at Pendower Shallows", "done": {"cleared": ["ch3_shallows"]}, "show": {"seen": ["ch3_quay_after"]}},
-		{"text": "The Night Wharf: follow the barge", "chapter": "ch3", "hint": "story mission at Lantern Quay", "done": {"cleared": ["ch3_wharf"]}, "show": {"seen": ["ch3_masquerade_after"]}},
-		{"text": "Win Neutral standing with the Velvet Nobility", "chapter": "ch3", "hint": "gifts, trade and the Nobility's asks in Diplomacy{tag:diplomacy}", "done": {"standing": {"velvet": "neutral"}}, "show": {"seen": ["ch3_wharf_after"]}},
-		{"text": "The Host", "chapter": "ch3", "hint": "story mission at the Velvet Causeway", "done": {"cleared": ["ch3_host"]}, "show": {"seen": ["ch3_wharf_after"]}},
-		{"text": "Win the Velvet Nobility's friendship", "chapter": "ch3", "hint": "a Friendly Nobility pays patronage, and a mask-maker comes to Hollowmark", "done": {"standing": {"velvet": "friendly"}}, "show": {"seen": ["ch3_end"]}},
-		{"text": "Hold Pendower Shallows", "chapter": "ch3", "hint": "claim it from the Command Table", "done": {"owns": ["inkmere"]}, "show": {"seen": ["ch3_end"]}},
-		{"text": "Hold twelve provinces", "chapter": "ch3", "hint": "claim, reclaim or win land by treaty", "done": {"held": 12}, "show": {"seen": ["ch3_end"]}}
+		{"text": "The Singer on the Quay: get the dockfolk across", "chapter": "ch3", "hint": "Story mission at Lantern Quay, in the south-west", "done": {"cleared": ["ch3_quay"]}, "show": {"seen": ["ch3_invitation"]}},
+		{"text": "Take the Vauclair Terraces", "chapter": "ch3", "hint": "Claim them from the Command Table: the masquerade only opens for whoever sends the wine", "done": {"owns": ["terraces"]}, "show": {"seen": ["ch3_quay_after"]}},
+		{"text": "The Masquerade: meet the Marquise", "chapter": "ch3", "hint": "Story mission at the Velvet Causeway", "done": {"cleared": ["ch3_masquerade"]}, "show": {"seen": ["ch3_quay_after"]}},
+		{"text": "Shadow and Debt: find the grifter on the Shallows (optional)", "chapter": "ch3", "hint": "Story mission at Pendower Shallows", "done": {"cleared": ["ch3_shallows"]}, "show": {"seen": ["ch3_quay_after"]}},
+		{"text": "The Night Wharf: follow the barge", "chapter": "ch3", "hint": "Story mission at Lantern Quay", "done": {"cleared": ["ch3_wharf"]}, "show": {"seen": ["ch3_masquerade_after"]}},
+		{"text": "Win Neutral standing with the Velvet Nobility", "chapter": "ch3", "hint": "Gifts, trade and the Nobility's asks in Diplomacy{tag:diplomacy}", "done": {"standing": {"velvet": "neutral"}}, "show": {"seen": ["ch3_wharf_after"]}},
+		{"text": "The Host", "chapter": "ch3", "hint": "Story mission at the Velvet Causeway", "done": {"cleared": ["ch3_host"]}, "show": {"seen": ["ch3_wharf_after"]}},
+		{"text": "Win the Velvet Nobility's friendship", "chapter": "ch3", "hint": "A Friendly Nobility pays patronage, and a mask-maker comes to Hollowmark", "done": {"standing": {"velvet": "friendly"}}, "show": {"seen": ["ch3_end"]}},
+		{"text": "Hold Pendower Shallows", "chapter": "ch3", "hint": "Claim it from the Command Table", "done": {"owns": ["inkmere"]}, "show": {"seen": ["ch3_end"]}},
+		{"text": "Hold twelve provinces", "chapter": "ch3", "hint": "Claim, reclaim or win land by treaty", "done": {"held": 12}, "show": {"seen": ["ch3_end"]}}
 	]
 }

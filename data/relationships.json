@@ -313,7 +313,7 @@
 					["saffron", "No hard feelings, love. Well. Some. They'll make a good song one day."]
 				],
 				"talk": [
-					"I sang your name at the window this morning and a sparrow appeared. It wasn't there before. It's still there. I'm not sure what that means.",
+					"I sang your name at the window this morning and a sparrow came out of the last note. It's still on the sill. I've been feeding it crumbs, so that's the two of us responsible for a sparrow now.",
 					"Mam says you're too quiet. I said that's the point. She said 'oh' in her worst voice.",
 					"Every song I write's about you now. It's very bad for business. Nobody wants a sad song about mud any more.",
 					"Come and sit at the front tonight. I like to know where you are when I hit the high bits."
@@ -471,7 +471,7 @@
 		{"ids": ["nan", "bran"], "kind": "friends", "name": "Small print", "text": "Bran's contract is on his arm and Nan's is in a moneylender's box. They spend whole evenings reading each other's clauses out loud and laughing at the worst ones.",
 			"effects": {"expedition": 5, "party": {"damage": 1}, "bond": 1},
 			"banter": [
-				[["nan", "Bran, what's clause nine on your arm say again?"], ["bran", "Says mind your own arm."]],
+				[["nan", "Bran, what's the small print on your arm say again?"], ["bran", "Says mind your own arm."]],
 				[["bran", "Your shadow talks."], ["nan", "So does your arm, love. Yours just uses clauses."]]
 			]},
 		{"ids": ["nan", "quill"], "kind": "rivals", "name": "Creative accounting", "text": "Quill cooks the books for Hollowmark and Nan cooks them for herself. Each is sure the other is skimming. Both are right.",

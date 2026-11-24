@@ -292,7 +292,7 @@
 			"pitch": "Nan Cripps, at your service. Reasonable rates. Tally, tell them the rates are reasonable.",
 			"welcome": "Lovely town. Honest faces. I'll have most of them by Thursday. Joke! Tally, laugh.",
 			"quips": ["Nan won the squad's supper off a toll-keeper at cards. Tally says she cheated. Nan says Tally cheated.", "Nan sold a farmer the same map twice. Tally gave him his money back the second time, and sulked all the way home."],
-			"lines": ["Every contract's got a loophole. I put 'em in myself. Saves time.", "Tally's my shadow. He talks. He's honest. It's a terrible affliction and we're seeing someone about it.", "Never trust a woman who says never trust her. That's me. Ha! Gotcha. Or did I."]
+			"lines": ["Every contract's got a loophole. I put 'em in myself. Saves time.", "Tally's my shadow. He talks. He's honest. It's a terrible affliction and we're seeing someone about it.", "Never trust a woman who says never trust her. That's me. Ha! Gotcha."]
 		},
 		{
 			"id": "anselme", "name": "Anselme Brugière", "title": "vintner", "tier": "recruit", "start": false,
@@ -326,7 +326,7 @@
 			"join": {"type": "claim", "province": "inkmere"}, "hire": {"gilt": 25},
 			"rumour": "The word-fishers of Pendower Shallows say the catches are getting strange. Hold the Shallows and one of them might come looking for steadier work.",
 			"pitch": "Your flag's on the Shallows now, so the nets are yours. Twenty-five Gilt and I'll tell you what we've been pulling out of the ink. You won't like it.",
-			"welcome": "Where's your water? Not the well. The ink. You must have some ink about.",
+			"welcome": "Got any ink about the place? Lake ink, the sort that wriggles. I fish words out of it, and they want feeding.",
 			"quips": ["Gaspard netted a word out of a puddle on the road. He wouldn't say which one. He threw it back.", "Gaspard fished the squad's supper out of an ink-pond. It was a stew. Nobody asked."],
 			"lines": ["Last week the nets came up full of the word 'mouth'. Just that. A hundredweight of it.", "Good words smell of salt. Bad ones smell of the inside of a cupboard.", "The masquerade buys our best catches for their speeches. Long words, by the barrel."]
 		}
