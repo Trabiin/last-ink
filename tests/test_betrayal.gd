@@ -191,7 +191,10 @@ func test_without_bran_the_top_candidate_takes_the_deal() -> void:
 	check(Betrayal.score("odile") < Betrayal.threshold(), "fixture: Odile is below the threshold")
 	check_eq(Betrayal.pick(), "odile", "Bran gone: the top candidate takes the deal anyway")
 	Empire.recruits.erase("odile")
-	check_eq(Betrayal.pick(), "bran", "nobody left at all: it is still Bran's (Chapter 5 covers it)")
+	check_eq(Betrayal.pick(), "bran", "nobody left at all: the pick is still Bran's...")
+	check_eq(Betrayal.lock(), Betrayal.NOBODY, "...but the lock knows nobody is there to take the deal")
+	check_eq(Betrayal.scene_talk(), "betrayal_alone", "and Ash goes through the door alone")
+	check_eq(Betrayal.outcome("bran"), "", "no fate for a Bran who isn't there")
 
 
 ## The rule from DESIGN.md section 10: every save state picks exactly one betrayer, or Bran.
@@ -252,13 +255,20 @@ func test_every_state_picks_exactly_one() -> void:
 			check(not (Relationships.romance_of(who) == "partner" and not Betrayal.home_erased(who)), "%s: a partner with a home betrayed Ash" % where)
 		else:
 			check(r.is_empty() or int(r[0]["score"]) < Betrayal.threshold(), "%s: Bran's con while %s clears the threshold" % [where, r[0]["id"] if not r.is_empty() else ""])
-		# Locking writes exactly one betrayal fate, and it is the pick.
-		Betrayal.lock()
+		# Locking writes exactly one betrayal fate, and it is the pick; with nobody left at all (Bran gone, no
+		# candidate) it locks NOBODY and writes none.
+		var nobody: bool = who == fb and not Empire.recruits.has(fb)
+		check_eq(Betrayal.lock(), Betrayal.NOBODY if nobody else who, "%s: lock() returns the pick" % where)
 		var marked := []
 		for id in Empire.relations["fates"]:
 			if Betrayal.outcome(str(id)) != "":
 				marked.append(str(id))
-		check_eq(marked, [who], "%s: exactly one betrayal fate after lock()" % where)
+		check_eq(marked, [] if nobody else [who], "%s: exactly one betrayal fate after lock()" % where)
+		check_eq(Betrayal.scene_talk() != "", true, "%s: a betrayal scene for the lock" % where)
+		check(Dialogue.talk(Betrayal.scene_talk()).size() > 0, "%s: the scene %s exists" % [where, Betrayal.scene_talk()])
+		if not nobody:
+			check(Betrayal.away(who), "%s: the betrayer is away after the lock" % where)
+			check_eq(Empire.role_of(who), Betrayal.AWAY_ROLE, "%s: off every post" % where)
 	check(states == 3000, "walked every state")
 	for id in cands + [fb]:
 		check(int(picked.get(id, 0)) > 0, "%s is picked in some campaign (%s)" % [id, str(picked)])
@@ -305,7 +315,11 @@ func test_bran_con() -> void:
 	check_eq(Betrayal.lock(), "bran", "nobody else: Bran")
 	check(Betrayal.is_con(), "it's a con")
 	check_eq(Betrayal.outcome("bran"), "faked", "Bran's fate: faked")
-	check(not Betrayal.away("bran"), "Bran never really leaves")
+	check(Betrayal.away("bran"), "Bran walks off with the Vacancy until his con pays off")
+	check(Betrayal.con_home(), "the con mission brings him home")
+	check(not Betrayal.away("bran"), "home again")
+	check_eq(Empire.role_of("bran"), "idle", "back in Hollowmark, ready for a post")
+	check(not Betrayal.con_home(), "only once")
 	check(not Betrayal.resolve("redeemed"), "nothing to forgive")
 	check(Epilogues.text_for("bran").contains("receipt"), "Bran's con epilogue")
 	for id in Betrayal.candidates():

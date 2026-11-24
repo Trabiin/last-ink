@@ -227,6 +227,14 @@ func _apply_live(id: String, before: Dictionary) -> void:
 
 
 func _gui_input(event: InputEvent) -> void:
+	if event is InputEventMouseMotion:  # pointing at a node (or Reset) focuses it, like the arrow keys
+		for k in _node_rects:
+			if (_node_rects[k] as Rect2).has_point(event.position) and sel != k:
+				_confirm_reset = ""
+				sel = k
+		if _reset_rect.has_point(event.position) and sel != RESET:
+			sel = RESET
+		return
 	if not Prompts.tapped(event):
 		return
 	var p: Vector2 = event.position
@@ -268,7 +276,8 @@ func _close_rect() -> Rect2:
 # ---------------------------------------------------------------- drawing
 
 func _text(pos: Vector2, s: String, fsize: int, col: Color, width := -1.0) -> void:
-	draw_string(font, pos, s, HORIZONTAL_ALIGNMENT_LEFT, width, Access.fs(fsize), col)
+	# Text cut by its width ends in "..." rather than mid-letter (long names at large text sizes).
+	draw_string(font, pos, Access.fit(font, s, Access.fs(fsize), width) if width > 0.0 else s, HORIZONTAL_ALIGNMENT_LEFT, width, Access.fs(fsize), col)
 
 
 func _text_c(center: Vector2, s: String, fsize: int, col: Color, width := -1.0) -> void:

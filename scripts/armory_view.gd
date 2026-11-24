@@ -36,6 +36,7 @@ var flash_t := 0.0
 var font: Font
 var rows: Array = []
 var _row_rects: Array = []  # [rect, row index]
+var _drag := {}  # a finger drag over the list (Prompts.list_steps)
 var _strip := TabStrip.new()  # the tab row with its switch keys either side
 var _minus_rects := {}  # row index -> rect (Satchel tab)
 var _plus_rects := {}
@@ -267,6 +268,26 @@ func _set_tab(t: String) -> void:
 
 
 func _gui_input(event: InputEvent) -> void:
+	var n := Prompts.list_steps(event, _drag, ROW_H, Rect2(0, 46, LIST_W + 12, size.y - 64).has_point(event.position))
+	if n != 0:  # the wheel or a finger scrolls the list (the focus walks with it)
+		var to := Prompts.step_row(rows, sel, n, false)
+		if to != sel:
+			sel = to
+			Audio.sfx("ui_move")
+		accept_event()
+		return
+	if event is InputEventMouseMotion:
+		for rr in _row_rects:  # pointing at a row focuses it, like the arrow keys
+			if (rr[0] as Rect2).has_point(event.position):
+				sel = int(rr[1])
+		return
+	match Prompts.list_tap(event, _drag, _row_at(event.position) if "position" in event else -1, sel):
+		"focus":
+			sel = _row_at(event.position)
+			return
+		"act":
+			_act(sel)
+			return
 	if not Prompts.tapped(event):
 		return
 	var p: Vector2 = event.position
@@ -289,12 +310,13 @@ func _gui_input(event: InputEvent) -> void:
 			_pack_step(i, 1)
 			_rebuild()
 			return
+
+
+func _row_at(p: Vector2) -> int:
 	for rr in _row_rects:
 		if (rr[0] as Rect2).has_point(p):
-			if sel == int(rr[1]):
-				_act(sel)
-			sel = int(rr[1])
-			return
+			return int(rr[1])
+	return -1
 
 
 func _close_rect() -> Rect2:
@@ -304,7 +326,8 @@ func _close_rect() -> Rect2:
 # ---------------------------------------------------------------- drawing helpers
 
 func _text(pos: Vector2, s: String, fsize: int, col: Color, width := -1.0) -> void:
-	draw_string(font, pos, s, HORIZONTAL_ALIGNMENT_LEFT, width, Access.fs(fsize), col)
+	# Text cut by its width ends in "..." rather than mid-letter (long names at large text sizes).
+	draw_string(font, pos, Access.fit(font, s, Access.fs(fsize), width) if width > 0.0 else s, HORIZONTAL_ALIGNMENT_LEFT, width, Access.fs(fsize), col)
 
 
 func _text_r(right: Vector2, s: String, fsize: int, col: Color) -> void:

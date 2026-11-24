@@ -1,5 +1,5 @@
 {
-	"_comment": "The climax betrayal (issue #186, docs/DESIGN.md section 10 'The betrayal'), read by scripts/betrayal.gd. At the end of Chapter 5 the Vacancy offers one companion their erased home back in exchange for Ash. Each candidate who has joined and was not lost in the white gets a leverage score from 'weights'; the top scorer betrays Ash if they reach 'threshold', and ties go to whoever is listed first in 'candidates'. If nobody reaches it, 'fallback' (Bran) fakes a betrayal to con the Vacancy. weights: home_erased (their home province is erased right now), home_reclaimed (it fell at least once and was won back; used instead of home_erased), personal_locked (personal mission not done and out of reach because the home is gone), personal_open (personal mission not done but still possible; used instead of personal_locked), bond_low (bond rank 0 or 1), bond_mid (bond rank 2), rival (at least one rivalry with someone on the roster that never reached a truce), ex (Ash ended a romance with them), close (bond rank 5 or a current romance; one minus, not both). A current romance partner is only a candidate while their home is erased (Ojon, 2026-11-21). 'home' must match their personal mission's province in data/personal.json; '_offer' is what the Vacancy promises: a writer's note for the Chapter 5 scene (#31), which writes the player text.",
+	"_comment": "The climax betrayal (issue #186, docs/DESIGN.md section 10 'The betrayal'), read by scripts/betrayal.gd. At the end of Chapter 5 the Vacancy offers one companion their erased home back in exchange for Ash. Each candidate who has joined and was not lost in the white gets a leverage score from 'weights'; the top scorer betrays Ash if they reach 'threshold', and ties go to whoever is listed first in 'candidates'. If nobody reaches it, 'fallback' (Bran) fakes a betrayal to con the Vacancy. weights: home_erased (their home province is erased right now), home_reclaimed (it fell at least once and was won back; used instead of home_erased), personal_locked (personal mission not done and out of reach because the home is gone), personal_open (personal mission not done but still possible; used instead of personal_locked), bond_low (bond rank 0 or 1), bond_mid (bond rank 2), rival (at least one rivalry with someone on the roster that never reached a truce), ex (Ash ended a romance with them), close (bond rank 5 or a current romance; one minus, not both). A current romance partner is only a candidate while their home is erased (Ojon, 2026-11-21). 'home' must match their personal mission's province in data/personal.json; '_offer' is what the Vacancy promises: a writer's note for the Chapter 5 scene (#31), which writes the player text. Chapter hooks (scripts/betrayal.gd header): seeds = each candidate's Chapter 4 seed talks, played in town when the marked candidate is talked to, seed_gap days apart (Bran's only while the pick is his con); plan = the Verity plan that leans on the top candidate's home when the foreshadowing starts (notice: province, then name); talks = every betrayal conversation (seeds, Verity's letters betrayal_letter_<id>, the Chapter 5 scenes betrayal_<id> / _partner / betrayal_bran / betrayal_alone, the Chapter 6 fight talks betrayal_fight_<id>_intro/_phase2/_outro whose outro choice carries the gesture, and Bran's con mission betrayal_con_*); speakers = the Vacancy (stage 'blank': no portrait, a hole in the page). Words in [[double brackets]] are drawn as black bars.",
 	"threshold": 40,
 	"weights": {
 		"home_erased": 50,
@@ -14,8 +14,1054 @@
 	},
 	"fallback": "bran",
 	"candidates": [
-		{"id": "ottoline", "home": "gallows", "_offer": "The six people she shut the Encore door on, back. Her six coat-check tickets are the seed."},
-		{"id": "ninefingers", "home": "tithe", "_offer": "The village Daro refused to strike, unstruck. Or a Concord pardon, if the Concord still stands."},
-		{"id": "odile", "home": "oldmill", "_offer": "Her mother written back in, or her mother's skim written out."}
-	]
+		{
+			"id": "ottoline",
+			"home": "gallows",
+			"_offer": "The six people she shut the Encore door on, back. Her six coat-check tickets are the seed."
+		},
+		{
+			"id": "ninefingers",
+			"home": "tithe",
+			"_offer": "The village Daro refused to strike, unstruck. Or a Concord pardon, if the Concord still stands."
+		},
+		{
+			"id": "odile",
+			"home": "oldmill",
+			"_offer": "Her mother written back in, or her mother's skim written out."
+		}
+	],
+	"seed_gap": 3,
+	"seeds": {
+		"ottoline": [
+			"betrayal_seed_ottoline_1",
+			"betrayal_seed_ottoline_2",
+			"betrayal_seed_ottoline_3"
+		],
+		"ninefingers": [
+			"betrayal_seed_ninefingers_1",
+			"betrayal_seed_ninefingers_2",
+			"betrayal_seed_ninefingers_3"
+		],
+		"odile": [
+			"betrayal_seed_odile_1",
+			"betrayal_seed_odile_2",
+			"betrayal_seed_odile_3"
+		],
+		"bran": [
+			"betrayal_seed_bran_1"
+		]
+	},
+	"plan": {
+		"label": "Verity's pages drift",
+		"per_day": 2,
+		"days": 6,
+		"counter": "governor",
+		"notice": "Verity's loose pages are drifting toward %s, where %s calls home. A governor there could hold them off."
+	},
+	"speakers": {
+		"vacancy": {
+			"name": "The Vacancy",
+			"stage": "blank",
+			"color": "eeebe2",
+			"colors": {
+				"skin": "f4f2ec",
+				"cloth": "eeebe2",
+				"trim": "15101a",
+				"hair": "eeebe2"
+			}
+		}
+	},
+	"talks": {
+		"betrayal_seed_ottoline_1": {
+			"title": "Head Count",
+			"lines": [
+				[
+					"",
+					"Ottoline is at the gate with a stub of chalk, ticking people in for the night. She gets to six and stops."
+				],
+				[
+					"ottoline",
+					"Lost count. Never lose count."
+				],
+				[
+					"ottoline",
+					"Had a dream. Knocking. Six knocks, then a seventh, soft, like someone asking. I stood there with me arms folded and didn't open."
+				],
+				[
+					"ottoline",
+					"Go on, get in. You're letting the cold in."
+				]
+			]
+		},
+		"betrayal_seed_ottoline_2": {
+			"title": "Doors",
+			"lines": [
+				[
+					"ottoline",
+					"Does a door stay shut? If you shut it proper. Bolt and bar."
+				],
+				[
+					"ottoline",
+					"Asking for nobody. Asking for a door."
+				],
+				[
+					"",
+					"She looks past Ash at the edge of the map, where the white is, for longer than a bouncer looks at anything."
+				],
+				[
+					"ottoline",
+					"It were polite, last night. The white. Didn't push. Just waited by the step like a regular who knows you'll let him in eventually."
+				]
+			]
+		},
+		"betrayal_seed_ottoline_3": {
+			"title": "Closing Time",
+			"lines": [
+				[
+					"",
+					"Ottoline has six coat-check tickets laid out on the well's rim, in order. She is turning the seventh over and over in her fingers."
+				],
+				[
+					"ottoline",
+					"Summat asked us a question last night. Said it knew where the coats went."
+				],
+				[
+					"ottoline",
+					"I didn't answer. Didn't say no, either. That's the bit I keep coming back to."
+				],
+				[
+					"",
+					"She sweeps the tickets into her apron pocket, all seven, and does not look at Ash again."
+				]
+			]
+		},
+		"betrayal_seed_ninefingers_1": {
+			"title": "Official Correspondence",
+			"lines": [
+				[
+					"",
+					"Daro is holding a letter at arm's length, the way people hold things that might go off. The seal is Concord blue."
+				],
+				[
+					"ninefingers",
+					"Pardon. Full. Back pay, nine years. Rank restored. Signed and sealed."
+				],
+				[
+					"ninefingers",
+					"Nobody I know signed it. Signature's just a gap where a name goes. Lovely gap, mind. Very official."
+				],
+				[
+					"",
+					"They fold it into quarters, then eighths, then put it in their breast pocket instead of the fire."
+				]
+			]
+		},
+		"betrayal_seed_ninefingers_2": {
+			"title": "Inventory",
+			"lines": [
+				[
+					"ninefingers",
+					"Woke up and counted ten. Fingers. Ten."
+				],
+				[
+					"ninefingers",
+					"Counted again, nine. Counted again, nine. Kept counting till the bell."
+				],
+				[
+					"ninefingers",
+					"Don't look at me like that, sir. Twelve years in, you learn to count your kit. Kit's just been interesting lately."
+				]
+			]
+		},
+		"betrayal_seed_ninefingers_3": {
+			"title": "Form H-1",
+			"lines": [
+				[
+					"ninefingers",
+					"Hypothetical. Form H-1, Questions Asked Off The Record."
+				],
+				[
+					"ninefingers",
+					"Someone offers you your page back. Clean. Nobody struck out, nobody fined, nobody's name on a plaque. All you've got to do is stand still while they read at you."
+				],
+				[
+					"ninefingers",
+					"Would you? Don't answer. Bloody stupid form. Dismissed."
+				],
+				[
+					"",
+					"They walk off fast, then stop at the edge of the plaza, and stand very still for a while."
+				]
+			]
+		},
+		"betrayal_seed_odile_1": {
+			"title": "An Irregular Entry",
+			"lines": [
+				[
+					"",
+					"Odile has the stolen ledger open on her knees. One line on the last page is in a hand that is not hers, in ink that is not quite any colour."
+				],
+				[
+					"odile",
+					"I did not write this. I write everything in this ledger, and I did not write this."
+				],
+				[
+					"odile",
+					"It is an offer of settlement. Terms to follow. It has left the amount blank, which is either very generous or very rude."
+				],
+				[
+					"",
+					"She does not cross it out. She draws a small neat box around it, the way she marks an entry to be queried."
+				]
+			]
+		},
+		"betrayal_seed_odile_2": {
+			"title": "Balanced",
+			"lines": [
+				[
+					"odile",
+					"I dreamt I balanced. Every column. Assets, liabilities, Mother's ninety Gilt. All of it, to the last copper."
+				],
+				[
+					"odile",
+					"It was appalling. I have never been so frightened in my life."
+				],
+				[
+					"odile",
+					"One wakes up and checks one's sums. Mine were wrong again, thank goodness. I should like that on the record."
+				]
+			]
+		},
+		"betrayal_seed_odile_3": {
+			"title": "Valuation",
+			"lines": [
+				[
+					"odile",
+					"What is a person worth, Ash? In Gilt. I am asking professionally."
+				],
+				[
+					"odile",
+					"The Concord had a table for it. Labourer, so much. Tithe-payer, so much more. Unregistered, nil. You would be nil. I always thought that table was obscene."
+				],
+				[
+					"odile",
+					"Somebody has offered me a different table. I have not read it. I have not torn it up, either. Enter that, if you are keeping notes on me."
+				]
+			]
+		},
+		"betrayal_seed_bran_1": {
+			"title": "Business Hours",
+			"lines": [
+				[
+					"bran",
+					"Had a visitor last night. Didn't knock. Didn't have a face, really. Wanted to talk business."
+				],
+				[
+					"bran",
+					"Told it me rates. Told it me clauses. It went quiet when I got to clause nine, so I said it twice."
+				],
+				[
+					"bran",
+					"Don't look at me like that, smudge. Clause nine: someone pays more, I tell the client first. I'm tellin' you. Ain't nobody paid me nothin' yet."
+				]
+			]
+		},
+		"betrayal_letter_ottoline": {
+			"title": "A Letter About Ottoline",
+			"lines": [
+				[
+					"",
+					"A letter on the Command Table again, under the smooth white stone. The handwriting is the same. It leans more than it used to."
+				],
+				[
+					"letter",
+					"'To Hollowmark, which I am told now has a great many people in it:'"
+				],
+				[
+					"letter",
+					"'Something I do not control has been asking after your doorwoman. The big one, with the chalk. It asks about her the way I used to ask about overdue books.'"
+				],
+				[
+					"letter",
+					"'I meant to aim the white at Gallows Ferry, and I find I already have, and I do not remember doing it. Keep the river held, if you can. Keep her close, if you can't.'"
+				],
+				[
+					"letter",
+					"'I am losing the thread of this, I should think. Fondly, and with less certainty than before: V. Hale.'"
+				],
+				[
+					"quill",
+					"Her hand's worse. The H in Hale's gone all to pieces. I mention it as a matter of record."
+				],
+				[
+					"",
+					"Somebody has to tell Ottoline about the letter. Nobody does."
+				]
+			]
+		},
+		"betrayal_letter_ninefingers": {
+			"title": "A Letter About Daro",
+			"lines": [
+				[
+					"",
+					"A letter on the Command Table again, under the smooth white stone. The handwriting is the same. It leans more than it used to."
+				],
+				[
+					"letter",
+					"'To Hollowmark, which I am told now has a great many people in it:'"
+				],
+				[
+					"letter",
+					"'Your Corporal Daro tore up an Erasure order once. I read the report. I admired it very much, and I signed the fine.'"
+				],
+				[
+					"letter",
+					"'Something is reading that report again, very slowly, the way one reads a menu. I have not given it permission. It does not ask me for things any more.'"
+				],
+				[
+					"letter",
+					"'Keep the Tithe Road, if you can. Hob's Wick has been struck out once in ink already; I should hate it to be struck out twice in white. Fondly, and rather frightened: V. Hale.'"
+				],
+				[
+					"quill",
+					"She signed Daro's fine. I filed it. Small world, and all of it paperwork."
+				],
+				[
+					"",
+					"Quill puts the letter in a drawer, then takes it out again and puts it under a heavier book."
+				]
+			]
+		},
+		"betrayal_letter_odile": {
+			"title": "A Letter About Odile",
+			"lines": [
+				[
+					"",
+					"A letter on the Command Table again, under the smooth white stone. The handwriting is the same. It leans more than it used to."
+				],
+				[
+					"letter",
+					"'To Hollowmark, which I am told now has a great many people in it:'"
+				],
+				[
+					"letter",
+					"'Please give my regards to Miss Penhallow. Her mother taught me double entry, a long time ago, in a cold room in the capital. Neither of us smiled once.'"
+				],
+				[
+					"letter",
+					"'Something has been going through the Penhallow accounts. It is looking for the one line that does not balance. I do not know what it means to do when it finds it.'"
+				],
+				[
+					"letter",
+					"'Hold Old Mill Crossing, if you can. I tried to aim the white elsewhere. It went where it liked. Fondly, and less in charge than you think: V. Hale.'"
+				],
+				[
+					"quill",
+					"She taught double entry to Verity Hale? Of course she did. I want to lie down."
+				],
+				[
+					"",
+					"Nobody says Odile's name out loud for the rest of the evening. It is somehow worse than saying it."
+				]
+			]
+		},
+		"betrayal_ottoline": {
+			"title": "Coat. Ticket. Out.",
+			"lines": [
+				[
+					"",
+					"The night after the Spire, Hollowmark is too quiet to sleep in. In the middle of the plaza there is a door: red paint, brass handle, chalk tallies up the frame. The Encore door. No building round it."
+				],
+				[
+					"",
+					"Ottoline stands in front of it with her arms folded, the way she stood for nine years. She does not move when Ash comes up."
+				],
+				[
+					"vacancy",
+					"[[Six]] coats. [[Six]] [[tickets]]. [[Supper]] [[on]] [[the]] [[table]]. home."
+				],
+				[
+					"ottoline",
+					"It came round at closing. Asked us nicely. Nobody asks us nicely."
+				],
+				[
+					"ottoline",
+					"Six coats, Ash. It says it'll put the people back in them. Not paper. Them. Lad with the cough. Merriam who sang flat. The two Fenwick sisters who never paid."
+				],
+				[
+					"vacancy",
+					"[[All]] [[it]] [[wants]] [[is]] one."
+				],
+				[
+					"ottoline",
+					"Just you. Through the door, like a coat to the cloakroom."
+				],
+				[
+					"ottoline",
+					"I stood with me back to a door once and let six folk die so a hundred and six didn't. I'm good at sums like that. I hate that I'm good at them."
+				],
+				[
+					"",
+					"She takes Ash by the arm. Not hard. The grip of somebody showing a drunk the way out, kindly, for the last time."
+				],
+				[
+					"ottoline",
+					"House rules. Coat. Ticket. Out."
+				],
+				[
+					"",
+					"She presses something into Ash's hand: a coat-check ticket, number seven. Then she opens the door, and the white comes in like weather."
+				],
+				[
+					"",
+					"When it lifts, the plaza is empty. Six chalk marks on the cobbles, and a seventh, half drawn."
+				]
+			]
+		},
+		"betrayal_ottoline_partner": {
+			"title": "Last Dance",
+			"lines": [
+				[
+					"",
+					"The night after the Spire, Hollowmark is too quiet to sleep in. In the middle of the plaza stands the Encore's red door, with no building round it, and Ottoline in front of it."
+				],
+				[
+					"ottoline",
+					"Dance with us. Once. Before."
+				],
+				[
+					"",
+					"There is no band. She hums the waltz they played at the Encore on Thursdays, badly, and leads, because she always leads."
+				],
+				[
+					"vacancy",
+					"[[Six]] coats. [[Six]] [[tickets]]. home."
+				],
+				[
+					"ottoline",
+					"Shut up. We're dancing."
+				],
+				[
+					"ottoline",
+					"Lantern Row's gone, love. The Encore, the six, all of it. It says it'll write them back. Says it's a fair trade. It is a fair trade. That's what's wrong with it."
+				],
+				[
+					"ottoline",
+					"If you'd been anyone else I'd have said no. If you'd been anyone else it wouldn't have asked."
+				],
+				[
+					"",
+					"On the last turn of the waltz she steps them both backwards, through the door. She lets go of Ash's hand on the threshold, very gently, one finger at a time."
+				],
+				[
+					"ottoline",
+					"I'm sorry, love. Coat. Ticket. Out."
+				],
+				[
+					"",
+					"When the white lifts, the plaza is empty. There is a coat-check ticket on the cobbles, number seven, and nobody to claim it."
+				]
+			]
+		},
+		"betrayal_ninefingers": {
+			"title": "Form V-1",
+			"lines": [
+				[
+					"",
+					"The night after the Spire, Hollowmark is too quiet to sleep in. In the middle of the plaza there is a door: no house round it, no frame, red paint on one side and nothing at all on the other."
+				],
+				[
+					"",
+					"Daro is sitting on the well's rim with their pike across their knees and a sheet of paper flat on the stones. The paper is perfectly blank, apart from a seal."
+				],
+				[
+					"ninefingers",
+					"Orders came. Nice paper. Lovely seal. Never had a seal for doing the right thing before."
+				],
+				[
+					"vacancy",
+					"[[Hob's]] [[Wick]]. [[Goats]] [[in]] [[the]] chapel. [[Unstruck]]."
+				],
+				[
+					"ninefingers",
+					"Form V-1. One Unwritten, surrendered. In return, one village, unstruck. Every house. Every name off the plaque. Or a pardon from a Concord that isn't there any more. Either. It's flexible."
+				],
+				[
+					"ninefingers",
+					"Twelve years they trained me to stand still while some sir read at me. Tore one order up. Cost me a finger and my name. This one costs you."
+				],
+				[
+					"ninefingers",
+					"Nine. Always nine. Turns out I keep the count by giving things up."
+				],
+				[
+					"",
+					"They sign. It is the first thing Daro has signed in nine years that they don't tear up afterwards."
+				],
+				[
+					"ninefingers",
+					"Stand down, Ash. That's an order. First one I've given."
+				],
+				[
+					"",
+					"Daro walks Ash to the door at a parade-ground pace and salutes the white before they open it. When it lifts, the form is still on the well, signed, and the pike is leaning against the wall where Daro always leaves it."
+				]
+			]
+		},
+		"betrayal_ninefingers_partner": {
+			"title": "Signed, Daro",
+			"lines": [
+				[
+					"",
+					"The night after the Spire, Hollowmark is too quiet to sleep in. In the middle of the plaza there is a door: no house round it, no frame, red paint on one side and nothing at all on the other."
+				],
+				[
+					"",
+					"Daro is waiting by it with a form in one hand and nothing in the other. The nothing is shaking slightly."
+				],
+				[
+					"vacancy",
+					"[[Hob's]] [[Wick]]. [[Unstruck]]. home."
+				],
+				[
+					"ninefingers",
+					"Don't make that face. Your face is the only one I never had to salute."
+				],
+				[
+					"ninefingers",
+					"The Wick's gone white. Every house. The old woman who asked if I knew the Corporal. All of it, and it says it'll put it back. All it wants is you."
+				],
+				[
+					"ninefingers",
+					"Told it no. Told it no for three nights. Fourth night it showed me the plaque, with the right name on, and I stopped saying anything at all."
+				],
+				[
+					"",
+					"Daro puts their forehead against Ash's, briefly, like checking a fever. Then they sign the form against Ash's shoulder."
+				],
+				[
+					"ninefingers",
+					"On record: I'm a coward. Underline it. Twice."
+				],
+				[
+					"",
+					"The door opens. The white comes in. When it lifts, there is a signed form on the cobbles, and nine fingerprints in the dust on the well, pressed hard."
+				]
+			]
+		},
+		"betrayal_odile": {
+			"title": "Carried Forward",
+			"lines": [
+				[
+					"",
+					"The night after the Spire, Hollowmark is too quiet to sleep in. In the middle of the plaza there is a door: no house round it, no frame, red paint on one side and nothing at all on the other."
+				],
+				[
+					"",
+					"Odile is at a trestle table in front of it with the stolen ledger open, two pens laid out, red and black. She has been there a while. The tea beside her has gone cold."
+				],
+				[
+					"vacancy",
+					"mother. [[The]] [[Old]] [[Mill]]. [[Ninety]] [[Gilt]], [[written]] out."
+				],
+				[
+					"odile",
+					"It is offering terms. My mother written back in, with the Old Mill round her. Or the ninety Gilt written out, so Penhallow Mere was never left off the lists. I may choose. It is very accommodating."
+				],
+				[
+					"odile",
+					"I have done the valuation. Assets: one mother, Chief Assessor, perfect books bar one line. One village, if I prefer. Liabilities: you."
+				],
+				[
+					"odile",
+					"It balances, Ash. That is the worst thing I have ever written."
+				],
+				[
+					"",
+					"She enters it. Red ink first, then black, the way she was taught, in a cold room, by her mother."
+				],
+				[
+					"odile",
+					"I am declaring it. I will not do this off the books. If I am going to be a thief, I shall be a properly documented one."
+				],
+				[
+					"",
+					"She closes the ledger and stands. Her hand on Ash's elbow is light and absolutely firm, a hand that has walked a great many debtors to a great many doors."
+				],
+				[
+					"odile",
+					"Do not look at me. I would rather you did not see my face."
+				],
+				[
+					"",
+					"The door opens. When the white lifts, the trestle is still there, and the cold tea, and a single receipt in Penhallow red: one Unwritten, received."
+				]
+			]
+		},
+		"betrayal_odile_partner": {
+			"title": "A Fair Price",
+			"lines": [
+				[
+					"",
+					"The night after the Spire, Hollowmark is too quiet to sleep in. In the middle of the plaza there is a door: no house round it, no frame, red paint on one side and nothing at all on the other."
+				],
+				[
+					"",
+					"Odile is standing beside it, quite still, with the ledger held shut against her chest like a shield."
+				],
+				[
+					"vacancy",
+					"mother. [[The]] [[Old]] [[Mill]]. home."
+				],
+				[
+					"odile",
+					"The Old Mill is gone. Mother is gone with it. I checked. I checked three times. One does not round."
+				],
+				[
+					"odile",
+					"It will write her back. Window seat, two pens, tea not drunk. All it asks is you, and I have tried every column there is to make that not balance."
+				],
+				[
+					"odile",
+					"I'm... I am sorry. There. A contraction. Put it on the record."
+				],
+				[
+					"",
+					"She takes Ash's hand, briefly, palm to palm, as if pressing a seal. Then she opens the door herself."
+				],
+				[
+					"odile",
+					"Do not look at me."
+				],
+				[
+					"",
+					"When the white lifts, the plaza is empty. The ledger is lying on the cobbles, open at a new page, with one entry in red ink and no total."
+				]
+			]
+		},
+		"betrayal_bran": {
+			"title": "Clause Nine",
+			"lines": [
+				[
+					"",
+					"The night after the Spire, Hollowmark is too quiet to sleep in. In the middle of the plaza there is a door: no house round it, no frame, red paint on one side and nothing at all on the other."
+				],
+				[
+					"",
+					"Bran is leaning on the door frame, picking his teeth with the corner of a contract. The contract is blank, apart from an X at the bottom."
+				],
+				[
+					"bran",
+					"Evenin', smudge. Clause nine. Someone pays more, I tell the client first. So. I'm tellin' you."
+				],
+				[
+					"vacancy",
+					"[[Anything]]. [[Name]] [[it]]. home."
+				],
+				[
+					"bran",
+					"It asked me price. I gave it. Everythin' it ever ate, back, all of it, by Thursday."
+				],
+				[
+					"vacancy",
+					"yes."
+				],
+				[
+					"bran",
+					"See? Said yes before I'd finished. Never trust a buyer who don't haggle."
+				],
+				[
+					"",
+					"The tattoo on his arm tightens. Ash can see it: the old ink pulling in like a fist, the skin going white round it. Bran lets it."
+				],
+				[
+					"bran",
+					"Can't read, me. Can count, though. And a contract you can't pay is a contract with nobody."
+				],
+				[
+					"",
+					"He takes Ash by the collar, quite gently, and winks. Then he walks Ash through the door like a man delivering a parcel he has already been paid for."
+				],
+				[
+					"",
+					"When the white lifts, there is an X on the cobbles, drawn in chalk, and nothing else."
+				]
+			]
+		},
+		"betrayal_alone": {
+			"title": "Nobody Home",
+			"lines": [
+				[
+					"",
+					"The night after the Spire, Hollowmark is too quiet to sleep in. In the middle of the plaza there is a door, and behind it, the white, waiting to be let in."
+				],
+				[
+					"vacancy",
+					"[[Anyone]]? [[Anyone]] [[at]] home?"
+				],
+				[
+					"",
+					"Nobody answers. Everyone it might have bargained with is gone: lost in the white, or never there at all. The offer hangs in the doorway with nowhere to go."
+				],
+				[
+					"vacancy",
+					"[[Then]] [[come]] [[in]]. door."
+				],
+				[
+					"",
+					"Ash looks at the door for a long time. Then, because nobody else is going to, Ash opens it and walks through."
+				]
+			]
+		},
+		"betrayal_fight_ottoline_intro": {
+			"title": "Lantern Row, as Written",
+			"lines": [
+				[
+					"",
+					"Lantern Row, the way the Blank keeps it: the words for lamps, the word for a river, a door that is only the words 'the red door'. Ottoline is standing in front of it with her arms folded."
+				],
+				[
+					"ottoline",
+					"Stop. Name?"
+				],
+				[
+					"ottoline",
+					"You're not on the list. You were never on the list. That were the point of you."
+				],
+				[
+					"",
+					"There is a black bar across her eyes, like a word somebody struck out. She cracks her knuckles anyway, the old way."
+				],
+				[
+					"ottoline",
+					"House rules. Nobody past this door. Not even you."
+				]
+			]
+		},
+		"betrayal_fight_ottoline_phase2": {
+			"title": "",
+			"lines": [
+				[
+					"vacancy",
+					"[[Hold]] [[the]] door."
+				],
+				[
+					"ottoline",
+					"It's writing in us. I can feel the letters going in. Get it done, Ash. Properly."
+				]
+			]
+		},
+		"betrayal_fight_ottoline_outro": {
+			"title": "Seventh Peg",
+			"lines": [
+				[
+					"",
+					"Ottoline goes down on one knee in the middle of Lantern Row. The black bar over her eyes flickers, and for a moment it is just her."
+				],
+				[
+					"ottoline",
+					"Six coats came back. It kept its word. They're in there, hung up, no one in them yet. It said they'd fill once you were through."
+				],
+				[
+					"ottoline",
+					"Go on, then. Whatever you're going to do. I'll not stop you."
+				]
+			],
+			"choice": [
+				{
+					"text": "Hold out the ticket, number seven",
+					"betrayal": "redeemed",
+					"reply": [
+						[
+							"",
+							"Ash holds out the coat-check ticket. Number seven. Ottoline looks at it for a long time."
+						],
+						[
+							"ottoline",
+							"That's not how it works. You hand the ticket over, you get your coat back."
+						],
+						[
+							"ottoline",
+							"...Right. Right, then. I'll get the door."
+						],
+						[
+							"",
+							"She takes the ticket, and the bar over her eyes tears like wet paper. She walks out of the white behind Ash without being asked."
+						]
+					]
+				},
+				{
+					"text": "Step aside from the door",
+					"betrayal": "let_go",
+					"reply": [
+						[
+							"",
+							"Ash steps aside, out of the way of the red door."
+						],
+						[
+							"ottoline",
+							"Aye. Fair. I'd have done the same."
+						],
+						[
+							"",
+							"She stands, brushes the white off her knees, and takes up her place in front of the door, arms folded. Ash's footsteps go away down the words for a street. Behind them she starts counting."
+						]
+					]
+				}
+			]
+		},
+		"betrayal_fight_ninefingers_intro": {
+			"title": "The Tithe Road, as Written",
+			"lines": [
+				[
+					"",
+					"The Tithe Road, as written: the word 'road' over and over, straight and grey, and every few yards the word WANTED. Hob's Wick is out to the side, a chapel and a well and some goats, all words."
+				],
+				[
+					"ninefingers",
+					"There you are. Took your time. I've read this road four hundred times since I got here. It's very short."
+				],
+				[
+					"",
+					"A black bar sits across Daro's eyes, neat as a censor's ruler."
+				],
+				[
+					"ninefingers",
+					"Terms say you don't leave. Terms say I make sure. Pike first, Daro second. You know the drill."
+				]
+			]
+		},
+		"betrayal_fight_ninefingers_phase2": {
+			"title": "",
+			"lines": [
+				[
+					"vacancy",
+					"[[Stand]] still."
+				],
+				[
+					"ninefingers",
+					"It's reading at me. In my own voice. Hit harder, sir. That's an order."
+				]
+			]
+		},
+		"betrayal_fight_ninefingers_outro": {
+			"title": "Dismissed",
+			"lines": [
+				[
+					"",
+					"Daro's pike clatters onto the word 'road'. They sit down hard beside it, and the bar over their eyes slides crooked."
+				],
+				[
+					"ninefingers",
+					"Village is there. I went and looked. Every house. Right name on the plaque. Goats in the chapel, as per."
+				],
+				[
+					"ninefingers",
+					"Doesn't feel like anything. Thought it'd feel like something."
+				]
+			],
+			"choice": [
+				{
+					"text": "Pick up the pike and hand it back",
+					"betrayal": "redeemed",
+					"reply": [
+						[
+							"",
+							"Ash picks up the pike, turns it round, and holds it out, shaft first."
+						],
+						[
+							"ninefingers",
+							"...You want a deserter back. Twice a deserter. That's bloody poor judgement, sir."
+						],
+						[
+							"ninefingers",
+							"Fine. On record: I'm coming. I'll want a court-martial after. A proper one. Form and all."
+						],
+						[
+							"",
+							"They take the pike. The bar over their eyes comes off on the shaft like ink on a thumb."
+						]
+					]
+				},
+				{
+					"text": "Salute, and walk away",
+					"betrayal": "let_go",
+					"reply": [
+						[
+							"",
+							"Ash salutes, badly, the way Daro has always complained about, and turns away."
+						],
+						[
+							"ninefingers",
+							"Elbow's wrong. Always was."
+						],
+						[
+							"",
+							"When Ash looks back, Daro is walking east along the words for the Tithe Road, toward a village that might be there, at a parade-ground pace, not looking back."
+						]
+					]
+				}
+			]
+		},
+		"betrayal_fight_odile_intro": {
+			"title": "Old Mill Crossing, as Written",
+			"lines": [
+				[
+					"",
+					"Old Mill Crossing, written out: the words 'a scarecrow' standing in the words 'a field', and the Honest Measure, which is now just its own name in large letters."
+				],
+				[
+					"odile",
+					"Sit down. This will hurt. Rather a lot. I am closing your account."
+				],
+				[
+					"",
+					"There is a black bar across her eyes. She has drawn a neat red box around it, the way she marks an entry to be queried."
+				],
+				[
+					"odile",
+					"I have declared the debt. It is entered. I will see it paid, Ash. I always do."
+				]
+			]
+		},
+		"betrayal_fight_odile_phase2": {
+			"title": "",
+			"lines": [
+				[
+					"vacancy",
+					"[[Balance]]."
+				],
+				[
+					"odile",
+					"It is correcting my figures. Mine. Do not let it round me, Ash. Whatever else."
+				]
+			]
+		},
+		"betrayal_fight_odile_outro": {
+			"title": "No Total",
+			"lines": [
+				[
+					"",
+					"The ledger falls out of Odile's hands and lands open on the word 'field'. She sits down beside it, very straight, as if at a desk."
+				],
+				[
+					"odile",
+					"She is in there. The window seat. Two pens. She looked up when I came in and asked whether I had brought the Lowmere ledger back."
+				],
+				[
+					"odile",
+					"Not hello. The ledger. It wrote her exactly, you see. It was very thorough."
+				]
+			],
+			"choice": [
+				{
+					"text": "Close the ledger and offer your hand",
+					"betrayal": "redeemed",
+					"reply": [
+						[
+							"",
+							"Ash closes the ledger and holds out a hand."
+						],
+						[
+							"odile",
+							"One betrayal. Under Liabilities. Carried forward."
+						],
+						[
+							"odile",
+							"I shall pay it down. A line at a time. Do not dare write it off."
+						],
+						[
+							"",
+							"She takes Ash's hand to stand. The red box round the bar over her eyes is the first thing to go, then the bar."
+						]
+					]
+				},
+				{
+					"text": "Leave her to her mother's house",
+					"betrayal": "let_go",
+					"reply": [
+						[
+							"",
+							"Ash leaves the ledger where it lies and steps back."
+						],
+						[
+							"odile",
+							"Ah. Yes. That is... fair. That is a fair valuation."
+						],
+						[
+							"",
+							"She picks up the ledger and walks toward the words 'the Honest Measure', where a window seat is waiting, and a woman with two pens who has not drunk her tea."
+						]
+					]
+				}
+			]
+		},
+		"betrayal_con_intro": {
+			"title": "Gallows Ferry, as Written",
+			"lines": [
+				[
+					"",
+					"Gallows Ferry, as the Blank keeps it: the words for a river, the words for lamps, some lit and some not. Somewhere down by the landing, a man is shouting about Thursday."
+				],
+				[
+					"",
+					"It is the voice Bran uses on Quill about his wages. There is no mistaking it."
+				]
+			]
+		},
+		"betrayal_con_bran": {
+			"title": "Thursday",
+			"lines": [
+				[
+					"",
+					"Bran is sitting on the word 'landing' with his feet up, waving a blank contract at the white like an unpaid bill."
+				],
+				[
+					"bran",
+					"It's Thursday! Everythin' you ever ate, back, all of it. I'm waitin'."
+				],
+				[
+					"vacancy",
+					"[[Later]]. [[Soon]]. [[Some]] [[of]] it."
+				],
+				[
+					"bran",
+					"Some of it? That's breach, that is. You want to see breach? Smudge! Over 'ere!"
+				],
+				[
+					"",
+					"He grins at Ash like a man who has been expecting a delivery."
+				],
+				[
+					"bran",
+					"Told you. Contract it can't pay's a contract with nobody. Now it's in breach, and I'm owed, and it's sendin' collectors 'cause it can't stand owin'. Keep 'em off me while I make it sweat."
+				]
+			]
+		},
+		"betrayal_con_outro": {
+			"title": "Receipt",
+			"lines": [
+				[
+					"",
+					"The last collector comes apart into the word 'nothing'. The white along the river has gone very still, the way a debtor goes still when the bailiff knocks."
+				],
+				[
+					"bran",
+					"Breach of contract. Payment not made. Goods returned to sender."
+				],
+				[
+					"",
+					"He holds his arm up. The tattoo has gone slack, the old ink lying easy on the skin, as if it never tightened at all."
+				],
+				[
+					"bran",
+					"And the paperwork says I'm owed. Which means it's got to let me back in. Wherever it keeps the stuff it can't pay for. Right to the middle."
+				],
+				[
+					"bran",
+					"Hazard pay, smudge. On the bill. Big bill."
+				]
+			]
+		}
+	}
 }

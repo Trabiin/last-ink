@@ -269,16 +269,17 @@ func ledger() -> Array:
 	if extra > 0:
 		lines.append({"label": tr("Garrisons and roads (%d past %d)") % [extra, HOLD_FREE], "gilt": -int(HOLD_UPKEEP["gilt"]) * extra,
 			"supplies": -int(HOLD_UPKEEP["supplies"]) * extra, "ink": 0, "note": ""})
-	var upkeep := UPKEEP_SUPPLIES * recruits.size()
-	lines.append({"label": tr("Upkeep (%d people)") % recruits.size(), "gilt": 0, "supplies": -upkeep, "ink": 0, "note": ""})
+	var fed := fed_count()
+	var upkeep := UPKEEP_SUPPLIES * fed
+	lines.append({"label": tr("Upkeep (%d people)") % fed, "gilt": 0, "supplies": -upkeep, "ink": 0, "note": ""})
 	var fighters := field_count()
 	if fighters > 0 and FIELD_RATIONS > 0:
 		lines.append({"label": tr("  Field rations (%d fighters)") % fighters, "gilt": 0, "supplies": -FIELD_RATIONS * fighters, "ink": 0, "note": ""})
 	var qm := current_effect("command_table")
 	if int(qm.get("upkeep_cut", 0)) > 0:
 		lines.append({"label": tr("  Quartermaster's savings"), "gilt": 0, "supplies": mini(int(qm["upkeep_cut"]), upkeep), "ink": 0, "note": ""})
-	if has_research("log_rations") and recruits.size() >= 4:
-		lines.append({"label": tr("  Ration tables"), "gilt": 0, "supplies": recruits.size() / 4, "ink": 0, "note": "research"})
+	if has_research("log_rations") and fed >= 4:
+		lines.append({"label": tr("  Ration tables"), "gilt": 0, "supplies": fed / 4, "ink": 0, "note": "research"})
 	var ink := current_effect("inkworks")
 	if int(ink.get("ink", 0)) > 0:
 		lines.append({"label": tr("Inkworks"), "gilt": 0, "supplies": 0, "ink": int(ink["ink"]), "note": ""})
@@ -491,7 +492,7 @@ func surge_days_left() -> int:
 
 const PARTY_SIZE := 3
 const ROLE_NAMES := {"idle": "Idle", "party": "Party", "governor": "Governor", "staff": "Building staff",
-	"expedition": "Expedition", "researcher": "Researcher", "envoy": "Envoy"}
+	"expedition": "Expedition", "researcher": "Researcher", "envoy": "Envoy", "away": "Gone with the Vacancy"}
 
 
 func _load_recruit_data() -> void:
@@ -510,13 +511,18 @@ func recruit(id: String) -> Dictionary:
 
 
 ## Joined recruits in roster order (the order of data/recruits.json).
-## Field heroes on the roster (they eat field rations on top of upkeep).
+## Field heroes on the roster (they eat field rations on top of upkeep). Nobody gone with the Vacancy eats.
 func field_count() -> int:
 	var n := 0
 	for id in recruits:
-		if recruit(id).get("tier", "") == "field":
+		if recruit(id).get("tier", "") == "field" and role_of(id) != Betrayal.AWAY_ROLE:
 			n += 1
 	return n
+
+
+## People Hollowmark feeds: the roster, less anyone gone with the Vacancy (issue #186).
+func fed_count() -> int:
+	return recruits.keys().filter(func(id): return role_of(id) != Betrayal.AWAY_ROLE).size()
 
 
 func roster_ids() -> Array:
@@ -707,6 +713,11 @@ func role_options(id: String) -> Array:
 		var back := job_left_text(e) if not e.is_empty() else Loc.t("soon")
 		out.append({"role": "expedition", "target": st["target"], "label": tr("On expedition: %s") % job(st["target"]).get("name", "?"),
 			"enabled": false, "note": tr("back in %s") % back, "preview": tr("Away from Hollowmark. Back in %s; nothing can be changed until then.") % back})
+		return out
+	if st["role"] == Betrayal.AWAY_ROLE:  # the climax betrayal (issue #186): off every post until Chapter 6 settles it
+		var why := Betrayal.away_label(id)
+		out.append({"role": Betrayal.AWAY_ROLE, "target": "", "label": why.capitalize() if why != "" else Loc.t(ROLE_NAMES["away"]),
+			"enabled": false, "note": why, "preview": tr("Not in Hollowmark. Nothing can be changed.")})
 		return out
 	var hurt := int(st["injured"]) > 0
 	var locked: bool = r.get("locked_party", false)

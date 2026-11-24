@@ -56,6 +56,7 @@ var _rows: Array = []  # {"head": text} | {"kind": "topic", "id"} | {"kind": "ti
 var _row_rects: Array = []
 var _replay_rect := Rect2()
 var _drag := 0.0
+var _list_drag := {}  # a finger drag over the list (Prompts.list_steps)
 
 
 ## Pops the Help screen up over `host` (on the pause menu's layer) and returns it.
@@ -121,6 +122,15 @@ func _move(d: int) -> void:
 		if not _rows[sel].has("head"):
 			break
 	page_scroll = 0.0
+
+
+## Wheel and drag steps: like the arrow keys but stopping at the ends instead of wrapping round.
+func _step(d: int) -> void:
+	var to := Prompts.step_row(_rows, sel, d, false)
+	if to != sel:
+		sel = to
+		page_scroll = 0.0
+		focus = 0
 
 
 func _activate() -> void:
@@ -193,8 +203,22 @@ func _gui_input(event: InputEvent) -> void:
 		if _page_rect().has_point(event.position):
 			page_scroll = clampf(page_scroll + d * LINE * 2, 0.0, _max_scroll())
 		else:
-			_move(d)
+			_step(d)
 		accept_event()
+		return
+	if event is InputEventScreenDrag or event is InputEventScreenTouch:
+		var n := Prompts.list_steps(event, _list_drag, ROW_H, event.position.x < LIST_W + 12)
+		if n != 0:  # a finger scrolls the list (the focus walks with it)
+			_step(n)
+		if n != 0 or event is InputEventScreenDrag and _list_drag.get("on_list", false):
+			accept_event()
+			return
+	if event is InputEventMouseMotion:
+		for rr in _row_rects:  # pointing at another topic focuses it, like the arrow keys
+			if (rr[0] as Rect2).has_point(event.position) and int(rr[1]) != sel:
+				sel = int(rr[1])
+				page_scroll = 0.0
+				focus = 0
 		return
 	if event is InputEventScreenDrag and _page_rect().has_point(event.position):
 		_drag -= event.relative.y
@@ -203,6 +227,18 @@ func _gui_input(event: InputEvent) -> void:
 			_drag -= n * LINE
 			page_scroll = clampf(page_scroll + n * LINE, 0.0, _max_scroll())
 		return
+	match Prompts.list_tap(event, _list_drag, _row_at(event.position) if "position" in event else -1, sel):
+		"focus":
+			sel = _row_at(event.position)
+			page_scroll = 0.0
+			focus = 0
+			accept_event()
+			return
+		"act":
+			focus = 0
+			_activate()
+			accept_event()
+			return
 	if not Prompts.tapped(event):
 		return
 	accept_event()
@@ -213,15 +249,13 @@ func _gui_input(event: InputEvent) -> void:
 	if _replay_rect.has_point(pos):
 		_activate()
 		return
+
+
+func _row_at(p: Vector2) -> int:
 	for rr in _row_rects:
-		if (rr[0] as Rect2).has_point(pos):
-			if int(rr[1]) == sel:
-				_activate()
-			else:
-				sel = int(rr[1])
-				page_scroll = 0.0
-			focus = 0
-			return
+		if (rr[0] as Rect2).has_point(p):
+			return int(rr[1])
+	return -1
 
 
 func _close_rect() -> Rect2:
@@ -235,7 +269,8 @@ func _page_rect() -> Rect2:
 # ---------------------------------------------------------------- drawing
 
 func _text(pos: Vector2, s: String, fsize: int, col: Color, width := -1.0, f: Font = null) -> void:
-	draw_string(f if f else font, pos, s, HORIZONTAL_ALIGNMENT_LEFT, width, Access.fs(fsize), col)
+	# Text cut by its width ends in "..." rather than mid-letter (long names at large text sizes).
+	draw_string(f if f else font, pos, Access.fit(f if f else font, s, Access.fs(fsize), width) if width > 0.0 else s, HORIZONTAL_ALIGNMENT_LEFT, width, Access.fs(fsize), col)
 
 
 func _tw(s: String, fsize: int, f: Font = null) -> float:
@@ -263,7 +298,8 @@ func _draw() -> void:
 	_row_rects.clear()
 	_replay_rect = Rect2()
 	_text(Vector2(10, 20), tr("Help"), 18, Color("f3e3c3"), -1, UiSkin.TITLE_FONT)
-	_text(Vector2(56, 19), tr("Everything the cast has explained, and the controls on this %s.") % _device_word(), 8, SOFT)
+	var hl := UiSkin.header_line(font, tr("Help"), 18, tr("Everything the cast has explained, and the controls on this %s.") % _device_word(), 8, vs.x, 56.0, UiSkin.TITLE_FONT, 10.0)
+	_text(Vector2(hl[0], 19), hl[1], 8, SOFT)
 	var cr := _close_rect()
 	UiSkin.panel(self, cr, "button")
 	_text(cr.position + Vector2(9, 12), tr("Close"), 9, Color(0.75, 0.72, 0.7))

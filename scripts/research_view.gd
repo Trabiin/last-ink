@@ -207,7 +207,8 @@ func _row_name(id: String) -> String:
 # ---------------------------------------------------------------- drawing
 
 func _text(pos: Vector2, s: String, fsize: int, col: Color, width := -1.0) -> void:
-	draw_string(font, pos, s, HORIZONTAL_ALIGNMENT_LEFT, width, Access.fs(fsize), col)
+	# Text cut by its width ends in "..." rather than mid-letter (long names at large text sizes).
+	draw_string(font, pos, Access.fit(font, s, Access.fs(fsize), width) if width > 0.0 else s, HORIZONTAL_ALIGNMENT_LEFT, width, Access.fs(fsize), col)
 
 
 func _text_r(right: Vector2, s: String, fsize: int, col: Color) -> void:
@@ -253,7 +254,8 @@ func _draw() -> void:
 
 	_text(Vector2(8, 20), tr("Research"), 15, Color("f3efe4"))
 	var daily := int(Empire.current_effect("scriptorium").get("insight", 0))
-	_text(Vector2(84, 20), tr("Insight: %d banked, +%d a day") % [int(Empire.res.get("insight", 0)), daily], 9, INSIGHT)
+	var hl := UiSkin.header_line(font, tr("Research"), 15, tr("Insight: %d banked, +%d a day") % [int(Empire.res.get("insight", 0)), daily], 9, vs.x, 84.0)
+	_text(Vector2(hl[0], 20), hl[1], 9, INSIGHT)
 	var pace := Empire.research_pace()
 	var p := float(pace["pace"])
 	var sub := ""
@@ -287,8 +289,11 @@ func _draw() -> void:
 					b = bb
 			y += HEAD_H
 			if y - HEAD_H >= top_clip and y <= bottom_clip:
-				_text(Vector2(10, y - 3), b.get("name", "?").to_upper(), 8, BRANCH_COLORS.get(last_branch, TEXT))
-				_text(Vector2(84, y - 3), b.get("blurb", ""), 7, SOFT, LIST_W - 76)
+				var bname: String = b.get("name", "?").to_upper()
+				_text(Vector2(10, y - 3), bname, 8, BRANCH_COLORS.get(last_branch, TEXT))
+				# The blurb starts after the name (long names and large text push it right) and is trimmed to the list.
+				var bx := maxf(84.0, 10.0 + font.get_string_size(bname, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(8)).x + 8.0)
+				_text(Vector2(bx, y - 3), Access.fit(font, b.get("blurb", ""), Access.fs(7), LIST_W + 8.0 - bx), 7, SOFT)
 		var rr := Rect2(8, y, LIST_W, ROW_H - 2)
 		if y < top_clip or y + ROW_H - 2 > bottom_clip:
 			_row_rects.append(Rect2())  # out of view: keeps the index, never hit

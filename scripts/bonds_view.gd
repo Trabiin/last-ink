@@ -228,7 +228,8 @@ func _close_rect() -> Rect2:
 # ---------------------------------------------------------------- drawing
 
 func _text(pos: Vector2, s: String, fsize: int, col: Color, width := -1.0) -> void:
-	draw_string(font, pos, s, HORIZONTAL_ALIGNMENT_LEFT, width, Access.fs(fsize), col)
+	# Text cut by its width ends in "..." rather than mid-letter (long names at large text sizes).
+	draw_string(font, pos, Access.fit(font, s, Access.fs(fsize), width) if width > 0.0 else s, HORIZONTAL_ALIGNMENT_LEFT, width, Access.fs(fsize), col)
 
 
 func _text_r(right: Vector2, s: String, fsize: int, col: Color) -> void:
@@ -281,7 +282,8 @@ func _draw() -> void:
 	_text(Vector2(8, 20), tr("Bonds"), 15, Color("f3efe4"))
 	var ready := Empire.bond_ready_ids().size()
 	var sub := tr("Chat once a day in Hollowmark, put people in roles they like, send them on jobs. Each rank has a scene.")
-	_text(Vector2(62, 20), (tr("%d want%s a word with Ash.") % [ready, "s" if ready == 1 else ""]) if ready > 0 else "", 9, HEART)
+	var hl := UiSkin.header_line(font, tr("Bonds"), 15, (tr("%d want%s a word with Ash.") % [ready, "s" if ready == 1 else ""]) if ready > 0 else "", 9, vs.x, 62.0)
+	_text(Vector2(hl[0], 20), hl[1], 9, HEART)
 	_text(Vector2(8, 34), sub, 8, SOFT, vs.x - 16)
 	var ids := _ids()
 	if ids.is_empty():
@@ -305,12 +307,14 @@ func _draw() -> void:
 		draw_rect(Rect2(rr.position, Vector2(3, rr.size.y)), accent)
 		var rank := Empire.bond_rank(id)
 		_text(rr.position + Vector2(10, 12), Empire.recruit(id)["name"], 9, GOLD if on else TEXT, 110)
-		_pips(rr.position + Vector2(130, 9), rank, HEART)
+		_pips(rr.position + Vector2(130, 9), rank, HEART if not Betrayal.marked(id) else Color(0.55, 0.53, 0.58))
 		_text_r(rr.position + Vector2(LIST_W - 6, 12), Empire.bond_rank_name(rank), 8, SOFT)
 		_bar(Rect2(rr.position + Vector2(10, 18), Vector2(120, 4)), _progress(id), HEART if rank < Empire.BOND_MAX else GOOD)
 		var ready_r := Empire.bond_next_scene(id)
 		var mood := Empire.role_mood(id)
-		if ready_r > 0:
+		if Betrayal.marked(id):  # Chapter 4 on: the heart goes grey (issue #186)
+			_text(rr.position + Vector2(138, 25), tr("somewhere else"), 8, Color(0.6, 0.58, 0.63))
+		elif ready_r > 0:
 			_text(rr.position + Vector2(138, 25), tr("wants a word!"), 8, HEART)
 		elif mood == "likes":
 			_text(rr.position + Vector2(138, 25), tr("happy in role"), 8, GOOD)

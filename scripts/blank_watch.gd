@@ -115,12 +115,17 @@ func _draw() -> void:
 	var next := next_to_fall()
 	if not next.is_empty():
 		var yours: bool = next["owner"] == "you"
-		var s := tr("Next to fall: %s in ~%d day%s") % [next["name"], next["days"], "" if next["days"] == 1 else "s"]
+		var s := next_text(next)
 		var col := Color(1, 0.6, 0.52) if yours else Color(0.85, 0.83, 0.78)
 		if yours and next["days"] <= 5:
 			col.a = 0.7 + 0.3 * sin(t * 4.0)
 		var w: float = cmd.font.get_string_size(s, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(8)).x
 		_text(Vector2(map_rect.end.x - w - 6, map_rect.end.y - 8), s, 8, col)
+
+
+## The bottom-right line on the map; the legend (command.gd) wraps to leave it room.
+static func next_text(next: Dictionary) -> String:
+	return Loc.t("Next to fall: %s in ~%d day%s") % [next["name"], next["days"], "" if next["days"] == 1 else "s"]
 
 
 ## The province the Blank will finish first at today's rates: {"name", "owner", "days"} or {}.

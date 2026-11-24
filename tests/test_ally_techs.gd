@@ -103,7 +103,11 @@ func _crowd(main: Node, ally: Hero) -> Array:
 	await _clear_enemies(main)
 	var ts := AllyTechs.techs_of(ally)
 	var stand := AllyTechs.standoff(ts[0]) if not ts.is_empty() else 30.0
-	var at: Vector2 = ally.global_position + Vector2(maxf(stand, 22.0), 0)
+	# Where the crowd stands relative to the ally. Kept as an offset, not a spot: the ally keeps moving while
+	# the crowd spawns (a frame can hold many physics steps on a slow machine), and an offset taken from a
+	# spot fixed before that would leave the crowd out of reach for good (seen on CI, and under load here).
+	var rel := Vector2(maxf(stand, 22.0), 0)
+	var at: Vector2 = ally.global_position + rel
 	var es := []
 	for attempt in 12:
 		if es.size() >= 4:
@@ -116,7 +120,7 @@ func _crowd(main: Node, ally: Hero) -> Array:
 		var e: Enemy = es[i]
 		e.max_hp = 9999
 		e.hp = 9999
-		e.set_meta("offset", at - ally.global_position + Vector2((i % 2) * 5.0 - 2.5, floorf(i / 2.0) * 5.0 - 2.5))
+		e.set_meta("offset", rel + Vector2((i % 2) * 5.0 - 2.5, floorf(i / 2.0) * 5.0 - 2.5))
 		e.global_position = ally.global_position + e.get_meta("offset")
 		e.velocity = Vector2.ZERO
 		e.stun(30.0)

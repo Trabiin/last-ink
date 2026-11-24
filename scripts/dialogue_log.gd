@@ -228,7 +228,7 @@ func _draw() -> void:
 	var heights := []
 	_content_h = 0.0
 	for e in entries:
-		var h := font.get_multiline_string_size(str(e["text"]), HORIZONTAL_ALIGNMENT_LEFT, text_w, fsize).y + Access.px(5.0)
+		var h := font.get_multiline_string_size(Dialogue.plain(str(e["text"])), HORIZONTAL_ALIGNMENT_LEFT, text_w, fsize).y + Access.px(5.0)
 		heights.append(h)
 		_content_h += h
 	_clamp()
@@ -253,7 +253,7 @@ func _draw() -> void:
 			draw_string(font, Vector2(x, y + Access.px(10.0)), Dialogue.display_name(who), HORIZONTAL_ALIGNMENT_LEFT, text_x - x - 6, Access.fs(9), acc.lightened(0.35))
 		else:
 			col = SOFT  # narration
-		draw_multiline_string(font, Vector2(text_x, y + Access.px(10.0)), str(e["text"]), HORIZONTAL_ALIGNMENT_LEFT, text_w, fsize, -1, col)
+		Dialogue.draw_text(self, font, Vector2(text_x, y + Access.px(10.0)), str(e["text"]), text_w, fsize, col, -1, Color(col, 0.9))
 	# Scroll bar.
 	if _content_h > _view_h:
 		var bar := Rect2(_panel.end.x - 10, top, 2, _view_h)

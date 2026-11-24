@@ -27,7 +27,7 @@ func after_each() -> void:
 	Access.danger_patterns = true
 
 
-## A quiet patrol: no other enemies, nothing respawning, every hero full and unharmed.
+## A quiet patrol: no other enemies, nothing respawning, every hero clear of statuses, allies benched.
 func _arena() -> Node:
 	Missions.launch(Missions.find("meadow_patrol"))
 	var main := await wait_scene(MAIN)
@@ -43,6 +43,14 @@ func _arena() -> Node:
 	for h in main.heroes:
 		Status.clear_all(h)
 		h.set_meta("status_immune", {})
+		if h != main.leader:
+			# Benched: the ally AI would rush in and break holds, readings and brush dips on its own timing,
+			# which made these checks depend on where it happened to stand. Parked behind the leader, still
+			# close enough for AllyAI.urgent_target to be asked about.
+			h.set_physics_process(false)
+			h.velocity = Vector2.ZERO
+			h.knockback = Vector2.ZERO
+			h.global_position = main.leader.global_position + Vector2(-120, 0)
 	return main
 
 
@@ -50,7 +58,9 @@ func _spawn(main: Node, kind: String, at: Vector2) -> Enemy:
 	var pack: Array = EnemyKinds.spawn(main.entities, at, {}, kind)
 	for extra in pack.slice(1):  # spawn() rolls a pack: keep one
 		extra.queue_free()
-	return pack[0]
+	var e: Enemy = pack[0]
+	e.global_position = at  # a pack is spread round a ring 10 px out: put this one exactly where asked
+	return e
 
 
 func _physics(n: int) -> void:
@@ -89,10 +99,16 @@ func test_penitent_grabs_and_lets_go_when_an_ally_hits_it() -> void:
 	var hero: Hero = main.leader
 	var p: Penitent = _spawn(main, "penitent", hero.global_position + Vector2(20, 0))
 	await frames(2)
+	p.global_position = hero.global_position + Vector2(20, 0)  # well inside its reach, whatever the first frames did
 	p.target = hero
 	p.grab_cd = 0.0
 	p._set_state(Enemy.State.CHASE, 0.0)
-	await _physics(2)
+	# Spawned overlapping, the bodies push apart to about LUNGE_RANGE, so the first step can land a hair outside it
+	# (seen on CI at 30.0x px) and the next chase step brings it back in: give it a few steps, not exactly two.
+	for i in 6:
+		await tree.physics_frame
+		if p.state == Penitent.S_HUNCH:
+			break
 	check_eq(p.state, Penitent.S_HUNCH, "in reach and ready: it hunches (the tell)")
 	p.state_t = 0.0
 	for i in 30:

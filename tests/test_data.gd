@@ -45,6 +45,7 @@ func _talks() -> Dictionary:
 	var t: Dictionary = D["dialogue.json"]["talks"].duplicate()
 	t.merge(D["story.json"]["talks"])
 	t.merge(D["personal.json"]["talks"])
+	t.merge(D["betrayal.json"]["talks"])  # the climax betrayal (issue #186)
 	return t
 
 
@@ -57,6 +58,8 @@ func _speakers() -> Dictionary:
 	for id in D["story.json"]["speakers"]:
 		s[id] = true
 	for id in D["personal.json"]["speakers"]:
+		s[id] = true
+	for id in D["betrayal.json"]["speakers"]:
 		s[id] = true
 	return s
 
@@ -433,7 +436,10 @@ func test_dialogue_and_story() -> void:
 				check(recruits.has(n), "banter %s %s: needs unknown %s" % [map, z.get("id"), n])
 	var missions := _ids(D["missions.json"]["missions"])
 	for b in D["story.json"]["beats"]:
-		check(talks.has(b.get("talk", "")), "story.json beat: talk %s missing" % b.get("talk"))
+		if b.has("pick"):  # Betrayal.beat_talk fills the talk at play time (letter / scene)
+			check(b["pick"] in ["letter", "scene"] and not b.has("talk"), "story.json beat: unknown pick %s" % b["pick"])
+		else:
+			check(talks.has(b.get("talk", "")), "story.json beat: talk %s missing" % b.get("talk"))
 		var then := str(b.get("then", ""))
 		if then.begins_with("launch:"):
 			check(missions.has(then.trim_prefix("launch:")), "story.json beat %s: mission %s missing" % [b.get("talk"), then])
@@ -474,16 +480,18 @@ func test_maps_load() -> void:
 # ------------------------------------------------------------------ finished art and text (issue #111)
 
 ## Everyone who can speak has a portrait, so the code-drawn safety-net bust never shows. Letters read
-## aloud ("stage": "letter") stand on stage as a sheet of paper instead.
+## aloud ("stage": "letter") stand on stage as a sheet of paper instead, and the Vacancy ("stage": "blank",
+## issue #186) as a hole in the page.
 func test_every_speaker_has_a_portrait() -> void:
 	var speakers := {}
 	speakers.merge(D["dialogue.json"]["speakers"])
 	speakers.merge(D["story.json"]["speakers"])
 	speakers.merge(D["personal.json"]["speakers"])
+	speakers.merge(D["betrayal.json"]["speakers"])
 	for id in _recruits():
 		speakers[id] = {}
 	for id in speakers:
-		if str(speakers[id].get("stage", "")) == "letter":
+		if str(speakers[id].get("stage", "")) in ["letter", "blank"]:
 			continue
 		check(_res("res://assets/portraits/%s.png" % id), "speaker %s: no portrait assets/portraits/%s.png" % [id, id])
 

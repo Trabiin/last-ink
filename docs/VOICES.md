@@ -403,10 +403,15 @@ Short lines (quips, hooks, a line or two in town). One clear angle each; never a
 - *(in game)* "There is no form for it. There is no form for YOU."
 - With dialect: "It has been noted that you are not on the Ledger. Your town will duly join you."
 
-### The Vacancy (not written yet)
+### The Vacancy (`vacancy`)
 Speaks only in redacted text: black bars, with the occasional terribly clear word (DESIGN.md section 11). It never
 explains, threatens, or says "I". Its clear words are small and domestic ("door", "supper", "mother"), never
 cosmic. No "I am the void" lines, ever.
+- **How to write it:** wrap every word that is struck in `[[double brackets]]`; the game draws them as ink bars
+  (scripts/dialogue.gd draw_text). Write real words under the bars (they set the bar's length, and a translator
+  sees them), and leave one to three plain words per line. It is staged as a hole in the page, no portrait.
+- First written for the betrayal (#186): "[[Six]] coats. [[Six]] [[tickets]]. [[Supper]] [[on]] [[the]] [[table]]. home."
+  and, to Bran, a single plain "yes." before he has finished naming his price.
 
 ### One-scene people
 Each gets one note of colour. Concord officials are the funniest when they're completely sincere.

@@ -41,6 +41,8 @@ func _run() -> void:
 		quit(1)
 		return
 	saves.dir = SCRATCH  # never touch the player's real saves
+	# Never send to the real report inbox (data/feedback.json endpoint): tests that send use a local fake.
+	var feedback: GDScript = load("res://scripts/feedback.gd")
 	clear_scratch()
 	saves.notices = []
 	var files := []
@@ -62,6 +64,7 @@ func _run() -> void:
 			var t = script.new()
 			t.tree = self
 			t.runner = self
+			feedback.override = {"endpoint": ""}
 			await t.before_each()
 			await t.call(name)
 			await t.after_each()

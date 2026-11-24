@@ -41,6 +41,13 @@ var ground_set := ""  # @ground <name>: art pass corner tiles in res://assets/ti
 ## (a gentle tint: cool forest, cold marsh, warm hills); mist scales the ground mist; motes tints the drifting
 ## motes (pollen, spores, midges). Keeps every biome in the one palette but lets each read apart.
 var mood := {"grade": Color.WHITE, "mist": 1.0, "motes": Color(1.0, 0.97, 0.85)}
+## @written (issue #186): the place as the Blank keeps it, written out as words on a page. No ground tiles: ruled
+## paper with paths pencilled in, every prop is its own name in ink (prop.gd), and plain page light (Ambience,
+## mood "page"). The betrayer's home in Chapter 6, and the Margin when #32 builds it.
+var written := false
+const PAPER := Color("efeadf")
+const RULE := Color(0.42, 0.5, 0.62, 0.16)
+const MARGIN := Color(0.72, 0.25, 0.22, 0.32)
 
 
 func world_size() -> Vector2:
@@ -77,8 +84,8 @@ func _parse(path: String) -> void:
 			in_rows = true
 		elif line.begins_with("@"):
 			var sp := line.find(" ")
-			var key := line.substr(1, sp - 1)
-			var val := line.substr(sp + 1)
+			var key := line.substr(1, sp - 1) if sp > 0 else line.substr(1).strip_edges()  # "@written" has no value
+			var val := line.substr(sp + 1) if sp > 0 else ""
 			if key == "name":
 				area_name = val
 			elif key == "blank":
@@ -90,6 +97,10 @@ func _parse(path: String) -> void:
 				_custom[key.substr(4)] = [val.get_slice("|", 0), val.get_slice("|", 1) if val.contains("|") else ""]
 			elif key.begins_with("mark"):
 				_marks[key.substr(4)] = val
+			elif key == "written":
+				written = true
+				mood["page"] = true  # Ambience: page light, no weather, ink flecks for motes
+				mood["motes"] = Color(0.12, 0.1, 0.14)
 			elif key == "ground":
 				ground_set = val.strip_edges()
 			elif key == "mood":
@@ -190,6 +201,9 @@ func _layer(tex: Texture2D, coords: Array) -> TileMapLayer:
 
 
 func _build_tiles() -> void:
+	if written:
+		_build_paper()
+		return
 	if ground_set != "" and ResourceLoader.exists("res://assets/tiles/%s/GGGG.png" % ground_set):
 		_build_corner_ground()
 		return
@@ -372,12 +386,44 @@ func _build_objects(entities: Node2D) -> void:
 				elif kind == "sign":
 					prop.text = _signs[ch]
 				prop.kind = kind
+				prop.written = written
 				prop.seed_v = x * 31 + y
 				# Origin = bottom-centre of the footprint. Big props anchor at their top-left tile.
 				var fp: Vector2i = PropScript.footprint(kind)
 				prop.position = Vector2(x * 16 + fp.x * 8, y * 16 + fp.y * 16 - 3)
 				entities.add_child(prop)
 				props.append(prop)
+
+
+## A written map's ground: one sheet of ruled paper the size of the map, a red margin down the left, and the
+## ground marks of the map text (paths, ":" and the like) as faint pencil hatching where a path would be.
+func _build_paper() -> void:
+	var sheet := Node2D.new()
+	sheet.z_index = -10
+	add_child(sheet)
+	sheet.draw.connect(func():
+		var ws := world_size()
+		sheet.draw_rect(Rect2(Vector2.ZERO, ws), PAPER)
+		var y := 24.0
+		while y < ws.y:
+			sheet.draw_line(Vector2(0, y), Vector2(ws.x, y), RULE, 1.0)
+			y += 16.0
+		sheet.draw_line(Vector2(40, 0), Vector2(40, ws.y), MARGIN, 1.0)
+		# Paths (":" cells) as a faint pencil edge along their outline, like a street sketched in before the words.
+		var pencil := Color(0.3, 0.28, 0.32, 0.22)
+		for ty in size_tiles.y:
+			for tx in size_tiles.x:
+				if _is_dirt(tx, ty) != 1:
+					continue
+				var o := Vector2(tx * 16, ty * 16)
+				if _is_dirt(tx, ty - 1) == 0:
+					sheet.draw_line(o, o + Vector2(16, 0), pencil, 1.0)
+				if _is_dirt(tx, ty + 1) == 0:
+					sheet.draw_line(o + Vector2(0, 16), o + Vector2(16, 16), pencil, 1.0)
+				if _is_dirt(tx - 1, ty) == 0:
+					sheet.draw_line(o, o + Vector2(0, 16), pencil, 1.0)
+				if _is_dirt(tx + 1, ty) == 0:
+					sheet.draw_line(o + Vector2(16, 0), o + Vector2(16, 16), pencil, 1.0))
 
 
 func _draw_words(canvas: Node2D) -> void:

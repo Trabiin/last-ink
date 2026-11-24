@@ -157,6 +157,72 @@ static func tapped(event: InputEvent) -> bool:
 		or (event is InputEventScreenTouch and event.pressed)
 
 
+## The mouse wheel or a finger dragged over a list, in rows: +n moves the focus n rows down (wheel
+## down, or the finger pushing the list up), -n up, 0 for any other event. `state` keeps the part of a
+## drag that is still under a row. `inside`: whether the event is over the list; a drag keeps going
+## wherever the finger wanders, as long as it started on the list. Lets a mouse or touch player reach
+## rows scrolled out of sight.
+static func list_steps(event: InputEvent, state: Dictionary, row_px: float, inside := true) -> int:
+	if event is InputEventMouseButton and event.pressed and inside:
+		if event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
+			return 1
+		if event.button_index == MOUSE_BUTTON_WHEEL_UP:
+			return -1
+	elif event is InputEventScreenDrag:
+		state["moved"] = float(state.get("moved", 0.0)) + absf(event.relative.y)
+		if not state.get("on_list", false):
+			return 0
+		var d: float = float(state.get("drag", 0.0)) - event.relative.y
+		var n := int(d / maxf(row_px, 1.0))
+		state["drag"] = d - n * row_px
+		return n
+	elif event is InputEventScreenTouch and event.pressed:
+		state["drag"] = 0.0
+		state["moved"] = 0.0
+		state["on_list"] = inside
+	return 0
+
+
+## Tap, tap again on a list a finger can also drag: a click picks a row at once, but a finger only
+## counts when it lifts again on the same row without having dragged, so a drag never picks or acts.
+## Pass the row under the pointer (-1 for none) and the focused row. Returns "focus" (move the focus
+## there), "act" (it was already focused: do it) or "" (nothing yet).
+static func list_tap(event: InputEvent, state: Dictionary, row: int, focused: int) -> String:
+	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		return "" if row < 0 else ("act" if row == focused else "focus")
+	if event is InputEventScreenTouch:
+		if event.pressed:
+			state["down_row"] = row
+			return ""
+		var down: int = state.get("down_row", -1)
+		state["down_row"] = -1
+		if row < 0 or row != down or float(state.get("moved", 0.0)) >= 8.0:
+			return ""
+		return "act" if row == focused else "focus"
+	return ""
+
+
+## The row `d` steps from `from` in a list whose header rows (dictionaries with "head") are skipped.
+## Without wrap it stops at either end, as wheels and drags should.
+static func step_row(rows: Array, from: int, d: int, wrap := true) -> int:
+	if rows.is_empty():
+		return from
+	var s := from
+	for k in absi(d):
+		var t := s
+		for n in rows.size():
+			t += signi(d)
+			if wrap:
+				t = posmod(t, rows.size())
+			elif t < 0 or t >= rows.size():
+				t = s
+				break
+			if not (rows[t] is Dictionary and (rows[t] as Dictionary).has("head")):
+				break
+		s = t
+	return s
+
+
 ## Screens built from Godot controls (buttons, check boxes, text boxes: the report form, the playtest
 ## survey) never see a finger, because the project turns off "touch as mouse" for the game's own tap
 ## handling. They call this first thing in _input: a touch or drag on them is handed to the controls as

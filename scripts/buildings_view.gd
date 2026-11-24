@@ -303,6 +303,11 @@ func _gui_input(event: InputEvent) -> void:
 				if (_pick_rects[i] as Rect2).has_point(event.position):
 					pick = i
 		else:
+			for i in _row_rects.size():  # pointing at another building focuses it, like the arrow keys
+				if (_row_rects[i] as Rect2).has_point(event.position) and sel != i:
+					sel = i
+					focus = 0
+					act = 0
 			for i in _act_rects.size():
 				if (_act_rects[i] as Rect2).has_point(event.position):
 					focus = 1

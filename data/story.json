@@ -1,5 +1,5 @@
 {
-	"_comment": "The main story (issue #18, scripts/story.gd). speakers and talks use the same format as data/dialogue.json and are merged into it by Dialogue.data(), so Dialogue.talk(\"ch1_arrest\") works anywhere. beats: what plays in Hollowmark, checked in order every time Ash is in town; the first beat whose conditions hold and whose talk has not been seen plays. A beat: talk (id), when (conditions, see Story.meets: active (a campaign started with the story on), cleared, not_cleared, seen, joined, renown, held, day), then (what happens after the talk: launch:<mission id>, command_on, act1_end, open_region:<region id> to lift the fog over a region of the territory map; several can be joined with commas), card ([title, subtitle] shown after the talk). goals: the story checklist, shown in the journal's Quests tab (I, issue #114) under the chapter they belong to: text, chapter (a chapter id from data/journal.json), hint, done (conditions), show (conditions; hidden until they hold).",
+	"_comment": "The main story (issue #18, scripts/story.gd). speakers and talks use the same format as data/dialogue.json and are merged into it by Dialogue.data(), so Dialogue.talk(\"ch1_arrest\") works anywhere. beats: what plays in Hollowmark, checked in order every time Ash is in town; the first beat whose conditions hold and whose talk has not been seen plays. A beat: talk (id), when (conditions, see Story.meets: active (a campaign started with the story on), cleared, not_cleared, seen, joined, renown, held, day), pick instead of talk (issue #186: the climax betrayal picks the talk, letter or scene, see Betrayal.beat_talk), then (what happens after the talk: launch:<mission id>, command_on, act1_end, open_region:<region id> to lift the fog over a region of the territory map; several can be joined with commas), card ([title, subtitle] shown after the talk). goals: the story checklist, shown in the journal's Quests tab (I, issue #114) under the chapter they belong to: text, chapter (a chapter id from data/journal.json), hint, done (conditions), show (conditions; hidden until they hold).",
 	"speakers": {
 		"clerk": {"name": "Clerk Pettigrew", "color": "b8a888", "colors": {"skin": "e0c0a0", "cloth": "4a4a58", "trim": "c9a54a", "hair": "6a6a6a"}},
 		"governor": {"name": "Governor Thale", "color": "c9a54a", "colors": {"skin": "e8c8b0", "cloth": "6a2a2a", "trim": "e0c060", "hair": "c8c0b0"}},
@@ -270,7 +270,9 @@
 		{"talk": "ch2_verity_after", "when": {"cleared": ["ch2_crypt"]},
 			"card": ["New story mission: The Abbot Who Copied Himself", "Saint Ledger's Abbey. The Prioress opens the hall once the Abbey is at least Neutral with you (Diplomacy)."]},
 		{"talk": "ch2_end", "when": {"cleared": ["ch2_abbot"]},
-			"card": ["Chapter 2 complete: The Copying Monks", "The Abbey's door is open and the Erasers know your name. The north is yours to hold until the Causeway calls. New goals are in the journal."]}
+			"card": ["Chapter 2 complete: The Copying Monks", "The Abbey's door is open and the Erasers know your name. The north is yours to hold until the Causeway calls. New goals are in the journal."]},
+		{"pick": "letter", "when": {"betrayal": "foreshadow"}},
+		{"pick": "scene", "when": {"betrayal": "locked"}}
 	],
 	"goals": [
 		{"text": "Escape the tax office", "chapter": "ch1", "hint": "Get past the wardens and out through the front door", "done": {"cleared": ["ch1_breakout"]}, "show": {"active": true}},

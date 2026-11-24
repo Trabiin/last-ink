@@ -246,9 +246,10 @@ func _draw() -> void:
 	var gy := 32 + ids.size() * rh + 3
 	_go_rect = Rect2(LIST_X, gy, 150, 22)
 	var go_on := sel == ids.size()
-	draw_rect(_go_rect, Color(0.26, 0.2, 0.08) if go_on else Color(0.16, 0.13, 0.08))
-	draw_rect(_go_rect, GOLD, false, 2.0 if go_on else 1.0)
-	_text(_go_rect.position + Vector2(10, 15), tr("Set out with %d") % party.size(), 10, GOLD)
+	# Only the focused row or button wears the gold frame, so there is never a second cursor on screen.
+	draw_rect(_go_rect, Color(0.26, 0.2, 0.08) if go_on else Color(0.13, 0.11, 0.09))
+	draw_rect(_go_rect, GOLD if go_on else Color(0.45, 0.38, 0.24), false, 2.0 if go_on else 1.0)
+	_text(_go_rect.position + Vector2(10, 15), tr("Set out with %d") % party.size(), 10, GOLD if go_on else Color("ece6da"))
 	_back_rect = Rect2(LIST_X + 158, gy, 70, 22)
 	draw_rect(_back_rect, Color(0.1, 0.09, 0.12))
 	draw_rect(_back_rect, Color(0.3, 0.27, 0.33), false, 1.0)
@@ -387,6 +388,9 @@ static func blocker(id: String) -> String:
 	if Empire.recruit(id).get("tier", "") != "field":
 		return Loc.t("not a fighter")
 	var st: Dictionary = Empire.recruits[id]
+	if str(st.get("role", "")) == Betrayal.AWAY_ROLE:  # the climax betrayal (issue #186)
+		var why := Betrayal.away_label(id)
+		return why if why != "" else Loc.t("gone")
 	if int(st.get("injured", 0)) > 0:
 		return Loc.t("injured, %d days") % int(st["injured"])
 	match st.get("role", "idle"):

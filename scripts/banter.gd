@@ -99,6 +99,8 @@ func _process(delta: float) -> void:
 		gap -= delta
 		if gap <= 0.0 and not queue.is_empty():
 			_cur = queue.pop_front()
+			if Betrayal.marked(String(_cur[0])):  # Chapter 4 on: black bars in the top candidate's banter (issue #186)
+				_cur = [_cur[0], Betrayal.redact(String(_cur[1])), _cur[2]]
 			DialogueLog.track(self, _cur, "banter")
 			_shown = 0.0
 			_hold = 1.8 + String(_cur[1]).length() * 0.035
@@ -108,7 +110,7 @@ func _process(delta: float) -> void:
 			return
 	if not _cur.is_empty():
 		var cps := Dialogue.chars_per_sec()
-		var n := String(_cur[1]).length()
+		var n := Dialogue.plain(String(_cur[1])).length()
 		_shown = 99999.0 if cps <= 0.0 else _shown + delta * cps
 		_fade = minf(_fade + delta * 5.0, 1.0)
 		if _shown >= n:
@@ -116,7 +118,7 @@ func _process(delta: float) -> void:
 			if _hold <= 0.0:
 				_cur = []
 				gap = 0.35
-		var done := _shown >= String(_cur[1]).length() if not _cur.is_empty() else true
+		var done := _shown >= Dialogue.plain(String(_cur[1])).length() if not _cur.is_empty() else true
 		modulate.a = clampf(minf(_fade, _hold / 0.3) if done else _fade, 0.0, 1.0)
 	queue_redraw()
 
@@ -134,7 +136,7 @@ func _draw() -> void:
 	var r := _panel_rect()
 	var who: String = _cur[0]
 	var tw := r.size.x - (49.0 if who != "" else 14.0)
-	var need := font.get_multiline_string_size(String(_cur[1]), HORIZONTAL_ALIGNMENT_LEFT, tw, Access.fs(9)).y
+	var need := font.get_multiline_string_size(Dialogue.plain(String(_cur[1])), HORIZONTAL_ALIGNMENT_LEFT, tw, Access.fs(9)).y
 	r.size.y = maxf(r.size.y, need + (22.0 if who != "" else 12.0))
 	UiSkin.page(self, r)  # the same torn ledger page as the dialogue box
 	var tx := r.position.x + 8
@@ -144,6 +146,5 @@ func _draw() -> void:
 		tx = face.end.x + 7
 		draw_string(font, Vector2(tx, r.position.y + 13), Dialogue.display_name(who), HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(9),
 			Dialogue.accent(who).darkened(0.35))
-	var text := String(_cur[1]).substr(0, int(_shown))
-	draw_multiline_string(font, Vector2(tx, r.position.y + (25 if who != "" else 15)), text, HORIZONTAL_ALIGNMENT_LEFT,
-		r.end.x - tx - 6, Access.fs(9), -1, UiSkin.PAGE_INK if who != "" else UiSkin.PAGE_INK_SOFT)
+	Dialogue.draw_text(self, font, Vector2(tx, r.position.y + (25 if who != "" else 15)), String(_cur[1]), r.end.x - tx - 6,
+		Access.fs(9), UiSkin.PAGE_INK if who != "" else UiSkin.PAGE_INK_SOFT, mini(int(_shown), 1 << 30))

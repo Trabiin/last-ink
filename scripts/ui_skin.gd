@@ -63,6 +63,16 @@ static func screen(ci: CanvasItem, vs: Vector2, header_h := 25.0) -> void:
 	ci.draw_rect(Rect2(10, y + 1, vs.x - 20, 1), Color(0.07, 0.06, 0.1, 0.8))
 
 
+## A full-screen view's header line beside its title: where it starts (after the title, never on it,
+## at any text size or font) and the text trimmed with "..." so it stops short of the Close button.
+## Returns [x, text]. `size` is the line's unscaled font size; the title is `title` at `title_size`.
+static func header_line(font: Font, title: String, title_size: int, text: String, size: int, view_w: float,
+		min_x := 0.0, title_font: Font = null, x0 := 8.0) -> Array:
+	var tf := title_font if title_font else font
+	var x := maxf(min_x, x0 + tf.get_string_size(title, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(title_size)).x + 10.0)
+	return [x, Access.fit(font, text, Access.fs(size), view_w - 64.0 - x)]
+
+
 ## A gold highlight around a panel (the controlled hero, the chosen row).
 static func highlight(ci: CanvasItem, r: Rect2, col := Color("e8c65a")) -> void:
 	ci.draw_rect(r.grow(1.0), col, false, 1.0)

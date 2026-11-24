@@ -56,6 +56,7 @@ var _go_rect := Rect2()
 var _filter_rect := Rect2()
 var _rule_base := 0.0
 var _drag := 0.0  # touch drag on the page, before it snaps to whole ruled lines
+var _list_drag := {}  # a finger drag over the list (Prompts.list_steps)
 
 
 func _ready() -> void:
@@ -164,14 +165,13 @@ func _row() -> Dictionary:
 	return _rows[s] if s >= 0 and s < _rows.size() else {}
 
 
-func _move(d: int) -> void:
+## Arrow keys wrap round; the wheel and finger drags (wrap false) stop at the ends.
+func _move(d: int, wrap := true) -> void:
 	if _rows.is_empty():
 		return
-	var s := int(sel.get(tab, 0))
-	for i in _rows.size():
-		s = posmod(s + d, _rows.size())
-		if not _rows[s].has("head"):
-			break
+	var s := Prompts.step_row(_rows, int(sel.get(tab, 0)), d, wrap)
+	if s == int(sel.get(tab, 0)):
+		return
 	sel[tab] = s
 	page_scroll = 0.0
 	read_t = 0.0
@@ -265,9 +265,16 @@ func _gui_input(event: InputEvent) -> void:
 		if _page_rect().has_point(event.position):
 			page_scroll = clampf(page_scroll + d * LINE * 2, 0.0, _max_scroll())
 		else:
-			_move(d)
+			_move(d, false)
 		accept_event()
 		return
+	if event is InputEventScreenDrag or event is InputEventScreenTouch:
+		var n := Prompts.list_steps(event, _list_drag, ROW_H, event.position.x < LIST_W + 12)
+		if n != 0:  # a finger scrolls the list (the focus walks with it)
+			_move(n, false)
+		if n != 0 or event is InputEventScreenDrag and _list_drag.get("on_list", false):
+			accept_event()
+			return
 	if event is InputEventMouseMotion:
 		for rr in _row_rects:
 			if (rr[0] as Rect2).has_point(event.position) and int(rr[1]) != int(sel.get(tab, -1)):
@@ -282,6 +289,23 @@ func _gui_input(event: InputEvent) -> void:
 		if lines != 0:  # scroll in whole ruled lines so the writing stays on them
 			_drag -= lines * LINE
 			page_scroll = clampf(page_scroll + lines * LINE, 0.0, _max_scroll())
+		return
+	var at := -1
+	if "position" in event:
+		for rr in _row_rects:
+			if (rr[0] as Rect2).has_point(event.position):
+				at = int(rr[1])
+	var tap := Prompts.list_tap(event, _list_drag, at, int(sel.get(tab, -1)))
+	if tap != "":
+		accept_event()
+		var again := tap == "act" and focus == 0
+		sel[tab] = at
+		focus = 0
+		if again or _rows[at].get("kind", "") == "filter":
+			_activate()  # tap to pick, tap again to act (touch friendly)
+		else:
+			page_scroll = 0.0
+			read_t = 0.0
 		return
 	if not Prompts.tapped(event):
 		return
@@ -299,18 +323,6 @@ func _gui_input(event: InputEvent) -> void:
 	if _go_rect.has_area() and _go_rect.has_point(event.position):
 		_go(_row().get("target", {}))
 		return
-	for rr in _row_rects:
-		if (rr[0] as Rect2).has_point(event.position):
-			var i := int(rr[1])
-			var again := i == int(sel.get(tab, -1)) and focus == 0
-			sel[tab] = i
-			focus = 0
-			if again or _rows[i].get("kind", "") == "filter":
-				_activate()  # tap to pick, tap again to act (touch friendly)
-			else:
-				page_scroll = 0.0
-				read_t = 0.0
-			return
 	if _page_rect().has_point(event.position):
 		focus = 1
 
@@ -326,7 +338,8 @@ func _page_rect() -> Rect2:
 # ---------------------------------------------------------------- drawing
 
 func _text(pos: Vector2, s: String, fsize: int, col: Color, width := -1.0, f: Font = null) -> void:
-	draw_string(f if f else font, pos, s, HORIZONTAL_ALIGNMENT_LEFT, width, Access.fs(fsize), col)
+	# Text cut by its width ends in "..." rather than mid-letter (long names at large text sizes).
+	draw_string(f if f else font, pos, Access.fit(f if f else font, s, Access.fs(fsize), width) if width > 0.0 else s, HORIZONTAL_ALIGNMENT_LEFT, width, Access.fs(fsize), col)
 
 
 func _tw(s: String, fsize: int, f: Font = null) -> float:
