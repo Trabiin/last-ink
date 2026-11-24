@@ -60,7 +60,7 @@
 			"join": {"type": "rescue", "job": "rescue_gristle"},
 			"rumour": "A hedge-witch in the Gutterwoods is in trouble with her own coven. She would owe you. She would also bill you.",
 			"quips": ["Mother Gristle has billed the squad for \"moral support\".", "Mother Gristle collected some mushrooms. She says they are for cooking. She did not say whose."],
-			"lines": ["This one cures fever. Or causes it. Depends who's paying.", "I bill by the wound. You look expensive."]
+			"lines": ["This one cures fever. That one causes it. Same price.", "I bill by the wound. You look expensive."]
 		},
 		{
 			"id": "ninefingers", "name": "Corporal Daro", "title": "\"Ninefingers\", deserter", "tier": "field", "start": false,

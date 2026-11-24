@@ -30,13 +30,13 @@
 			["", "Boots on the stairs outside. A lot of them."],
 			["bran", "Right. Ash, keep 'em off the door. I'm gonna stand here and watch him write very slowly."],
 			["crane", "You can't seriously expect me to... 'ere, put that down..."],
-			["bran", "Pen. Paper. Arm. Start writing.", "angry"]
+			["bran", "There's me arm. There's your pen. Start writin'.", "angry"]
 		]},
 		"personal_bran_outro": {"title": "Clause Nine", "lines": [
 			["", "The last Guild sellsword limps down the landing. Inside, Crane has struck his own name from Bran's arm, line by line, his hand shaking hard enough to blot every stroke."],
-			["crane", "There. Satisfied? You're held by nobody. A contract with no holder. It isn't even legal. It's just... ink."],
+			["crane", "There. Satisfied? You're held by nobody. A contract with no holder. No court would 'ear it. You've paid good money for a bit of ink."],
 			["bran", "And this is your money. All of it. I said I'd pay, and I pay."],
-			["", "Bran drops the purse on the desk. Then he takes Crane's pen, looks at it for a long moment, and walks out onto the landing."],
+			["", "Bran drops the purse on the desk. Then he takes Crane's pen, weighs it in his hand, and walks out onto the landing."],
 			["", "There is a small splash."],
 			["bran", "Don't look at me like that. It was a terrible pen.", "smug"],
 			["bran", "Come on. Let's go 'ome before I start feelin' things."]
@@ -55,7 +55,7 @@
 			["hester", "I owe you a grandson. I know. Thought of it every day for eleven years, I have."],
 			["gristle", "Then you've had plenty of time to find a knife, haven't you. Put my name back, Hester. Where it was. Deep."],
 			["hester", "The tree decides, not me. It wants to know you're still one of us. It will test you. The woods will come for the tree, and you will defend it, or you won't."],
-			["gristle", "Ugh. Ceremony. Fine. Ash, dear, hit anything that tries to eat the tree. Anything. The Coven gets the bill.", "smug"]
+			["gristle", "Ceremony, is it. Fine. Ash, dear, hit anything that tries to eat the tree. Anything. The Coven gets the bill.", "smug"]
 		]},
 		"personal_gristle_outro": {"title": "Paid in Full", "lines": [
 			["", "The last moth falls in a flutter of torn envelopes. The woods go quiet, the way a room goes quiet after an argument."],
@@ -182,7 +182,7 @@
 			["", "A rap at the shutter. A rattle of the latch. Notary Fennick opens his window and finds Jessamy's face an inch from his own."],
 			["marrow", "You. You're... I struck you out. You paid me to, duly. I remember the fee. It was a very good fee."],
 			["jessamy", "And now I'd like a refund, Fennick. In ink. Write me back in."],
-			["marrow", "That's not how it works. Once you're out of the Ledger you're out. Per the statute. That's the whole point of being out."],
+			["marrow", "That's not how it works. Once you're out of the Ledger you're out. Per the statute, section nine, which I did not write."],
 			["jessamy", "Then make it how it works. You're a notary. Notarise something.", "angry"],
 			["", "Outside, someone shouts. A lantern swings toward the toll house. Then another."],
 			["marrow", "The clerks! They'll see you! They'll see me! They'll audit me!"],
@@ -219,7 +219,7 @@
 			["odile", "Every account balances. Every one. All but a single line, twenty-six years old. Ninety Gilt, quietly moved, so one village never made it onto the lists."],
 			["penhallow", "Penhallow Mere."],
 			["odile", "Where I was born."],
-			["", "For a long moment neither of them says anything. Then the Chief Assessor caps her red pen, and her black one, and stands."],
+			["", "Neither of them says anything. The tea goes cold. Then the Chief Assessor caps her red pen, and her black one, and stands."],
 			["penhallow", "Keep the ledger, Odile. Use it better than I did.", "sad"],
 			["", "She pays for the tea, and the menu, and leaves. Odile does not cry until she is sure her mother is out of sight. Ash does not look."]
 		]},

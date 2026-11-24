@@ -10,8 +10,8 @@ for names; this file does it for prose.
 **How to use it:**
 - Before writing or editing a character's lines, read their sheet (section 5). Cover the speaker name and read
   the line back: if it could be anyone's, rewrite it.
-- `tests/test_voice.gd` enforces the hard bans (section 2.1) and punctuation (section 3) on every push, and
-  prints a count of the softer tells (section 2.2) so we can watch them go down.
+- `tests/test_voice.gd` enforces the hard bans (section 2.1), punctuation (section 3) and a budget for each
+  softer tell (section 2.2) on every push.
 - The script rewrite (#167 step two) and every new chapter (#28 to #32) are written to these sheets. The final
   read-aloud check is part of #142.
 
@@ -66,28 +66,32 @@ string literals in scripts. A deliberate use (a character mocking purple prose, 
 > deafening silence · the silence stretched · can't help but · let out a breath · only time will tell ·
 > in a world where · serves as a reminder · a reminder that · at the end of the day · and that's okay ·
 > maybe that's enough · it's not about X, it's about Y · not just X, but Y · more than just ·
-> (eyes) glinting / sparkling with · something shifted
+> (eyes) glinting / sparkling with · something shifted · a long moment
 
 An ink-and-paper world makes some of these extra tempting ("indelible", "palimpsest", "echoes of erased names").
 That's exactly why they're banned: they're the first thing a model reaches for here.
 
-### 2.2 Watched (counted, not failed yet)
+### 2.2 Watched (the test fails over budget)
 
 These aren't wrong once. They're tells when they repeat, or when every character does them. `tests/test_voice.gd`
-counts them on every run (`VOICE_REPORT=1` lists each hit). Step two of #167 rewrites the excess and turns the
-count into a limit.
+counts them across the whole script and fails when a tell goes over its budget (the Limit column);
+`VOICE_REPORT=1` lists each hit. Lines spoken by a tell's owner don't count. A few deliberate uses (Ottoline's
+"Coat. Ticket. Out." refrain, a written-out knock) sit on `WATCH_ALLOW` in the test with a reason.
 
-| Tell | What it looks like | Rule |
-|---|---|---|
-| **"People think X"** | "People think medicine and poison are opposites." | A lecture opener. Three characters use it now (Gristle, Jessamy, Odile). Keep at most one in the whole script |
-| **The correction** | "Not empty. Clean." · "It isn't cowardice. It's manners." | Strong once a chapter. As a habit it's the "it's not X, it's Y" tell in short form |
-| **The either/or verdict** | "That's either very smart or very stupid." · "Must be nice. Or terrifying." | Bran and Jessamy share it now. Give it to one (section 5) |
-| **The "Or X." afterthought** | "Or sell it. Or forget whose I was." | Owned by Jessamy ("handsome. Or pretty.") and Bran (escalating options). Others drop it |
-| **Fragment triplets** | "Streets. Families. Whole towns." | One per scene at most. Owned by nobody |
-| **Stated feelings** | "I'm not crying." · "I feel so guilty." | Rewrite as action or deflection (house rule 2) |
-| **Moral tags** | "Now you know." · "That's the whole art." · "That isn't nothing." | A neat button on the end of a confession. Cut it or swap for an action |
-| **Soft-fantasy words** | journey, realm, embark, unravel, whisper(ing), truly, deeply | Not banned, but each needs a reason. Tobble's "whispering's my trade" is fine; a narrator who whispers every scene isn't |
-| **Somebody else's word** | Anyone but Gristle saying "dearie" | Each sheet lists words a character owns. Others don't use them |
+**Over budget?** Rewrite the new line, or an older one you like less. Don't raise the limit: the budgets are the
+point. #167 step two (2026-11-24) cut the script from 52 watched tells (2026-11-21) to 11.
+
+| Tell | What it looks like | Rule | Limit |
+|---|---|---|---|
+| **"People think X"** | "People think medicine and poison are opposites." | A lecture opener. At most one in the whole script | 1 |
+| **The correction** | "Not empty. Clean." · "It isn't cowardice. It's manners." | Strong once a chapter. As a habit it's the "it's not X, it's Y" tell in short form | 6 |
+| **The either/or verdict** | "That's either very smart or very stupid." · "Must be nice. Or terrifying." | Bran's alone (section 5) | 0 others |
+| **The "Or X." afterthought** | "Or sell it. Or forget whose I was." | Owned by Jessamy ("handsome. Or pretty.") and Bran (escalating options). Others drop it | 2 others |
+| **Fragment triplets** | "Streets. Families. Whole towns." | One per scene at most. Owned by nobody | 4 |
+| **Stated feelings** | "I'm not crying." · "I feel so guilty." | Rewrite as action or deflection (house rule 2) | 0 |
+| **Moral tags** | "Now you know." · "That's the whole art." · "That isn't nothing." | A neat button on the end of a confession. Cut it or swap for an action | 0 |
+| **Soft-fantasy words** | journey, realm, embark, unravel, whisper(ing), truly, deeply | Not banned, but each needs a reason. Tobble's "whispering's my trade" is his (owner); the Saltreed reeds that whisper are the place's one | 3 |
+| **Somebody else's word** | Anyone but Gristle saying "dearie" | Each sheet lists words a character owns. Others don't use them | 0 |
 
 ### 2.3 Caught by reading (no test can)
 

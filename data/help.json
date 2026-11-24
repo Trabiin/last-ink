@@ -13,7 +13,7 @@
 			"summary": "The map, the clock, Fray and governors.",
 			"lines": [
 				"This is the governor's old table. He used it to decide who to tax. We'll use it to decide who to keep.",
-				"Every patch of colour is a province. The paler it goes, the more Fray: the Blank wearing it thin. At a hundred it's gone. Not burned, not taken. Gone, and everyone in it.",
+				"Every patch of colour is a province. The paler it goes, the more Fray: the Blank wearing it thin. At a hundred it's gone, and everyone in it.",
 				"The clock only runs while we're at this table or walking the town. {dev:Keys 1 to 4 set the pace, from stopped to fast|{key:clock_slower} and {key:clock_faster} step it slower and faster|The speed buttons up top set the pace}. Stop it whenever you need to think. I do, constantly.",
 				"Pick a province and post a governor{tag:govern}. Ungoverned land frays faster and pays a quarter less. Free land next to ours can be claimed for Gilt and Supplies, once somebody's there to run it.",
 				"The bar along the top is what we have. The ledger{tag:ledger} is where it goes every dawn. People eat. Mostly I mind that they eat on credit.",

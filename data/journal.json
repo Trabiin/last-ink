@@ -8,7 +8,7 @@
 			"done": {"cleared": ["meadow_prologue"]},
 			"recap": [
 				{"when": {}, "text": "The Blank eats everything it touches: grass, roads, names, the paperwork that says a thing exists. It does not give things back. It gave you back. You came to in the Frayed Meadow with no name, no voice and no entry in the Great Ledger, and the Nibblers wanted you returned like a library book."},
-				{"when": {"cleared": ["meadow_prologue"]}, "text": "You drove them off. A sellsword called Brannoc Tolley, Bran to anyone he has not yet invoiced, watched you do it, decided you were either a miracle or a business opportunity, and walked you to the nearest town to find out which."}
+				{"when": {"cleared": ["meadow_prologue"]}, "text": "You drove them off. A sellsword called Brannoc Tolley, Bran to anyone he has not yet invoiced, watched you do it, smelled a business opportunity, and walked you to the nearest town to work out what you were worth."}
 			]
 		},
 		{
@@ -114,7 +114,7 @@
 				{"when": {"seen": ["ch1_takeover"]}, "text": "Verity Hale stepped into it like a door, and it closed behind her like one."}
 			]},
 		{"id": "blank_fray", "cat": "blank", "title": "Fray", "unlock": {"command": true},
-			"text": "How far the Blank has eaten into a province, from 0 to 100. Fray rises every day at the edge of the white, faster beside land that is already gone, faster where nobody governs, and faster still once a place is past half-unravelled: it feeds itself. Frayed land pays less. At 100 the province is erased.",
+			"text": "How far the Blank has eaten into a province, from 0 to 100. Fray rises every day at the edge of the white, faster beside land that is already gone, faster where nobody governs, and faster still once a place is past half gone: it feeds itself. Frayed land pays less. At 100 the province is erased.",
 			"more": [{"when": {"command": true}, "text": "What pushes it down: a governor who suits the land, Wardlamps, scouting and patrol missions, and holding the line when a surge comes. Every source is listed in a province's panel on the Command Table."}]},
 		{"id": "blank_surges", "cat": "blank", "title": "Surges", "unlock": {"command": true},
 			"text": "Every few days the Blank gathers itself and lunges at one province. You get a warning, and a Defense mission on the map. Hold the wardstone until the surge breaks and it never lands. Ignore it and the province takes a heavy blow of Fray and a scar that keeps fraying it for days.",
@@ -168,7 +168,7 @@
 			{"when": {"cleared": ["act1_concord"]}, "text": "Where Tithe-Captain Morrow's column came to collect Hollowmark, and left without it."}
 		],
 		"lampwick": [{"when": {}, "text": "The spring is black and slow and never runs dry. Everything that is hungry for writing finds its way to it sooner or later, the Blank included."}],
-		"saltreed": [{"when": {}, "text": "Stilt-houses and boardwalks over a marsh going white from the east. The reed-cutters work the half that is still green and do not go near the half that whispers."}],
+		"saltreed": [{"when": {}, "text": "Stilt-houses and boardwalks over a marsh going white from the east. The reed-cutters work the half that is still green and do not go near the white half, which has started saying their names."}],
 		"gallows": [{"when": {}, "text": "The gallows the ferry is named for have not been used in years. The Guild finds that the name does most of the work."}],
 		"tithe": [
 			{"when": {}, "text": "The Concord's last tollhouse before the Marches. Most travellers are found wanting. The rest are found later, in ditches, with their paperwork in order."},
@@ -197,7 +197,7 @@
 		{"id": "thale", "portrait": "governor", "name": "Governor Thale", "title": "formerly of Hollowmark", "unlock": {"seen": ["ch1_takeover"]},
 			"text": "The Concord's governor of Hollowmark, until the morning after the tax office went white. He took the town seal, his carriage and every report he would ever need to write, and left the town behind. He is presumably still writing them."},
 		{"id": "pettigrew", "portrait": "clerk", "name": "Clerk Pettigrew", "title": "of the Hollowmark tax office", "unlock": {"seen": ["ch1_arrest"]},
-			"text": "The clerk who tried to write you into the Ledger and found nothing there to write. Not cruel, only thorough. Whether the Blank took him with the office, nobody has thought to check, which in Hollowmark counts as an obituary."},
+			"text": "The clerk who tried to write you into the Ledger and found nothing there to write. He checked twice, then once more in better light. Whether the Blank took him with the office, nobody has thought to check, which in Hollowmark counts as an obituary."},
 		{"id": "morrow", "portrait": "captain", "name": "Tithe-Captain Morrow", "title": "of the Concord tithe columns", "unlock": {"seen": ["act1_writ"]},
 			"text": "He counts people the way other men count sheep, Ninefingers says, and he came to Old Mill Crossing to count Hollowmark.",
 			"more": [{"when": {"cleared": ["act1_concord"]}, "text": "His column broke at the Crossing. In his papers was the order with the Auditor's red seal."}]},

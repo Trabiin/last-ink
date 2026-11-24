@@ -250,7 +250,7 @@
 				], "choice": [
 					{"label": "[Draw a little picture in the foam]", "bond": 3, "reply": [["tobble", "Ha! A goat? A cloud? A goat in a cloud. Worth a drink. Worth two. Don't tell the others."]]},
 					{"label": "[Leave the second drink]", "bond": 1, "reply": [["tobble", "Sensible. Most sensible customer I've had in thirty years. Bit dull."]]},
-					{"label": "[Put a coin down]", "bond": 2, "reply": [["tobble", "Coin's fine. Coin's honest. Secrets are better, but you'll warm up, lad. Or lass. Whichever."]]}
+					{"label": "[Put a coin down]", "bond": 2, "reply": [["tobble", "Coin's fine. Coin's honest. Secrets are better, but you'll warm up, love. They all do."]]}
 				]},
 				{"rank": 2, "title": "Retiring Next Week", "lines": [
 					["tobble", "Retiring next week. Got a cottage picked out. Frayed Meadow, by the brook. Roses."],
@@ -327,9 +327,9 @@
 					{"label": "[Hand her a fresh quill]", "bond": 2, "reply": [["abeyance", "Oh, a good one. I'll use it for the margins. That's where I keep the true things now."]]}
 				], "end": [["abeyance", "I'll work the margins at the Scriptorium. Things go faster when you know what to look for."]]},
 				{"rank": 4, "title": "A Map", "lines": [
-					["abeyance", "The page drew a map last night. Not words. Lines. The Wickham Hills, and a chapel I've never seen."],
+					["abeyance", "The page drew a map last night, all lines and not a single word. The Wickham Hills, and a chapel I've never seen."],
 					["abeyance", "There's an X. The page has never been that direct. It's usually so polite."],
-					["abeyance", "I think it wants to go home. Or it wants me to see something. I must take it. Will you send people with me?"]
+					["abeyance", "I think it wants to go home, or to show me something first. I must take it. Will you send people with me?"]
 				], "choice": [
 					{"label": "[Nod]", "bond": 3, "reply": [["abeyance", "Thank you. The Wickham Hills. I'll pack the notebook. And the page. Obviously the page. You'll have to do the fighting."]]},
 					{"label": "[Mime: careful]", "bond": 2, "reply": [["abeyance", "I'm always careful. It's the page that isn't."]]}
@@ -437,7 +437,7 @@
 					["", "She says it lightly. Then she checks the sky over the rooftops, the way sailors check for weather. Still dark. She relaxes."],
 					["jessamy", "Go on, then. What's in your box?", "smug"]
 				], "choice": [
-					{"label": "[Open your empty hands]", "bond": 3, "reply": [["jessamy", "Nothin'? That's the saddest thing I've ever seen. Or the most suspicious. I'll decide which once I know you better.", "happy"]]},
+					{"label": "[Open your empty hands]", "bond": 3, "reply": [["jessamy", "Nothin'? Not one sweetheart, not one warrant? I'll get a story out of you yet, cully.", "happy"]]},
 					{"label": "[Point back at her: you first]", "bond": 2, "reply": [["jessamy", "Ha. No. Nice try. Mine's nailed shut. ...I'll tell you one day. Not today. Today I'm bein' charmin'."]]}
 				]},
 				{"rank": 3, "title": "Struck Off", "lines": [
@@ -521,10 +521,10 @@
 					["odile", "A letter came. Red ink, then black. She always checks twice."],
 					["odile", "My mother is at Old Mill Crossing. She wishes to discuss \"the return of Concord property\". That means the ledger. I think it also means me."],
 					["odile", "She will offer me my post back. She will offer to pretend none of this happened. She is very good at making lines disappear."],
-					["odile", "I need to go. Not to give her anything. To settle up. Properly. Once."]
+					["odile", "I need to go. I am not giving her anything back. I am going to settle up, properly, once."]
 				], "choice": [
 					{"label": "[Nod]", "bond": 3, "reply": [["odile", "Thank you. Old Mill Crossing. I'll bring a spare pen. She always forgets hers, to see if I'll offer."]]},
-					{"label": "[Hold out a hand: leave the ledger here]", "bond": 2, "reply": [["odile", "Yes. Good. Safer. She cannot take what I have not brought. You would make a decent collector. That is not a compliment.", "smug"]]}
+					{"label": "[Hold out a hand: leave the ledger here]", "bond": 2, "reply": [["odile", "Good. That is safer. She cannot take what I have not brought. You would make a decent collector. That is not a compliment.", "smug"]]}
 				], "end": [["", "A personal mission is on the Command Table: \"Settle the Account\", at Old Mill Crossing. Odile is going, and Ash goes with her."]]},
 				{"rank": 5, "title": "Reconciled", "lines": [
 					["odile", "She came alone. No guards, no clerks. Older than I remembered. She'd brought her own pen this time."],
@@ -553,9 +553,9 @@
 					["", "Her dressing table is a battlefield of powder and rouge, with a rapier laid across it like a hairbrush."],
 					["velvette", "House rules of the Crimson Encore: I tell you a secret, you tell me one. Business, I have done it that way since I was sixteen."],
 					["velvette", "Mine: Bran sleeps with his contract arm under the pillow. He talks to it. Tenderly."],
-					["velvette", "Your turn. ...Oh. You have nothing to tell. No past at all. Tragic, mon petit. Or thrilling. I have not decided.", "surprised"]
+					["velvette", "Your turn. ...Oh. You have nothing to tell. No past at all. Mon petit, a blank page. Anyone could write on you.", "surprised"]
 				], "choice": [
-					{"label": "[Lean in as if to whisper, then say nothing]", "bond": 3, "reply": [["velvette", "Oh, you tease. You absolute professional. Silence is the most expensive secret there is. I put it on your tab.", "happy"]]},
+					{"label": "[Lean in close, then say nothing]", "bond": 3, "reply": [["velvette", "Oh, you tease. You absolute professional. Silence is the most expensive secret there is. I put it on your tab.", "happy"]]},
 					{"label": "[Draw a small X in the powder on her mirror]", "bond": 2, "reply": [["velvette", "An X. A kiss, or a mark on a map? Don't tell me. I'll enjoy guessing.", "smug"]]},
 					{"label": "[Look at the rapier]", "bond": 1, "reply": [["velvette", "Don't touch the sword, darling. It is the only one in the room who isn't flirting with you."]]}
 				]},
