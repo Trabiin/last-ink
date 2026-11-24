@@ -229,6 +229,11 @@ func system_info() -> Dictionary:
 	}
 	if OS.has_feature("web"):
 		info["browser"] = str(JavaScriptBridge.eval("navigator.userAgent", true))
+		# Typing events the browser sent to the text fields (Controls.WEB_TYPING_HOOK), e.g.
+		# "compositionstart 2, input:insertCompositionText 9, ...": shows how a phone keyboard types.
+		var typing = JavaScriptBridge.eval("(function(){var t=window.__lastInkTyping;if(!t)return '';var o=[];for(var k in t.seen)o.push(k+' '+t.seen[k]);if(t.synced)o.push('synced '+t.synced);return o.join(', ');})()", true)
+		if typing is String and typing != "":
+			info["web_typing"] = typing
 	return info
 
 

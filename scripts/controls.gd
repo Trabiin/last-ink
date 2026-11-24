@@ -3,8 +3,54 @@ extends Node
 ## buttons press these same actions). Runs before any scene so menus and gameplay share it.
 
 
+## Web build, phones: on-screen keyboards type a word as an IME "composition" and Godot 4.3 shows it
+## only from compositionupdate events, which some Android keyboards don't send, so a word appeared
+## only once space finished it (issue #175 follow-up). This hook watches Godot's hidden IME element
+## and, while a word is being composed, re-sends what is in it as a compositionupdate, so the text
+## field shows each letter as it is typed. It also counts which typing events the browser sends;
+## Diag.system_info() puts the counts in bug reports (web_typing) so a phone that still misbehaves
+## shows why. Desktop keyboards don't compose, so nothing changes there.
+const WEB_TYPING_HOOK := """
+(function () {
+	if (window.__lastInkTyping) return;
+	var st = window.__lastInkTyping = { seen: {}, synced: 0 };
+	function count(k) { st.seen[k] = (st.seen[k] || 0) + 1; }
+	function hook(ime) {
+		if (ime.__lastInkHooked) return;
+		ime.__lastInkHooked = true;
+		var composing = false;
+		['compositionstart', 'compositionupdate', 'compositionend'].forEach(function (t) {
+			ime.addEventListener(t, function (e) {
+				if (!e.isTrusted) return;
+				count(t);
+				if (t === 'compositionstart') composing = true;
+				if (t === 'compositionend') composing = false;
+			}, true);
+		});
+		ime.addEventListener('keydown', function (e) {
+			if (e.isTrusted) count(e.key === 'Unidentified' || e.keyCode === 229 ? 'keydown:ime' : 'keydown');
+		}, true);
+		ime.addEventListener('input', function (e) {
+			count('input:' + (e.inputType || '?'));
+			if (!composing || !e.isComposing) return;
+			st.synced++;
+			ime.dispatchEvent(new CompositionEvent('compositionupdate', { data: ime.textContent || '' }));
+		}, false);
+	}
+	var tries = 0;
+	(function find() {
+		var ime = document.querySelector('div.ime');
+		if (ime) hook(ime);
+		else if (tries++ < 50) setTimeout(find, 200);
+	})();
+})();
+"""
+
+
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
+	if OS.has_feature("web"):
+		JavaScriptBridge.eval(WEB_TYPING_HOOK, true)
 	_add_action("move_left", [KEY_A, KEY_LEFT], [JOY_BUTTON_DPAD_LEFT], JOY_AXIS_LEFT_X, -1.0)
 	_add_action("move_right", [KEY_D, KEY_RIGHT], [JOY_BUTTON_DPAD_RIGHT], JOY_AXIS_LEFT_X, 1.0)
 	_add_action("move_up", [KEY_W, KEY_UP], [JOY_BUTTON_DPAD_UP], JOY_AXIS_LEFT_Y, -1.0)
