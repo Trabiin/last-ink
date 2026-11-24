@@ -119,9 +119,9 @@ func test_weapon_lines_have_six_tiers_and_gear_has_icons() -> void:
 func test_buildings_and_status_icons() -> void:
 	for b in ["forge", "market"]:
 		var bd: Dictionary = Empire.building_data.get(b, {})
-		check_eq((bd.get("levels", []) as Array).size(), 3, "%s has 3 levels" % b)
+		check_eq((bd.get("levels", []) as Array).size(), 5, "%s has 5 levels (4 and 5 from issue #189)" % b)
 		check(_icon(b), "%s has an icon" % b)
-		for lv in [1, 2, 3]:
+		for lv in [1, 2, 3, 4, 5]:
 			check(ResourceLoader.exists("res://assets/buildings/%s_%d.png" % [b, lv]), "%s level %d sprite" % [b, lv])
 	for s in Status.AILMENTS + Status.BOONS:
 		check(_icon("status_" + s), "status %s has an icon" % s)

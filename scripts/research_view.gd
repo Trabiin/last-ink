@@ -2,7 +2,9 @@ extends Control
 ## Research screen (the Scriptorium). Opened with T, from the menus, the Research button on the
 ## Command Table, or by walking up to the Scriptorium in town.
 ##
-## One plain list (Up/Down, Enter, Esc; mouse and touch tap): a branch of three nodes each for the four Hollowmark branches and every chapter branch.
+## One plain list (Up/Down, Enter, Esc; mouse and touch tap, wheel or drag to scroll): the four Hollowmark
+## branches (three nodes, a fourth node and a study with ranks each) and every chapter branch whose
+## region of the map is open (issue #189); the list scrolls to keep the chosen node in view.
 ## Enter on a node starts studying it (paying its cost the first time), Enter on the node being
 ## studied sets it aside. Study runs on the Command clock; researchers' Lore sets the pace.
 
@@ -18,7 +20,9 @@ const INSIGHT := Color("d7b8f0")
 const ROW_H := 15.0
 const HEAD_H := 13.0
 const LIST_W := 318.0
-const BRANCH_COLORS := {"wardcraft": Color("e8c66a"), "logistics": Color("b7c98a"), "inkcraft": Color("8fa7e8"), "arms": Color("e89a8a"), "abbey": Color("d98a7a")}
+const BRANCH_COLORS := {"wardcraft": Color("e8c66a"), "logistics": Color("b7c98a"), "inkcraft": Color("8fa7e8"), "arms": Color("e89a8a"), "abbey": Color("d98a7a"),
+	"causeway": Color("c98ad9"), "coast": Color("8ad0d9"), "spire": Color("f2c25c")}
+const LIST_TOP := 46.0
 
 var sel := 0
 var closed_frame := -1
@@ -26,6 +30,8 @@ var opened_frame := -1
 var flash := ""
 var flash_t := 0.0
 var _rows: Array = []  # node ids, in branch order
+var _hidden_branches := 0  # chapter branches still behind the fog
+var scroll := 0.0  # how far the list is scrolled down, in pixels
 var _row_rects: Array = []
 var font: Font
 
@@ -42,7 +48,12 @@ func open() -> void:
 	visible = true
 	opened_frame = Engine.get_process_frames()
 	_rows.clear()
+	_hidden_branches = 0
+	scroll = 0.0
 	for b in Empire.research_branches():
+		if Empire.research_branch_lock(b["id"]) != "":
+			_hidden_branches += 1  # a chapter that has not opened its region yet: no spoilers
+			continue
 		for id in Empire.research_ids():
 			if Empire.research_node(id)["branch"] == b["id"]:
 				_rows.append(id)
@@ -58,6 +69,7 @@ func open() -> void:
 			first_free = i
 	if first_free >= 0:
 		sel = first_free
+	call_deferred("_follow_sel")
 
 
 func close() -> void:
@@ -75,8 +87,10 @@ func _process(delta: float) -> void:
 		return
 	if Input.is_action_just_pressed("move_up") or Input.is_action_just_pressed("ui_up"):
 		sel = posmod(sel - 1, _rows.size())
+		_follow_sel()
 	elif Input.is_action_just_pressed("move_down") or Input.is_action_just_pressed("ui_down"):
 		sel = posmod(sel + 1, _rows.size())
+		_follow_sel()
 	if Input.is_action_just_pressed("ui_accept"):
 		_pick(sel)
 	elif Input.is_action_just_pressed("research") or Input.is_action_just_pressed("ui_cancel") or Input.is_action_just_pressed("pause"):
@@ -114,6 +128,14 @@ func _pick(i: int) -> void:
 
 
 func _gui_input(event: InputEvent) -> void:
+	if event is InputEventMouseButton and event.pressed and event.button_index in [MOUSE_BUTTON_WHEEL_UP, MOUSE_BUTTON_WHEEL_DOWN]:
+		scroll += ROW_H * 2 * (1 if event.button_index == MOUSE_BUTTON_WHEEL_DOWN else -1)
+		_clamp_scroll()
+		return
+	if event is InputEventScreenDrag:
+		scroll -= event.relative.y
+		_clamp_scroll()
+		return
 	if event is InputEventMouseMotion:
 		for i in _row_rects.size():
 			if (_row_rects[i] as Rect2).has_point(event.position):
@@ -131,6 +153,55 @@ func _gui_input(event: InputEvent) -> void:
 
 func _close_rect() -> Rect2:
 	return Rect2(Vector2(size.x - 56, 6), Vector2(50, 16))
+
+
+## Height of the whole list, branch heads and the footer line included.
+func _list_height() -> float:
+	var h := 0.0
+	var last := ""
+	for id in _rows:
+		var br := str(Empire.research_node(id)["branch"])
+		if br != last:
+			last = br
+			h += HEAD_H
+		h += ROW_H
+	return h + (HEAD_H if _hidden_branches > 0 else 0.0)
+
+
+func _list_bottom() -> float:
+	return size.y - 16.0
+
+
+func _clamp_scroll() -> void:
+	scroll = clampf(scroll, 0.0, maxf(_list_height() - (_list_bottom() - LIST_TOP), 0.0))
+
+
+## Scrolls just enough to show the chosen row (and its branch head).
+func _follow_sel() -> void:
+	var y := 0.0
+	var last := ""
+	for i in _rows.size():
+		var br := str(Empire.research_node(_rows[i])["branch"])
+		if br != last:
+			last = br
+			y += HEAD_H
+		if i == sel:
+			var view := _list_bottom() - LIST_TOP
+			if y - HEAD_H < scroll:
+				scroll = y - HEAD_H
+			elif y + ROW_H > scroll + view:
+				scroll = y + ROW_H - view
+			break
+		y += ROW_H
+	_clamp_scroll()
+
+
+## "Readings of the Edge (2/5)" for studies with ranks.
+func _row_name(id: String) -> String:
+	var n := Empire.research_node(id)
+	if Empire.research_max_rank(id) <= 1:
+		return n["name"]
+	return "%s (%d/%d)" % [n["name"], Empire.research_rank(id), Empire.research_max_rank(id)]
 
 
 # ---------------------------------------------------------------- drawing
@@ -200,9 +271,11 @@ func _draw() -> void:
 		sub = tr("Studying %s: done in %s at %d%% pace.") % [a["name"], Empire.research_left_text(Empire.research_active), int(round(p * 100))]
 	_text(Vector2(8, 34), sub, 8, sub_col)
 
-	# The list, grouped by branch
-	var y := 46.0
+	# The list, grouped by branch, scrolled; rows outside the list area are skipped (and can't be tapped).
+	var y := LIST_TOP - scroll
 	var last_branch := ""
+	var top_clip := LIST_TOP - 2.0
+	var bottom_clip := _list_bottom()
 	for i in _rows.size():
 		var id: String = _rows[i]
 		var n := Empire.research_node(id)
@@ -213,9 +286,14 @@ func _draw() -> void:
 				if bb["id"] == last_branch:
 					b = bb
 			y += HEAD_H
-			_text(Vector2(10, y - 3), b.get("name", "?").to_upper(), 8, BRANCH_COLORS.get(last_branch, TEXT))
-			_text(Vector2(84, y - 3), b.get("blurb", ""), 7, SOFT)
+			if y - HEAD_H >= top_clip and y <= bottom_clip:
+				_text(Vector2(10, y - 3), b.get("name", "?").to_upper(), 8, BRANCH_COLORS.get(last_branch, TEXT))
+				_text(Vector2(84, y - 3), b.get("blurb", ""), 7, SOFT, LIST_W - 76)
 		var rr := Rect2(8, y, LIST_W, ROW_H - 2)
+		if y < top_clip or y + ROW_H - 2 > bottom_clip:
+			_row_rects.append(Rect2())  # out of view: keeps the index, never hit
+			y += ROW_H
+			continue
 		_row_rects.append(rr)
 		var on := i == sel
 		draw_rect(rr, Color(0.16, 0.13, 0.09) if on else Color(0.09, 0.08, 0.11))
@@ -234,7 +312,7 @@ func _draw() -> void:
 		var nx := 18.0
 		if UiSkin.draw_icon(self, id, Rect2(rr.position + Vector2(15, 2), Vector2(14, 14)), Color(1, 1, 1, 0.4) if state == "locked" else Color.WHITE):
 			nx = 34.0
-		_text(base + Vector2(nx, 0), n["name"], 9, GOLD if on and state != "locked" else col, 148 - nx)
+		_text(base + Vector2(nx, 0), _row_name(id), 9, GOLD if on and state != "locked" else col, 148 - nx)
 		match state:
 			"done":
 				_text(base + Vector2(150, 0), Loc.t("known"), 8, GOOD)
@@ -243,10 +321,23 @@ func _draw() -> void:
 				_bar(bx, Empire.research_fraction(id), GOLD if state == "active" else SOFT)
 				_text(Vector2(bx.end.x + 6, base.y), Empire.research_left_text(id) if state == "active" else tr("set aside"), 8, SOFT)
 			_:
-				var cost: Dictionary = n["cost"]
+				var cost := Empire.research_cost(id)
+				var days := int(ceil(Empire.research_days(id)))
 				_text(base + Vector2(150, 0), Empire.cost_text(cost), 8, (INSIGHT if Empire.can_afford(cost) else BAD) if state != "locked" else DIM)
-				_text_r(base + Vector2(LIST_W - 6, 0), tr("%d day%s") % [int(n["days"]), "" if int(n["days"]) == 1 else "s"], 8, SOFT if state != "locked" else DIM)
+				_text_r(base + Vector2(LIST_W - 6, 0), tr("%d day%s") % [days, "" if days == 1 else "s"], 8, SOFT if state != "locked" else DIM)
 		y += ROW_H
+	if _hidden_branches > 0:
+		y += HEAD_H
+		if y <= bottom_clip and y >= top_clip:
+			_text(Vector2(10, y - 3), tr("More to study as the story opens new regions of the map."), 7, DIM)
+	# Scroll bar, when the list is longer than the screen
+	var view := bottom_clip - LIST_TOP
+	var total := _list_height()
+	if total > view:
+		var track := Rect2(LIST_W + 11, LIST_TOP, 3, view)
+		draw_rect(track, Color(0.14, 0.12, 0.16))
+		var th := maxf(view * view / total, 12.0)
+		draw_rect(Rect2(track.position.x, LIST_TOP + (view - th) * scroll / maxf(total - view, 1.0), 3, th), SOFT)
 
 	_draw_details(vs)
 	_text(Vector2(8, vs.y - 8), Prompts.help([["updown", "choose"], ["ui_accept", tr("study / set aside")], [["ui_cancel", "research"], "close"]], tr("Tap a node, tap again to study it")), 7, Color(0.5, 0.48, 0.52))
@@ -269,7 +360,7 @@ func _draw_details(vs: Vector2) -> void:
 	draw_rect(Rect2(x - 8, top, 3, vs.y - top - 26), BRANCH_COLORS.get(n["branch"], TEXT))
 	var y := top + 16
 	UiSkin.draw_icon(self, id, Rect2(x + w - 34, top + 6, 32, 32))
-	_text(Vector2(x, y), n["name"], 12, Color("f3efe4"), w - 40)
+	_text(Vector2(x, y), _row_name(id), 12, Color("f3efe4"), w - 40)
 	y += 12
 	var branch_name := ""
 	for b in Empire.research_branches():
@@ -280,9 +371,13 @@ func _draw_details(vs: Vector2) -> void:
 	y += _wrap(Vector2(x, y + 8), n["effect"] + ".", w, 9, GOOD) + 4
 	y += _wrap(Vector2(x, y + 8), n["blurb"], w, 8, Color(0.78, 0.76, 0.74)) + 8
 	var state := Empire.research_state(id)
+	if Empire.research_max_rank(id) > 1 and state != "done":
+		var rk := Empire.research_rank(id)
+		_text(Vector2(x, y + 8), tr("Rank %d of %d studied. Each rank costs more and takes longer than the last.") % [rk, Empire.research_max_rank(id)], 8, GOLD if rk > 0 else SOFT, w)
+		y += 14
 	match state:
 		"done":
-			_text(Vector2(x, y + 8), tr("Known. Already working for you."), 9, GOOD)
+			_text(Vector2(x, y + 8), tr("Known. Already working for you.") if Empire.research_max_rank(id) <= 1 else tr("Every rank studied. Already working for you."), 9, GOOD)
 		"active", "shelved":
 			_text(Vector2(x, y + 8), tr("Studying now") if state == "active" else tr("Set aside (paid for, progress kept)"), 9, GOLD if state == "active" else SOFT)
 			y += 14
@@ -291,10 +386,11 @@ func _draw_details(vs: Vector2) -> void:
 			_text(Vector2(x, y + 8), tr("%d%% done. %s") % [int(Empire.research_fraction(id) * 100),
 				(tr("Done in ") + Empire.research_left_text(id) + ".") if state == "active" else Prompts.confirm() + tr(" to resume.")], 8, SOFT, w)
 		_:
-			var cost: Dictionary = n["cost"]
+			var cost := Empire.research_cost(id)
+			var days := int(ceil(Empire.research_days(id)))
 			_text(Vector2(x, y + 8), tr("Costs %s, paid when you start.") % Empire.cost_text(cost), 8, INSIGHT if Empire.can_afford(cost) else BAD, w)
 			y += 12
-			_text(Vector2(x, y + 8), tr("Study: %d day%s at 100%% pace.") % [int(n["days"]), "" if int(n["days"]) == 1 else "s"], 8, SOFT, w)
+			_text(Vector2(x, y + 8), tr("Study: %d day%s at 100%% pace.") % [days, "" if days == 1 else "s"], 8, SOFT, w)
 			var why := Empire.research_blocker(id)
 			if why != "":
 				y += 12

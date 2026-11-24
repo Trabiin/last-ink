@@ -60,6 +60,41 @@ Filed:
 Fine as it is: Gilt is the tight resource through Act 1 (it stays near the reserve while buildings go
 up until about day 40), and a player who does nothing loses Hollowmark on day 19 to 22.
 
+### The late economy, 2026-11-24 (issue #189)
+
+Once Act 1 was over, Insight, Ink, Gilt and Supplies piled up: research ran out around day 25, Ink had almost
+nothing to buy, and Gilt ran away once every building reached level 3. What there is to spend on now
+(numbers in the data files and `scripts/sinks.gd`):
+
+| Sink | Uses | Opens | Where |
+|---|---|---|---|
+| Building levels 4 and 5 | Gilt, Supplies, Ink to build; upkeep every dawn (level 4: 3 Gilt, 1 Supplies, 1 Ink; level 5: 5, 2, 2; the Inkworks pays no Ink) | Level 4 with Chapter 2's region, level 5 with Chapter 3's | `data/buildings.json` levels (`region`, `upkeep`) |
+| Unpaid upkeep | A dawn that can't pay leaves the resource at what was left and every level 4+ building works as level 3 (a beacon as level 2) until a dawn that pays | | `Sinks.settle` |
+| Hurrying the builders | 30% of the level's Gilt and 40% of its Supplies per day brought forward | Any time a building is going up | Buildings screen, the building's actions |
+| Fourth research node per branch | Insight, some Ink | Scriptorium 2, after the branch's third node | `data/research.json` |
+| Studies with ranks (one per branch, 5 ranks) | 40 Insight + 2 Ink, +15 and +1 a rank; 4 days, +1 a rank | After the fourth node | `ranks`, `step`, `days_step` |
+| Chapter research (Causeway, Coast, Spire: 3 nodes each) | Insight, Ink | When the chapter opens its region; hidden until then | `branches[].region` |
+| Level 3 Wardlamp (beacon) | 90 Gilt, 10 Supplies, 8 Ink; burns 1 Ink a day | Beacon Script | `wardlamp` |
+| Lamps in later regions | Gilt and Ink cost +25% per chapter past the first | | `wardlamp.region_cost` |
+| Tavern feast | 4 Supplies and 3 Gilt a head, every 6 days: bonds +2, injuries heal 2 days, Hollowmark Fray -8, party +10 max HP for 3 days | After the Auditor | Buildings screen, Hollowmark |
+| Ink lessons | 2 Ink a day per benched field hero for 2 colour points, up to colour level 3, only from Ink above 30 | After the Auditor, Scriptorium 2 with a researcher | Scriptorium actions (a switch) |
+
+Research numbers for the new nodes are "mods" in `data/research.json`, summed by `Empire.research_mod()`, so a
+chapter thread can add nodes without code. The bot (`tools/balance_bot.gd`) builds up to level 5 as regions
+open, hurries the builders while it holds more than 300 Gilt, feasts when the larder holds 120 Supplies, and
+leaves lessons on.
+
+Sim after the change (`-- 90 steady,casual,rush 3`): no flags. Highest after day 30 across the nine runs:
+Insight 174, Ink 132 (one rush run, briefly), Gilt 450, Supplies 543 (rush, which holds the most land); on
+day 90 every run is under the bands (Insight 18 to 99, Ink 18 to 78, Gilt 84 to 422). Ink now sits near the
+lesson floor of 30 once lessons start; a player saving Ink for something switches lessons off. A steady
+player builds the first level 4 around day 80: the one building crew is still the pace-setter, which is
+what hurrying is for. `tests/test_sinks.gd` keeps an 80-day steady run inside the bands.
+
+Still open: the idle policy loses Hollowmark on day 19 or 20, one day under its band, as before this change.
+Chapters 3 to 5 have no story yet, so level 5 and the chapter research can only be reached by opening their
+regions (tests do); their numbers are first drafts for those chapters to tune.
+
 ## Performance probe
 
 ```sh

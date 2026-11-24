@@ -29,6 +29,7 @@ const SURGE_FRAY := 12
 const SURGE_SCAR_DAYS := 3
 const SURGE_WARNING_DAYS := 2
 const SURGE_GAP := [3, 5]  # days between surges
+const SURGE_FRAY_MIN := 2  # however much research blunts a surge, it still leaves a mark
 
 const RESOURCES := ["gilt", "supplies", "ink"]
 const ABBEY_RESEARCH := 0.15  # a Friendly Abbey's perk: research pace (issue #28)
@@ -95,6 +96,7 @@ var research_done := []
 var research_progress := {}
 var research_active := ""
 var research_paid := []
+var research_ranks := {}  # node id -> ranks finished, for studies with "ranks" (issue #189)
 var research_data := {}  # id -> Dictionary from data/research.json, in file order
 var branch_data := []
 ## Diplomacy: faction id -> standing (-100..100), factions you have a trade pact with,
@@ -137,6 +139,8 @@ var ai_techs := {}
 var journal := {}
 ## Faction asks: favours the factions ask of you (scripts/faction_asks.gd, issue #131).
 var asks := {}
+## The late economy: feasts, unpaid upkeep, one-time notices (scripts/sinks.gd, issue #189).
+var sinks := {}
 
 
 func territory() -> Territory:
@@ -187,6 +191,8 @@ func reset() -> void:
 	research_progress = {}
 	research_active = ""
 	research_paid = []
+	research_ranks = {}
+	sinks = Sinks.fresh()
 	_load_faction_data()
 	standing = {}
 	for fid in faction_data:
@@ -285,6 +291,7 @@ func ledger() -> Array:
 	var ins := int(current_effect("scriptorium").get("insight", 0))
 	if ins > 0:
 		lines.append({"label": tr("Scriptorium"), "gilt": 0, "supplies": 0, "ink": 0, "note": tr("+%d Insight") % ins})
+	lines.append_array(Sinks.ledger_lines())  # upkeep of the late building levels and beacons (issue #189)
 	_diplomacy_ledger(lines)
 	for b in bond_perk_lines():
 		lines.append(b)
@@ -308,6 +315,8 @@ func _settle() -> void:
 	hungry = res["supplies"] < 0
 	if hungry:
 		res["supplies"] = 0
+	Sinks.settle(hungry)  # upkeep nobody could pay goes unpaid, and the late levels work a tier down (issue #189)
+	Sinks.dawn()
 	Progress.dawn()  # the Barracks trains whoever is on the bench
 	Armory.dawn()  # the Forge finishes its jobs (issue #112)
 	ledger_settled.emit(net)
@@ -341,7 +350,7 @@ func fray_sources(p: Dictionary, gov := "-") -> Array:
 	if float(p["fray"]) > 50.0:
 		out.append([tr("Unravelling feeds itself"), FRAY_MOMENTUM])
 	var press: Dictionary = t.region_of(p).get("pressure", {})
-	if int(press.get("per_day", 0)) != 0:
+	if int(press.get("per_day", 0)) != 0 and not research_calms(str(p.get("region", ""))):
 		out.append([str(press.get("label", tr("The region frays"))), int(press["per_day"])])
 	if owner == "you":
 		if gov == "":
@@ -360,9 +369,10 @@ func fray_sources(p: Dictionary, gov := "-") -> Array:
 			for pk in bond_perks_with("fray_home"):
 				out.append([tr("%s (%s's bond)") % [pk["name"], short_name(pk["id"])], -int(pk["effect"]["fray_home"])])
 		if int(lamps.get(p["id"], 0)) > 0:
-			var lv := int(lamps[p["id"]])
+			var lv := Sinks.lamp_working_level(p["id"])  # a beacon without its Ink burns as level 2 (issue #189)
 			var bright := has_research("ward_lampwright")
-			out.append([tr("Wardlamp (level %d%s)") % [lv, tr(", written") if bright else ""], lamp_fray(lv) - (1 if bright else 0)])
+			var unpaid := tr(", unfed") if lv < int(lamps[p["id"]]) else ""
+			out.append([tr("Wardlamp (level %d%s)") % [lv, (tr(", written") if bright else "") + unpaid], lamp_fray(lv) - (1 if bright else 0) - int(research_mod("lamp_fray"))])
 		if has_perk("coven"):
 			var woods := t.find(faction("coven")["province"])
 			if not woods.is_empty() and woods["owner"] != "erased" and woods["index"] in t.neighbors[p["index"]]:
@@ -469,7 +479,8 @@ func _update_surge() -> void:
 
 ## How hard a surge hits. The Long Watch and the Abbey's Bell Wards take the edge off.
 func surge_fray() -> int:
-	return Assists.surge_fray(SURGE_FRAY - (4 if has_research("ward_longwatch") else 0) - (3 if has_research("bell_wards") else 0))
+	var cut := (4 if has_research("ward_longwatch") else 0) + (3 if has_research("bell_wards") else 0) + int(research_mod("surge_fray"))
+	return Assists.surge_fray(maxi(SURGE_FRAY - cut, SURGE_FRAY_MIN))
 
 
 func surge_days_left() -> int:
@@ -623,7 +634,12 @@ func governor_blocker(id: String) -> String:
 
 
 func claim_cost(pid: String) -> Dictionary:
-	return territory().find(pid).get("claim", CLAIM_DEFAULT)
+	var c: Dictionary = territory().find(pid).get("claim", CLAIM_DEFAULT)
+	var cut := research_mod("claim_discount")  # Ink-Lake Charts (issue #189)
+	if cut > 0.0 and c.has("gilt"):
+		c = c.duplicate()
+		c["gilt"] = int(floor(int(c["gilt"]) * (1.0 - minf(cut, 0.9))))
+	return c
 
 
 func borders_yours(pid: String) -> bool:
@@ -849,7 +865,7 @@ func job_ids() -> Array:
 
 ## How many squads the Guildhall can have out at once (one per level).
 func expedition_slots() -> int:
-	return level_of("guildhall")
+	return level_of("guildhall") + (int(research_mod("expedition_slots")) if level_of("guildhall") > 0 else 0)
 
 
 func expedition_running(jid: String) -> Dictionary:
@@ -980,6 +996,9 @@ func expedition_odds(jid: String, squad: Array) -> Dictionary:
 	if has_research("log_fieldmaps"):
 		chance += 10
 		why.append([tr("Field Maps (research), +10%"), true])
+	for src in research_mod_sources("expedition_odds"):  # later research (issue #189)
+		chance += float(src[1])
+		why.append([tr("%s (research), +%d%%") % [src[0], int(src[1])], true])
 	if has_perk("guild"):
 		chance += 10
 		why.append([tr("Guild scouts share the road (Friendly), +10%"), true])
@@ -1203,7 +1222,105 @@ func research_branches() -> Array:
 
 
 func has_research(id: String) -> bool:
-	return id in research_done
+	return id in research_done or int(research_ranks.get(id, 0)) > 0
+
+
+## Studies with ranks (issue #189): how many times a node has been finished, and how many it can be.
+func research_rank(id: String) -> int:
+	if int(research_node(id).get("ranks", 0)) > 0:
+		return int(research_ranks.get(id, 0))
+	return 1 if id in research_done else 0
+
+
+func research_max_rank(id: String) -> int:
+	return maxi(int(research_node(id).get("ranks", 1)), 1)
+
+
+## What the next rank (or the only one) costs: the base cost plus step for every rank already done.
+func research_cost(id: String) -> Dictionary:
+	var n := research_node(id)
+	var cost: Dictionary = n.get("cost", {})
+	var r := research_rank(id) if int(n.get("ranks", 0)) > 0 else 0
+	if r <= 0 or not n.has("step"):
+		return cost
+	var out := cost.duplicate()
+	for k in n["step"]:
+		out[k] = int(out.get(k, 0)) + int(n["step"][k]) * r
+	return out
+
+
+## Days of study for the next rank at 100% pace.
+func research_days(id: String) -> float:
+	var n := research_node(id)
+	var r := research_rank(id) if int(n.get("ranks", 0)) > 0 else 0
+	return float(n.get("days", 1)) + float(n.get("days_step", 0)) * r
+
+
+## A research number (data/research.json "mods") summed over everything known, ranks counted (issue #189).
+func research_mod(key: String) -> float:
+	var total := 0.0
+	for src in research_mod_sources(key):
+		total += float(src[1])
+	return total
+
+
+## [[node name, amount], ...] for one "mods" key, for the lines that explain a number.
+func research_mod_sources(key: String) -> Array:
+	var out := []
+	for id in research_ids():
+		var mods: Dictionary = research_node(id).get("mods", {})
+		if not mods.has(key) or typeof(mods[key]) == TYPE_STRING:
+			continue
+		var r := research_rank(id)
+		if r > 0:
+			out.append([research_node(id)["name"], float(mods[key]) * r])
+	return out
+
+
+## Whether known research stops a region's own pressure (Sea-Walls of Sentences on the coast).
+func research_calms(region_id: String) -> bool:
+	if region_id == "":
+		return false
+	for id in research_ids():
+		if str(research_node(id).get("mods", {}).get("calm_region", "")) == region_id and has_research(id):
+			return true
+	return false
+
+
+## A research branch that waits for a region of the map ("" = it is open).
+func research_branch_lock(branch_id: String) -> String:
+	for b in research_branches():
+		if b["id"] == branch_id and str(b.get("region", "")) != "" and not region_open(str(b["region"])):
+			return Sinks.region_lock_text(str(b["region"]))
+	return ""
+
+
+## The mission numbers from "mods" research, with a HUD line for each (issue #189).
+func _late_research_boosts(b: Dictionary) -> void:
+	var dmg := int(research_mod("damage"))
+	if dmg > 0:
+		b["damage"] += dmg
+		b["lines"].append(tr("+%d damage (research)") % dmg)
+	var hp := int(research_mod("hp"))
+	if hp > 0:
+		b["hp"] += hp
+		b["lines"].append(tr("+%d max HP (research)") % hp)
+	var rv := research_mod("revive")
+	if rv > 0.0:
+		b["revive"] *= 1.0 + rv
+		b["lines"].append(tr("revives %d%% faster (research)") % int(round(rv * 100)))
+	var pr := research_mod("power_rate")
+	if pr > 0.0:
+		b["power_rate"] *= 1.0 + pr
+		b["lines"].append(tr("gauge %d%% faster (research)") % int(round(pr * 100)))
+	var ir := research_mod("ink_regen")
+	if ir > 0.0:
+		b["ink_regen"] += ir
+		b["lines"].append(tr("Ink %d%% faster (research)") % int(round(ir * 100)))
+	var g := minf(research_mod("guard"), 0.5)
+	if g > 0.0:
+		b["guard"] += g
+		b["lines"].append(tr("-%d%% damage taken (research)") % int(round(g * 100)))
 
 
 ## How fast the Scriptorium studies: {"pace": 1.0 = 100%, "why": [text, ...]}. 0 = stalled.
@@ -1241,11 +1358,11 @@ func research_pace() -> Dictionary:
 
 ## Days of study still owed on a node (at 100% pace).
 func research_remaining(id: String) -> float:
-	return maxf(float(research_node(id).get("days", 1)) - float(research_progress.get(id, 0.0)), 0.0)
+	return maxf(research_days(id) - float(research_progress.get(id, 0.0)), 0.0)
 
 
 func research_fraction(id: String) -> float:
-	return clampf(float(research_progress.get(id, 0.0)) / maxf(float(research_node(id).get("days", 1)), 0.001), 0.0, 1.0)
+	return clampf(float(research_progress.get(id, 0.0)) / maxf(research_days(id), 0.001), 0.0, 1.0)
 
 
 ## "1 day 4 h" at the current pace, or "stalled".
@@ -1258,7 +1375,7 @@ func research_left_text(id: String) -> String:
 
 ## "available", "active", "shelved" (started, then set aside), "done" or "locked".
 func research_state(id: String) -> String:
-	if has_research(id):
+	if id in research_done:
 		return "done"
 	if id == research_active:
 		return "active"
@@ -1273,6 +1390,9 @@ func _research_lock(id: String) -> String:
 	for need in n.get("needs", []):
 		if not has_research(need):
 			return tr("needs %s first") % research_node(need)["name"]
+	var branch_lock := research_branch_lock(str(n.get("branch", "")))
+	if branch_lock != "":
+		return branch_lock
 	var lv := int(n.get("scriptorium", 1))
 	if level_of("scriptorium") < lv:
 		return tr("needs the Scriptorium") + (tr(" at level %d") % lv if lv > 1 else "")
@@ -1283,15 +1403,15 @@ func _research_lock(id: String) -> String:
 
 ## Why a node can't be started right now ("" = it can).
 func research_blocker(id: String) -> String:
-	if has_research(id):
-		return tr("already known")
+	if id in research_done:
+		return tr("already known") if research_max_rank(id) <= 1 else tr("every rank studied")
 	if id == research_active:
 		return tr("already being studied")
 	var lock := _research_lock(id)
 	if lock != "":
 		return lock
-	if not id in research_paid and not can_afford(research_node(id)["cost"]):
-		return tr("not enough ") + _missing(research_node(id)["cost"])
+	if not id in research_paid and not can_afford(research_cost(id)):
+		return tr("not enough ") + _missing(research_cost(id))
 	return ""
 
 
@@ -1310,7 +1430,7 @@ func start_research(id: String) -> bool:
 	if research_blocker(id) != "":
 		return false
 	if not id in research_paid:
-		spend(research_node(id)["cost"])
+		spend(research_cost(id))
 		research_paid.append(id)
 	research_active = id
 	return true
@@ -1330,12 +1450,19 @@ func _advance_research(days: float) -> void:
 	var id := research_active
 	research_progress[id] = float(research_progress.get(id, 0.0)) + days * pace
 	if research_remaining(id) <= 0.0:
-		research_done.append(id)
+		var n := research_node(id)
+		var ranked := int(n.get("ranks", 0)) > 0
+		if ranked:  # a study with ranks: one more rank, and it stays open until the last (issue #189)
+			research_ranks[id] = int(research_ranks.get(id, 0)) + 1
+		if not ranked or int(research_ranks[id]) >= research_max_rank(id):
+			research_done.append(id)
 		research_progress.erase(id)
 		research_paid.erase(id)
 		research_active = ""
-		var n := research_node(id)
-		notice.emit(tr("Research done: %s. %s.") % [n["name"], n["effect"]], false)
+		if ranked:
+			notice.emit(tr("Research done: %s, rank %d of %d. %s.") % [n["name"], int(research_ranks[id]), research_max_rank(id), n["effect"]], false)
+		else:
+			notice.emit(tr("Research done: %s. %s.") % [n["name"], n["effect"]], false)
 		research_finished.emit(id)
 
 
@@ -1364,6 +1491,10 @@ func mission_boosts() -> Dictionary:
 	if has_research("ink_skin"):
 		b["guard"] = 0.25
 		b["lines"].append(tr("-25% damage taken"))
+	_late_research_boosts(b)  # the late research: fourth nodes, studies and chapter branches (issue #189)
+	if Sinks.fed():
+		b["hp"] += Sinks.FEAST_FED_HP
+		b["lines"].append(tr("+%d max HP (fed from the feast)") % Sinks.FEAST_FED_HP)
 	for pk in bond_perks_with("mission_hp"):
 		b["hp"] += int(pk["effect"]["mission_hp"])
 		b["lines"].append(tr("+%d max HP (%s)") % [int(pk["effect"]["mission_hp"]), pk["name"]])
@@ -1390,6 +1521,7 @@ func mission_boosts() -> Dictionary:
 ## Damage a party member actually takes from a hit, after Inkskin.
 func damage_to_party(amount: int) -> int:
 	var mult := 0.75 if has_research("ink_skin") else 1.0
+	mult *= 1.0 - minf(research_mod("guard"), 0.5)  # later research (issue #189)
 	for pk in bond_perks_with("mission_guard"):  # House Rules (Ottoline's bond)
 		mult *= 1.0 - float(pk["effect"]["mission_guard"])
 	mult *= 1.0 - float(Relationships.party_effects(PartyPicker.mission_party(active_mission))["guard"])  # rivals take risks
@@ -1530,6 +1662,8 @@ func standing_sources(fid: String, env := "-") -> Array:
 		env = envoy_of(fid)
 	if env != "":
 		out.append([tr("Envoy %s") % short_name(env), int(envoy_effect(env, fid)["drift"])])
+		for src in research_mod_sources("envoy_standing"):  # Masked Envoys (issue #189)
+			out.append([tr("%s (research)") % src[0], int(src[1])])
 	var base := int(fa.get("drift", 0))
 	if base != 0 and standing_of(fid) > int(fa.get("floor", -100)):
 		out.append([fa.get("drift_why", tr("Drifts")), base])
@@ -1919,8 +2053,9 @@ func building_effect(id: String, level: int, staff: Array) -> Dictionary:
 	return {"text": ""}
 
 
+## What a building does today. Levels 4 and 5 work as level 3 while their upkeep goes unpaid (issue #189).
 func current_effect(id: String) -> Dictionary:
-	return building_effect(id, level_of(id), staff_of(id))
+	return building_effect(id, Sinks.working_level(id), staff_of(id))
 
 
 func surge_warning_days() -> int:
@@ -1939,7 +2074,8 @@ func next_level(id: String) -> Dictionary:
 	if lv >= levels.size():
 		return {}
 	var l: Dictionary = levels[lv]
-	return {"level": lv + 1, "cost": discounted(l["cost"]), "days": int(l["days"]), "slots": int(l["slots"])}
+	return {"level": lv + 1, "cost": discounted(l["cost"]), "days": int(l["days"]), "slots": int(l["slots"]),
+		"upkeep": l.get("upkeep", {}), "lock": Sinks.level_lock(id, lv + 1)}
 
 
 ## Why a building can't be built or upgraded right now, or "" if it can.
@@ -1949,6 +2085,8 @@ func build_blocker(id: String) -> String:
 		return tr("fully upgraded")
 	if not construction.is_empty():
 		return tr("your builders are busy on the %s") % building(construction["id"])["name"]
+	if str(nl.get("lock", "")) != "":  # levels 4 and 5 open with the chapters (issue #189)
+		return nl["lock"]
 	if not can_afford(nl["cost"]):
 		return tr("not enough ") + _missing(nl["cost"])
 	return ""
@@ -2006,7 +2144,8 @@ func lamp_next(pid: String) -> Dictionary:
 	if lv >= levels.size():
 		return {}
 	var l: Dictionary = levels[lv]
-	return {"level": lv + 1, "cost": discounted(l["cost"]), "days": int(l["days"]), "fray": int(l["fray"])}
+	return {"level": lv + 1, "cost": discounted(Sinks.lamp_cost(pid, l["cost"])), "days": int(l["days"]), "fray": int(l["fray"]),
+		"upkeep": l.get("upkeep", {}), "lock": Sinks.lamp_lock(lv + 1)}
 
 
 ## Building and Wardlamp costs after Clean Books (Odile's bond): Gilt only, rounded down.
@@ -2030,6 +2169,8 @@ func lamp_blocker(pid: String) -> String:
 		return tr("fully upgraded")
 	if lamp_jobs.has(pid):
 		return tr("already being built")
+	if str(nl.get("lock", "")) != "":
+		return nl["lock"]
 	if not can_afford(nl["cost"]):
 		return tr("not enough ") + _missing(nl["cost"])
 	return ""
@@ -2111,7 +2252,8 @@ func to_dict() -> Dictionary:
 		"expeditions": expeditions, "reports": reports, "job_ready": job_ready,
 		"mission_ready": mission_ready,
 		"research_done": research_done, "research_progress": research_progress, "research_active": research_active,
-		"research_paid": research_paid,
+		"research_paid": research_paid, "research_ranks": research_ranks,
+		"sinks": sinks,
 		"standing": standing, "pacts": pacts, "deal_ready": deal_ready, "intel_until": intel_until,
 		"next_trouble_day": next_trouble_day, "trouble_days": trouble_days, "diplo_log": diplo_log,
 		"bonds": bonds,
@@ -2205,6 +2347,12 @@ func from_dict(d: Dictionary) -> void:
 	for rid in saved_rp:
 		if research_data.has(rid):
 			research_progress[rid] = float(saved_rp[rid])
+	var saved_rr = d.get("research_ranks", {})
+	if typeof(saved_rr) == TYPE_DICTIONARY:
+		for rid in saved_rr:
+			if research_data.has(rid) and int(research_node(rid).get("ranks", 0)) > 0:
+				research_ranks[rid] = clampi(int(saved_rr[rid]), 0, int(research_node(rid)["ranks"]))
+	sinks = Sinks.from_save(d.get("sinks", null))
 	var ra: String = d.get("research_active", "")
 	if research_data.has(ra) and not ra in research_done:
 		research_active = ra

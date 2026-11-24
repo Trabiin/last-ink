@@ -5,6 +5,10 @@ extends Control
 ## Three steps, all plain lists: buildings on the left, then that building's actions (build or
 ## upgrade, staff slots), then for a staff slot, who to post there. Keyboard, gamepad, mouse and
 ## touch. The clock keeps running underneath (pause it with 1).
+##
+## After the buildings: the tavern feast (after Act 1) and one Wardlamp row per province you hold. The list
+## scrolls (wheel, drag, or just moving the selection) once it is longer than the screen. Levels 4 and 5 and
+## level 3 beacons show their daily upkeep and what happens when it goes unpaid (issue #189).
 
 signal closed
 
@@ -29,6 +33,7 @@ var flash_t := 0.0
 var _row_rects: Array = []
 var _act_rects: Array = []
 var _pick_rects: Array = []
+var scroll := 0.0  # how far the left list is scrolled down, in pixels
 var font: Font
 
 
@@ -53,6 +58,7 @@ func open(building_id := "") -> void:
 			if rows[i]["id"] == building_id:
 				sel = i
 				focus = 1
+	_follow_sel()
 
 
 func close() -> void:
@@ -61,11 +67,12 @@ func close() -> void:
 	closed.emit()
 
 
-## The left list: buildings, then one Wardlamp row per province you hold.
+## The left list: buildings, the tavern feast, then one Wardlamp row per province you hold.
 func _rows() -> Array:
 	var out := []
 	for id in Empire.building_ids():
 		out.append({"kind": "building", "id": id})
+	out.append({"kind": "feast", "id": "feast"})
 	for p in Empire.territory().provinces:
 		if p["owner"] == "you":
 			out.append({"kind": "lamp", "id": p["id"]})
@@ -87,6 +94,12 @@ func _actions() -> Array:
 		return []
 	var row: Dictionary = rows[sel]
 	var out := []
+	if row["kind"] == "feast":
+		var why := Sinks.feast_blocker()
+		var heads := Empire.recruits.size()
+		out.append({"kind": "feast", "label": tr("Hold a feast  (%s)") % _cost_text(Sinks.feast_cost()), "enabled": why == "", "note": why,
+			"preview": tr("%d people at the tables: %d Supplies and %d Gilt a head. The next feast can be %d days after this one.") % [heads, Sinks.FEAST_PER_HEAD["supplies"], Sinks.FEAST_PER_HEAD["gilt"], Sinks.FEAST_GAP]})
+		return out
 	if row["kind"] == "lamp":
 		var pid: String = row["id"]
 		var nl := Empire.lamp_next(pid)
@@ -95,9 +108,11 @@ func _actions() -> Array:
 			var blocker := Empire.lamp_blocker(pid)
 			var p := Empire.territory().find(pid)
 			var verb := tr("Light a Wardlamp") if lv == 0 else tr("Brighten the Wardlamp to level %d") % nl["level"]
+			var preview := tr("%s: Fray %d a day from the lamp instead of %d. The province would change by %+d a day.") % [p["name"], nl["fray"], Empire.lamp_fray(lv), Empire.fray_rate(p) - Empire.lamp_fray(lv) + int(nl["fray"])]
+			if not (nl.get("upkeep", {}) as Dictionary).is_empty():
+				preview += " " + tr("A beacon burns %s a day; without it, it burns as level %d.") % [_cost_text(nl["upkeep"]), nl["level"] - 1]
 			out.append({"kind": "lamp", "label": tr("%s  (%s, %d day%s)") % [verb, _cost_text(nl["cost"]), nl["days"], "" if nl["days"] == 1 else "s"],
-				"enabled": blocker == "", "note": blocker,
-				"preview": tr("%s: Fray %d a day from the lamp instead of %d. The province would change by %+d a day.") % [p["name"], nl["fray"], Empire.lamp_fray(lv), Empire.fray_rate(p) - Empire.lamp_fray(lv) + int(nl["fray"])]})
+				"enabled": blocker == "", "note": blocker, "preview": preview})
 		return out
 	var id: String = row["id"]
 	var b := Empire.building(id)
@@ -109,8 +124,21 @@ func _actions() -> Array:
 		var verb := tr("Build") if lv == 0 else tr("Upgrade to level %d") % nl["level"]
 		var next_fx: Dictionary = Empire.building_effect(id, nl["level"], Empire.staff_of(id))
 		var preview := tr("Level %d: %s. %d staff slot%s.") % [nl["level"], next_fx["text"], nl["slots"], "" if nl["slots"] == 1 else "s"]
+		if not (nl.get("upkeep", {}) as Dictionary).is_empty():  # levels 4 and 5 (issue #189)
+			preview += " " + tr("Upkeep %s a day; while a dawn can't pay it, the building works as level 3.") % _cost_text(nl["upkeep"])
 		out.append({"kind": "build", "label": tr("%s  (%s, %d day%s)") % [verb, _cost_text(nl["cost"]), nl["days"], "" if nl["days"] == 1 else "s"],
 			"enabled": blocker == "", "note": blocker, "preview": preview})
+	if id == "scriptorium" and Sinks.feast_open():  # Ink lessons for benched heroes (issue #189)
+		var pupils := Sinks.lesson_pupils().size()
+		var why := Sinks.lessons_blocker()
+		var on_label := tr("Ink lessons: on, %d pupil%s") % [pupils, "" if pupils == 1 else "s"] if why == "" else tr("Ink lessons: off")
+		var note := "" if why == "" or why == tr("switched off") else why
+		out.append({"kind": "lessons", "label": on_label + ("  " + tr("(switch off)") if Sinks.lessons_on() else "  " + tr("(switch on)")),
+			"enabled": Sinks.lessons_open(), "note": note, "preview": Sinks.lessons_text()})
+	if building_now:  # spare Gilt buys extra hands (issue #189)
+		var hb := Sinks.hurry_blocker()
+		out.append({"kind": "hurry", "label": tr("Hurry the builders: a day sooner  (%s)") % _cost_text(Sinks.hurry_cost()), "enabled": hb == "", "note": hb,
+			"preview": tr("Extra hands and overtime. The job finishes a day sooner; you can hurry it again while more than a few hours are left.")})
 	var staff := Empire.staff_of(id)
 	for i in Empire.slots_of(id):
 		var who: String = staff[i] if i < staff.size() else ""
@@ -176,8 +204,10 @@ func _process(delta: float) -> void:
 			var n := _rows().size()
 			if up:
 				sel = posmod(sel - 1, n)
+				_follow_sel()
 			elif down:
 				sel = posmod(sel + 1, n)
+				_follow_sel()
 			if (accept or right) and not _actions().is_empty():
 				focus = 1
 				act = 0
@@ -222,6 +252,15 @@ func _do(a: Dictionary) -> void:
 		"lamp":
 			if Empire.start_lamp(row["id"]):
 				_flash(tr("A Wardlamp goes up in %s.") % Empire.territory().find(row["id"])["name"])
+		"hurry":
+			if Sinks.hurry():
+				_flash(tr("Extra hands on the site. Done in %s.") % Empire.job_left_text(Empire.construction))
+		"lessons":
+			Sinks.set_lessons(not Sinks.lessons_on())
+			_flash(tr("Ink lessons switched on.") if Sinks.lessons_on() else tr("Ink lessons switched off."))
+		"feast":
+			if Sinks.hold_feast():
+				_flash(tr("The tavern throws open its doors. Everyone eats."))
 		"slot":
 			picker_slot = int(a["slot"])
 			focus = 2
@@ -262,6 +301,10 @@ func _gui_input(event: InputEvent) -> void:
 					focus = 1
 					act = i
 		return
+	if event is InputEventMouseButton and event.pressed and event.button_index in [MOUSE_BUTTON_WHEEL_UP, MOUSE_BUTTON_WHEEL_DOWN]:
+		scroll += ROW_H * (1 if event.button_index == MOUSE_BUTTON_WHEEL_DOWN else -1)
+		_clamp_scroll()
+		return
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 		accept_event()
 		_click(event.position)
@@ -269,6 +312,11 @@ func _gui_input(event: InputEvent) -> void:
 
 ## Touch does not emulate the mouse in this project, so taps arrive here.
 func _input(event: InputEvent) -> void:
+	if visible and event is InputEventScreenDrag and event.position.x < LIST_X + LIST_W:
+		scroll -= event.relative.y
+		_clamp_scroll()
+		get_viewport().set_input_as_handled()
+		return
 	if visible and event is InputEventScreenTouch and event.pressed:
 		get_viewport().set_input_as_handled()
 		_click(event.position)
@@ -306,6 +354,49 @@ func _close_rect() -> Rect2:
 	return Rect2(Vector2(size.x - 56, 6), Vector2(50, 16))
 
 
+const LIST_TOP := 30.0
+
+
+func _list_bottom() -> float:
+	return size.y - 22.0  # above the flash line
+
+
+## Height of the whole left list, section heads included.
+func _list_height() -> float:
+	var h := 0.0
+	var last := "building"
+	for row in _rows():
+		if row["kind"] != last:
+			last = row["kind"]
+			h += 17.0
+		h += ROW_H
+	return h
+
+
+func _clamp_scroll() -> void:
+	scroll = clampf(scroll, 0.0, maxf(_list_height() - (_list_bottom() - LIST_TOP), 0.0))
+
+
+## Scrolls just enough to show the selected row.
+func _follow_sel() -> void:
+	var y := 0.0
+	var last := "building"
+	var rows := _rows()
+	for i in rows.size():
+		if rows[i]["kind"] != last:
+			last = rows[i]["kind"]
+			y += 17.0
+		if i == sel:
+			var view := _list_bottom() - LIST_TOP
+			if y < scroll:
+				scroll = y
+			elif y + ROW_H > scroll + view:
+				scroll = y + ROW_H - view
+			break
+		y += ROW_H
+	_clamp_scroll()
+
+
 # ---------------------------------------------------------------- drawing
 
 func _text(pos: Vector2, s: String, fsize: int, col: Color) -> void:
@@ -318,11 +409,22 @@ func _wrap(pos: Vector2, s: String, width: float, fsize: int, col: Color) -> flo
 
 
 func _row_status(row: Dictionary) -> Array:
+	if row["kind"] == "feast":
+		if not Sinks.feast_open():
+			return [tr("After Act 1"), Color(0.55, 0.53, 0.56)]
+		if Sinks.fed():
+			return [tr("The party is still full"), GOOD]
+		var left := Sinks.feast_ready_day() - Empire.day
+		if left > 0:
+			return [tr("Next feast in %d day%s") % [left, "" if left == 1 else "s"], Color(0.62, 0.6, 0.62)]
+		return [tr("Ready: %s") % _cost_text(Sinks.feast_cost()), GOLD]
 	if row["kind"] == "lamp":
 		var pid: String = row["id"]
 		if Empire.lamp_jobs.has(pid):
 			return [tr("Going up: %s left") % Empire.job_left_text(Empire.lamp_jobs[pid]), GOLD]
 		var lv := int(Empire.lamps.get(pid, 0))
+		if lv > 0 and Sinks.lamp_working_level(pid) < lv:
+			return [tr("Unfed beacon: burns as level %d") % Sinks.lamp_working_level(pid), BAD]
 		return [tr("Unlit") if lv == 0 else tr("Lit, level %d  (Fray %d a day)") % [lv, Empire.lamp_fray(lv)], Color(0.62, 0.6, 0.62) if lv == 0 else GOOD]
 	var id: String = row["id"]
 	var lv := Empire.level_of(id)
@@ -330,6 +432,8 @@ func _row_status(row: Dictionary) -> Array:
 		return [tr("%s: %s left") % [tr("Building") if lv == 0 else tr("Upgrading"), Empire.job_left_text(Empire.construction)], GOLD]
 	if lv == 0:
 		return [tr("Not built"), Color(0.55, 0.53, 0.56)]
+	if Sinks.working_level(id) < lv:
+		return [tr("Level %d, works as %d: upkeep unpaid") % [lv, Sinks.working_level(id)], BAD]
 	return [tr("Level %d/%d   staff %d/%d") % [lv, Empire.max_level(id), Empire.staff_of(id).size(), Empire.slots_of(id)], Color(0.7, 0.68, 0.7)]
 
 
@@ -354,24 +458,31 @@ func _draw() -> void:
 	# Left list
 	var rows := _rows()
 	_row_rects.clear()
-	var y := 30.0
-	var lamps_header := false
+	_clamp_scroll()
+	var y := LIST_TOP - scroll
+	var bottom := _list_bottom()
+	var last_kind := "building"
 	for i in rows.size():
 		var row: Dictionary = rows[i]
-		if row["kind"] == "lamp" and not lamps_header:
-			lamps_header = true
+		if row["kind"] != last_kind:
+			last_kind = row["kind"]
 			y += 4
-			_text(Vector2(LIST_X, y + 9), tr("Wardlamps"), 9, Color(0.7, 0.68, 0.7))
+			if y >= LIST_TOP - 4 and y + 13 <= bottom:
+				_text(Vector2(LIST_X, y + 9), tr("Wardlamps") if row["kind"] == "lamp" else tr("Hollowmark"), 9, Color(0.7, 0.68, 0.7))
 			y += 13
 		var r := Rect2(LIST_X, y, LIST_W, ROW_H - 3)
+		if y < LIST_TOP - 1 or y + ROW_H - 3 > bottom:
+			_row_rects.append(Rect2())  # scrolled out of view: keeps the index, never hit
+			y += ROW_H
+			continue
 		_row_rects.append(r)
 		var on := i == sel
 		draw_rect(r, Color(0.16, 0.13, 0.09) if on else Color(0.09, 0.08, 0.11))
 		if on:
 			draw_rect(r, GOLD if focus == 0 else Color(0.55, 0.48, 0.3), false, 1.0)
-		var name_s: String = Empire.building(row["id"])["name"] if row["kind"] == "building" else Empire.territory().find(row["id"])["name"]
+		var name_s: String = Empire.building(row["id"])["name"] if row["kind"] == "building" else (tr("Tavern feast") if row["kind"] == "feast" else Empire.territory().find(row["id"])["name"])
 		var tx := 8.0
-		if row["kind"] == "building" and UiSkin.draw_icon(self, row["id"], Rect2(r.position + Vector2(5, 3), Vector2(18, 18))):
+		if row["kind"] in ["building", "feast"] and UiSkin.draw_icon(self, row["id"], Rect2(r.position + Vector2(5, 3), Vector2(18, 18))):
 			tx = 27.0
 		_text(r.position + Vector2(tx, 10), name_s, 9, GOLD if on else Color("ece6da"))
 		var st := _row_status(row)
@@ -380,6 +491,13 @@ func _draw() -> void:
 			draw_rect(Rect2(r.position.x + 130, r.position.y + 6, 76, 4), Color(0.18, 0.16, 0.2))
 			draw_rect(Rect2(r.position.x + 130, r.position.y + 6, 76 * Empire.job_progress(Empire.construction), 4), GOLD)
 		y += ROW_H
+	var total := _list_height()
+	if total > bottom - LIST_TOP:  # scroll bar
+		var view := bottom - LIST_TOP
+		var tr_r := Rect2(LIST_X + LIST_W + 3, LIST_TOP, 3, view)
+		draw_rect(tr_r, Color(0.14, 0.12, 0.16))
+		var th := maxf(view * view / total, 12.0)
+		draw_rect(Rect2(tr_r.position.x, LIST_TOP + (view - th) * scroll / maxf(total - view, 1.0), 3, th), Color(0.62, 0.6, 0.62))
 	if rows.is_empty():
 		return
 
@@ -387,7 +505,12 @@ func _draw() -> void:
 	var row: Dictionary = rows[sel]
 	var w := vs.x - DETAIL_X - 8
 	var dy := 44.0
-	if row["kind"] == "lamp":
+	if row["kind"] == "feast":
+		_text(Vector2(DETAIL_X, dy), tr("Tavern feast"), 15, Color("f3efe4"))
+		dy += 8
+		dy += _wrap(Vector2(DETAIL_X, dy + 9), tr("Long tables in the square, a pig on the spit and everyone who works for you at one sitting. It costs a little for every mouth, and the tavern needs a week to recover."), w, 8, Color(0.62, 0.6, 0.62)) + 6
+		dy += _wrap(Vector2(DETAIL_X, dy + 9), Sinks.feast_text(), w, 8, Color("cfe0b0")) + 6
+	elif row["kind"] == "lamp":
 		var p := Empire.territory().find(row["id"])
 		_text(Vector2(DETAIL_X, dy), tr("Wardlamp: ") + p["name"], 15, Color("f3efe4"))
 		dy += 8
@@ -410,6 +533,11 @@ func _draw() -> void:
 		if lv > 0:
 			_text(Vector2(DETAIL_X, dy + 9), tr("Now: ") + Empire.current_effect(id)["text"], 9, Color("cfe0b0"))
 			dy += 16
+			var up := Sinks.building_upkeep(id)
+			if not up.is_empty():  # levels 4 and 5 (issue #189)
+				var unpaid := Sinks.working_level(id) < lv
+				_text(Vector2(DETAIL_X, dy + 9), (tr("Upkeep %s a day. Unpaid at the last dawn: working as level 3.") if unpaid else tr("Upkeep %s a day, paid at dawn.")) % _cost_text(up), 8, BAD if unpaid else Color(0.7, 0.68, 0.7))
+				dy += 13
 		if Empire.construction.get("id", "") == id:
 			dy = _draw_job(Empire.construction, tr("Building") if lv == 0 else tr("Upgrading to level %d") % (lv + 1), dy, w)
 
