@@ -88,7 +88,6 @@ var _cv: CanvasItem = self  # what the draw helpers draw on: this, the clipped m
 var map_clip: Control  # clips everything drawn on the map to its window
 var map_canvas: Control
 var overlay: Control  # buttons, legend, panel and toasts, drawn over the map
-var _tray: Control  # the alert tray (alert_tray.gd), lifted above the legend when it wraps
 # Camera: `cam` is the map cell at the centre of the window, `zoom` screen pixels per cell.
 var zoom := 2.0
 var cam := Vector2.ZERO
@@ -142,8 +141,7 @@ func _ready() -> void:
 	var watch := preload("res://scripts/blank_watch.gd").new()  # the Blank's creep, made visible (issue #33)
 	watch.cmd = self
 	inner.add_child(watch)
-	_tray = _alert_tray()
-	inner.add_child(_tray)  # alerts with "go there", map markers and the pinned story goal (issue #22)
+	inner.add_child(_alert_tray())  # alerts with "go there", map markers and the pinned story goal (issue #22)
 	overlay = Control.new()
 	overlay.set_anchors_preset(Control.PRESET_FULL_RECT)
 	overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -252,6 +250,7 @@ func _alert_tray() -> Control:
 	tray.origin = MAP_ORIGIN + Vector2(4, MAP_VIEW.y - 16)  # stacks up from just above the legend
 	tray.grow_up = true
 	tray.width = 270.0
+	_tray = tray
 	return tray
 
 
@@ -1665,6 +1664,7 @@ func _draw_legend() -> void:
 
 
 const LEGEND_ROW_H := 12.0
+var _tray: Control  # the alert tray (alert_tray.gd, made in _alert_tray), lifted above the legend when it wraps
 const BLANK_WATCH := preload("res://scripts/blank_watch.gd")
 
 
