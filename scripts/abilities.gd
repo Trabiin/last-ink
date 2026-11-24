@@ -264,6 +264,7 @@ static func _arc(h: Hero, a: Dictionary, parent: Node) -> void:
 				enemy.stun(float(a.get("stun", 0)))
 	if hit_any and h.party:
 		h.party.shake(4.0 if a.has("stun") else 3.0)
+		Rumble.landed(h, 1.0)  # issue #149
 
 
 static func _taunt(h: Hero, a: Dictionary, parent: Node) -> void:
@@ -415,6 +416,7 @@ static func riposte(h: Hero, from: Vector2) -> void:
 	h.ink = minf(h.ink + float(a.get("refund", 0)), h.max_ink)
 	if h.party:
 		h.party.shake(3.0)
+	Rumble.landed(h, 1.0)  # issue #149
 
 
 # ---------------------------------------------------------------- Chapter 3 kinds (#29)
@@ -585,6 +587,7 @@ static func dash_hits(h: Hero) -> void:
 				enemy.stun(float(h.dash_ability.get("stun", 0)))
 			if h.party:
 				h.party.shake(2.0)
+			Rumble.landed(h, 0.6)
 
 
 # ---------------------------------------------------------------- ally AI

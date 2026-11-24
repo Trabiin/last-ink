@@ -3,6 +3,7 @@ extends "res://tests/test_case.gd"
 ## overflows at Large and Largest. Does nothing in the normal test run. Under a display (not --headless):
 ##   ACCESS_SHOTS=/tmp/a11y TEXT_SIZE=2 xvfb-run -a godot --audio-driver Dummy --path . -s tests/run.gd -- access_shots
 ## TEXT_SIZE is 0 (Normal), 1 (Large) or 2 (Largest); FONT=1 uses the readable font (issue #192). The
+## SHOT_SIZE=1280x800 sets the window size (Steam Deck, #149). The
 ## danger markers, the first-start page, the Accessibility, Assists and Controls pages, a conversation,
 ## the dialogue log, a bond scene, the map without colour and captions are included.
 
@@ -55,6 +56,13 @@ func test_screens() -> void:
 		Dialogue.mark_seen("talk:" + str(k))
 	Settings.tips = false
 	var title := await goto(TITLE, 20)
+	# SHOT_SIZE=1280x800 takes the shots at that window size (Steam Deck, issue #149). After the
+	# title screen, which applies the saved window size.
+	var sz := OS.get_environment("SHOT_SIZE").split("x")
+	if sz.size() == 2:
+		DisplayServer.window_set_size(Vector2i(int(sz[0]), int(sz[1])))
+		tree.root.size = Vector2i(int(sz[0]), int(sz[1]))
+		await frames(4)
 	await _shot("00_title")
 	var first := OptionsView.popup(title, "first")
 	await _shot("01_first_start")

@@ -248,6 +248,7 @@ func _apply_hit() -> void:
 		gain_skill("weapon", "", Skills.swing_points(swing_power))  # weapon skill grows with use (issue #24)
 	if hit_any and party:
 		party.shake(1.5 + 2.0 * swing_power)
+		Rumble.landed(self, swing_power)  # only when this is the hero you control (issue #149)
 
 
 ## Rewrite's shield soaks first, then Hold the Line's guard cuts what's left.
@@ -285,6 +286,10 @@ func take_hit(amount: int, from: Vector2, force := 160.0) -> bool:
 	TreePerks.hit_back(self, before - hp, from)  # skill tree thorns (issue #25)
 	if hp < before:
 		AllyTechs.interrupted(self, before - hp)  # a heavy blow breaks an ally's charge
+		if dead:
+			Rumble.downed(self)  # the pad, when this is the hero you control (issue #149)
+		else:
+			Rumble.hurt(self, float(before - hp) / maxf(1.0, float(max_hp)))
 	return landed
 
 

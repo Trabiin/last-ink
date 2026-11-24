@@ -284,6 +284,7 @@ func _set_leader(h: Hero) -> void:
 
 func shake(amount: float) -> void:
 	shake_amount = maxf(shake_amount, amount * Settings.shake_scale())  # Options: screen shake
+	Rumble.quake(amount)  # boss slams and the biggest blasts rumble the pad too (issue #149); not tied to the shake option
 
 
 func touch_active() -> bool:
@@ -702,7 +703,7 @@ func _process(delta: float) -> void:
 		shake_amount = maxf(shake_amount - 20.0 * delta, 0.0)
 		camera.offset = Vector2(randf_range(-1, 1), randf_range(-1, 1)) * shake_amount
 
-	Empire.playtime += delta
+	Empire.playtime += minf(delta, Empire.MAX_TICK)  # not the hours a suspended Deck slept (issue #149)
 	autosave_t -= delta
 	if autosave_t <= 0.0:
 		if can_autosave():

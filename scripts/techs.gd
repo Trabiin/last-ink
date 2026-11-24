@@ -344,6 +344,7 @@ static func fire(h: Hero, t: Dictionary = {}) -> void:
 		credit(h, state)  # knives are their own reward: the throw counts as the tech landing
 	if h.party:
 		h.party.shake(2.5)
+	Rumble.tech(h)  # issue #149: the pad, when h is the hero you control
 
 
 ## One blast going off: its look, its damage and everything that rides on it. state is shared by all of
@@ -412,6 +413,7 @@ static func pulse(h: Hero, t: Dictionary, b: Dictionary, state: Dictionary) -> v
 		credit(h, state)
 		if h.party:
 			h.party.shake(5.0)
+		Rumble.tech(h, true)
 
 
 ## Landing a tech: Ink and weapon skill, once per tech however many blasts hit.

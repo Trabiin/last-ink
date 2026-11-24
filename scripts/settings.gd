@@ -107,6 +107,7 @@ static var fx := {}  # id -> 0..100
 static var battle_speed_i := 2
 static var difficulty := 1
 static var shake_i := 2
+static var rumble_i := 2  # Rumble.LEVELS: Off, Light, Full (issue #149)
 static var tips := true  # first-visit explainers and first-time tips (issue #115); the story's unlocks always play
 static var volumes := {"Master": 80, "Music": 70, "SFX": 80, "UI": 70, "Voice": 90}  # percent, steps of 10
 static var bindings := {}  # "<action>" -> {"key": physical keycode} and/or {"pad": {"b": button} | {"a": axis, "v": sign}}
@@ -133,6 +134,7 @@ static func load_settings() -> void:
 	battle_speed_i = clampi(int(cfg.get_value("options", "battle_speed", battle_speed_i)), 0, BATTLE_SPEEDS.size() - 1)
 	difficulty = clampi(int(cfg.get_value("options", "difficulty", difficulty)), 0, DIFFICULTIES.size() - 1)
 	shake_i = clampi(int(cfg.get_value("options", "screen_shake", shake_i)), 0, SHAKES.size() - 1)
+	rumble_i = clampi(int(cfg.get_value("options", "rumble", rumble_i)), 0, Rumble.LEVELS.size() - 1)
 	tips = bool(cfg.get_value("options", "tips", tips))
 	for bus in BUSES:
 		volumes[bus] = clampi(int(cfg.get_value("volume", bus, volumes[bus])), 0, 100)
@@ -149,6 +151,7 @@ static func save() -> void:
 	cfg.set_value("options", "battle_speed", battle_speed_i)
 	cfg.set_value("options", "difficulty", difficulty)
 	cfg.set_value("options", "screen_shake", shake_i)
+	cfg.set_value("options", "rumble", rumble_i)
 	cfg.set_value("options", "tips", tips)
 	for bus in BUSES:
 		cfg.set_value("volume", bus, volumes[bus])

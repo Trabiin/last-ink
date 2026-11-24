@@ -88,6 +88,8 @@ func _rebuild() -> void:
 			"detail": tr("Typewriter speed in conversations%s.") % ((tr(" (%s changes it there too)") % Prompts.key("swap")) if Prompts.key("swap") != "" else "")})
 		_rows.append({"id": "shake", "kind": "cycle", "label": tr("Screen shake"), "value": Loc.t(Settings.SHAKES[Settings.shake_i]),
 			"detail": tr("Camera shake on heavy hits and techs.")})
+		_rows.append({"id": "rumble", "kind": "cycle", "label": tr("Rumble"), "value": Loc.t(Rumble.LEVELS[Settings.rumble_i]),
+			"detail": Loc.t(Rumble.LEVEL_INFO[Settings.rumble_i])})
 		if Loc.languages().size() > 1:  # issue #143: only once a translation ships
 			var chosen := _language_choice()
 			_rows.append({"id": "language", "kind": "cycle", "label": tr("Language"), "value": Loc.language_name(chosen),
@@ -302,6 +304,9 @@ func _step(i: int, step: int) -> void:
 			_set_text_speed(clampi(Dialogue.speed_index() + step, 0, Dialogue.SPEEDS.size() - 1))
 		"shake":
 			Settings.shake_i = clampi(Settings.shake_i + step, 0, Settings.SHAKES.size() - 1)
+		"rumble":  # issue #149
+			Settings.rumble_i = clampi(Settings.rumble_i + step, 0, Rumble.LEVELS.size() - 1)
+			Rumble.kick(0.5, 0.8, 0.2)  # feel the new strength right away
 		"tips":  # issue #115
 			Settings.tips = step > 0
 		"language":  # issue #143
@@ -450,6 +455,7 @@ func _value_index(id: String) -> int:
 		"difficulty": return Settings.difficulty
 		"text_speed": return Dialogue.speed_index()
 		"shake": return Settings.shake_i
+		"rumble": return Settings.rumble_i
 		"tips": return 1 if Settings.tips_enabled() else 0
 		"language": return Loc.languages().find(_language_choice())
 		"a:text": return Access.text_size

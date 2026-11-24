@@ -514,6 +514,8 @@ func _draw_details(vs: Vector2) -> void:
 	# Standing and why it moves
 	var v := Empire.standing_of(fid)
 	var tier := Empire.tier_of(fid)
+	if not r["kind"] in ["deal", "offer", "refuse", "ask"]:
+		y += Access.px(9)  # after the faction blurb: room for the Standing line, drawn on its baseline (issue #149)
 	_text(Vector2(x, y), tr("Standing"), 8, Color(0.75, 0.72, 0.7))
 	_text_r(Vector2(x + w, y), "%s %+d" % [Empire.tier_name(tier), v], 9, TIER_COLORS[tier])
 	y += 4
