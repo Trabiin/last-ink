@@ -26,7 +26,14 @@ if [ -n "$TAG" ]; then
 	curl -fsSL ${AUTH[@]+"${AUTH[@]}"} "$API/tags/$TAG" -o "$TMP/release.json"
 	echo "[$(cat "$TMP/release.json")]" > "$TMP/releases.json"
 else
-	curl -fsSL ${AUTH[@]+"${AUTH[@]}"} "$API?per_page=30" -o "$TMP/releases.json"
+	# GodotSteam publishes module builds and GDExtension builds side by side; look well back.
+	for page in 1 2 3; do
+		curl -fsSL ${AUTH[@]+"${AUTH[@]}"} "$API?per_page=100&page=$page" -o "$TMP/page$page.json"
+	done
+	python3 -c 'import json,sys; print(json.dumps(sum((json.load(open(f)) for f in sys.argv[1:]), [])))' "$TMP"/page*.json > "$TMP/releases.json"
+	# Diagnostics: the organisation's repositories (GDExtension builds may live in their own one).
+	curl -fsSL ${AUTH[@]+"${AUTH[@]}"} "https://api.github.com/orgs/GodotSteam/repos?per_page=100" 2>/dev/null \
+		| python3 -c 'import json,sys; print("GodotSteam repositories:", ", ".join(r["name"] for r in json.load(sys.stdin)))' || true
 fi
 
 # Picks the newest release (or the pinned one) whose GDExtension zip loads in our Godot and leaves it

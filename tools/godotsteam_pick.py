@@ -14,7 +14,7 @@ import sys
 import urllib.request
 import zipfile
 
-MAX_TRIES = 12
+MAX_TRIES = 25
 
 
 def ver(s):
@@ -44,9 +44,9 @@ def main(releases_path, out, godot):
         if len(tried) >= MAX_TRIES:
             break
     sys.stderr.write("releases seen:\n")
-    for rel in json.load(open(releases_path))[:30]:
+    for rel in json.load(open(releases_path)):
         sys.stderr.write("  %s%s: %s\n" % (rel.get("tag_name"), " (pre)" if rel.get("prerelease") else "",
-                                           ", ".join(a["name"] for a in rel.get("assets", [])) or "(no files)"))
+                                           ", ".join(a["name"] for a in rel.get("assets", []))[:160] or "(no files)"))
     sys.stderr.write("no GodotSteam GDExtension release loads in Godot %s; tried: %s\n" % (godot, ", ".join(tried) or "none"))
     return 1
 
