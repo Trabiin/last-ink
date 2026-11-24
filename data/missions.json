@@ -24,6 +24,7 @@
 		{
 			"id": "act1_concord", "name": "The Concord Answers", "province": "oldmill", "story": true,
 			"needs": {"seen": ["act1_writ"]},
+			"gate": {"held": 4, "renown": 8},
 			"map": "res://maps/frayed_meadow.txt", "intro": "act1_concord_intro",
 			"brief": "A Concord tithe column is marching on Hollowmark to collect 'all outstanding sums', meaning you. Break it at Old Mill Crossing before it reaches the gate.",
 			"objective": {"kind": "kills", "count": 16, "label": "Break the tithe column"},
@@ -88,6 +89,7 @@
 		},
 		{
 			"id": "auditor_duel", "name": "Boss: The Auditor", "province": "tithe", "story": true, "after": "act1_concord",
+			"gate": {"renown": 15, "built": {"infirmary": 1}},
 			"map": "res://maps/tithe_tollgate.txt",
 			"brief": "The Concord has sent its answer to an unregistered town: the Auditor, who strikes people out of the Ledger with a quill the size of a lance. He is waiting at the Tithe Road tollgate, and Hollowmark is next on his list. Watch the red lanes and the dotted lines, and hit him when his nib sticks.",
 			"objective": {"kind": "boss", "boss": "auditor", "label": "Strike out the Auditor"},

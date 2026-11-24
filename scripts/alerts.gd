@@ -267,6 +267,10 @@ static func goal_target(done: Dictionary) -> Dictionary:
 			var j := Empire.job(jid)
 			if j.get("recruit", "") == rid:
 				return {"province": j.get("province", ""), "mission": "rescue_" + rid}
+	var built: Dictionary = done.get("built", {})
+	for bid in built:
+		if Empire.level_of(bid) < int(built[bid]):
+			return {"view": "buildings"}  # a story gate wants a building (issue #190)
 	return {}
 
 
