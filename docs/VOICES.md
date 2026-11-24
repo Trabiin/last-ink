@@ -372,6 +372,56 @@ examples written to this sheet.
 - With dialect: "I told him. Next morning the cellar were clean. Not empty. Clean. White as new paper."
 - With dialect: "Got her! Run! Well, tha run. I'll do summat near it."
 
+### Hortense, the Velvet Marquise (`hortense`)
+- **Who:** Causeway aristocrat and the Concord's Office of Corrections' best informant, until she brings you her sister's
+  debt instead of your name. Her spying is the Chapter 3 twist and it is a decoy: she is never the betrayer (#186).
+  Separate person from Fauvette; they share a scene (`ch3_two_rapiers`) and dislike each other on sight.
+- **Talks:** light, quick, amused. Flirts with everyone, enemies included, and it is a little too well rehearsed.
+  When it matters she drops the charm and gives you the plain fact in one sentence.
+- **Speech:** Causeway aristocracy: perfect court English, French used correctly and rarely ("Mesdames", "enfin"
+  at most once a scene). No contractions when she is being the Marquise; contractions slip in with Bérénice.
+- **Owns:** "sweet" as an endearment, invitations, forks, "stepped out for air", the codes she and Bérénice share.
+- **Never:** "darling" (Fauvette's); stage words (Fauvette's); begs; says she is sorry in so many words. She shows it
+  by paying.
+- *(in game)* "I have stepped out for air with half the Concord's nobility. I always came back in with the story
+  and they came back in poorer."
+- *(in game)* "Do not look so pleased. I need somewhere that is not here, and you need someone who knows which fork
+  the Nobility stab each other with."
+- *(in game)* "Bérénice. I remember every code we ever had. The tapping one. The one with the fan. The one Papa
+  never broke."
+
+### Saffron Kiss (`saffron`)
+- **Who:** cabaret singer from Lantern Quay (registered name Maud Pickering). Her songs turn into small, real
+  places while she sings them and fade when she stops. One song has had no last verse for eleven years.
+- **Talks:** warm, teasing, a performer between sets. Talks in half-lyrics she has not finished; rhymes by accident
+  and pretends she meant it. Goes quiet and very plain about her mother.
+- **Speech:** Lantern Quay, working waterfront: "love" for everyone, "Mam", dropped g's now and then ("singin'"),
+  "proper" in Saffron's mouth means "finished". No French; the quay is not the Causeway.
+- **Owns:** "love", "the last verse", "a good song one day", lyrics, gin.
+- **Never:** "darling" (Fauvette's); "sweet" (Hortense's); explains what a song means.
+- *(in game)* "No hard feelings, love. Well. Some. They'll make a good song one day."
+- *(in game)* "I'm writing a song about tonight. I'm going to finish it. You see if I don't."
+- *(in game)* "The house is gone now. It went when the song went, like songs do."
+
+### Nan Cripps and Tally (`nan`, `tally`)
+- **Who:** a cheerful grifter who sold her conscience at fifteen to old Pratt the moneylender. It came back as
+  Tally, her talking shadow, who cannot lie and keeps telling people the truth about her. They fight as a pair.
+- **Talks:** Nan: fast, chatty, flattering, every story a little bigger than the last. Tally: flat, literal,
+  brief, and always right; speaks only when the truth is being bent. They are a double act and Tally gets the last
+  line.
+- **Speech:** Nan is Hollowmark-born (over the cobbler's) and puts on whatever accent the mark wants; at rest she
+  has Bran's docks speech, softer: "'em", "ain't", "proper". Tally speaks correct, plain English with no accent at
+  all, like a ledger reading itself.
+- **Owns:** Nan: "mark", "clause", "the trade", "terms". Tally: corrections of fact, "I do not have hands", "the
+  collateral" (meaning itself).
+- **Never:** Nan admits a lie unless Tally makes her. Tally lies, jokes on purpose, or uses Bran's either/or verdict.
+  Tally's line is one fact, not a judgement.
+- *(in game)* Nan: "People ask how I got into the trade. I tell 'em I was born in a Frayed Meadow hedge and raised
+  by a travelling bishop. It's half true." Tally: "None of it is true. She was born in Hollowmark, over the
+  cobbler's. Her mother taught arithmetic."
+- *(in game)* Tally: "It shook my hand. I do not have hands."
+- *(in game)* Tally: "'The debt falls due at the new moon. The collateral will be recovered.' The collateral is me."
+
 ### Light recruits
 Short lines (quips, hooks, a line or two in town). One clear angle each; never a mini-speech.
 
@@ -442,16 +492,24 @@ readers: educated, sincere, unhurried.
 | Brother Cuthbert (`cuthbert`) | Deaf bell-ringer: capitals when he mishears ("WHAT? Oh. A job."). Big, gentle, literal. |
 | Brother Alcuin (`alcuin`) | Returned Eraser novice. Earnest, guilty, bookish; quotes the drafts and then argues with them. |
 
+### Chapter 3 people (the Velvet Causeway)
+Causeway nobles share Hortense's court English (4.2); quay people share Saffron's. The Host has no dialect.
+
+| Who | Note |
+|---|---|
+| Duc de Lantenay (`lantenay`) | Master of ceremonies at the Host's table. Exquisite manners laid over total cowardice; announces horrors as courses ("those of you who are not the course"). |
+| Purser Gaudin (`gaudin`) | Hortense's handler at the Office of Corrections. Polite, dry, transactional: everyone is an account, Hortense is "Marquise", a betrayal is "paid in full". |
+| The Host (`host`) | Chapter 3 boss. The Causeway's party that never ended, grown a mouth. ALL CAPITALS, short shouted sentences, food and guests and the table. Never a joke on purpose. |
+| Bérénice de Saulx (`berenice`) | Hortense's sister, seventeen, sold as a copyist. Sharp, quick, unimpressed; spells messages in first letters. |
+| Proctor Dufresne (`proctor`) | Head of the copyists' school. Precise, cold, a bursar's English; talks about pupils as fees. |
+| Annie Pickering, "Mam" (`mam`) | Saffron's mother. North-of-the-quay plain speech, short and dry, waiting eleven years for a last verse. Brings up Saffron's father in every scene. |
+| Old Pratt (`pratt`) | Moneylender. Soft-spoken, exact about percentages, calls Nan "my dear". Contracts read like prayers. |
+
 ### Not built yet
 Seeds for chapters #28 to #32; flesh these out into full sheets when the character is written.
 
-- **Hortense, the Velvet Marquise:** flirts with everyone, enemies included, mid-fight; a spy, so her flirting is
-  a little too well-rehearsed. Must sound nothing like Fauvette: Hortense is aristocratic and light, Fauvette is
-  showbusiness and dark. No "darling" (Fauvette's); her word is "sweet". She is Causeway aristocracy: perfect, light court English with the French used correctly and sparingly, which is how you tell her from Fauvette's stage French.
 - **Ilse of the Mirror:** a reflection that walked out when her original was erased. Vain, precise, slightly
   backwards: describes things left-to-right reversed, compliments herself in the third person, never says "I
   remember".
-- **Saffron Kiss** (registered name Maud Pickering): cabaret singer; talks in lyrics she hasn't finished writing.
-- **Nan Cripps & Tally:** Nan is a cheerful liar; Tally, her talking shadow, is the honest one and hates it.
 - **Cass & Kit Pruett:** twin chemists who disagree about everything; never finish each other's sentences, they
   contradict them.

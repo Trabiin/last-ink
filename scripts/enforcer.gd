@@ -122,7 +122,7 @@ func _slam() -> void:
 	for h in get_tree().get_nodes_in_group("heroes"):
 		var hero := h as Hero
 		if hero and not hero.dead and hero.global_position.distance_to(at) < SLAM_R + hero.radius:
-			if hero.take_hit(Empire.damage_to_party(damage), at, 260.0):
+			if hero.take_hit(Empire.damage_to_party(roundi(damage * hit_mult())), at, 260.0):
 				Status.struck(self, hero)  # the slam stuns (data/enemies.json, issue #112)
 	if target == null and goal != null and is_instance_valid(goal) and goal.global_position.distance_to(at) < SLAM_R + 8.0:
 		goal.nibble(damage)

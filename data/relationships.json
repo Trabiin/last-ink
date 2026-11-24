@@ -240,6 +240,84 @@
 					"Anyone gives you trouble, you point. I'll do the rest. That's romance, that is.",
 					"Brought you soup. Didn't make it. Threatened the man who did."
 				]
+			},
+			"hortense": {
+				"perk": {"name": "Dance Card", "desc": "Every standing gain with a faction is 1 bigger.", "effect": {"standing_bonus": 1}},
+				"moment": {"title": "The Balcony", "lines": [
+					["", "Hollowmark has no balconies, so Hortense has taken the top of the town hall stairs, opened the window and called it one."],
+					["hortense", "On the Causeway, this is where it happens. The ball goes on inside. Two people step out for air, and come back in with a story."],
+					["hortense", "I have stepped out for air with half the Concord's nobility. I always came back in with the story and they came back in poorer."],
+					["hortense", "This time I would rather not come back in at all. Which is the most inconvenient thing that has ever happened to me."],
+					["", "She turns her mask over in her hands, the velvet one from the masquerade. She does not put it on."],
+					["hortense", "So. A dance, sweet, and we see where it goes. Or a bow, and we go back to being excellent friends who flirt. I shall be charming about either. I am always charming."]
+				], "choice": [
+{"label": "[Take the dance]", "bond": 3, "romance": true, "reply": [
+						["hortense", "...You lead with the left. I taught you that. I did not teach you the rest.", "surprised"],
+						["hortense", "Not a word of this downstairs. I have a reputation for breaking hearts and I mean to keep it."],
+						["", "The window stays open. The draught gets in, and neither of them closes it."]
+					]},
+{"label": "[Bow, and kiss her hand]", "bond": 2, "romance": false, "reply": [
+						["hortense", "Ah. Gallant, and final. That is the nicest refusal I have ever had, and I have had a few.", "sad"],
+						["hortense", "Excellent friends who flirt, then. I shall make it the best friendship on the Causeway. Everyone will be jealous."]
+					]}
+				]},
+				"rank5": {"rank": 5, "title": "One True Thing", "lines": [
+					["", "The Terraces are quiet. Bérénice de Saulx is asleep in the town hall with six other girls, under every blanket Hollowmark owns."],
+					["hortense", "She asked me who you were. I said you were the person who does not exist. She said that was silly, because she could see you, and because I keep looking at you."],
+					["hortense", "I have lied to everyone I have ever met, beautifully, for a living. You made it impossible. I have stopped minding."],
+					["hortense", "So. One true thing. I love you, and I would like to stay. There. It has no French in it. I checked twice."]
+				], "choice": [
+					{"label": "[Kiss her]", "bond": 3, "reply": [["hortense", "Mm. The Causeway would call that a scandal. I call it a very good evening.", "happy"]]},
+					{"label": "[Take both her hands]", "bond": 2, "reply": [["hortense", "Careful, sweet. If you keep doing that I shall have to start telling the truth on purpose.", "happy"]]}
+				]},
+				"ended": [
+					["hortense", "I heard. Of course I heard: I hear everything, it was my profession. Do not look at me like a dropped glass.", "sad"],
+					["hortense", "I shall tell the Causeway I left you. They will believe it. They always believe the de Saulx. We will still dance at weddings."]
+				],
+				"talk": [
+					"If anyone asks, I am here for the politics. Nobody will believe me. That is the fun of it.",
+					"I wrote to Bérénice about you. She wrote back one word: 'finally'. Children are very rude.",
+					"You still never look at your feet when we dance. I adore that. Also you have stepped on mine twice.",
+					"On the Causeway, a lady keeps three lovers and a duelling partner. I have rationalised. You are all four."
+				]
+			},
+			"saffron": {
+				"perk": {"name": "Love Song", "desc": "The party's gauge fills 10% faster on missions.", "effect": {"mission_power_rate": 0.1}},
+				"moment": {"title": "Duet", "lines": [
+					["", "Late, in the tavern's back room. Saffron has a borrowed fiddle across her knees and no intention of playing it."],
+					["saffron", "Here's a thing. I write songs about everyone. Bran's got one, it's mostly about his arms. Tobble's got three, all rude."],
+					["saffron", "Yours keeps going wrong. It starts off a funny one, about the quiet sort. Then it turns into a love song by the second verse, every time. I've tried. It won't stay funny."],
+					["saffron", "So I'm asking, love, before I make a fool of myself in front of a paying crowd. Is it a love song, or do I keep trying to make it a funny one?"]
+				], "choice": [
+{"label": "[Kiss her]", "bond": 3, "romance": true, "reply": [
+						["saffron", "...Love song. Right. That settles the second verse.", "happy"],
+						["saffron", "Don't tell anyone. They'll all want one, and I've only got the one voice."],
+						["", "She puts the fiddle down. Somewhere a lamp lights itself that nobody sang."]
+					]},
+{"label": "[Laugh, and point to the funny bits]", "bond": 2, "romance": false, "reply": [
+						["saffron", "Funny one it is. Good. Funny songs get more applause anyway.", "happy"],
+						["saffron", "Mates, then. Best kind of harmony. Nobody goes flat."]
+					]}
+				]},
+				"rank5": {"rank": 5, "title": "The Whole Song", "lines": [
+					["saffron", "She came out, love. She came out, and she was cross, because I'd left the kettle on eleven years ago."],
+					["saffron", "The house is gone now. It went when the song went, like songs do. Mam's at the tavern telling Tobble he's watering the gin, and he is."],
+					["saffron", "I finished a song. First one ever. I thought it'd feel like dying. It felt like getting off a stage and you're there with my coat."],
+					["saffron", "And I've finished yours. The love song. Every verse. I'm going to sing it to you, all the way to the end, and you're going to stay. That's what finished means."]
+				], "choice": [
+					{"label": "[Listen to every verse]", "bond": 3, "reply": [["saffron", "...And nothing went away. Look at that. You're still here.", "happy"]]},
+					{"label": "[Join in on the last line]", "bond": 2, "reply": [["saffron", "Flat! Brave! Perfect. That's our duet, that is.", "happy"]]}
+				]},
+				"ended": [
+					["saffron", "So that's that. I've cut your verses out of the love song. It's a lot shorter now. Funnier, too.", "sad"],
+					["saffron", "No hard feelings, love. Well. Some. They'll make a good song one day."]
+				],
+				"talk": [
+					"I sang your name at the window this morning and a sparrow appeared. It wasn't there before. It's still there. I'm not sure what that means.",
+					"Mam says you're too quiet. I said that's the point. She said 'oh' in her worst voice.",
+					"Every song I write's about you now. It's very bad for business. Nobody wants a sad song about mud any more.",
+					"Come and sit at the front tonight. I like to know where you are when I hit the high bits."
+				]
 			}
 		}
 	},
@@ -372,6 +450,40 @@
 				"effects": {"expedition": 5, "party": {"hp": 5}},
 				"banter": [
 					[["bran", "Chair's holding up."], ["ottoline", "Course it is. Built it to hold me."]]
+				]}},
+		{"ids": ["hortense", "velvette"], "kind": "rivals", "name": "Two rapiers", "text": "A marquise and a showgirl, both with swords and both used to being the only one in the room. Fauvette calls Hortense 'the amateur'. Hortense calls Fauvette nothing at all, which is worse.",
+			"effects": {"expedition": -5, "party": {"damage": 2, "guard": -0.05}, "bond": -1},
+			"banter": [
+				[["velvette", "The marquise holds her sword like a fan, chérie. Very pretty. Very slow."], ["hortense", "And Fauvette holds hers like a microphone. Everyone has their gifts."]],
+				[["hortense", "Shall we count, sweet? First to five."], ["velvette", "Darling, I stopped counting at eleven."]]
+			],
+			"truce": {"days": 10, "name": "A shared bow", "text": "Hortense and Fauvette fought a practice bout in the square that went on for an hour and ended in a draw neither will admit to. They now take the same corner of the tavern and criticise everyone else's footwork.",
+				"effects": {"expedition": 5, "party": {"damage": 1, "guard": 0.05}},
+				"banter": [
+					[["velvette", "You left your guard open on the third pass, marquise."], ["hortense", "I know. I wanted to see if you would notice. You did. How irritating."]]
+				]}},
+		{"ids": ["saffron", "ottoline"], "kind": "friends", "name": "Cabaret hours", "text": "Saffron sang at the Gilt Lantern and Ottoline kept the Encore's door, two streets apart, for years. They have a hundred stories about the same drunks.",
+			"effects": {"expedition": 5, "building": 1, "party": {"hp": 5}, "bond": 1},
+			"banter": [
+				[["saffron", "Ottoline, remember the magistrate at the Lantern? The one who sang along?"], ["ottoline", "I remember. I threw him out by the second chorus. You thanked me."]],
+				[["ottoline", "You sing, I hit. Like the old days."], ["saffron", "Like the old days, love. Except now the drunks have teeth."]]
+			]},
+		{"ids": ["nan", "bran"], "kind": "friends", "name": "Small print", "text": "Bran's contract is on his arm and Nan's is in a moneylender's box. They spend whole evenings reading each other's clauses out loud and laughing at the worst ones.",
+			"effects": {"expedition": 5, "party": {"damage": 1}, "bond": 1},
+			"banter": [
+				[["nan", "Bran, what's clause nine on your arm say again?"], ["bran", "Says mind your own arm."]],
+				[["bran", "Your shadow talks."], ["nan", "So does your arm, love. Yours just uses clauses."]]
+			]},
+		{"ids": ["nan", "quill"], "kind": "rivals", "name": "Creative accounting", "text": "Quill cooks the books for Hollowmark and Nan cooks them for herself. Each is sure the other is skimming. Both are right.",
+			"effects": {"expedition": -5, "building": -1, "bond": -1},
+			"banter": [
+				[["quill", "Nan, the supply ledger is six Gilt short."], ["nan", "Is it? Funny. My purse is six Gilt heavy. Must be a draught."]],
+				[["nan", "Quill, love, you've carried a two there that wants to be a seven."], ["quill", "I've carried it exactly where I wanted it, thank you."]]
+			],
+			"truce": {"days": 10, "name": "Two sets of books", "text": "Quill and Nan agreed to audit each other weekly. Hollowmark's books have never been cleaner, and the two of them have never been happier about it.",
+				"effects": {"expedition": 5, "building": 1},
+				"banter": [
+					[["quill", "I found your six Gilt, Nan."], ["nan", "And I found your seven. Call it square?"]]
 				]}}
 	]
 }

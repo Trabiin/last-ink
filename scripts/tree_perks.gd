@@ -131,6 +131,10 @@ static func damage_bonus(h: Hero, enemy: Enemy) -> float:
 	var aura := 0.0
 	for o in _allies(h, AURA_RANGE):
 		aura = maxf(aura, p(o, "aura_damage"))
+	if enemy.charmed_by(h):  # Beguile (Hortense): she hits what she has charmed harder
+		b += enemy.charm_mult - 1.0
+	if h.song_t > 0.0:  # Saffron's Torch Song: everyone it reaches hits harder while it lasts
+		b += h.song_boost
 	return b + aura
 
 

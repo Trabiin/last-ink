@@ -310,7 +310,7 @@ func _hurt(hero: Hero, damage: int, knock: float, from: Vector2) -> bool:
 	if hit_this.has(hero):
 		return false
 	hit_this.append(hero)
-	var amount := float(damage) * (AUDIT_MULT if audited.has(hero) else 1.0)
+	var amount := float(damage) * (AUDIT_MULT if audited.has(hero) else 1.0) * hit_mult()
 	return hero.take_hit(Empire.damage_to_party(int(round(amount))), from, knock)
 
 

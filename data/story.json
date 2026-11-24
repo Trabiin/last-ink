@@ -9,7 +9,10 @@
 		"odo": {"name": "Brother Odo", "color": "8a6a4a", "colors": {"skin": "d8b494", "cloth": "5a4632", "trim": "a08a5a", "hair": "4a3a2a"}},
 		"wulfstan": {"name": "Abbot Wulfstan", "color": "8a3a34", "colors": {"skin": "e0c8b0", "cloth": "1e1a1e", "trim": "c9a54a", "hair": "d8d4cc"}},
 		"ebba": {"name": "Prioress Ebba", "color": "a05a4a", "colors": {"skin": "e0c0a4", "cloth": "2a2628", "trim": "d8d0c0", "hair": "6a5a4a"}},
-		"askew": {"name": "First Reader Askew", "color": "d8d2c4", "colors": {"skin": "e8ccb0", "cloth": "e8e4d8", "trim": "a08a5a", "hair": "8a6a4a"}}
+		"askew": {"name": "First Reader Askew", "color": "d8d2c4", "colors": {"skin": "e8ccb0", "cloth": "e8e4d8", "trim": "a08a5a", "hair": "8a6a4a"}},
+		"lantenay": {"name": "Duc de Lantenay", "color": "4a5ab0", "colors": {"skin": "ecd6c4", "cloth": "2a2e5a", "trim": "d8c070", "hair": "e8e4dc"}},
+		"gaudin": {"name": "Purser Gaudin", "color": "5a5a6a", "colors": {"skin": "dcc4ac", "cloth": "30303c", "trim": "a8a8b8", "hair": "4a3a2a"}},
+		"host": {"name": "The Host", "color": "8a2a4a", "colors": {"skin": "e8d8d0", "cloth": "4a1028", "trim": "e0c070", "hair": "1a0a10"}}
 	},
 	"talks": {
 		"ch1_arrest": {"title": "Chapter 1  ·  No Such Person", "lines": [
@@ -245,6 +248,173 @@
 			["bran", "Monks owe us. Monks pay late. Still. It's a start."],
 			["", "That night a letter lies on the Command Table, weighed down with a smooth white stone. It says only: 'Thank you for counting them. Fondly, V.'"],
 			["", "Under her name, in a different ink, someone has drawn a single black bar."]
+		]},
+		"ch3_invitation": {"title": "An Invitation", "lines": [
+			["", "A card arrives at the Command Table by barge, by pony and finally by a footman in a powdered wig who will not say who sent him. It is thick, gilt-edged and smells of violets."],
+			["velvette", "Oh, darling. Look at this. A de Saulx card. I have not seen one since I was sixteen and singing for my supper at the bottom of their stairs.", "surprised"],
+			["velvette", "'The Marquise de Saulx requests the pleasure of the company of the person who does not exist, at the Masquerade, which continues.' Which continues, she says. It has been a year."],
+			["bran", "Who throws a party for a year?"],
+			["velvette", "The Causeway, mon vieux. They dance on the bridges while the ink lake comes up the steps. When the Blank came, they decided the music should simply not stop."],
+			["bran", "And now a marquise wants the smudge. By name. Or by no name. That's worse."],
+			["", "Folded inside the card is a second sheet, unsigned, in a rough hand: 'The quay is going under. Somebody's singing it up. Come quick or don't bother.'"],
+			["velvette", "Two letters, one envelope. One of them is lying, and it is never the rough one."]
+		]},
+		"ch3_quay_intro": {"title": "Lantern Quay", "lines": [
+			["", "Lantern Quay is half gone. The white has bitten a hole through the middle of the wharf, and on the far side a crowd of dockhands and barge families is trapped against the water."],
+			["", "Across the gap, from nothing to nothing, runs a bridge of warm yellow light. A woman in a sequinned coat stands at the near end, singing at the top of her lungs."],
+			["saffron", "Don't stop me! If I stop it goes, love, and they all go in the drink! Keep those things off me!"],
+			["bran", "She's singin' a bridge. Course she is. Why not."]
+		]},
+		"ch3_quay_outro": {"title": "Saffron Kiss", "lines": [
+			["", "The last barge child runs across the light, and the singer lets the final note go. The bridge goes out like a lamp. Nobody is on it."],
+			["saffron", "Ha! Every one. Did you count? I counted. Forty-one and a goat."],
+			["saffron", "Saffron Kiss, top of the bill at the Gilt Lantern till it fell in the lake. You'll be the one with no name. The whole quay's talking about you. Well, not talking. Sort of pointing."],
+			["saffron", "Here's the thing, love. I can sing things up, but they don't stay. A bridge, a lamp, a door. They last as long as the song, and I've never finished a song in my life."],
+			["saffron", "So I'm coming with you. You've got a town that stays put. I'd like to see what that's like.", "happy"]
+		]},
+		"ch3_quay_after": {"title": "Who Sent the Card", "lines": [
+			["saffron", "The rough letter was mine. Sorry about the spelling. The posh one's from the Marquise. Everybody on the Causeway gets one eventually."],
+			["saffron", "Here's what nobody prints. The masquerade has a host nobody's seen. Every night a few guests go up to pay their respects, and they don't come down again."],
+			["velvette", "And the rest keep dancing. Of course they do. A missing guest is just more room on the floor."],
+			["saffron", "The Marquise only lets in whoever sends the wine. If you want through the door, you'll want the Vauclair Terraces first. The presses up there feed the whole party."],
+			["bran", "So we take a vineyard to go to a party to find out who's eatin' the guests. Lovely. Love a Tuesday."]
+		]},
+		"ch3_masquerade_intro": {"title": "The Masquerade", "lines": [
+			["", "The Velvet Causeway glitters across the ink lake, a city of bridges and balconies lit by ten thousand candles. Every window has music in it. Every step leading down to the water is a little shorter than last night."],
+			["", "A footman bows at the first bridge and hands Ash a plain white mask. He does not ask for a name."],
+			["saffron", "Masks on, loves. Smile at everybody. If someone asks who you are, say you're a cousin. Everyone here is somebody's cousin."]
+		]},
+		"ch3_hortense": {"title": "The Marquise", "lines": [
+			["", "In the middle of the great hall a woman in blue silk is dancing with nobody. She sees Ash, stops dead in the middle of the floor, and the orchestra stops with her."],
+			["hortense", "There you are. The person who does not exist. I have had your portrait drawn eleven times from descriptions, and every artist drew a different face. I see why.", "smug"],
+			["hortense", "Hortense de Saulx. This is my party, technically. My family has hosted it for two hundred years, which mostly means paying for it."],
+			["hortense", "Dance with me, sweet. Everyone is watching, and I would like them to see who I have caught."]
+		], "choice": [
+			{"text": "Take her hand and lead", "reply": [["hortense", "Oh. You lead. Nobody leads me. How refreshing. Let us go round once and give them something to talk about.", "surprised"]]},
+			{"text": "Bow, and let her lead", "reply": [["hortense", "Good manners. Rarer than diamonds here, and worth more. Follow me, and mind my train.", "happy"]]},
+			{"text": "Stay where you are, watching the doors", "reply": [["hortense", "Watching the exits at a party. You and I are going to get on terribly well. Very wise, sweet. Somebody is about to need them.", "smug"]]}
+		]},
+		"ch3_verity_mask": {"title": "A White Mask", "lines": [
+			["", "On the balcony above the hall, away from the candles, a woman in a cream robe and a plain white mask is watching the dancers with her hands folded."],
+			["verity", "Hello again. Don't stop dancing on my account. I came to see whether the rumour was true."],
+			["verity", "Something here eats guests. People assume it's mine. Everything hungry is assumed to be mine these days."],
+			["verity", "It isn't. I have never sent anything to a party. I don't approve of parties. All that noise, and nobody writes anything down."],
+			["verity", "Be careful who you dance with, Ash. This city has a great many masks, and some of them have been on so long there's nothing underneath."],
+			["", "When Ash looks up again, the balcony is empty, and the candle on its rail has burned straight down in a single moment."]
+		]},
+		"ch3_course": {"title": "The Next Course", "lines": [
+			["", "A bell rings somewhere above the hall. The music changes key. Half the dancers turn, all together, and their masks are smiling a little wider than masks should."],
+			["lantenay", "Mesdames, messieurs. Our host calls for the next course. Do keep dancing, those of you who are not the course."],
+			["hortense", "Lantenay, you old horror. Not tonight, and not my guest. Ash, sweet, the revellers have stopped being polite. Do the same.", "angry"]
+		]},
+		"ch3_masquerade_outro": {"title": "A Room in Hollowmark", "lines": [
+			["", "The hall is quiet. The orchestra has hidden under its music stands. The Duc de Lantenay has withdrawn, very slowly, upstairs."],
+			["hortense", "Well. That is the most fun anyone has had at this party in a year, and I include the people who were eaten."],
+			["hortense", "I'm coming with you to Hollowmark. Do not look so pleased. I need somewhere that is not here, and you need someone who knows which fork the Nobility stab each other with."],
+			["saffron", "She's a liar, love. Everyone on the Causeway knows the Marquise is a liar."],
+			["hortense", "Of course I am. Everyone here is. I'm only the best at it.", "smug"]
+		]},
+		"ch3_masquerade_after": {"title": "A Barge at Night", "lines": [
+			["saffron", "Ash, love. The posh lot that went up to see the host, the ones who never came down. I've seen where the rest of them go."],
+			["saffron", "There's a barge that ties up at Lantern Quay after midnight. No lights. Concord colours under the tarpaulin. It takes on crates of people in masks, and it sails for the Causeway's back stairs."],
+			["hortense", "Gossip, sweet. The quay is full of it. I know a quicker way onto that wharf, if you insist on going. I insist on coming."],
+			["bran", "She insists. She insists a lot. I don't like a woman who knows the quick way into a trap."],
+			["hortense", "Bran, darling. A trap is just a party you weren't told about."]
+		]},
+		"ch3_wharf_intro": {"title": "The Night Wharf", "lines": [
+			["", "Lantern Quay after midnight, every lamp out. A long black barge rides low at the end of the smugglers' wharf, and men in Concord grey are lifting crates aboard."],
+			["hortense", "This way. Along the warehouses, keep to the dark side. Nobody looks at the dark side of anything here."],
+			["saffron", "Hortense, how do you know the way to a Concord barge in the dark?"],
+			["hortense", "I know the way to everything in the dark, sweet. It's how I was raised."]
+		]},
+		"ch3_gaudin": {"title": "Delivery", "lines": [
+			["", "On the barge's deck, under a single hooded lantern, stands a steel table with straps on it. A neat card on the table reads: SUBJECT (UNREGISTERED). FOR THE ANATOMISTS OF THE OFFICE OF CORRECTIONS."],
+			["gaudin", "Marquise. Punctual, and with the subject, as promised. The Office is very grateful. Your sister's notes will be marked paid in full."],
+			["", "Everyone turns to look at Hortense. She does not look away from Ash."],
+			["hortense", "Yes. That's true. The Office sent me a letter the day after the Auditor fell, and I was to bring you here, and they would let Bérénice go. Every word I have said to you since was meant to get you onto this barge.", "sad"],
+			["bran", "I said. I said she knew the quick way into a trap."]
+		], "choice": [
+			{"text": "Put a hand on your weapon", "reply": [["hortense", "Good. You should. I would think less of you otherwise. Now watch what I do with mine."]]},
+			{"text": "Hold out your hand to her", "reply": [["hortense", "...You are impossible. You know that? Here I am, ruining my own big scene, and you hold out your hand.", "surprised"]]},
+			{"text": "Look at the steel table, then back at her", "reply": [["hortense", "Yes. I saw it too. I had imagined something with more velvet."]]}
+		]},
+		"ch3_letter_aloud": {"title": "The Concord's Letter", "lines": [
+			["", "Hortense takes a folded letter from her glove, breaks the Concord seal with her thumb and reads it aloud, in her best ballroom voice, to the whole wharf."],
+			["hortense", "'To the Marquise de Saulx. The Office requires the unregistered subject, alive, for study. In return the debts of the House of de Saulx will be discharged, and the pupil Bérénice released.'"],
+			["hortense", "'Further: the Office will continue to supply the Causeway's host with guests from the debtors' rolls, so long as the Nobility keep the Blank off the bridges. Signed, for the Concord, Purser Gaudin.'"],
+			["gaudin", "Marquise, that letter was private."],
+			["hortense", "Nothing on the Causeway is private, Purser. You fed debtors to that thing upstairs so the bridges would stay dry, and you wrote it down. The Concord always writes it down.", "angry"],
+			["", "She tears the letter in two and lets the pieces go into the ink lake."],
+			["hortense", "I will fetch my sister myself. Ash, sweet. Shall we sink a barge?"]
+		]},
+		"ch3_wharf_outro": {"title": "Odds", "lines": [
+			["", "The Concord barge lists, groans and settles into the ink with its steel table still on deck. The crates on the wharf are open. Inside, blinking, are debtors from half the towns on the lake."],
+			["bran", "So. She was sellin' you. To the Concord. For cuttin' up."],
+			["hortense", "I was. I am not any more. I changed my mind somewhere around the first dance, and then I changed it back four times, and then I saw the table."],
+			["hortense", "Keep me or throw me in the lake. I would do either in your place. But if you keep me, I will be the most useful liar you ever had, and I shall only lie to other people."],
+			["velvette", "Darling, a confession on a sinking barge. It has everything. I could not have staged it better.", "smug"],
+			["", "Ash looks at Hortense for a while, then hands her back her rapier, hilt first."],
+			["hortense", "...Thank you. I shall try very hard to deserve that. It will be a novelty.", "sad"]
+		]},
+		"ch3_wharf_after": {"title": "The Host", "lines": [
+			["hortense", "Here is the rest of it. The thing upstairs at the masquerade came to the first night after the Blank arrived. Nobody invited it. It sat down at the head of the table and never left."],
+			["hortense", "It is mostly mouth. It eats guests, and while it's eating, the ink stays off the bridges. The Nobility worked that out in a week. The Concord worked out who to send."],
+			["saffron", "So everyone dances, and every night a few go upstairs, and the city stays dry. That's the party. That's the whole party."],
+			["hortense", "Lantenay holds the stairs. He won't open the hall to people the Nobility despise. Make them merely dislike you, and I can get us up."]
+		]},
+		"ch3_two_rapiers": {"title": "Two Rapiers", "lines": [
+			["", "The practice yard behind the barracks, early. Fauvette is already there, rapier out, when Hortense arrives in a borrowed fencing jacket that fits her suspiciously well."],
+			["velvette", "Marquise. I sang at your family's masquerade when I was sixteen. Bottom of the stairs, by the coats. You paid the Encore double to have me there."],
+			["hortense", "I remember. You were very good. You were also stealing from the coats."],
+			["velvette", "Every coat in the house, chérie. I still have a glove of your father's. It is the only de Saulx thing I own that was paid for."],
+			["hortense", "Then we are even. I knew whose guests went upstairs and did not come back, and I went on dancing. You knew the Encore's volunteers, and you went on bowing. We are both very good at going on."],
+			["velvette", "Hm. Fine. One bout. First to touch three times. If I win, you stop calling me 'the cabaret girl'."],
+			["hortense", "And if I win?"],
+			["velvette", "You won't, darling. But if you do, I'll give you back the glove.", "smug"],
+			["", "They salute. Nobody in Hollowmark gets any work done for an hour. The score, according to Fauvette, is three to two. According to Hortense, it is also three to two, the other way round."]
+		]},
+		"ch3_shallows_intro": {"title": "Pendower Shallows", "lines": [
+			["", "On the mud flats of Pendower Shallows, a dozen word-fishers are crowded round a woman with a folding table, three walnut shells and a very loud voice."],
+			["nan", "Find the word, win the word! Under one of these shells, a genuine 'tomorrow', fresh off the nets this morning. Sixpence a go! Who's feeling lucky? You, sir, with the face!"],
+			["", "Her shadow stretches across the mud in the wrong direction, away from the sun. It clears its throat."],
+			["tally", "The word is not under any of the shells. It is in her sleeve. It has been in her sleeve since Monday."],
+			["nan", "Tally!"],
+			["", "The word-fishers turn as one. Behind them, out on the shallows, the ink starts to boil with eels."]
+		]},
+		"ch3_shallows_outro": {"title": "Nan Cripps and Tally", "lines": [
+			["nan", "Well! That was a lovely bit of teamwork. I distracted them, you hit them, Tally ruined my livelihood. Shall we do it again tomorrow?"],
+			["tally", "She signed me over to a moneylender when she was fifteen. Her conscience, as collateral. It came out like this. Talking."],
+			["nan", "Tally's very honest. It's a terrible burden. I'm Nan, by the way. Nan Cripps. You'll be the one with no name. That's a lovely trick, that is. I'd pay to learn it."],
+			["nan", "I hear Hollowmark's got a market and nobody who knows how to fleece it. Take me on. I'll work cheap, and Tally will make sure I'm telling the truth about the cheap part."],
+			["tally", "She will not work cheap."]
+		]},
+		"host_intro": {"title": "The Head of the Table", "lines": [
+			["", "Above the great hall, behind doors of black lacquer, is the banqueting room. The table runs the length of the room. Every chair is empty except the one at the far end."],
+			["", "The guest at the head of the table is enormous, and wears a mask on every part of it that could be called a face. Most of it is mouth."],
+			["host", "AH. THE LATE ARRIVALS. SIT, SIT. THERE IS ALWAYS ROOM AT THE TABLE. THERE IS ALWAYS ROOM INSIDE."],
+			["hortense", "Good evening, monsieur. I'm afraid we're here to end the party."],
+			["host", "NOBODY ENDS THE PARTY. THE PARTY ENDS WHEN THE GUESTS RUN OUT. AND THE GUESTS NEVER RUN OUT."]
+		]},
+		"host_phase2": {"title": "Second Helpings", "lines": [
+			["", "The Host tears off its masks one after another and throws them aside. Under each one is another mouth."],
+			["host", "RUDE. RUDE GUESTS. I WILL EAT THE TABLE. I WILL EAT THE FLOOR. I WILL EAT THE BRIDGES AND THE LAKE CAN HAVE WHAT IS LEFT."],
+			["saffron", "It's going to jump, love! Watch where its shadow lands!"]
+		]},
+		"host_outro": {"title": "The Party Ends", "lines": [
+			["", "The Host sits back in its chair. All its mouths close at once. Slowly, the way a candle goes, it is gone, and the chair at the head of the table is just a chair."],
+			["", "From the hall below comes a sound nobody on the Causeway has heard in a year: the orchestra stopping, and not starting again."],
+			["hortense", "There. The party is over. My family hosted it for two hundred years, and I have ended it in one evening. Grandmère would be appalled.", "happy"],
+			["saffron", "Listen to that. Quiet. You can hear the water."],
+			["bran", "You can hear the water comin' up the steps."],
+			["hortense", "Yes. Now the Causeway has to keep itself dry the ordinary way, with walls, and work, and you. How dreadful for them."]
+		]},
+		"ch3_end": {"title": "The Party's Over", "lines": [
+			["", "The masquerade is over. On the Causeway the candles are out and the masks are off, and people are standing on the bridges looking at each other's faces as if they had never seen them before."],
+			["lantenay", "The Nobility will remember this, Keeper. Some of us with gratitude. Most of us with a great deal of paperwork. Our wine still goes to whoever holds the presses."],
+			["hortense", "He means thank you. The Nobility have no word for it, so they send wine."],
+			["saffron", "I'm writing a song about tonight. I'm going to finish it. You see if I don't."],
+			["", "That night a letter lies on the Command Table, weighed down with a white mask. It says only: 'That one was not mine. Someone else is setting places at the table. Fondly, V.'"],
+			["", "Under her name, in a different ink, someone has drawn two black bars."]
 		]}
 	},
 	"beats": [
@@ -272,7 +442,18 @@
 		{"talk": "ch2_end", "when": {"cleared": ["ch2_abbot"]},
 			"card": ["Chapter 2 complete: The Copying Monks", "The Abbey's door is open and the Erasers know your name. The north is yours to hold until the Causeway calls. New goals are in the journal."]},
 		{"pick": "letter", "when": {"betrayal": "foreshadow"}},
-		{"pick": "scene", "when": {"betrayal": "locked"}}
+		{"pick": "scene", "when": {"betrayal": "locked"}},
+		{"talk": "ch3_invitation", "when": {"seen": ["ch2_end"], "held": 8}, "then": "open_region:causeway",
+			"card": ["Chapter 3: Masquerade", "New story mission: The Singer on the Quay. Lantern Quay, on the ink lake in the south-west (territory map)."]},
+		{"talk": "ch3_quay_after", "when": {"cleared": ["ch3_quay"]},
+			"card": ["New story mission: The Masquerade", "The Velvet Causeway (territory map). The door opens for whoever holds the Vauclair Terraces."]},
+		{"talk": "ch3_masquerade_after", "when": {"cleared": ["ch3_masquerade"]},
+			"card": ["New story mission: The Night Wharf", "Lantern Quay (territory map), after midnight."]},
+		{"talk": "ch3_two_rapiers", "when": {"cleared": ["ch3_masquerade"], "joined": ["velvette", "hortense"]}},
+		{"talk": "ch3_wharf_after", "when": {"cleared": ["ch3_wharf"]},
+			"card": ["New story mission: The Host", "The Velvet Causeway. Lantenay opens the stairs once the Velvet Nobility are at least Neutral with you (Diplomacy)."]},
+		{"talk": "ch3_end", "when": {"cleared": ["ch3_host"]},
+			"card": ["Chapter 3 complete: Masquerade", "The music has stopped on the Causeway and the Concord knows Hortense's name. The lake is yours to hold until the sea calls. New goals are in the journal."]}
 	],
 	"goals": [
 		{"text": "Escape the tax office", "chapter": "ch1", "hint": "Get past the wardens and out through the front door", "done": {"cleared": ["ch1_breakout"]}, "show": {"active": true}},
@@ -294,6 +475,16 @@
 		{"text": "The Abbot Who Copied Himself", "chapter": "ch2", "hint": "story mission at Saint Ledger's Abbey", "done": {"cleared": ["ch2_abbot"]}, "show": {"seen": ["ch2_verity_after"]}},
 		{"text": "Win the Abbey's friendship", "chapter": "ch2", "hint": "a Friendly Abbey speeds up research, and a lost brother waits at its gate", "done": {"standing": {"abbey": "friendly"}}, "show": {"seen": ["ch2_end"]}},
 		{"text": "Hold Scarth Pass", "chapter": "ch2", "hint": "claim it from the Command Table once a neighbour is yours", "done": {"owns": ["quillpine"]}, "show": {"seen": ["ch2_end"]}},
-		{"text": "Hold nine provinces", "chapter": "ch2", "hint": "claim, reclaim or win land by treaty", "done": {"held": 9}, "show": {"seen": ["ch2_end"]}}
+		{"text": "Hold nine provinces", "chapter": "ch2", "hint": "claim, reclaim or win land by treaty", "done": {"held": 9}, "show": {"seen": ["ch2_end"]}},
+		{"text": "The Singer on the Quay: get the dockfolk across", "chapter": "ch3", "hint": "story mission at Lantern Quay, in the south-west", "done": {"cleared": ["ch3_quay"]}, "show": {"seen": ["ch3_invitation"]}},
+		{"text": "Take the Vauclair Terraces", "chapter": "ch3", "hint": "claim them from the Command Table: the masquerade only opens for whoever sends the wine", "done": {"owns": ["terraces"]}, "show": {"seen": ["ch3_quay_after"]}},
+		{"text": "The Masquerade: meet the Marquise", "chapter": "ch3", "hint": "story mission at the Velvet Causeway", "done": {"cleared": ["ch3_masquerade"]}, "show": {"seen": ["ch3_quay_after"]}},
+		{"text": "Shadow and Debt: find the grifter on the Shallows (optional)", "chapter": "ch3", "hint": "story mission at Pendower Shallows", "done": {"cleared": ["ch3_shallows"]}, "show": {"seen": ["ch3_quay_after"]}},
+		{"text": "The Night Wharf: follow the barge", "chapter": "ch3", "hint": "story mission at Lantern Quay", "done": {"cleared": ["ch3_wharf"]}, "show": {"seen": ["ch3_masquerade_after"]}},
+		{"text": "Win Neutral standing with the Velvet Nobility", "chapter": "ch3", "hint": "gifts, trade and the Nobility's asks in Diplomacy{tag:diplomacy}", "done": {"standing": {"velvet": "neutral"}}, "show": {"seen": ["ch3_wharf_after"]}},
+		{"text": "The Host", "chapter": "ch3", "hint": "story mission at the Velvet Causeway", "done": {"cleared": ["ch3_host"]}, "show": {"seen": ["ch3_wharf_after"]}},
+		{"text": "Win the Velvet Nobility's friendship", "chapter": "ch3", "hint": "a Friendly Nobility pays patronage, and a mask-maker comes to Hollowmark", "done": {"standing": {"velvet": "friendly"}}, "show": {"seen": ["ch3_end"]}},
+		{"text": "Hold Pendower Shallows", "chapter": "ch3", "hint": "claim it from the Command Table", "done": {"owns": ["inkmere"]}, "show": {"seen": ["ch3_end"]}},
+		{"text": "Hold twelve provinces", "chapter": "ch3", "hint": "claim, reclaim or win land by treaty", "done": {"held": 12}, "show": {"seen": ["ch3_end"]}}
 	]
 }

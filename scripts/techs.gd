@@ -385,6 +385,13 @@ static func pulse(h: Hero, t: Dictionary, b: Dictionary, state: Dictionary) -> v
 				enemy.mark(float(p["mark"]), float(p.get("mark_mult", 1.5)))
 			if float(p.get("taunt", 0)) > 0.0:
 				enemy.taunt(h, float(p["taunt"]))
+			if float(p.get("charm", 0)) > 0.0 and not enemy.dead:  # Hortense (Chapter 3): survivors are Beguiled
+				enemy.charm(float(p["charm"]), h, 1.5)
+			if float(p.get("weaken", 0)) > 0.0 and not enemy.dead:  # Nan: survivors are under the Small Print
+				enemy.weaken(float(p["weaken"]), 0.6, 0.75)
+	if float(p.get("song", 0)) > 0.0:  # Saffron: the party inside the blast gets the Torch Song
+		for other in _allies(h, center, float(b["reach"]) + 8.0):
+			Abilities.sing_to(other, float(p["song"]), float(p.get("song_boost", 0.2)), 0.3)
 	if int(p.get("heal", 0)) > 0 or int(p.get("shield", 0)) > 0:
 		for other in _allies(h, center, float(b["reach"]) + 8.0):
 			var amount := mini(int(p.get("heal", 0)), other.max_hp - other.hp)

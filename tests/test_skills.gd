@@ -8,7 +8,8 @@ const COMMAND := "res://scenes/command.tscn"
 ## Keys a tech may have (a typo in data/techs.json fails here instead of silently doing nothing).
 const TECH_KEYS := ["id", "name", "desc", "color", "fx", "sound", "mult", "reach", "arc", "offset", "knock", "step",
 	"hits", "every", "last", "chain", "chain_gap", "chain_delay", "delay", "spread", "knives", "stun", "mark", "mark_mult",
-	"execute", "taunt", "guard", "guard_time", "vanish", "crit", "heal", "shield", "shield_time", "ink", "leech", "leech_cap"]
+	"execute", "taunt", "guard", "guard_time", "vanish", "crit", "heal", "shield", "shield_time", "ink", "leech", "leech_cap",
+	"charm", "weaken", "song", "song_boost"]
 const SOUND_KEYS := ["tone", "sweep", "noise", "len", "ring", "thump"]
 const KNIFE_KEYS := ["count", "arc", "speed", "range", "mult", "pierce", "knock"]
 
@@ -94,7 +95,9 @@ func test_abilities_have_ink_colours_and_tiers() -> void:
 			for k in a["tiers"][tier]:
 				var v = a["tiers"][tier][k]
 				if a.has(k) and typeof(a[k]) != TYPE_BOOL:
-					check(float(v) >= float(a[k]) or k == "cooldown", "%s tier %s: %s gets weaker" % [w, tier, k])
+					# Smaller is stronger for waits, slows and Small Print's damage multiplier.
+					var lower_better: bool = k in ["cooldown", "every", "slow"] or (k == "mult" and a.get("kind", "") == "weaken")
+					check(float(v) <= float(a[k]) if lower_better else float(v) >= float(a[k]), "%s tier %s: %s gets weaker" % [w, tier, k])
 
 
 # ------------------------------------------------------------------ levels

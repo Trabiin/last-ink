@@ -570,6 +570,21 @@ wants to dissect the one person the Blank spat out. Player chooses dialogue tone
 Hortense stays (she has fallen for the party, or at least for their odds). Boss: **The Host**, a party guest who is
 mostly mouth.
 
+**Built (#29, on tracked stand-in art):** five story missions in four new Causeway provinces (Lantern Quay, the
+Velvet Causeway, Pendower Shallows, the Vauclair Terraces), owned partly by the new **Velvet Nobility** faction
+(patronage gilt when Friendly, wine-and-masks deals, four asks, fines and seizures as trouble). The Singer on the
+Quay (Saffron joins), the Masquerade (needs the Terraces; Hortense joins, Verity watches from a balcony in a white
+mask), the optional Shallows (Nan and Tally join), the Night Wharf (Hortense reads her Concord orders aloud to the
+whole wharf and tears them up: the Office wanted Ash for study in exchange for her sister Bérénice's debts, and has
+been feeding debtors to the Host), and the Host (needs Neutral with the Nobility). The Host fights at its banquet
+table: a bite, a fan of shouted words, a breath that pulls heroes in and swallows its own guests to heal, a bell
+for more guests; at half it unmasks and adds a gulp jump that leaves it stuck in the floor. The Vacancy's beat is
+the two black bars under Verity's "that one was not mine" letter (ch3_end). New enemies: Masked Reveller, Bridge
+Duellist, Ink Eel, Lamplighter. Three field heroes with full kits, bonds, romance (Hortense, Saffron), pair
+banter, epilogues, techs, skill trees, weapons and personal missions. Hortense and Fauvette get their scene
+(`ch3_two_rapiers`). Save step `20261126_chapter3` gives old saves the Nobility's Causeway. All stand-in art is
+listed in `data/placeholders.json` and tracked in the Chapter 3 art swap issue.
+
 **Chapter 4: The Sea Stops** (Unfinished Coast, ~30 min)
 The Vacancy speaks for the first time, through a drowned lighthouse keeper, in redacted text. Recruit **Ilse of the
 Mirror**, a knight who is actually a reflection that walked out of her mirror when the original was erased. Verity

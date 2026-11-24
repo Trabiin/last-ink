@@ -1,5 +1,5 @@
 {
-	"_comment": "Charged techs (issues #8, #24). Every field hero has five, one per weapon skill level (level 1 knows the first; each level up to 5 teaches the next, data/gear.json \"skills\"). With a full power gauge, hold Attack: the first tech is ready after stage_hold[0] seconds, the next one the hero knows after stage_hold[1], and so on; releasing fires the last one reached. A tech picked in the quick menu's Techs tab charges on its own instead (ready after its own stage time). Keyed by hero id (data/heroes.json), a list in level order. Every tech: id (unique), name, desc, color (glow, blast and preview), fx (how the blast looks, drawn in scripts/tech_fx.gd: burst, slash, sweep, line, beam, seal, shock, spiral, pillar, shards, splash, stars, coins, petals), sound (synthesized in scripts/techs.gd: tone Hz, sweep Hz over the clip, noise 0-1, len s, ring 0-1 bell overtone, thump 0-1 low boom). Blast: mult = damage as a multiple of the hero's full-power swing (0 = no blast, e.g. only knives), reach px radius, arc degrees either side of facing (180 = all round), offset px in front of the hero where the blast is centred, knock = knockback (negative pulls enemies in), step = px the hero lunges first (untouchable while it does). Optional: hits + every (that many blasts, every s apart; last = overrides for the final one), chain + chain_gap + chain_delay (extra blasts marching forward), delay (s before it goes off; its area is marked on the ground meanwhile), spread (degrees: one blast per angle), knives {count, arc total degrees, speed, range, mult, pierce}, stun s, mark s + mark_mult (Audited), execute (enemies at or below this share of max HP take double), taunt s (enemies hit go for the hero), guard + guard_time (hero takes that much less damage), vanish s + crit (out of sight; next landed swing x crit), heal / shield + shield_time (allies inside the blast), ink (Ink to every ally within 120 px), leech + leech_cap (that share of damage dealt heals allies within 90 px, each up to cap).",
+	"_comment": "Charged techs (issues #8, #24). Every field hero has five, one per weapon skill level (level 1 knows the first; each level up to 5 teaches the next, data/gear.json \"skills\"). With a full power gauge, hold Attack: the first tech is ready after stage_hold[0] seconds, the next one the hero knows after stage_hold[1], and so on; releasing fires the last one reached. A tech picked in the quick menu's Techs tab charges on its own instead (ready after its own stage time). Keyed by hero id (data/heroes.json), a list in level order. Every tech: id (unique), name, desc, color (glow, blast and preview), fx (how the blast looks, drawn in scripts/tech_fx.gd: burst, slash, sweep, line, beam, seal, shock, spiral, pillar, shards, splash, stars, coins, petals), sound (synthesized in scripts/techs.gd: tone Hz, sweep Hz over the clip, noise 0-1, len s, ring 0-1 bell overtone, thump 0-1 low boom). Blast: mult = damage as a multiple of the hero's full-power swing (0 = no blast, e.g. only knives), reach px radius, arc degrees either side of facing (180 = all round), offset px in front of the hero where the blast is centred, knock = knockback (negative pulls enemies in), step = px the hero lunges first (untouchable while it does). Optional: hits + every (that many blasts, every s apart; last = overrides for the final one), chain + chain_gap + chain_delay (extra blasts marching forward), delay (s before it goes off; its area is marked on the ground meanwhile), spread (degrees: one blast per angle), knives {count, arc total degrees, speed, range, mult, pierce}, stun s, mark s + mark_mult (Audited), execute (enemies at or below this share of max HP take double), taunt s (enemies hit go for the hero), guard + guard_time (hero takes that much less damage), vanish s + crit (out of sight; next landed swing x crit), heal / shield + shield_time (allies inside the blast), ink (Ink to every ally within 120 px), leech + leech_cap (that share of damage dealt heals allies within 90 px, each up to cap). Chapter 3 (issue #29): charm s (enemies hit and left standing are Beguiled, Enemy.charm), weaken s (they are under the Small Print, Enemy.weaken), song s + song_boost (the party inside the blast gets the Torch Song, Hero.song_t).",
 	"stage_hold": [
 		1.0,
 		1.4,
@@ -950,6 +950,358 @@
 					"thump": 0.6
 				},
 				"desc": "Fauvette takes her bow and the stage comes down around her. Hits everything nearby, and anything at half health or less takes double."
+			}
+		],
+		"hortense": [
+			{
+				"id": "pas_de_deux",
+				"name": "Pas de Deux",
+				"mult": 1.5,
+				"reach": 44,
+				"arc": 9,
+				"offset": 0,
+				"knock": 160,
+				"step": 12,
+				"hits": 2,
+				"every": 0.14,
+				"color": "7a9cf0",
+				"fx": "line",
+				"sound": {
+					"tone": 1400,
+					"sweep": -600,
+					"noise": 0.3,
+					"len": 0.26,
+					"ring": 0.5,
+					"thump": 0.0
+				},
+				"desc": "A step in and two quick thrusts down the same line. She makes it look like the opening of a dance, which it is."
+			},
+			{
+				"id": "kiss_of_the_blade",
+				"name": "Kiss of the Blade",
+				"mult": 2.4,
+				"reach": 50,
+				"arc": 8,
+				"offset": 0,
+				"knock": 200,
+				"step": 8,
+				"charm": 3.0,
+				"color": "8fb0ff",
+				"fx": "beam",
+				"sound": {
+					"tone": 1250,
+					"sweep": -500,
+					"noise": 0.25,
+					"len": 0.3,
+					"ring": 0.7,
+					"thump": 0.0
+				},
+				"desc": "One long thrust, and a wink down the blade. Whatever it doesn't drop stands there Beguiled for 3 s."
+			},
+			{
+				"id": "masque",
+				"name": "Masque",
+				"mult": 1.3,
+				"reach": 40,
+				"arc": 180,
+				"offset": 0,
+				"knock": 180,
+				"vanish": 2.5,
+				"crit": 2.0,
+				"charm": 2.0,
+				"color": "5a6ad0",
+				"fx": "petals",
+				"sound": {
+					"tone": 900,
+					"sweep": 300,
+					"noise": 0.5,
+					"len": 0.4,
+					"ring": 0.6,
+					"thump": 0.0
+				},
+				"desc": "A swirl of the cloak: everything around her is nicked and Beguiled for 2 s, and she is gone for 2.5 s. Her next hit lands double."
+			},
+			{
+				"id": "liaison",
+				"name": "Liaison",
+				"mult": 1.8,
+				"reach": 24,
+				"arc": 180,
+				"offset": 24,
+				"knock": 180,
+				"chain": 3,
+				"chain_gap": 26,
+				"chain_delay": 0.1,
+				"color": "9ab8ff",
+				"fx": "slash",
+				"sound": {
+					"tone": 1500,
+					"sweep": -300,
+					"noise": 0.35,
+					"len": 0.34,
+					"ring": 0.5,
+					"thump": 0.0
+				},
+				"desc": "Three thrusts that walk forward on their own, each a pace further than the last. Everyone along the way gets a turn."
+			},
+			{
+				"id": "the_last_waltz",
+				"name": "The Last Waltz",
+				"mult": 1.3,
+				"reach": 58,
+				"arc": 180,
+				"offset": 0,
+				"knock": 200,
+				"hits": 4,
+				"every": 0.16,
+				"last": {
+					"mult": 2.6,
+					"knock": 360,
+					"charm": 3.5
+				},
+				"color": "c0d0ff",
+				"fx": "spiral",
+				"sound": {
+					"tone": 784,
+					"sweep": -200,
+					"noise": 0.35,
+					"len": 0.7,
+					"ring": 0.8,
+					"thump": 0.3
+				},
+				"desc": "She waltzes through the crowd with the rapier for a partner: four turns that cut everything round her, and on the last one everything left standing is Beguiled for 3.5 s."
+			}
+		],
+		"saffron": [
+			{
+				"id": "crack_the_whip",
+				"name": "Crack the Whip",
+				"mult": 2.2,
+				"reach": 66,
+				"arc": 7,
+				"offset": 0,
+				"knock": 240,
+				"color": "f0c040",
+				"fx": "line",
+				"sound": {
+					"tone": 2200,
+					"sweep": -1600,
+					"noise": 0.6,
+					"len": 0.16,
+					"ring": 0.2,
+					"thump": 0.0
+				},
+				"desc": "The whip goes out its full length with a crack you hear across the lake. Hard, straight and a long way."
+			},
+			{
+				"id": "high_note",
+				"name": "High Note",
+				"mult": 1.6,
+				"reach": 62,
+				"arc": 60,
+				"offset": 0,
+				"knock": 200,
+				"stun": 0.8,
+				"color": "ffd36a",
+				"fx": "sweep",
+				"sound": {
+					"tone": 1760,
+					"sweep": 200,
+					"noise": 0.15,
+					"len": 0.5,
+					"ring": 0.9,
+					"thump": 0.0
+				},
+				"desc": "One note, held. Everything in a wide wedge in front of her stops to listen for 0.8 s, which hurts more than it sounds."
+			},
+			{
+				"id": "standing_room_only",
+				"name": "Standing Room Only",
+				"mult": 1.4,
+				"reach": 70,
+				"arc": 180,
+				"offset": 0,
+				"knock": -220,
+				"heal": 8,
+				"color": "f8e08a",
+				"fx": "stars",
+				"sound": {
+					"tone": 660,
+					"sweep": 330,
+					"noise": 0.2,
+					"len": 0.5,
+					"ring": 0.8,
+					"thump": 0.2
+				},
+				"desc": "The whip goes round in a circle and everything in reach is hauled in close. The party inside it is patched up 8 by the applause."
+			},
+			{
+				"id": "second_verse",
+				"name": "Second Verse",
+				"mult": 1.6,
+				"reach": 64,
+				"arc": 180,
+				"offset": 0,
+				"knock": 200,
+				"song": 6,
+				"song_boost": 0.2,
+				"color": "ffc84a",
+				"fx": "coins",
+				"sound": {
+					"tone": 988,
+					"sweep": 250,
+					"noise": 0.2,
+					"len": 0.55,
+					"ring": 0.9,
+					"thump": 0.0
+				},
+				"desc": "A verse nobody asked for and everybody needed. Hits everything round her, and the party inside it gets 6 s of Torch Song."
+			},
+			{
+				"id": "final_number",
+				"name": "Final Number",
+				"mult": 3.4,
+				"reach": 74,
+				"arc": 180,
+				"offset": 0,
+				"knock": 380,
+				"delay": 0.4,
+				"song": 8,
+				"song_boost": 0.25,
+				"heal": 10,
+				"color": "fff0b0",
+				"fx": "pillar",
+				"sound": {
+					"tone": 523,
+					"sweep": -120,
+					"noise": 0.3,
+					"len": 0.8,
+					"ring": 0.9,
+					"thump": 0.6
+				},
+				"desc": "The big finish. A ring of gold light goes up round her and comes down hard on everything in it; the party inside is healed 10 and gets 8 s of a better Torch Song."
+			}
+		],
+		"nan": [
+			{
+				"id": "down_payment",
+				"name": "Down Payment",
+				"mult": 1.6,
+				"reach": 26,
+				"arc": 45,
+				"offset": 4,
+				"knock": 200,
+				"step": 8,
+				"hits": 2,
+				"every": 0.12,
+				"last": {
+					"knock": 380,
+					"stun": 0.6
+				},
+				"color": "9a86c0",
+				"fx": "slash",
+				"sound": {
+					"tone": 220,
+					"sweep": -80,
+					"noise": 0.6,
+					"len": 0.22,
+					"ring": 0.1,
+					"thump": 0.7
+				},
+				"desc": "Left, then right. The second one has the brass in it and leaves them seeing stars for a moment."
+			},
+			{
+				"id": "terms_and_conditions",
+				"name": "Terms and Conditions",
+				"mult": 1.5,
+				"reach": 50,
+				"arc": 180,
+				"offset": 0,
+				"knock": 180,
+				"weaken": 6,
+				"color": "b0a0d8",
+				"fx": "seal",
+				"sound": {
+					"tone": 330,
+					"sweep": -140,
+					"noise": 0.4,
+					"len": 0.3,
+					"ring": 0.4,
+					"thump": 0.6
+				},
+				"desc": "A punch into the floor and paper everywhere. Everything round her is hit and put under the Small Print for 6 s."
+			},
+			{
+				"id": "double_dealing",
+				"name": "Double Dealing",
+				"mult": 2.0,
+				"reach": 46,
+				"arc": 7,
+				"offset": 0,
+				"knock": 240,
+				"spread": [
+					-10,
+					10
+				],
+				"color": "7a6aa8",
+				"fx": "line",
+				"sound": {
+					"tone": 400,
+					"sweep": -200,
+					"noise": 0.5,
+					"len": 0.28,
+					"ring": 0.2,
+					"thump": 0.4
+				},
+				"desc": "Nan swings left. Tally swings right. Two hard lines out from her at once, and nobody knows which one was the real one."
+			},
+			{
+				"id": "call_in_the_debt",
+				"name": "Call In the Debt",
+				"mult": 3.2,
+				"reach": 36,
+				"arc": 40,
+				"offset": 6,
+				"knock": 520,
+				"step": 40,
+				"stun": 1.2,
+				"color": "c0a8f0",
+				"fx": "shock",
+				"sound": {
+					"tone": 180,
+					"sweep": -90,
+					"noise": 0.5,
+					"len": 0.32,
+					"ring": 0.2,
+					"thump": 0.9
+				},
+				"desc": "A running haymaker from three paces back. Hits very hard in front, knocks them flying and stuns for 1.2 s."
+			},
+			{
+				"id": "small_hours",
+				"name": "Small Hours",
+				"mult": 2.6,
+				"reach": 64,
+				"arc": 180,
+				"offset": 0,
+				"knock": 340,
+				"delay": 0.35,
+				"weaken": 8,
+				"mark": 6,
+				"mark_mult": 1.4,
+				"vanish": 2.0,
+				"crit": 2.0,
+				"color": "5a4a7a",
+				"fx": "spiral",
+				"sound": {
+					"tone": 146,
+					"sweep": -60,
+					"noise": 0.6,
+					"len": 0.7,
+					"ring": 0.5,
+					"thump": 0.8
+				},
+				"desc": "The lights go out, Tally signs everyone up, and the lights come back on. Everything round her takes a hard hit, is under the Small Print for 8 s and takes 40% more from everyone for 6 s. Nan slips out of sight with her next hit doubled."
 			}
 		]
 	}
