@@ -87,7 +87,37 @@ var fog_tex: ImageTexture  # mist over the regions the story has not opened (iss
 var _cv: CanvasItem = self  # what the draw helpers draw on: this, the clipped map canvas or the overlay
 var map_clip: Control  # clips everything drawn on the map to its window
 var map_canvas: Control
-var overlay: Control  # buttons, legend, panel and toasts, drawn over the map
+var overlay: Control  # buttons, resources, legend and the province panel, drawn over the map
+# Redrawing (issue #191). Each layer of the table keeps what it last drew and is redrawn only when
+# something it shows has changed; only a few small layers (the fog's drift, the Blank's static, the
+# surge rings and mission dots) move every frame, and the gold pulse and "TIME PAUSED" are faded with
+# modulate instead of being redrawn. See _refresh_layers().
+var paint_canvas: Control  # the painting (smooth filtering)
+var fog_canvas: Control  # the drifting mist over locked regions: two textures, redrawn every frame
+var static_canvas: Control  # the Blank's static along its edge, reseeded ten times a second
+var sel_canvas: Control  # the selected province's gold outline, pulsed by self_modulate
+var labels_canvas: Control  # hover outline, province labels and region names
+var pulse_canvas: Control  # surge rings and the dots by mission tags, every frame from _pulses
+var clock_canvas: Control  # the day, the time bar and the speed buttons
+var live_overlay: Control  # the zoom hint, the dawn's resource changes and the ledger
+var toast_canvas: Control  # the "Day N begins" toast, faded by modulate
+var paused_canvas: Control  # "TIME PAUSED", pulsed by modulate
+var view_serial := 0  # goes up whenever the map's pan or zoom moves (blank_watch.gd and the alert tray watch it)
+var state_serial := 0  # goes up whenever anything the table shows may have changed (the same watchers)
+var _pulses: Array = []  # [kind ("surge" or "dot"), position, countdown text or colour, pulsing] gathered with the labels
+var _view_key := []
+var _state_key := 0
+var _slow_key := 0
+var _slow_t := 0.0
+var _live_key := 0
+var _clock_key := 0
+var _static_seed := -1
+var _hover_key := -2
+var _toast_key := ""
+var _prov_key := 0
+var _dirty := true  # everything that shows game state: map, labels, overlay and the watchers
+const SLOW_EVERY := 0.5  # seconds between checks of the state that is too costly to look at every frame
+
 # Camera: `cam` is the map cell at the centre of the window, `zoom` screen pixels per cell.
 var zoom := 2.0
 var cam := Vector2.ZERO
@@ -114,6 +144,8 @@ func _ready() -> void:
 	Empire.notice.connect(_on_notice)
 	Empire.hollowmark_lost.connect(_on_hollowmark_lost)
 	Empire.region_opened.connect(_on_region_opened)
+	for sig in [Empire.speed_changed, Empire.building_finished, Empire.expedition_returned, Empire.research_finished, Empire.bond_ready]:
+		sig.connect(_on_state_signal)
 	# The map: a clipped window. Inside it, a full-screen layer, so everything drawn there uses
 	# screen coordinates and anything outside the window is cut off.
 	map_clip = Control.new()
@@ -127,26 +159,24 @@ func _ready() -> void:
 	inner.size = Vector2(1280, 720)
 	inner.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	map_clip.add_child(inner)
-	var paint_canvas := Control.new()  # the painting and the fog, smoothly filtered
-	paint_canvas.set_anchors_preset(Control.PRESET_FULL_RECT)
-	paint_canvas.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	paint_canvas = _layer(inner, _draw_paint)  # the painting and the fog, smoothly filtered; then the crisp layers
 	paint_canvas.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
-	inner.add_child(paint_canvas)
-	paint_canvas.draw.connect(_draw_paint.bind(paint_canvas))
-	map_canvas = Control.new()  # washes, borders, roads and labels, crisp pixels
-	map_canvas.set_anchors_preset(Control.PRESET_FULL_RECT)
-	map_canvas.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	inner.add_child(map_canvas)
-	map_canvas.draw.connect(_draw_map.bind(map_canvas))
+	fog_canvas = _layer(inner, _draw_fog)
+	fog_canvas.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
+	map_canvas = _layer(inner, _draw_map)  # washes, borders and roads, crisp pixels
+	static_canvas = _layer(inner, _draw_static)
+	sel_canvas = _layer(inner, _draw_selected)
+	labels_canvas = _layer(inner, _draw_labels_layer)
+	pulse_canvas = _layer(inner, _draw_pulses)
 	var watch := preload("res://scripts/blank_watch.gd").new()  # the Blank's creep, made visible (issue #33)
 	watch.cmd = self
 	inner.add_child(watch)
 	inner.add_child(_alert_tray())  # alerts with "go there", map markers and the pinned story goal (issue #22)
-	overlay = Control.new()
-	overlay.set_anchors_preset(Control.PRESET_FULL_RECT)
-	overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(overlay)
-	overlay.draw.connect(_draw_overlay.bind(overlay))
+	clock_canvas = _layer(self, _draw_clock_layer)  # under the overlay, whose panel frame overlaps the Menu button
+	overlay = _layer(self, _draw_overlay)
+	toast_canvas = _layer(self, _draw_toast)
+	live_overlay = _layer(self, _draw_live)
+	paused_canvas = _layer(self, _draw_paused)
 	frame_regions(Empire.regions_open, true)
 
 	var roster_layer := CanvasLayer.new()
@@ -222,6 +252,16 @@ func _ready() -> void:
 	HelpWatch.attach(self)  # explainers, the story's paced unlocks and first-time tips (issue #115)
 	if Empire.territory().find("hollowmark").get("owner", "") == "erased":
 		call_deferred("_show_lost")  # lost while walking around town
+
+
+## A full-screen drawing layer that never takes input; `drawer` draws it (it is passed the layer).
+func _layer(parent: Node, drawer: Callable) -> Control:
+	var c := Control.new()
+	c.set_anchors_preset(Control.PRESET_FULL_RECT)
+	c.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	parent.add_child(c)
+	c.draw.connect(drawer.bind(c))
+	return c
 
 
 func _on_day_passed(d: int) -> void:
@@ -731,6 +771,8 @@ func _bake() -> void:
 	else:
 		map_tex = ImageTexture.create_from_image(map_img)
 		fog_tex = ImageTexture.create_from_image(fog_img)
+	_prov_key = _prov_hash()
+	invalidate()
 	if map_canvas != null:
 		for c in map_canvas.get_parent().get_children():
 			(c as CanvasItem).queue_redraw()
@@ -783,10 +825,7 @@ func _process(delta: float) -> void:
 		autosave_t = AUTOSAVE_EVERY
 		autosave()
 	_process_camera(delta)
-	queue_redraw()
-	for c in map_canvas.get_parent().get_children():
-		(c as CanvasItem).queue_redraw()
-	overlay.queue_redraw()
+	_refresh_layers(delta)
 	var frame := Engine.get_process_frames()
 	if frame == menu_closed_frame or roster_view.visible or frame == roster_view.closed_frame \
 			or buildings_view.visible or frame == buildings_view.closed_frame \
@@ -869,6 +908,127 @@ func _process(delta: float) -> void:
 		_activate(selected)
 	elif Input.is_action_just_pressed("ui_cancel") or Input.is_action_just_pressed("pause"):
 		_open_menu()
+
+
+# ---------------------------------------------------------------- redrawing (issue #191)
+
+func _on_state_signal(_arg = null) -> void:
+	invalidate()
+
+
+## Marks everything that shows game state for a redraw: the map's layers, the overlay and the
+## watchers (blank_watch.gd, the alert tray). Call it after changing anything the table shows.
+func invalidate() -> void:
+	_dirty = true
+
+
+## Once a frame: redraws the layers whose contents changed, and moves the few that animate.
+func _refresh_layers(delta: float) -> void:
+	var frame := Engine.get_process_frames()
+	# Pan and zoom move every map layer.
+	var vk := [zoom, cam, size]
+	if vk != _view_key:
+		_view_key = vk
+		view_serial += 1
+		queue_redraw()  # the frame round the map
+		for c in [paint_canvas, map_canvas, sel_canvas, labels_canvas]:
+			c.queue_redraw()
+		_static_seed = -1
+		_dirty = true  # labels outside the window were skipped, and the overlay's zoom buttons follow the zoom
+	# The game state the table shows: what is cheap to read every frame, and the rest twice a second.
+	var sk := _state_hash()
+	if sk != _state_key:
+		_state_key = sk
+		_dirty = true
+	_slow_t -= delta
+	if _slow_t <= 0.0:
+		_slow_t = SLOW_EVERY
+		if _prov_hash() != _prov_key:
+			_bake()  # land changed hands or frayed without passing through a screen that re-bakes
+		var sl := _slow_hash()
+		if sl != _slow_key:
+			_slow_key = sl
+			_dirty = true
+	if frame == menu_closed_frame or _view_closed(frame):
+		_dirty = true  # a screen or menu was open: anything may have changed behind it
+	if _dirty:
+		_dirty = false
+		state_serial += 1
+		for c in [map_canvas, sel_canvas, labels_canvas, clock_canvas, overlay, live_overlay, toast_canvas, paused_canvas]:
+			c.queue_redraw()
+	if hovered != _hover_key:
+		_hover_key = hovered
+		labels_canvas.queue_redraw()
+	# What moves.
+	fog_canvas.queue_redraw()
+	var seed := int(t * 10.0)
+	if seed != _static_seed:
+		_static_seed = seed
+		static_canvas.queue_redraw()
+	sel_canvas.self_modulate.a = 0.75 + 0.25 * sin(t * 4.0)
+	if not _pulses.is_empty() or pulse_canvas.get_meta("drawn", false):
+		pulse_canvas.set_meta("drawn", not _pulses.is_empty())
+		pulse_canvas.queue_redraw()
+	var ck := [Empire.day, Empire.day_t, Empire.speed].hash()  # while time runs the day bar creeps every frame (a small layer)
+	if ck != _clock_key:
+		_clock_key = ck
+		clock_canvas.queue_redraw()
+	var lk := [int(_zoom_hint_alpha() * 48.0), frame if deltas_t > 0.0 else 0, show_ledger or ledger_hover].hash()
+	if lk != _live_key:
+		_live_key = lk
+		live_overlay.queue_redraw()
+	toast_canvas.visible = toast_t > 0.0
+	toast_canvas.modulate.a = clampf(toast_t / 0.5, 0.0, 1.0)
+	if toast + "|" + toast2 != _toast_key:
+		_toast_key = toast + "|" + toast2
+		toast_canvas.queue_redraw()
+	paused_canvas.visible = Empire.SPEEDS[Empire.speed] == 0
+	paused_canvas.modulate.a = 0.55 + 0.25 * sin(t * 3.0)
+
+
+## True on the frame a screen opened from the table closes, or while one is open.
+func _view_closed(frame: int) -> bool:
+	for v in [roster_view, buildings_view, governor_view, expedition_view, research_view, diplomacy_view, bonds_view,
+			newcomers_view, party_picker, gear_view, journal_view, armory_view]:
+		if v.visible or frame == v.closed_frame:
+			return true
+	return false
+
+
+## The state the table shows that is cheap to read: compared every frame.
+func _state_hash() -> int:
+	var research := 0
+	if Empire.research_active != "":
+		research = int(Empire.research_fraction(Empire.research_active) * 100.0)
+	return [Empire.day, Empire.speed, Empire.res, Empire.hungry, Empire.recruits.size(), Empire.construction.size(),
+		Empire.expeditions.size(), Empire.unread_reports(), Empire.research_active, research, Empire.surge,
+		Empire.regions_open.size(), Empire.job_ids().size(), Journal.unread_count(), Prompts.device, Prompts.pad_style,
+		Access.text_size, Access.readable_font, Access.map_symbols, TranslationServer.get_locale(), selected,
+		zoom_to > zoom_min() + 0.05].hash()
+
+
+## The state that costs more to read (story, unlocks, standing, plans): compared twice a second, as a
+## safety net for changes that do not come through a signal or a screen closing.
+func _slow_hash() -> int:
+	var aid := false
+	if Empire.surge.get("id", "") != "":
+		aid = Empire.faction_ids().any(func(f): return Empire.deal_blocker(f, "aid") == "")
+	var m := _mission(selected)
+	return [Alerts.goal().get("text", ""), Help.is_open("expeditions"), Help.is_open("research"), Help.is_open("diplomacy"),
+		m.get("name", ""), m.get("blocker", ""), Missions.list_for_province(territory.provinces[selected]["id"]).size(),
+		aid, float(Empire.research_pace()["pace"]) <= 0.0 if Empire.research_active != "" else false,
+		Empire.recruits, Empire.buildings, Empire.standing, Empire.pacts.size(), Empire.missions_cleared.size(),
+		Empire.mission_ready, Empire.job_ready, BlankPlans.targets(), Empire.faction_ids().filter(func(f): return Journal.faction_known(f))].hash()
+
+
+## Every province's owner and Fray: what the baked map shows.
+func _prov_hash() -> int:
+	var a := []
+	for p in territory.provinces:
+		a.append(p["owner"])
+		a.append(int(p["fray"]))
+		a.append(Empire.province_open(p))
+	return a.hash()
 
 
 ## Moves the selection to the best province in a direction: close, and roughly that way.
@@ -1236,11 +1396,15 @@ func _draw() -> void:
 	draw_rect(_map_rect(), SEA_PARCH.darkened(0.12))  # open sea past the edge of the world
 
 
-## The painting and the fog over locked regions (smooth filtering).
+## The painting (smooth filtering).
 func _draw_paint(c: CanvasItem) -> void:
-	var wr := _world_rect()
 	if painted_tex:
-		c.draw_texture_rect(painted_tex, wr, false)
+		c.draw_texture_rect(painted_tex, _world_rect(), false)
+
+
+## The fog over locked regions (smooth filtering). Two texture draws, so it is redrawn every frame.
+func _draw_fog(c: CanvasItem) -> void:
+	var wr := _world_rect()
 	if fog_tex:
 		# Two layers of the same mist, drifting against each other, so the fog billows.
 		var drift := Vector2.ZERO if Access.reduce_motion else Vector2(sin(t * 0.13), cos(t * 0.09)) * 2.5 * zoom
@@ -1248,18 +1412,44 @@ func _draw_paint(c: CanvasItem) -> void:
 		c.draw_texture_rect(fog_tex, Rect2(wr.position - drift * 0.7 + Vector2(0, zoom), wr.size), false, Color(1, 1, 1, 0.55))
 
 
-## Everything else on the map (crisp pixels), clipped to the map's window.
+## The washes, borders and roads (crisp pixels), clipped to the map's window.
 func _draw_map(c: CanvasItem) -> void:
 	_cv = c
 	_cv.draw_texture_rect(map_tex, _world_rect(), false)
 	_draw_roads()
-	_draw_static()
+	_cv = self
+
+
+## The picked province's outline at full gold; _refresh_layers() pulses it with self_modulate.
+func _draw_selected(c: CanvasItem) -> void:
+	_cv = c
 	_draw_outline(selected, GOLD)
+	_cv = self
+
+
+## The hovered province's outline, the province labels and the region names.
+func _draw_labels_layer(c: CanvasItem) -> void:
+	_cv = c
+	_pulses = []
 	if hovered >= 0 and hovered != selected:
 		_draw_outline(hovered, Color(1, 1, 1, 0.55))
 	_draw_labels()
 	_draw_region_names()
 	_cv = self
+
+
+## What moves on the labels every frame: the surge's ring and the dots by mission tags.
+func _draw_pulses(c: CanvasItem) -> void:
+	for pl in _pulses:
+		var pos: Vector2 = pl[1]
+		if pl[0] == "surge":
+			var pulse := 0.5 + 0.5 * sin(t * 5.0)
+			c.draw_arc(pos + Vector2(0, -6), 14.0 + pulse * 3.0, 0, TAU, 32, Color(1, 0.35, 0.3, 0.5 + 0.4 * pulse), 2.0)
+			_cv = c
+			_text_c(pos + Vector2(0, 13), pl[2], 8, Color(1, 0.55, 0.5), 3)
+			_cv = self
+		else:
+			c.draw_circle(pos, 2.0 + (0.6 * sin(t * 4.0) if pl[3] else 0.0), pl[2])
 
 
 ## Buttons, legend, the province panel and toasts, over the map.
@@ -1270,7 +1460,6 @@ func _draw_overlay(c: CanvasItem) -> void:
 	# Top bar
 	_text(MAP_ORIGIN + Vector2(6, 14), tr("THE INKLANDS"), 10, Color(0.85, 0.82, 0.76, 0.8), 3)
 	_draw_resources()
-	_draw_clock()
 	var rb := _roster_button_rect()
 	UiSkin.panel(_cv, rb, "button")
 	_text_c(Vector2(rb.get_center().x, rb.position.y + 12), tr("Roster (%d)") % Empire.recruits.size() + _k("roster"), 9, Color(0.85, 0.82, 0.76))
@@ -1318,15 +1507,39 @@ func _draw_overlay(c: CanvasItem) -> void:
 	_text_c(Vector2(jb.get_center().x, jb.position.y + 12), tr("Journal%s") % (" *" if jnew else "") + _k("journal"), 9, GOLD if jnew else Color(0.85, 0.82, 0.76))
 	_draw_legend()
 	_draw_panel()
-	if toast_t > 0.0:
-		var a := clampf(toast_t / 0.5, 0.0, 1.0)
-		_text_c(Vector2(_map_rect().get_center().x, MAP_ORIGIN.y + 22), toast, 12, Color(1, 0.95, 0.85, a), 4)
-		if toast2 != "":
-			_text_c(Vector2(_map_rect().get_center().x, MAP_ORIGIN.y + 36), toast2, 9, Color(1, 0.55, 0.5, a), 4)
+	_cv = self
+
+
+func _draw_clock_layer(c: CanvasItem) -> void:
+	_cv = c
+	_draw_clock()
+	_cv = self
+
+
+## The zoom hint and the dawn's floating resource changes: redrawn when they change. The ledger
+## sits here too, so it stays over the dawn's numbers as it did over the whole overlay.
+func _draw_live(c: CanvasItem) -> void:
+	_cv = c
+	_draw_zoom_hint()
+	_draw_res_deltas()
 	if show_ledger or ledger_hover:
 		_draw_ledger()
-	if Empire.SPEEDS[Empire.speed] == 0:
-		_text_c(Vector2(_map_rect().get_center().x, MAP_ORIGIN.y + MAP_VIEW.y - 24), tr("TIME PAUSED"), 11, Color(1, 1, 1, 0.55 + 0.25 * sin(t * 3.0)), 4)
+	_cv = self
+
+
+## "Day N begins": drawn opaque, faded out by the layer's modulate (see _refresh_layers()).
+func _draw_toast(c: CanvasItem) -> void:
+	_cv = c
+	_text_c(Vector2(_map_rect().get_center().x, MAP_ORIGIN.y + 22), toast, 12, Color(1, 0.95, 0.85), 4)
+	if toast2 != "":
+		_text_c(Vector2(_map_rect().get_center().x, MAP_ORIGIN.y + 36), toast2, 9, Color(1, 0.55, 0.5), 4)
+	_cv = self
+
+
+## "TIME PAUSED": drawn once, pulsed by the layer's modulate.
+func _draw_paused(c: CanvasItem) -> void:
+	_cv = c
+	_text_c(Vector2(_map_rect().get_center().x, MAP_ORIGIN.y + MAP_VIEW.y - 24), tr("TIME PAUSED"), 11, Color.WHITE, 4)
 	_cv = self
 
 
@@ -1355,9 +1568,18 @@ func _draw_zoom_buttons() -> void:
 			r.size.x = 30
 		UiSkin.panel(_cv, r, "button")
 		_text_c(Vector2(r.get_center().x, r.position.y + 11), labels[i], 9, Color(0.85, 0.82, 0.76))
-	# How to move the map, for the first moments on the table and whenever the pointer is on the buttons.
+
+
+## How bright the zoom hint is: full while the pointer is on the zoom buttons, else fading out
+## over the first moments on the table.
+func _zoom_hint_alpha() -> float:
 	var near := Rect2(_zoom_button_rect(0).position, Vector2(70, 15)).grow(4.0).has_point(get_local_mouse_position())
-	var a := 1.0 if near else clampf((9.0 - t) / 2.0, 0.0, 1.0)
+	return 1.0 if near else clampf((9.0 - t) / 2.0, 0.0, 1.0)
+
+
+func _draw_zoom_hint() -> void:
+	# How to move the map, for the first moments on the table and whenever the pointer is on the buttons.
+	var a := _zoom_hint_alpha()
 	if a > 0.0:
 		var hint := tr("Wheel or + / - to zoom, drag to pan")
 		if Prompts.touch():
@@ -1406,7 +1628,16 @@ func _draw_resources() -> void:
 		if net.has(k) and int(net[k]) != 0:
 			var n := int(net[k])
 			_text(Vector2(x + 12 + w, 15), ("+%d" if n > 0 else "%d") % n, 8, Color("9fd18b") if n > 0 else Color("ff8a7a"))
-		if deltas_t > 0.0 and deltas.has(k) and int(deltas[k]) != 0:
+		x += 56.0
+
+
+## After dawn, each resource's net change floats up from the bar.
+func _draw_res_deltas() -> void:
+	if deltas_t <= 0.0:
+		return
+	var x := 8.0
+	for k in ["gilt", "supplies", "ink", "renown"]:
+		if deltas.has(k) and int(deltas[k]) != 0:
 			var d := int(deltas[k])
 			var rise := (2.5 - deltas_t) * 6.0
 			_text(Vector2(x + 10, 30 - rise + 10), ("+%d" if d > 0 else "%d") % d, 10, Color(0.62, 0.82, 0.55, minf(deltas_t, 1.0)) if d > 0 else Color(1, 0.55, 0.5, minf(deltas_t, 1.0)), 3)
@@ -1499,7 +1730,13 @@ func _draw_roads() -> void:
 					_cv.draw_line(p1.lerp(p2, float(i) / n), p1.lerp(p2, float(i + 1) / n), col, 1.5)
 
 
-func _draw_static() -> void:
+func _draw_static(c: CanvasItem) -> void:
+	_cv = c
+	_draw_static_dots()
+	_cv = self
+
+
+func _draw_static_dots() -> void:
 	if blank_edge.is_empty():
 		return
 	var rng := RandomNumberGenerator.new()
@@ -1515,9 +1752,7 @@ func _draw_static() -> void:
 		_cv.draw_rect(Rect2(pos, Vector2(2, 2)), col)
 
 
-func _draw_outline(i: int, col: Color) -> void:
-	var pulse := 0.75 + 0.25 * sin(t * 4.0) if col == GOLD else 1.0
-	var c := Color(col, col.a * pulse)
+func _draw_outline(i: int, c: Color) -> void:
 	var sz := Vector2(ceilf(zoom), ceilf(zoom))
 	for cell in outlines[i]:
 		_cv.draw_rect(Rect2(_cell_to_screen(cell).floor(), sz), c)
@@ -1562,11 +1797,9 @@ func _draw_labels() -> void:
 		if Access.map_symbols and p["owner"] != "erased":
 			_fray_chip(pos + Vector2(font.get_string_size(p["name"], HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(fsize)).x / 2.0 + 3.0, 2.0), int(p["fray"]))
 		if Empire.surge.get("id", "") == p["id"]:
-			# A gathering surge: a pulsing red ring and a countdown.
-			var pulse := 0.5 + 0.5 * sin(t * 5.0)
-			_cv.draw_arc(pos + Vector2(0, -6), 14.0 + pulse * 3.0, 0, TAU, 32, Color(1, 0.35, 0.3, 0.5 + 0.4 * pulse), 2.0)
+			# A gathering surge: a pulsing red ring and the countdown over it (both on pulse_canvas).
 			var dl := Empire.surge_days_left()
-			_text_c(pos + Vector2(0, 13), tr("Surge %s") % (tr("today") if dl <= 0 else tr("in %d day%s") % [dl, "" if dl == 1 else "s"]), 8, Color(1, 0.55, 0.5), 3)
+			_pulses.append(["surge", pos, tr("Surge %s") % (tr("today") if dl <= 0 else tr("in %d day%s") % [dl, "" if dl == 1 else "s"]), false])
 		# Type missions on offer: Reclaim, Rescue, Raid, Salvage, Personal (Defense already shows as the surge ring).
 		var tags := []
 		for tm in MissionTypes.for_province(p["id"]):
@@ -1577,7 +1810,7 @@ func _draw_labels() -> void:
 			var tcol: Color = MissionTypes.TYPE_COLORS[tm["type"]]
 			if tm["blocker"] != "":
 				tcol = tcol.darkened(0.45)
-			_cv.draw_circle(pos + Vector2(-font.get_string_size(Loc.t(MissionTypes.TYPE_NAMES[tm["type"]]), HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(8)).x / 2.0 - 5, ty - 3), 2.0 + (0.6 * sin(t * 4.0) if tm["blocker"] == "" else 0.0), tcol)
+			_pulses.append(["dot", pos + Vector2(-font.get_string_size(Loc.t(MissionTypes.TYPE_NAMES[tm["type"]]), HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(8)).x / 2.0 - 5, ty - 3), tcol, tm["blocker"] == ""])
 			_text_c(pos + Vector2(0, ty), Loc.t(MissionTypes.TYPE_NAMES[tm["type"]]), 8, tcol, 3)
 			ty += 10.0
 

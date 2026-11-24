@@ -88,7 +88,7 @@ CPU cost, headless:
 |---|---|---|---|---|---|---|
 | Town, noon | 1121 | 2.1 | 3.1 | 696 | 0 | 91 |
 | Town, night | 68 | 2.0 | 2.7 | 690 | 0 | 91 |
-| Command Table | 989 | 7.2 | 10.0 | 62 | 0 | 118 |
+| Command Table | 989 | 7.2 (0.5 after #191) | 10.0 (0.7 after #191) | 62 | 0 | 118 |
 | Fight, day | 331 | 4.9 | 8.7 | 2484 | 30 | 128 |
 | Fight, night | 191 | 4.7 | 7.9 | 2508 | 31 | 128 |
 | Defense | 113 | 3.7 | 5.4 | 1560 | 10 | 126 |
@@ -106,5 +106,8 @@ Visual effects sliders as the low-end fallback (xvfb at 1280x720, software GPU):
 from 133 ms a frame with every effect at 100 to 38 ms with every effect at 0 (3.5 times faster), the
 night fight from 108 ms to 58 ms. So turning effects down works.
 
-Filed: #191 the Command Table redraws everything every frame (the heaviest CPU scene, still inside
-the 16.7 ms budget).
+Fixed (#191): the Command Table redrew the whole screen every frame. It now redraws each layer only
+when what it shows changes (selection, hover, a new day, resources, settings, pan and zoom); the fog,
+the Blank's static, the surge rings and the alert markers move on small layers of their own, and the
+gold outline and "TIME PAUSED" pulse through modulate. Headless, 2026-11-24: 8.2 ms avg / 12.2 ms p95
+before, 0.5 ms / 0.7 ms after. `tests/test_command_redraw.gd` fails if an idle table redraws again.
