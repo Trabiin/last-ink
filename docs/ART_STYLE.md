@@ -160,7 +160,7 @@ onto the 4x screen they came out as smooth, bright vector shapes. They now draw 
 - Effect nodes join with `FxLayer.adopt(node)` (`Fx`, `TechFx` and `Hero.fx_overlay` already do). The main view
   skips that visibility layer; a SubViewport sharing the world draws only it, at one pixel per world pixel on
   the camera's whole-pixel grid, and the shader turns it into pixel art: every colour snaps to the FX palette,
-  see-through comes in three flat steps (the faintest dithered into scattered pixels), and the night tint is
+  see-through comes in flat steps (a sixth, a third, two thirds, solid; big faint areas are one even wash, never a dotted mesh), and the night tint is
   mostly taken back out (effects are light).
 - **FX palette** = the 38 style colours + accent tints for light: bone light `#e6dfcd`, plum `#3b2a4a #6a4a7e
   #8f6fae #b49bcc`, rose `#7a3a52 #b05a78 #d98aa0`, pale ink `#b8cff2`, pale lamplight `#f7e3a6`, pale poison

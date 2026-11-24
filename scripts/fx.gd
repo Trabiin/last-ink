@@ -74,7 +74,7 @@ static func ring(parent: Node, pos: Vector2, r: float, col: Color) -> void:
 
 func _enter_tree() -> void:
 	if kind != Kind.NUMBER:
-		FxLayer.adopt(self)
+		FxLayer.adopt(self, kind == Kind.RING)  # a ring lies flat on the ground, under the actors
 
 
 func _process(delta: float) -> void:

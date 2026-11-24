@@ -172,6 +172,7 @@ func test_fx_layer_in_a_mission() -> void:
 	b2.max_life = 1.0
 	main.entities.add_child(b2)
 	await frames(1)
+	check(b2.visibility_layer == FxLayer.GROUND_BIT, "a ring lies on the ground FX layer")
 	var first := b2.shown
 	b2._process(Fx.STEP * 0.4)
 	check_eq(b2.shown, first, "a ring holds its frame for less than a step")
