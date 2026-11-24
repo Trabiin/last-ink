@@ -142,7 +142,7 @@ func test_short_names_come_from_data() -> void:
 	check_eq(Empire.short_name("tobble"), "Old Tobble", "title kept")
 	check_eq(Empire.short_name("ninefingers"), "Daro", "rank dropped")
 	check_eq(Empire.short_name("cuthbert"), "Brother Cuthbert", "Brother is a title, not a first name")
-	check_eq(Empire.short_name("bran"), "Brannoc", "first name")
+	check_eq(Empire.short_name("jessamy"), "Jessamy", "first name")
 
 
 ## Engine key names (English) go through the catalogue; letters stay as they are.
