@@ -810,8 +810,8 @@ func _on_slot(id: String) -> void:
 func _process(delta: float) -> void:
 	# The clock only runs once Ash runs the town (end of Chapter 1), and stops for story scenes.
 	if Story.command_on() and not dialogue_box.visible and not chapter_card.visible:
-		Empire.tick(delta)
-	Empire.playtime += delta
+		Empire.tick_frame(delta)
+	Empire.playtime += minf(delta, Empire.MAX_TICK)  # not the hours a suspended Deck slept (issue #149)
 	autosave_t -= delta
 	if autosave_t <= 0.0:
 		autosave_t = AUTOSAVE_EVERY

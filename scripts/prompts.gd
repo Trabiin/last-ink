@@ -11,6 +11,7 @@ const TOUCH := "touch"
 
 static var device := KEYS
 static var pad_style := "xbox"  # xbox, playstation or nintendo (face button names)
+static var pad_id := 0  # the gamepad last used (Rumble shakes this one, issue #149)
 
 const PAD_NAMES := {
 	"xbox": {JOY_BUTTON_A: "A", JOY_BUTTON_B: "B", JOY_BUTTON_X: "X", JOY_BUTTON_Y: "Y",
@@ -44,8 +45,9 @@ static func note(event: InputEvent) -> void:
 		device = TOUCH
 	elif (event is InputEventJoypadButton and event.pressed) \
 			or (event is InputEventJoypadMotion and absf(event.axis_value) > 0.5):
-		if device != PAD:
+		if device != PAD or pad_id != event.device:
 			pad_style = style_of(Input.get_joy_name(event.device))
+		pad_id = event.device
 		device = PAD
 
 

@@ -21,13 +21,19 @@ const MODE_INFO := [
 	"Exclusive fullscreen: the game takes the screen over. Can be a little smoother on some machines.",
 ]
 ## Window sizes for windowed mode: multiples of the 640x360 layout grid first, so pixels stay even.
-const SIZES := [Vector2i(1280, 720), Vector2i(1600, 900), Vector2i(1920, 1080), Vector2i(2560, 1440), Vector2i(3200, 1800), Vector2i(3840, 2160)]
+## The 16:10 sizes (Steam Deck and many laptops, issue #149) come last so saved choices keep their
+## index; the options row steps through them by size (size_order), and 16:10 shows a little more
+## of the world above and below instead of stretching.
+const SIZES := [Vector2i(1280, 720), Vector2i(1600, 900), Vector2i(1920, 1080), Vector2i(2560, 1440), Vector2i(3200, 1800), Vector2i(3840, 2160),
+	Vector2i(1280, 800), Vector2i(1920, 1200), Vector2i(2560, 1600)]
 const SCALINGS := ["Smooth", "Pixel-perfect"]
 const SCALING_INFO := [
 	"Fills the window at any size. Pixels may be a hair uneven at odd sizes.",
 	"Scales by whole numbers only, so every pixel is the same size. The view widens a little to fill the rest.",
 ]
-const FPS_CAPS := [0, 30, 60, 90, 120, 144, 165, 240]  # 0 = no cap
+## 0 = no cap. 40 (issue #149) is the Steam Deck's battery-friendly lock, added last so saved
+## choices keep their index; the options row steps through them in order of value (fps_order).
+const FPS_CAPS := [0, 30, 60, 90, 120, 144, 165, 240, 40]
 const BACKGROUNDS := ["Pause and mute", "Mute only", "Keep playing"]
 const BACKGROUND_INFO := [
 	"Fights open the pause menu, the Command clock stops and the sound goes quiet while you are in another window.",
@@ -51,13 +57,37 @@ static func is_desktop() -> bool:
 	return not OS.has_feature("web") and OS.has_feature("pc")
 
 
+## True on a Steam Deck (issue #149). Steam sets SteamDeck=1 for games it starts there; a Linux
+## machine whose screen is exactly 1280x800 counts too (the Deck in desktop mode, or started outside
+## Steam). LASTINK_DECK=1 / 0 forces it either way, for testing on a PC. Used for the Deck defaults
+## (fullscreen, 60 fps cap) and the smallest text size (Access.fs).
+static func on_deck() -> bool:
+	if _deck_override >= 0:
+		return _deck_override == 1
+	var force := OS.get_environment("LASTINK_DECK")
+	if force != "":
+		return force == "1"
+	if OS.get_environment("SteamDeck") == "1":
+		return true
+	if OS.get_name() != "Linux" or DisplayServer.get_name() == "headless":
+		return false
+	return DisplayServer.screen_get_size(DisplayServer.window_get_current_screen()) == Vector2i(1280, 800)
+
+
+## Tests: -1 = detect, 0 = not a Deck, 1 = a Deck.
+static var _deck_override := -1
+
+
 static func load_settings() -> void:
 	if _loaded:
 		return
 	_loaded = true
 	background = 0 if is_desktop() else 2  # a browser tab already pauses itself when hidden
 	var cfg := ConfigFile.new()
-	if cfg.load(Settings.PATH) != OK:
+	var has_file := cfg.load(Settings.PATH) == OK
+	if not (has_file and cfg.has_section(SECTION)):
+		deck_defaults()
+	if not has_file:
 		return
 	mode = clampi(int(cfg.get_value(SECTION, "mode", mode)), 0, MODES.size() - 1)
 	size_i = clampi(int(cfg.get_value(SECTION, "size", size_i)), 0, SIZES.size() - 1)
@@ -79,6 +109,16 @@ static func save() -> void:
 	cfg.set_value(SECTION, "fps_cap", fps_i)
 	cfg.set_value(SECTION, "background", background)
 	cfg.save(Settings.PATH)
+
+
+## First start on a Steam Deck (no display options saved yet): fill the screen, and cap at 60 fps so the
+## battery isn't spent on frames the 60 Hz screen can't show (40 is one step down on the row).
+static func deck_defaults() -> void:
+	if not on_deck():
+		return
+	mode = 1  # Borderless: the whole screen, and the Steam overlay and suspend behave
+	size_i = SIZES.find(Vector2i(1280, 800))
+	fps_i = FPS_CAPS.find(60)
 
 
 # ---------------------------------------------------------------- choices for the options rows
@@ -113,6 +153,14 @@ static func sizes() -> Array:
 	for i in SIZES.size():
 		if i == 0 or (SIZES[i].x <= usable.x and SIZES[i].y <= usable.y):
 			out.append(i)
+	out.sort_custom(func(a, b): return SIZES[a].x * SIZES[a].y < SIZES[b].x * SIZES[b].y)
+	return out
+
+
+## Frame caps in the order the row steps through them: Off, then lowest to highest.
+static func fps_order() -> Array:
+	var out := range(FPS_CAPS.size())
+	out.sort_custom(func(a, b): return FPS_CAPS[a] < FPS_CAPS[b])
 	return out
 
 
@@ -146,7 +194,7 @@ static func step(id: String, dir: int) -> bool:
 		"vsync":
 			vsync = dir > 0
 		"fps":
-			fps_i = clampi(fps_i + dir, 0, FPS_CAPS.size() - 1)
+			fps_i = _step_in(fps_order(), fps_i, dir)
 		"background":
 			background = clampi(background + dir, 0, BACKGROUNDS.size() - 1)
 	if before == [mode, size_i, scaling, vsync, fps_i, background]:

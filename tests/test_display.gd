@@ -112,9 +112,11 @@ func test_display_options_step_and_persist() -> void:
 	check(D.size_name().ends_with("(screen)"), "fullscreen shows the screen size")
 	D.step("mode", -1)
 	check(D.step("size", 1), "window size steps in windowed mode")
-	check_eq(D.size_name(), "1600 x 900", "second size")
+	check_eq(D.size_name(), "1280 x 800", "second size (16:10, issue #149)")
+	D.step("size", 1)
+	check_eq(D.size_name(), "1600 x 900", "third size")
 	check(not D.step("size", -5) or D.size_i == 0, "size clamps at the smallest")
-	D.step("fps", 2)
+	D.step("fps", 3)  # Off, 30, 40 (the Deck lock, issue #149), 60
 	check_eq(D.fps_name(), "60 fps", "frame cap")
 	D.step("vsync", -1)
 	check(not D.vsync, "vsync off")

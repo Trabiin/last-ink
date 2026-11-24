@@ -10,7 +10,11 @@ extends Control
 
 const TITLE_SCENE := "res://scenes/title.tscn"
 const MAP_ORIGIN := Vector2(4, 22)
-const MAP_VIEW := Vector2(428, 332)  # the map's window on screen; the world inside pans and zooms
+const MAP_VIEW_640x360 := Vector2(428, 332)  # the map's window on the 640x360 layout
+const MAP_BOTTOM_GAP := 360.0 - 22.0 - 332.0  # space kept under the map
+## The map's window on screen; the world inside pans and zooms. Grows taller on 16:10 screens (Steam
+## Deck, issue #149: the view is 640x400 there) so no empty band sits under the map (_fit_map_view).
+var map_view := MAP_VIEW_640x360
 const MAP_CELLS := Empire.MAP_CELLS
 const ZOOM_MAX := 3.2  # screen pixels per map cell, fully zoomed in
 const ZOOM_READ := 1.5  # below this the map shows region names over province names
@@ -151,7 +155,7 @@ func _ready() -> void:
 	map_clip = Control.new()
 	map_clip.clip_contents = true
 	map_clip.position = MAP_ORIGIN
-	map_clip.size = MAP_VIEW
+	map_clip.size = map_view
 	map_clip.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(map_clip)
 	var inner := Control.new()
@@ -287,7 +291,7 @@ func _alert_tray() -> Control:
 	var tray := preload("res://scripts/alert_tray.gd").new()
 	tray.host = self
 	tray.on_map = true
-	tray.origin = MAP_ORIGIN + Vector2(4, MAP_VIEW.y - 16)  # stacks up from just above the legend
+	tray.origin = MAP_ORIGIN + Vector2(4, map_view.y - 16)  # stacks up from just above the legend
 	tray.grow_up = true
 	tray.width = 270.0
 	_tray = tray
@@ -493,9 +497,23 @@ func _notification(what: int) -> void:
 			autosave()
 
 
+## Stretches the map's window to the screen's height (taller than 360 on 16:10 screens).
+func _fit_map_view() -> void:
+	var h := maxf(MAP_VIEW_640x360.y, size.y - MAP_ORIGIN.y - MAP_BOTTOM_GAP)
+	if is_equal_approx(h, map_view.y):
+		return
+	map_view.y = h
+	map_clip.size = map_view
+	if _tray:
+		_tray.origin = MAP_ORIGIN + Vector2(4, map_view.y - 16)
+	cam = _clamp_cam(cam, zoom)
+	cam_to = _clamp_cam(cam_to, zoom_to)
+	invalidate()
+
+
 ## The map's window on screen.
 func _map_rect() -> Rect2:
-	return Rect2(MAP_ORIGIN, MAP_VIEW)
+	return Rect2(MAP_ORIGIN, map_view)
 
 
 ## Where the whole world lands on screen at the current pan and zoom.
@@ -504,11 +522,11 @@ func _world_rect() -> Rect2:
 
 
 func _cell_to_screen(c: Vector2) -> Vector2:
-	return MAP_ORIGIN + MAP_VIEW / 2.0 + (c - cam) * zoom
+	return MAP_ORIGIN + map_view / 2.0 + (c - cam) * zoom
 
 
 func _screen_to_cell(pos: Vector2) -> Vector2:
-	return (pos - MAP_ORIGIN - MAP_VIEW / 2.0) / zoom + cam
+	return (pos - MAP_ORIGIN - map_view / 2.0) / zoom + cam
 
 
 func _province_screen_pos(p: Dictionary) -> Vector2:
@@ -519,13 +537,13 @@ func _province_screen_pos(p: Dictionary) -> Vector2:
 
 ## Zoomed all the way out, the whole Inklands fits the window.
 func zoom_min() -> float:
-	return minf(MAP_VIEW.x / MAP_CELLS.x, MAP_VIEW.y / MAP_CELLS.y)
+	return minf(map_view.x / MAP_CELLS.x, map_view.y / MAP_CELLS.y)
 
 
 ## Keeps the camera over the world: no panning off into nothing. A world smaller than the window
 ## (zoomed out) sits in its middle.
 func _clamp_cam(c: Vector2, z: float) -> Vector2:
-	var half := MAP_VIEW / 2.0 / z
+	var half := map_view / 2.0 / z
 	var out := c
 	for a in 2:
 		if half[a] * 2.0 >= MAP_CELLS[a]:
@@ -543,7 +561,7 @@ func frame_regions(ids: Array, instant := false) -> void:
 			box = r["frame"] if box.size == Vector2.ZERO else box.merge(r["frame"])
 	if box.size == Vector2.ZERO:
 		box = Rect2(Vector2.ZERO, Vector2(MAP_CELLS))
-	zoom_to = clampf(minf(MAP_VIEW.x / box.size.x, MAP_VIEW.y / box.size.y), zoom_min(), 2.2)
+	zoom_to = clampf(minf(map_view.x / box.size.x, map_view.y / box.size.y), zoom_min(), 2.2)
 	cam_to = _clamp_cam(box.get_center(), zoom_to)
 	if instant:
 		zoom = zoom_to
@@ -553,13 +571,13 @@ func frame_regions(ids: Array, instant := false) -> void:
 ## Zooms by `f`, keeping the map point under `at` (screen) where it is.
 func zoom_by(f: float, at := Vector2.INF) -> void:
 	if at == Vector2.INF:
-		at = MAP_ORIGIN + MAP_VIEW / 2.0
+		at = MAP_ORIGIN + map_view / 2.0
 	var anchor := _screen_to_cell(at)
 	var nz := clampf(zoom_to * f, zoom_min(), ZOOM_MAX)
 	# Solve for the camera that keeps `anchor` under `at` at the new zoom.
-	cam_to = _clamp_cam(anchor - (at - MAP_ORIGIN - MAP_VIEW / 2.0) / nz, nz)
+	cam_to = _clamp_cam(anchor - (at - MAP_ORIGIN - map_view / 2.0) / nz, nz)
 	zoom_to = nz
-	if at != MAP_ORIGIN + MAP_VIEW / 2.0:
+	if at != MAP_ORIGIN + map_view / 2.0:
 		zoom = zoom_to  # wheel and pinch zoom track the pointer exactly
 		cam = cam_to
 
@@ -814,8 +832,9 @@ func _is_border(x: int, y: int, r: int) -> bool:
 
 func _process(delta: float) -> void:
 	t += delta
-	Empire.tick(delta)
-	Empire.playtime += delta
+	_fit_map_view()
+	Empire.tick_frame(delta)
+	Empire.playtime += minf(delta, Empire.MAX_TICK)  # not the hours a suspended Deck slept (issue #149)
 	toast_t = maxf(toast_t - delta, 0.0)
 	deltas_t = maxf(deltas_t - delta, 0.0)
 	for n in notices:
@@ -1323,7 +1342,7 @@ func _governor_button_rect() -> Rect2:
 
 
 func _roster_button_rect() -> Rect2:
-	return Rect2(Vector2(MAP_ORIGIN.x + MAP_VIEW.x - 74, MAP_ORIGIN.y + 4), Vector2(70, 16))
+	return Rect2(Vector2(MAP_ORIGIN.x + map_view.x - 74, MAP_ORIGIN.y + 4), Vector2(70, 16))
 
 
 func _buildings_button_rect() -> Rect2:
@@ -1540,7 +1559,7 @@ func _draw_toast(c: CanvasItem) -> void:
 ## "TIME PAUSED": drawn once, pulsed by the layer's modulate.
 func _draw_paused(c: CanvasItem) -> void:
 	_cv = c
-	_text_c(Vector2(_map_rect().get_center().x, MAP_ORIGIN.y + MAP_VIEW.y - 24), tr("TIME PAUSED"), 11, Color.WHITE, 4)
+	_text_c(Vector2(_map_rect().get_center().x, MAP_ORIGIN.y + map_view.y - 24), tr("TIME PAUSED"), 11, Color.WHITE, 4)
 	_cv = self
 
 
@@ -1884,13 +1903,13 @@ func _draw_region_panel(r: Dictionary, x: float, w: float) -> void:
 ## alert tray stacks up from above the top row.
 func _draw_legend() -> void:
 	var rows := _legend_rows()
-	var y := MAP_ORIGIN.y + MAP_VIEW.y - 8 - (rows.size() - 1) * Access.px(LEGEND_ROW_H)
+	var y := MAP_ORIGIN.y + map_view.y - 8 - (rows.size() - 1) * Access.px(LEGEND_ROW_H)
 	for row in rows:
 		var x := MAP_ORIGIN.x + 4
 		for k in row:
 			x = _legend_entry(x, y, k, _legend_label(k))
 		y += Access.px(LEGEND_ROW_H)
-	var tray_at := MAP_ORIGIN + Vector2(4, MAP_VIEW.y - 16 - (rows.size() - 1) * Access.px(LEGEND_ROW_H))
+	var tray_at := MAP_ORIGIN + Vector2(4, map_view.y - 16 - (rows.size() - 1) * Access.px(LEGEND_ROW_H))
 	if _tray != null and _tray.origin != tray_at:
 		_tray.origin = tray_at
 		_tray.queue_redraw()
@@ -1912,7 +1931,7 @@ func _legend_rows() -> Array:
 	for fid in Empire.faction_ids():  # factions whose home is on the open map (Chapter 2 adds the Abbey, the Erasers)
 		if Journal.faction_known(fid):
 			keys.append(fid)
-	var full := MAP_VIEW.x - 8.0
+	var full := map_view.x - 8.0
 	var bottom_w := full
 	var next: Dictionary = BLANK_WATCH.next_to_fall()
 	if not next.is_empty():

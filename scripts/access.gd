@@ -60,6 +60,7 @@ static var _loaded := false
 static func load_settings() -> void:
 	if _loaded:
 		return
+	min_size = DECK_MIN_SIZE if DisplaySettings.on_deck() else 0
 	_loaded = true
 	var cfg := ConfigFile.new()
 	if cfg.load(Settings.PATH) != OK:
@@ -137,6 +138,14 @@ static func finish_first_boot() -> void:
 
 # ---------------------------------------------------------------- text size
 
+## Smallest pixel-font size (issue #149). Valve asks for text at least 9 pixels tall at the Steam
+## Deck's 1280x800; Jersey's capitals are 9 screen pixels tall from size 8 at that 2x scale, so on a
+## Deck nothing is drawn smaller than 8 (hints and captions drawn at 6 or 7 elsewhere). 0 = no floor.
+## Set by load_settings from DisplaySettings.on_deck().
+const DECK_MIN_SIZE := 8
+static var min_size := 0
+
+
 static func text_scale() -> float:
 	load_settings()
 	return TEXT_SCALE[text_size]
@@ -150,10 +159,11 @@ static func fs(size: int) -> int:
 	if readable_font:
 		# Atkinson's letters stand taller and wider than Jersey's at the same size: this keeps the readable
 		# font at the pixel font's height, so layouts keep fitting and Text size still does the growing.
+		# Its capitals at 7 are already 9 screen pixels tall at 1280x800, so the Deck floor isn't needed.
 		return maxi(7, roundi(size * TEXT_SCALE[text_size] * READABLE_SCALE))
 	if text_size == 0:
-		return size
-	return maxi(size, roundi(size * TEXT_SCALE[text_size]))
+		return maxi(size, min_size)
+	return maxi(maxi(size, min_size), roundi(size * TEXT_SCALE[text_size]))
 
 
 ## A line height, text row height or gap that has to grow with the text.

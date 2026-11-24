@@ -221,6 +221,18 @@ func reset() -> void:
 	regions_open = starting_regions()
 
 
+## Longest step the clock takes in one frame. A laptop lid or a Steam Deck's suspend button freezes the
+## game, and the first frame after waking can report the whole sleep as its delta: without this cap
+## the Blank would eat days of land while the machine slept (issue #149).
+const MAX_TICK := 0.25
+
+
+## The scenes' per-frame call (Command Table, town): one frame's worth of clock, capped (MAX_TICK).
+func tick_frame(delta: float) -> void:
+	tick(minf(delta, MAX_TICK))
+
+
+## Moves the clock on by delta real seconds (tests and the balance bot step whole days at once).
 func tick(delta: float) -> void:
 	_check_leads()
 	FactionAsks.check()

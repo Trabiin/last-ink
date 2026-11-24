@@ -115,7 +115,9 @@ func _process(delta: float) -> void:
 	if Engine.get_process_frames() != opened_frame and page != "squad" and TabStrip.pressed() != 0:
 		_tab_to("reports" if page == "board" else "board")
 		return
-	if Engine.get_process_frames() == opened_frame or _rows.is_empty():
+	if Engine.get_process_frames() == opened_frame:
+		return  # the key or button that opened the screen (E, R3) must not also close it (issue #149)
+	if _rows.is_empty():
 		if Input.is_action_just_pressed("ui_cancel") or Input.is_action_just_pressed("expeditions"):
 			_back()
 		return

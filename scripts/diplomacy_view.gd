@@ -510,7 +510,7 @@ func _draw_details(vs: Vector2) -> void:
 		_text(Vector2(x, y), fa["name"], 12, Color("f3efe4"), w)
 		y += 4
 		y += _wrap(Vector2(x, y + 9), tr("Wants: ") + fa["wants"], w, 8, GOLD) + 2
-		y += _wrap(Vector2(x, y + 9), fa["blurb"], w, 8, Color(0.78, 0.76, 0.74)) + 6
+		y += _wrap(Vector2(x, y + 9), fa["blurb"], w, 8, Color(0.78, 0.76, 0.74)) + Access.px(15)  # the Standing line below sits on its baseline
 	# Standing and why it moves
 	var v := Empire.standing_of(fid)
 	var tier := Empire.tier_of(fid)
