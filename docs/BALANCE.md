@@ -68,7 +68,7 @@ nothing to buy, and Gilt ran away once every building reached level 3. What ther
 
 | Sink | Uses | Opens | Where |
 |---|---|---|---|
-| Building levels 4 and 5 | Gilt, Supplies, Ink to build; upkeep every dawn (level 4: 3 Gilt, 1 Supplies, 1 Ink; level 5: 5, 2, 2; the Inkworks pays no Ink) | Level 4 with Chapter 2's region, level 5 with Chapter 3's | `data/buildings.json` levels (`region`, `upkeep`) |
+| Building levels 4 and 5 | Gilt, Supplies, Ink to build; upkeep every dawn (level 4: 3 Gilt, 1 Supplies, 1 Ink; level 5: 5, 2, 2; the Inkworks pays no Ink) | Level 4 with Chapter 2's region, level 5 with Chapter 3's | `data/buildings.json` levels (`region`, `upkeep`); sprites made from level 3 by `tools/make_building_tiers.py` until hand-made art lands (#224) |
 | Unpaid upkeep | A dawn that can't pay leaves the resource at what was left and every level 4+ building works as level 3 (a beacon as level 2) until a dawn that pays | | `Sinks.settle` |
 | Hurrying the builders | 30% of the level's Gilt and 40% of its Supplies per day brought forward | Any time a building is going up | Buildings screen, the building's actions |
 | Fourth research node per branch | Insight, some Ink | Scriptorium 2, after the branch's third node | `data/research.json` |
