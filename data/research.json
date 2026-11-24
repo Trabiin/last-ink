@@ -44,7 +44,7 @@
 		{
 			"id": "ink_tap", "branch": "inkcraft", "name": "Spring Tapping", "cost": {"insight": 8}, "days": 2,
 			"effect": "The Inkworks makes +1 Ink a day (while it has a worker); heroes refill Ink 25% faster on missions",
-			"blurb": "A better way to draw ink from the springs: slowly, and while humming. The twins insist on the humming."
+			"blurb": "A better way to draw ink from the springs: slowly, and while humming. The inkmakers insist on the humming."
 		},
 		{
 			"id": "ink_blot", "branch": "inkcraft", "name": "Blotting Charm", "cost": {"insight": 16}, "days": 3, "needs": ["ink_tap"],
@@ -102,7 +102,7 @@
 			"id": "ink_wells", "branch": "inkcraft", "name": "Deep Wells", "cost": {"insight": 45, "ink": 4}, "days": 5, "needs": ["ink_skin"], "scriptorium": 2,
 			"mods": {"ink_regen": 0.25},
 			"effect": "Missions: heroes refill Ink 25% faster again",
-			"blurb": "The twins found a seam of older ink under the springs. It flows like it remembers being words."
+			"blurb": "The inkmakers found a seam of older ink under the springs. It flows like it remembers being words."
 		},
 		{
 			"id": "ink_study", "branch": "inkcraft", "name": "Marginal Inks", "cost": {"insight": 40, "ink": 2}, "days": 4, "needs": ["ink_wells"], "scriptorium": 2,

@@ -72,7 +72,7 @@
 			["", "Over the rise: a mill wheel turning, a chapel roof, goats where goats should not be. Hob's Wick. Every house still standing."],
 			["ninefingers", "It's there. It's all... there."],
 			["", "But the fields to the east have gone pale at the edges, and something is crawling out of the white toward the nearest house."],
-			["ninefingers", "No. Not after all this. Didn't spend nine years and one finger keeping this place on the map to watch it get bloody nibbled.", "angry"],
+			["ninefingers", "No. Not after all this. Didn't lose a finger keeping this place on the map to watch it get bloody nibbled.", "angry"],
 			["ninefingers", "Ash. Hold the line at the village. Nothing gets past the well."]
 		]},
 		"personal_ninefingers_outro": {"title": "Roll of Honour", "lines": [

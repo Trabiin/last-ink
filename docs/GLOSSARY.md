@@ -9,8 +9,7 @@ per chapter in `build/script/`) and search it.
 
 ## House style
 
-- **British spelling** everywhere the player reads: armour, colour, favour, honour, rumour, defence (but see
-  *Defense* below), duellist, recognise, authorise, grey, millrace.
+- **British spelling** everywhere the player reads: armour, colour, favour, honour, rumour, defence, duellist, recognise, authorise, grey, millrace.
 - Numbers in story text are words ("eleven years", "Thirty-one lines"); numbers in rules text are digits
   ("+2 Gilt a day", "15 Renown").
 - A goal's hint starts with a capital letter, like its title.
@@ -31,9 +30,9 @@ per chapter in `build/script/`) and search it.
 | **Ink** | capital I for the resource and the magic; lower case for ordinary ink in pens and wells | Five colours people can hold (Red, Blue, Gold, Green, Black) and White, which only the Blank uses. |
 | **the Inklands** | always "the" | The whole map. |
 | **Blot** | capital B | The thing at the heart of erased land that a Reclaim mission breaks. |
-| **surge** | lower case | A Blank lunge at one province; a Defense mission stops it. |
+| **surge** | lower case | A Blank lunge at one province; a Defence mission stops it. |
 | **Wardlamp** | one word, capital W | Built in a province you hold; slows its Fray. |
-| **wardstone** | one word, lower case | What you hold in a Defense mission. |
+| **wardstone** | one word, lower case | What you hold in a Defence mission. |
 
 ## Resources and screens
 
@@ -45,7 +44,7 @@ per chapter in `build/script/`) and search it.
 | **Renown** | Fame, capital R. Story gates use it. |
 | **the Command Table** | The map table in the square; also the screen. |
 | **Bonds**, **Expeditions**, **Diplomacy**, **Research**, **Buildings** | Screen names, capitalised. As ordinary words in speech they can be lower case ("a bond", "an expedition"). |
-| **Defense** | A mission type name, kept as written (it is the in-game label). Open question: switch to British "Defence" across data and scripts. |
+| **Defence** | The mission type (Ojon, 2026-11-24: British spelling). The id stays `defense` in code and saves. |
 | **Patrol**, **Reclaim**, **Rescue**, **Raid**, **Salvage** | Mission type names, capitalised. |
 
 ## Factions
@@ -71,7 +70,7 @@ these the same everywhere.
 | tobble | Old Tobble | Old Tobble / Tobble | Ottoline's "Uncle Tobble". |
 | pell | Pell Mossop | Pell | |
 | gristle | Mother Gristle | Mother Gristle / Gristle | |
-| ninefingers | Corporal Daro | Daro | "Ninefingers" is the nickname. they/them. |
+| ninefingers | Corporal Daro | Daro | "Ninefingers" is the nickname. they/them. Twelve years in the Concord army; deserted recently (the start of the game) rather than strike out Hob's Wick, and lost the finger for it. The village was told Daro died a hero; the Tithe Road still has the wanted posters. |
 | abeyance | Sister Hild | Sister Hild / Hild | Was Abeyance before the naming pass. |
 | hesper | Hetty Coyne | Hetty | |
 | dunmore | Dunmore Vellacott | Dunmore | |
@@ -81,6 +80,8 @@ these the same everywhere.
 | odile | Odile Penhallow | Odile | Her mother: Chief Assessor Marguerite Penhallow. |
 | ottoline | Big Ottoline | Ottoline | |
 | velvette | Fauvette | Fauvette | Stage name of Colombe Brissot. The id stays `velvette`. |
+
+Planned, not in the game yet: Cass and Kit Pruett, twin chemists for the Inkworks (issue #27). Until they join, write "the inkmakers".
 
 Others: Verity Hale (the archivist in the white), Governor Thale, Clerk Pettigrew, Tithe-Captain Morrow,
 the Auditor, Ozias Crane, Hester Vane, Notary Fennick, Augustin Sallow.

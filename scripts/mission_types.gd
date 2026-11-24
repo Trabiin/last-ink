@@ -20,7 +20,7 @@ const MAP := "res://maps/frayed_meadow.txt"
 const RECLAIM_INK := 3
 const RECLAIM_FRAY := 60  # what a rewritten province starts at: thin, but standing
 const DEFENSE_FRAY := -5  # the line you held stays a little firmer
-const TYPE_NAMES := {"defense": "Defense", "reclaim": "Reclaim", "rescue": "Rescue", "raid": "Raid",
+const TYPE_NAMES := {"defense": "Defence", "reclaim": "Reclaim", "rescue": "Rescue", "raid": "Raid",
 	"salvage": "Salvage", "personal": "Personal"}
 const TYPE_COLORS := {"defense": Color("ff8a6a"), "reclaim": Color("eeebe2"), "rescue": Color("8ad1ff"),
 	"raid": Color("f0b54a"), "salvage": Color("9fe0b0"), "personal": Color("f29bd0")}

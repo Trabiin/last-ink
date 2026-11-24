@@ -68,7 +68,7 @@
 			"blurb": "Deserted the Concord army rather than strike out a village. Sharpest tongue in the Inklands.",
 			"post": "gate", "look": {"outfit": "soldier", "colors": {"skin": "b88866", "metal": "a29e96", "cloth": "6a2a2a", "boots": "2a2220"}},
 			"join": {"type": "rescue", "job": "rescue_daro"},
-			"rumour": "A Concord deserter is being marched back for trial. They have opinions about the march.",
+			"rumour": "A Concord deserter is hiding somewhere along the Tithe Road with a price on their head. They have opinions about the price.",
 			"quips": ["Daro saluted a scarecrow out of habit, then threatened it.", "Daro wants it on record that the plan was bad and they followed it anyway."],
 			"lines": ["Lost the finger to a form. Long story. Paperwork was involved.", "The Concord strikes out villages with a pen. I prefer the sword. More honest."]
 		},
