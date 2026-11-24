@@ -71,7 +71,7 @@
 			"reach": 32,
 			"arc": 110,
 			"knock": 280,
-			"desc": "Red Ink up the arm, then a huge axe arc in front of Bran: {damage} damage, and it hurls Nibblers back.{stun_text}",
+			"desc": "Red Ink up the arm, then a huge cleaver arc in front of Bran: {damage} damage, and it hurls Nibblers back.{stun_text}",
 			"ai": {
 				"when": "crowd",
 				"count": 2,
@@ -101,7 +101,7 @@
 			"radius": 110,
 			"time": 5,
 			"guard": 0.5,
-			"desc": "Clause four. Every Nibbler nearby goes for Bran instead, and he takes {guard_pct}% less damage for {time} s.",
+			"desc": "Clause four. Everything nearby goes for Bran instead, and he takes {guard_pct}% less damage for {time} s.",
 			"ai": {
 				"when": "threat",
 				"count": 2,

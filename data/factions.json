@@ -124,7 +124,7 @@
 			"id": "concord", "name": "The Gilded Concord", "short": "Concord", "province": "tithe",
 			"start": -55, "respects": "charm", "drift": -1, "floor": -80,
 			"wants": "You registered, taxed, or dissected.",
-			"blurb": "The bureaucratic empire that rules the capital and audits the Tithe Road. An unregistered town run by a man who crawled out of the Blank is, to them, a paperwork emergency.",
+			"blurb": "The bureaucratic empire that rules the capital and audits the Tithe Road. An unregistered town run by someone who crawled out of the Blank is, to them, a paperwork emergency.",
 			"envoy_title": "Petitioner",
 			"react": {"claim_near": -4, "erased_near": 0, "why_claim": "More unregistered land on their border"},
 			"drift_why": "Unregistered and unrepentant: the Concord files against you daily",

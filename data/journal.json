@@ -30,7 +30,7 @@
 				{"when": {"seen": ["ch1_takeover"]}, "text": "A woman in a pale archivist's coat watched the crater with professional interest, called you 'the one it gave back', and stepped into the white as if it were a door. Governor Thale fled with the town seal and forgot the town. With no governor and no legal standing, Hollowmark could be run by nobody. You are nobody. Quill pointed you at the Command Table."},
 				{"when": {"seen": ["act1_rumours"]}, "text": "Tobble brought rumours: a hedge-witch selling cures out of a hollow tree in the Gutterwoods, and a Concord corporal with nine fingers hiding on the Tithe Road after refusing an Erasure order."},
 				{"when": {"joined": ["gristle"]}, "text": "Mother Gristle came to Hollowmark with her kettle, her opinions and a cure for most things, including people."},
-				{"when": {"joined": ["ninefingers"]}, "text": "Corporal Daro, Ninefingers, came in off the Tithe Road with a Concord price on his head, the sharpest tongue in the Inklands, and a deserter's knowledge of where Concord forms are weakest."},
+				{"when": {"joined": ["ninefingers"]}, "text": "Corporal Daro, Ninefingers, came in off the Tithe Road with a Concord price on their head, the sharpest tongue in the Inklands, and a deserter's knowledge of where Concord forms are weakest."},
 				{"when": {"seen": ["act1_writ"]}, "text": "The Concord answered: a writ nailed to the well announced that a tithe column under Tithe-Captain Morrow would collect all outstanding sums from Hollowmark. The outstanding sum was everyone in it."},
 				{"when": {"cleared": ["act1_concord"]}, "text": "You broke the column at Old Mill Crossing. Its strongbox was empty, because it had come to be filled. In Morrow's papers was an order sealed with a red quill: the mark of the Auditor."},
 				{"when": {"cleared": ["auditor_duel"]}, "text": "The Auditor waited at the Tithe Road tollgate with a quill the length of a lance, striking out anything in his way. He did not strike out Hollowmark. You struck him out instead."},
@@ -159,7 +159,7 @@
 			{"when": {}, "text": "The Concord's last tollhouse before the Marches. Most travellers are found wanting. The rest are found later, in ditches, with their paperwork in order."},
 			{"when": {"cleared": ["auditor_duel"]}, "text": "The tollgate where the Auditor fell. The clerks have filed the incident under weather."}
 		],
-		"whitewater": [{"when": {}, "text": "It had a mill-race, a chapel and a name. On the map it is still drawn in. On the ground there is nothing to stand on."}],
+		"whitewater": [{"when": {}, "text": "It had a millrace, a chapel and a name. On the map it is still drawn in. On the ground there is nothing to stand on."}],
 		"candlemere": [{"when": {}, "text": "A lake town of chandlers. Every window burns all night, just in case."}, {"when": {"cleared": ["ch2_candleford"]}, "text": "Five wax barges lie burnt at the bottom of the lake. The sixth made it to the Abbey. Nell Tapper keeps the wicks going for whoever holds the town."}],
 		"abbey": [{"when": {}, "text": "The Abbey of Saint Ledger, its cloister walk, its copying hall and its bells."}, {"when": {"cleared": ["ch2_abbot"]}, "text": "The bells ring one hour at a time again. The brothers copy Osyth's board now, with the heading put back."}],
 		"ossuary": [{"when": {}, "text": "A cloister on a hill the Ledger says was always empty. The Erasers camp in its garth."}, {"when": {"cleared": ["ch2_crypt"]}, "text": "Under the hill: eleven thousand four hundred and six, counted, in chalk."}],
@@ -172,7 +172,7 @@
 				{"when": {"plans": true}, "text": "Chalk lines on Concord roads, and the Blank leaning harder wherever they point. She is aiming it."},
 				{"when": {"seen": ["act1_end"]}, "text": "Her letter says she is not your enemy: she is the person who has read the drafts, and when you have read them too, you will agree about the Concord. It asks you to stop pushing the white back. It is signed 'Fondly'. Polite letters are the worst kind."}
 			]},
-		{"id": "auditor", "portrait": "auditor", "name": "The Auditor", "title": "of the Office of Audits", "unlock": {"seen": ["act1_concord_after"]},
+		{"id": "auditor", "portrait": "auditor", "name": "The Auditor", "title": "of the Office of Corrections", "unlock": {"seen": ["act1_concord_after"]},
 			"text": "The Concord's answer to towns that will not file. He strikes things out of the Ledger with a quill the size of a lance. See the Codex for how he fights.",
 			"more": [{"when": {"cleared": ["auditor_duel"]}, "text": "Struck out at the Tithe Road tollgate. Verity Hale sent her thanks: he had erased four towns she was fond of."}]},
 		{"id": "thale", "portrait": "governor", "name": "Governor Thale", "title": "formerly of Hollowmark", "unlock": {"seen": ["ch1_takeover"]},

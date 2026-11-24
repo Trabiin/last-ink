@@ -56,7 +56,7 @@
 		},
 		{
 			"id": "rescue_abeyance", "name": "Rumour: a scribe hiding in Wickham", "kind": "Rescue", "province": "lampwick",
-			"blurb": "A runaway from the Abbey is hiding in the Wickham hills with a stolen page that will not stay written. The Abbey wants the page back, and the scribe.",
+			"blurb": "A runaway from the Abbey is hiding in the Wickham Hills with a stolen page that will not stay written. The Abbey wants the page back, and the scribe.",
 			"days": 2, "rations": 2, "stats": {"lore": 1.0, "charm": 0.5}, "target": 18, "danger": 1, "cooldown": 2,
 			"reward": {"insight": [2, 4]}, "recruit": "abeyance",
 			"text": {
@@ -65,7 +65,7 @@
 			}
 		},
 		{
-			"id": "rescue_daro", "name": "Rumour: a deserter on Tithe Road", "kind": "Rescue", "province": "tithe",
+			"id": "rescue_daro", "name": "Rumour: a deserter on the Tithe Road", "kind": "Rescue", "province": "tithe",
 			"blurb": "A Concord corporal walked out on an Erasure order and is hiding somewhere along the Tithe Road toll posts. The Concord has posted a reward. Pay it to yourself.",
 			"days": 3, "rations": 2, "stats": {"might": 0.5, "charm": 1.0, "grit": 0.5}, "target": 22, "danger": 2, "cooldown": 3,
 			"reward": {"renown": 1}, "recruit": "ninefingers",

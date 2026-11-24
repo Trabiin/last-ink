@@ -59,6 +59,6 @@ static func _ids_by_name() -> Dictionary:
 	return out
 
 
-const LEGACY_NAMES := {"quill marrow": "quill", "brannoc coil": "bran", "sister abeyance": "abeyance",
+const LEGACY_NAMES := {"quill marrow": "quill", "brannoc coil": "bran", "brannoc tolley": "bran", "sister abeyance": "abeyance",
 	"abeyance": "abeyance", "hesper quoin": "hesper", "hesper": "hesper", "pell undermoss": "pell",
 	"dunmore vell": "dunmore", "jessamy nightjar": "jessamy", "velvette": "velvette"}
