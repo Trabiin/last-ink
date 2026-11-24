@@ -386,6 +386,9 @@ func _draw_key_art(vs: Vector2) -> void:
 		draw_rect(Rect2(px, py, 2, 2), Color(0, 0, 0, 0.7) if i % 2 else Color(0.97, 0.96, 0.93, 0.6))
 
 
+const TAGLINE_GAP := 10.0  # room between the tagline and the menu's frame (its brass corners poke out ~4 px)
+
+
 func _draw_logo(vs: Vector2) -> void:
 	var font := ThemeDB.fallback_font
 	var logo_font: Font = Access.PIXEL_HEADING  # the logo is art: Jacquard 12 even with the readable font (#192)
@@ -412,6 +415,9 @@ func _draw_logo(vs: Vector2) -> void:
 	var tag := tr("Reality is being eaten. You were spat back out.")
 	var tw := font.get_string_size(tag, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(10)).x
 	draw_string(font, Vector2(c.x - tw / 2.0, c.y + 30), tag, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(10), Color(0.75, 0.72, 0.7))
+	# A long menu (large text) climbs no higher than a clear gap under the tagline, frame corners included.
+	var tag_bottom := c.y + 30.0 + font.get_descent(Access.fs(10))
+	menu.min_top = maxf(0.34, (tag_bottom + TAGLINE_GAP) / vs.y)
 
 
 var _mask_cache := {}

@@ -115,6 +115,11 @@ func _assign(o: Dictionary) -> void:
 
 func _gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion:
+		for i in _row_rects.size():  # pointing at another person focuses them, like the arrow keys
+			if (_row_rects[i] as Rect2).has_point(event.position) and sel != i:
+				sel = i
+				focus = 0
+				opt = 0
 		for i in _opt_rects.size():
 			if (_opt_rects[i] as Rect2).has_point(event.position):
 				focus = 1
@@ -260,7 +265,9 @@ func _draw() -> void:
 	if show["preview"] != "":
 		_wrap(Vector2(OPT_X, oy + 12), show["preview"], size.x - OPT_X - 8, 8, Color("cfe0b0"))
 	var help := Prompts.help([["updown", "choose"], ["ui_accept", "assign"], ["ui_cancel", "back"]], tr("Tap a role to assign it")) if focus == 1 else Prompts.help([["updown", tr("choose person")], ["ui_accept", tr("pick a role")], [["ui_cancel", "roster"], "close"]], tr("Tap a person, then tap a role"))
-	_text(Vector2(OPT_X, vs.y - 10), help, 7, Color(0.5, 0.48, 0.52))
+	# Under the roles; a long line (large text, long key names) slides left so it never runs off the edge.
+	var hw := font.get_string_size(help, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(7)).x
+	_text(Vector2(maxf(8.0, minf(OPT_X, vs.x - 8.0 - hw)), vs.y - 10), help, 7, Color(0.5, 0.48, 0.52))
 	if flash_t > 0.0:
 		var a := clampf(flash_t / 0.4, 0.0, 1.0)
 		_text(Vector2(LIST_X, vs.y - 10), flash, 9, Color(1, 0.9, 0.7, a))

@@ -37,7 +37,7 @@ static func height(fsize := 9) -> float:
 	return maxf(15.0, Access.fs(fsize) + 6.0)
 
 
-## Draws the row with its top-left at `at`. With width > 0 the tabs share that width evenly (glyphs
+## Draws the row with its top-left at `at`. With width > 0 the tabs share that width (glyphs
 ## included); otherwise each tab is as wide as its label. Returns the x where the row ends.
 func draw(ci: CanvasItem, font: Font, at: Vector2, fsize := 9, width := 0.0) -> float:
 	var h := height(fsize)
@@ -47,13 +47,30 @@ func draw(ci: CanvasItem, font: Font, at: Vector2, fsize := 9, width := 0.0) -> 
 	prev_rect = glyph(ci, font, Vector2(x, at.y), h, PREV, -1, fsize)
 	x = prev_rect.end.x + GAP
 	var next_w := glyph_width(font, NEXT, h, fsize)
-	var even := 0.0
+	var widths := []
 	if width > 0.0 and labels.size() > 0:
-		even = (at.x + width - next_w - GAP - x - GAP * (labels.size() - 1)) / labels.size()
+		# A fixed width: each tab as wide as its label plus an even share of the room left over. Long
+		# labels at large text sizes first shrink the tab text a step or two (never below the Normal
+		# size) and only then get trimmed, so "Abilities" doesn't turn into "Abiliti...".
+		var avail := at.x + width - next_w - GAP - x - GAP * (labels.size() - 1)
+		var floor_fsize := mini(sfsize, fsize)
+		var tab_fsize := sfsize
+		while true:
+			var natural := 0.0
+			for label in labels:
+				natural += font.get_string_size(str(label), HORIZONTAL_ALIGNMENT_LEFT, -1, tab_fsize).x + 12.0
+			if natural <= avail or tab_fsize <= floor_fsize:
+				var extra := (avail - natural) / labels.size()
+				for label in labels:
+					var nat := font.get_string_size(str(label), HORIZONTAL_ALIGNMENT_LEFT, -1, tab_fsize).x + 12.0
+					widths.append(nat + extra if natural <= avail else avail / labels.size())
+				break
+			tab_fsize -= 1
+		sfsize = tab_fsize
 	for i in labels.size():
 		var label := str(labels[i])
 		var lw := font.get_string_size(label, HORIZONTAL_ALIGNMENT_LEFT, -1, sfsize).x
-		var w := even if even > 0.0 else lw + 14.0
+		var w: float = widths[i] if not widths.is_empty() else lw + 14.0
 		var r := Rect2(x, at.y, w, h)
 		rects.append(r)
 		var on := i == current

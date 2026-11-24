@@ -306,6 +306,22 @@ func _shop_pick(i: int) -> void:
 func _gui_input(event: InputEvent) -> void:
 	if _tree != null:
 		return
+	if event is InputEventMouseMotion:  # pointing at a row focuses it, like the arrow keys
+		var at := -1
+		var rects: Array = _tech_rects if tab == "skills" else (_shop_rects if tab == "shop" else (_pick_rects if picking else _slot_rects))
+		for i in rects.size():
+			if (rects[i] as Rect2).has_point(event.position):
+				at = i
+		if at >= 0:
+			match tab:
+				"skills": tech_i = at
+				"shop": shop_i = at
+				_:
+					if picking:
+						pick_i = at
+					else:
+						slot_i = at
+		return
 	if Prompts.tapped(event):
 		var p: Vector2 = event.position
 		if _close_rect().has_point(p):
@@ -365,7 +381,8 @@ func _close_rect() -> Rect2:
 # ---------------------------------------------------------------- drawing
 
 func _text(pos: Vector2, s: String, fsize: int, col: Color, width := -1.0) -> void:
-	draw_string(font, pos, s, HORIZONTAL_ALIGNMENT_LEFT, width, Access.fs(fsize), col)
+	# Text cut by its width ends in "..." rather than mid-letter (long names at large text sizes).
+	draw_string(font, pos, Access.fit(font, s, Access.fs(fsize), width) if width > 0.0 else s, HORIZONTAL_ALIGNMENT_LEFT, width, Access.fs(fsize), col)
 
 
 func _text_r(right: Vector2, s: String, fsize: int, col: Color) -> void:

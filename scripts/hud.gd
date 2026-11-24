@@ -87,7 +87,8 @@ func _draw_ability_bar(hero: Hero, vs: Vector2) -> void:
 			k = str(i + 1)
 		_text(Vector2(x + 4 + ox, y + 10), k, 9, col, false)
 		var kw := ThemeDB.fallback_font.get_string_size(k, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(9)).x
-		_text(Vector2(x + 8 + ox + kw, y + 10), str(a.get("name", "")), 8, txt_col, false)
+		var nx := x + 8 + ox + kw  # long names at large text sizes end in "..." inside the slot
+		_text(Vector2(nx, y + 10), Access.fit(ThemeDB.fallback_font, str(a.get("name", "")), Access.fs(8), r.end.x - 5.0 - nx), 8, txt_col, false)
 		var cost_col := INK_COL if why != "ink" else Color("ff6b6b")
 		_text(Vector2(x + 4 + ox, y + 22), tr("%d Ink") % int(a.get("cost", 0)), 8, cost_col, false)
 		if cd > 0.0:
@@ -120,12 +121,19 @@ func _draw() -> void:
 			draw_texture_rect(face, Rect2(x + 3, y + 6, 20, 20), false, Color(0.45, 0.45, 0.45) if hero.dead else Color.WHITE)
 			x += fw
 		var name_col := Color(0.6, 0.6, 0.6) if hero.dead else Color.WHITE
-		_text(Vector2(x + 5, y + 10), hero.hero_name + (tr("  (down)") if hero.dead else ""), 9, name_col, false)
 		var pct := int(round(hero.power * 100.0))
 		var pcol := Color("ffd166") if pct >= 100 else Color(0.8, 0.8, 0.85)
+		# The gauge sits against the plate's right edge, the level just left of it, and the name gets
+		# what is left (trimmed with "..."), so nothing runs into the frame at large text sizes.
+		var hf := ThemeDB.fallback_font
+		var pct_s := "%d%%" % pct
+		var px := minf(x + 82, panel.end.x - 6.0 - hf.get_string_size(pct_s, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(9)).x)
+		var lv_s := tr("Lv%d") % Progress.level(hero.hero_id)
+		var lx := minf(x + 58, px - 4.0 - hf.get_string_size(lv_s, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(8)).x)
+		_text(Vector2(x + 5, y + 10), Access.fit(hf, hero.hero_name + (tr("  (down)") if hero.dead else ""), Access.fs(9), lx - 3.0 - (x + 5)), 9, name_col, false)
 		if not hero.charge_ready:  # a ready charged tech shows TECH here instead
-			_text(Vector2(x + 82, y + 10), "%d%%" % pct, 9, pcol, false)
-		_text(Vector2(x + 58, y + 10), tr("Lv%d") % Progress.level(hero.hero_id), 8, Color(0.75, 0.72, 0.6), false)
+			_text(Vector2(px, y + 10), pct_s, 9, pcol, false)
+		_text(Vector2(lx, y + 10), lv_s, 8, Color(0.75, 0.72, 0.6), false)
 		# XP sliver along the top edge of the panel
 		draw_rect(Rect2(x, y, 112.0 * Progress.xp_fraction(hero.hero_id), 1), Color("b9a0e8"))
 		# HP bar
@@ -145,7 +153,8 @@ func _draw() -> void:
 				draw_rect(Rect2(sx - 1, y + 19, 2, 6), Color(str(st[1].get("color", "ffffff"))).lightened(0.4) if lit else Color(0, 0, 0, 0.7))
 			if hero.charge_ready:
 				UiSkin.draw_icon(self, "tech_" + hero.hero_id, Rect2(x + 99, y + 2, 10, 10))
-				_text(Vector2(x + 80, y + 10), tr("TECH"), 9, tcol.lightened(0.3), false)
+				var tw := ThemeDB.fallback_font.get_string_size(tr("TECH"), HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(9)).x
+				_text(Vector2(minf(x + 80, x + 97 - tw), y + 10), tr("TECH"), 9, tcol.lightened(0.3), false)
 		# Ink (abilities, issue #7)
 		if hero.max_ink > 0.0:
 			draw_rect(Rect2(x + 5, y + 25, 102, 3), Color(0, 0, 0, 0.6))

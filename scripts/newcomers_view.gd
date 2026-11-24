@@ -128,7 +128,8 @@ func _hire_rect() -> Rect2:
 # ---------------------------------------------------------------- drawing
 
 func _text(pos: Vector2, s: String, fsize: int, col: Color, width := -1.0) -> void:
-	draw_string(font, pos, s, HORIZONTAL_ALIGNMENT_LEFT, width, Access.fs(fsize), col)
+	# Text cut by its width ends in "..." rather than mid-letter (long names at large text sizes).
+	draw_string(font, pos, Access.fit(font, s, Access.fs(fsize), width) if width > 0.0 else s, HORIZONTAL_ALIGNMENT_LEFT, width, Access.fs(fsize), col)
 
 
 func _wrap(pos: Vector2, s: String, width: float, fsize: int, col: Color) -> float:
@@ -146,7 +147,8 @@ func _draw() -> void:
 	_text(Vector2(8, 20), tr("Newcomers"), 15, Color("f3efe4"))
 	var ids := Empire.lead_ids()
 	var waiting := ids.filter(func(id): return Empire.is_visitor(id)).size()
-	_text(Vector2(98, 20), (tr("%d waiting at the gate.") % waiting) if waiting > 0 else "", 9, GOLD)
+	var hl := UiSkin.header_line(font, tr("Newcomers"), 15, (tr("%d waiting at the gate.") % waiting) if waiting > 0 else "", 9, vs.x, 98.0)
+	_text(Vector2(hl[0], 20), hl[1], 9, GOLD)
 	_text(Vector2(8, 34), tr("Roster %d of %d. People turn up at the south gate when you meet their hook; talk to them there or take them on here.")
 		% [Empire.roster_ids().size(), Empire.recruit_data.size()], 8, SOFT, vs.x - 70)
 	if ids.is_empty():
