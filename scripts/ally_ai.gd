@@ -20,6 +20,7 @@ const LEGACY := {"steady": "balanced", "reckless": "aggressive", "guard": "suppo
 const KITE_FAR := 92.0  # Keep Distance closes in again past this
 const KITE_LEASH := 150.0  # ... and never kites further than this from the leader
 const SUPPORT_HEAL_SPEEDUP := 0.5  # a Support hero's passive poultice runs 1.5x as often
+const RESCUE_R := 260.0  # an ally comes this far to break a hold on a friend (urgent_target)
 const FOCUS_LOOK := 0.6  # seconds between a focused ally's second looks at who to go for
 
 
@@ -50,6 +51,18 @@ static func steer(h: Hero, leader: Hero, delta: float) -> Vector2:
 		return tech_move[0]
 	if id == "support" and h.heal_every > 0.0:
 		h.heal_t -= delta * SUPPORT_HEAL_SPEEDUP
+
+	# A hero in a Penitent's hold, or a Reader reading a name, comes before the preset's footwork: any hit
+	# breaks it, so the ally goes straight in and swings whatever its gauge (issue #206).
+	var urgent := urgent_target(h, leader, float(p["seek"]))
+	if urgent != null:
+		h.ai_target = urgent
+		var to_u := urgent.global_position - h.global_position
+		if to_u.length() <= h.reach + urgent.radius - 4.0:
+			h.facing = to_u.normalized()
+			h.try_attack()
+			return Vector2.ZERO
+		return to_u.normalized()
 
 	var t: Enemy = h.ai_target
 	# Keep Distance picks from where it stands; everyone else guards the leader's surroundings.
@@ -167,6 +180,30 @@ static func focus_target(h: Hero, from: Vector2, r: float, leader: Hero) -> Enem
 			best_score = score
 			best = enemy
 	return best if best != null else nearest
+
+
+## The enemy an ally should drop everything for (Enemy.priority): one holding a hero (2) within RESCUE_R of the
+## ally, else one doing something a hit would break (1) within seek of the leader. Null when there is none.
+static func urgent_target(h: Hero, leader: Hero, seek: float) -> Enemy:
+	var best: Enemy = null
+	var best_score := -INF
+	for e in h.get_tree().get_nodes_in_group("enemies"):
+		var enemy := e as Enemy
+		if enemy == null or enemy.dead:
+			continue
+		var pr := enemy.priority()
+		if pr <= 0:
+			continue
+		var d := enemy.global_position.distance_to(h.global_position)
+		if pr >= 2 and d > RESCUE_R:
+			continue
+		if pr == 1 and enemy.global_position.distance_to(leader.global_position) > seek:
+			continue
+		var score := pr * 1000.0 - d
+		if score > best_score:
+			best_score = score
+			best = enemy
+	return best
 
 
 ## An ordinary swing, unless the gauge is being saved for a charged tech (AllyTechs.saving).

@@ -1,6 +1,6 @@
 {
 	"_comment": "Where bug reports and feedback go (issue #146, docs/FEEDBACK.md). endpoint: the report worker's URL (tools/feedback_worker); empty = the form saves reports to a file instead. game_key: not a secret, it only keeps random web traffic out.",
-	"endpoint": "",
+	"endpoint": "https://last-ink-reports.lastink.workers.dev",
 	"game_key": "last-ink-reports-1",
 	"privacy_url": "https://github.com/Trabiin/last-ink/blob/main/docs/PRIVACY.md",
 	"timeout": 25

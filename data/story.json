@@ -65,7 +65,9 @@
 			["bran", "Collect what? We don't owe 'em nothin'. We don't even exist.", "surprised"],
 			["quill", "That's the outstanding sum, as it were. Us."],
 			["ninefingers", "Know that column. Tithe-Captain Morrow. Counts people the way other men count sheep. Meet him at the Crossing before he reaches the gate."],
-			["gristle", "Bring him back alive if you can. A tonic I've got, been dying to try it on a tax man.", "smug"]
+			["gristle", "Bring him back alive if you can. A tonic I've got, been dying to try it on a tax man.", "smug"],
+			["ninefingers", "Not today, though. Morrow marches with forty wardens and assesses every hamlet on the way. Gives us a few days. Go now, we're a footnote."],
+			["quill", "Then we stop being a footnote. Four provinces under the flag and enough Renown that the Concord has to spell our name right. Then we go and meet him."]
 		]},
 		"act1_concord_intro": {"title": "Act 1  ·  The Concord Answers", "lines": [
 			["captain", "Halt. You there, the one standing where nobody's written. You'll do as a first entry."],
@@ -78,7 +80,10 @@
 			["ninefingers", "That seal. Seen it twice. Both times, the town it was stamped on stopped being a town by morning.", "sad"],
 			["quill", "The Auditor. The Concord doesn't send him to collect. It sends him to strike things out of the Ledger. Streets. Families. Whole towns."],
 			["quill", "He's marching down the Tithe Road. If he reaches Hollowmark with that quill, we won't be erased by the Blank. We'll be erased by paperwork.", "angry"],
-			["bran", "Then we meet 'im on the road. Somebody check what a giant pen is weak to."]
+			["bran", "Then we meet 'im on the road. Somebody check what a giant pen is weak to."],
+			["gristle", "Whole, nobody walks away from that quill. Beds I want first. Bandages, a roof, a stove for the kettle. An Infirmary, Ash.", "angry"],
+			["quill", "And make some noise while she builds it. The Ledger can strike out a town nobody's heard of. A town people sing about takes paperwork. Fifteen Renown, say."],
+			["ninefingers", "He walks. Stops at every tollgate to check the books. We have time. Not much."]
 		]},
 		"act1_end": {"title": "End of Act 1", "lines": [
 			["", "Three days after the Auditor falls, a letter arrives. Nobody delivered it. It is simply on the Command Table one morning, weighed down with a smooth white stone."],
@@ -249,9 +254,9 @@
 			"card": ["Chapter 1 complete: No Such Person", "Hollowmark is yours. The Command Table and the clock are switched on."]},
 		{"talk": "act1_rumours", "when": {"seen": ["ch1_takeover"], "day": 2}},
 		{"talk": "act1_writ", "when": {"joined": ["gristle", "ninefingers"]},
-			"card": ["New story mission: The Concord Answers", "Meet the tithe column at Old Mill Crossing (territory map)."]},
+			"card": ["New story mission: The Concord Answers", "Meet the tithe column at Old Mill Crossing (territory map) once Hollowmark holds 4 provinces and has 8 Renown."]},
 		{"talk": "act1_concord_after", "when": {"cleared": ["act1_concord"]},
-			"card": ["New story mission: The Auditor", "Stop him on the Tithe Road before he strikes out Hollowmark."]},
+			"card": ["New story mission: The Auditor", "Stop him on the Tithe Road. Build an Infirmary and reach 15 Renown first."]},
 		{"talk": "act1_end", "when": {"cleared": ["auditor_duel"]}, "then": "open_region:abbey",
 			"card": ["Act 1 complete: The Unregistered Town", "Verity Hale has made her offer. The fog has lifted over Saint Ledger's Abbey, in the north. Hold six provinces and the north will send for you."]},
 		{"talk": "ch2_bells", "when": {"seen": ["act1_end"], "held": 6},
@@ -274,7 +279,9 @@
 		{"text": "Take charge of Hollowmark", "chapter": "ch1", "hint": "Walk back into the square at dawn", "done": {"seen": ["ch1_takeover"]}, "show": {"active": true}},
 		{"text": "Find the hedge-witch in the Gutterwoods", "chapter": "act1", "hint": "Rescue job on the Expeditions board{tag:expeditions}, or a Rescue mission on the map", "done": {"joined": ["gristle"]}, "show": {"seen": ["act1_rumours"]}},
 		{"text": "Free the deserter on Tithe Road", "chapter": "act1", "hint": "Rescue job on the Expeditions board{tag:expeditions}, or a Rescue mission on the map", "done": {"joined": ["ninefingers"]}, "show": {"seen": ["act1_rumours"]}},
+		{"text": "Make Hollowmark worth answering: hold 4 provinces and earn 8 Renown", "chapter": "act1", "hint": "claim land on the territory map; missions earn Renown", "done": {"held": 4, "renown": 8}, "show": {"seen": ["act1_writ"], "not_cleared": ["act1_concord"]}},
 		{"text": "The Concord Answers: break the tithe column", "chapter": "act1", "hint": "story mission at Old Mill Crossing", "done": {"cleared": ["act1_concord"]}, "show": {"seen": ["act1_writ"]}},
+		{"text": "Ready Hollowmark for the Auditor: build an Infirmary and earn 15 Renown", "chapter": "act1", "hint": "Buildings screen{tag:buildings}; missions earn Renown", "done": {"built": {"infirmary": 1}, "renown": 15}, "show": {"seen": ["act1_concord_after"], "not_cleared": ["auditor_duel"]}},
 		{"text": "The Auditor: stop him on the Tithe Road", "chapter": "act1", "hint": "story mission at Tithe Road", "done": {"cleared": ["auditor_duel"]}, "show": {"seen": ["act1_concord_after"]}},
 		{"text": "Take Whitewater back from the Blank", "chapter": "act1", "hint": "Reclaim mission on the territory map, then claim it with a governor", "done": {"owns": ["whitewater"]}, "show": {"seen": ["act1_end"]}},
 		{"text": "Hold six provinces", "chapter": "act1", "hint": "claim free neighbours from the Command Table. Chapter 2 begins once you do", "done": {"held": 6}, "show": {"seen": ["act1_end"]}},

@@ -84,6 +84,10 @@ var ai_ability_t := 0.0
 var vanish_t := 0.0
 var vanish_speed := 1.0
 var crit_next := 1.0
+## Wading through something that drags at the feet (a Whitewasher's wet stripe, scripts/white_stripe.gd):
+## it sets mire_t each frame the hero stands in it; feet move at mire_mult of their speed while it lasts.
+var mire_t := 0.0
+var mire_mult := 1.0
 ## Big Ottoline: this fraction of knockback still moves her (1 = normal, data/heroes.json "poise").
 var poise := 1.0
 ## Riposte (Fauvette): while parry_t > 0 the next hit is turned aside and answered (abilities.gd kind "parry").
@@ -192,6 +196,9 @@ func _physics_process(delta: float) -> void:
 	if dir.length() > 0.1 and swing_t <= 0.0 and not ai_charging:  # a charging ally keeps its aim while it steps
 		facing = dir.normalized()
 	var spd := (vanish_speed if vanish_t > 0.0 else 1.0) * move_speed * (0.3 if swing_t > 0.0 or cast_t > 0.0 else (Techs.CHARGE_SPEED if charging else 1.0))
+	if mire_t > 0.0:
+		mire_t -= delta
+		spd *= mire_mult
 	velocity = dir * spd + knockback
 	knockback = knockback.move_toward(Vector2.ZERO, 900.0 * delta)
 	move_and_slide()
