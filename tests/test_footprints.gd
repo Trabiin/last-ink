@@ -67,6 +67,8 @@ func _building_keys() -> Array:
 func test_everything_placed_has_a_footprint() -> void:
 	var kinds := _placed_kinds()
 	for kind in kinds:
+		if kind == "word":  # @written maps: a word's box is sized from its text (Prop._ready_written)
+			continue
 		check(Footprints.has("props", kind), "prop '%s' (placed by %s) has no entry in data/footprints.json: add it and run tools/footprints.py" % [kind, kinds[kind]])
 	for key in _building_keys():
 		check(Footprints.poly("buildings", key).size() >= 3, "building %s has no footprint in data/footprints.json" % key)

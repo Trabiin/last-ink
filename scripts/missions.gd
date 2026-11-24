@@ -89,7 +89,8 @@ static func offered(m: Dictionary) -> bool:
 	if m.has("needs") and not Story.meets(m["needs"]):  # story conditions (issue #18)
 		return false
 	var p := Empire.territory().find(m.get("province", ""))
-	return not p.is_empty() and p["owner"] != "erased" and Empire.province_open(p)
+	# "in_blank" missions happen inside the white (the betrayer's home written as words, issue #186).
+	return not p.is_empty() and (p["owner"] != "erased" or m.get("in_blank", false)) and Empire.province_open(p)
 
 
 ## The mission a province offers, or {} when there is none. Story missions come first.
@@ -220,6 +221,7 @@ static func _effect_lines(m: Dictionary, outcome: String, stats: Dictionary) -> 
 ##   grant: [province ids]   the province raises your flag (it still wants a governor)
 ##   join: [recruit ids]     that person joins the roster straight from the mission
 ##   standing: {faction: n}  standing changes with those factions
+##   betrayal: "foreshadow" | "lock" | "con_home"   the climax betrayal's chapter hooks (issue #186)
 ## dry_run only describes them, for the results screen. Returns the lines either way.
 static func story_effects(m: Dictionary, dry_run := false) -> Array:
 	var lines := []
@@ -245,6 +247,17 @@ static func story_effects(m: Dictionary, dry_run := false) -> Array:
 		lines.append(Loc.t("%s standing %+d.") % [Empire.faction(fid).get("short", fid), int(st[fid])])
 		if not dry_run:
 			Empire.change_standing(fid, int(st[fid]), str(m.get("name", "")), true)
+	match str(fx.get("betrayal", "")):
+		"foreshadow":
+			if not dry_run:
+				Betrayal.begin_foreshadowing()
+		"lock":
+			if not dry_run:
+				Betrayal.lock()
+		"con_home":
+			lines.append(Loc.t("Bran is back on the roster, with a receipt."))
+			if not dry_run:
+				Betrayal.con_home()
 	return lines
 
 

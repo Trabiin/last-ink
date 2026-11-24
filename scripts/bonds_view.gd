@@ -305,12 +305,14 @@ func _draw() -> void:
 		draw_rect(Rect2(rr.position, Vector2(3, rr.size.y)), accent)
 		var rank := Empire.bond_rank(id)
 		_text(rr.position + Vector2(10, 12), Empire.recruit(id)["name"], 9, GOLD if on else TEXT, 110)
-		_pips(rr.position + Vector2(130, 9), rank, HEART)
+		_pips(rr.position + Vector2(130, 9), rank, HEART if not Betrayal.marked(id) else Color(0.55, 0.53, 0.58))
 		_text_r(rr.position + Vector2(LIST_W - 6, 12), Empire.bond_rank_name(rank), 8, SOFT)
 		_bar(Rect2(rr.position + Vector2(10, 18), Vector2(120, 4)), _progress(id), HEART if rank < Empire.BOND_MAX else GOOD)
 		var ready_r := Empire.bond_next_scene(id)
 		var mood := Empire.role_mood(id)
-		if ready_r > 0:
+		if Betrayal.marked(id):  # Chapter 4 on: the heart goes grey (issue #186)
+			_text(rr.position + Vector2(138, 25), tr("somewhere else"), 8, Color(0.6, 0.58, 0.63))
+		elif ready_r > 0:
 			_text(rr.position + Vector2(138, 25), tr("wants a word!"), 8, HEART)
 		elif mood == "likes":
 			_text(rr.position + Vector2(138, 25), tr("happy in role"), 8, GOOD)

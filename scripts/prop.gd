@@ -41,6 +41,17 @@ const FLAT := ["pond", "bones", "skull", "garden", "lilypad", "planks", "inkspri
 
 var kind := "bush"
 var text := ""  # sign text, or a building's name plate
+## In a map written as words (@written, issue #186) a prop is its own name in ink: "a bush", "the ferry rope".
+var written := false
+## The words a written prop stands as, by kind ("word" props spell their own plate text instead).
+const WRITTEN := {
+	"bush": "a bush", "shrub": "shrub", "rock": "a stone", "rock_big": "a great stone", "stump": "stump",
+	"skull": "skull", "bones": "bones", "sign": "a sign", "pond": "a pond", "house": "a house", "townhall": "the hall",
+	"tavern": "the tavern", "barn": "a barn", "stores": "the stores", "stall": "a stall", "fountain": "a fountain",
+	"crates": "crates", "barrels": "barrels", "produce": "turnips", "bench": "a bench", "banner": "a flag",
+	"grave": "a grave", "well": "the well", "cart": "a cart", "lamppost": "a lamp", "noticeboard": "notices",
+}
+const WORD_INK := Color("15101a")
 var _plate_y := 0.0
 var seed_v := 0
 var collision_poly := PackedVector2Array()  # the footprint this prop stands on (empty: walk-through)
@@ -64,6 +75,9 @@ static func footprint(k: String) -> Vector2i:
 
 func _ready() -> void:
 	collision_layer = 1
+	if written or kind == "word":
+		_ready_written()
+		return
 	if kind in FLAT:
 		z_index = -1
 	var k: Array = KINDS.get(kind, [30, 0, 1, 1])
@@ -99,6 +113,42 @@ func _ready() -> void:
 		var plate := Node2D.new()
 		add_child(plate)
 		plate.draw.connect(_draw_plate.bind(plate))
+
+
+## A prop in a written map: just its word, in ink on its own line, with a footprint the size of the word so
+## the party walks round it as it would round the thing itself.
+func _ready_written() -> void:
+	var word := word_text()
+	var fs := word_size()
+	var font: Font = ThemeDB.fallback_font  # the body face: blackletter capitals don't read at a glance
+	var w := font.get_string_size(word, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(fs)).x
+	if kind in FLAT:
+		z_index = -1
+	else:
+		var pts := Footprints.box(Vector2(maxf(w * 0.92, 8.0), clampf(fs * 0.45, 5.0, 14.0)))
+		collision_poly = pts
+		Footprints.attach(self, pts)
+	var ink := Node2D.new()
+	add_child(ink)
+	ink.draw.connect(func():
+		var at := Vector2(-w / 2.0, -2.0)
+		ink.draw_line(at + Vector2(0, 2), at + Vector2(w, 2), Color(WORD_INK, 0.25), 1.0)  # written on a line
+		ink.draw_string(font, at, word, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(fs), WORD_INK if not kind in FLAT else Color(WORD_INK, 0.55)))
+
+
+## The word a written prop spells.
+func word_text() -> String:
+	if kind == "word" or (text != "" and kind != "sign"):
+		return text.get_slice("\n", 0)
+	return Loc.t(WRITTEN.get(kind, kind.replace("_", " ")))
+
+
+## Big things are written big.
+func word_size() -> int:
+	var fp := footprint(kind)
+	if kind == "word":
+		return 13
+	return clampi(8 + (fp.x + fp.y) * 2, 10, 26)
 
 
 ## Recoloured copies (<kind>_v1.png, _v2..., made by tools/depth_pass.py) so a repeated prop doesn't read as a

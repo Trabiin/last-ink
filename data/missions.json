@@ -200,6 +200,62 @@
 			"loot": {}
 		},
 		{
+			"_comment": "The climax betrayal, Chapter 6 (issue #186): the betrayer's fight in their home written as words, offered once Chapter 5 has locked them (needs betrayer), even when the home is erased (in_blank). The gesture is the outro talk's choice. Chapter 6 (#32) adds its own 'after'.",
+			"id": "betrayal_fight_ottoline", "name": "The Betrayal: Ottoline's Door", "province": "gallows", "story": true, "in_blank": true,
+			"needs": {"betrayer": "ottoline"},
+			"map": "res://maps/written_gallows.txt", "threat": 5,
+			"brief": "Ottoline took the Vacancy's deal and walked Ash into the white. She is standing guard over the Encore's red door, inside Gallows Ferry as the Blank keeps it. She fights the way she always did: the shoulder charge down a lane, both fists into the floor, and one punch you will see coming for a long time.",
+			"objective": {"kind": "boss", "boss": "turncoat", "who": "ottoline", "talks": "betrayal_fight_ottoline", "label": "Bring Ottoline down. Don't finish her."},
+			"enemies": {"nibbler": 1},
+			"rewards": {"renown": 4, "insight": 6},
+			"xp": 110,
+			"loot": {}
+		},
+		{
+			"id": "betrayal_fight_ninefingers", "name": "The Betrayal: Daro's Road", "province": "tithe", "story": true, "in_blank": true,
+			"needs": {"betrayer": "ninefingers"},
+			"map": "res://maps/written_tithe.txt", "threat": 5,
+			"brief": "Daro signed the Vacancy's form and handed Ash over. They are waiting on the Tithe Road as written, beside a Hob's Wick that may or may not be real. Watch the point: the long lunge, the sweep up close, and the Skewer, a line the length of the road.",
+			"objective": {"kind": "boss", "boss": "turncoat", "who": "ninefingers", "talks": "betrayal_fight_ninefingers", "label": "Bring Daro down. Don't finish them."},
+			"enemies": {"nibbler": 1},
+			"rewards": {"renown": 4, "insight": 6},
+			"xp": 110,
+			"loot": {}
+		},
+		{
+			"id": "betrayal_fight_odile", "name": "The Betrayal: Odile's Account", "province": "oldmill", "story": true, "in_blank": true,
+			"needs": {"betrayer": "odile"},
+			"map": "res://maps/written_oldmill.txt", "threat": 5,
+			"brief": "Odile entered the deal in her ledger and paid it with Ash. She is at Old Mill Crossing as written, outside the Honest Measure. Levy drains you to heal her; stand out of her Audit seals, or her hits land half again as hard.",
+			"objective": {"kind": "boss", "boss": "turncoat", "who": "odile", "talks": "betrayal_fight_odile", "label": "Bring Odile down. Don't finish her."},
+			"enemies": {"nibbler": 1},
+			"rewards": {"renown": 4, "insight": 6},
+			"xp": 110,
+			"loot": {}
+		},
+		{
+			"_comment": "Bran's con paid off (issue #186): he sold Ash for a price the Vacancy can't pay, and it is in breach. Brings him home (on_success betrayal: con_home).",
+			"id": "betrayal_con", "name": "The Con: Bran's Thursday", "province": "gallows", "story": true, "in_blank": true,
+			"needs": {"betrayer": "bran"},
+			"map": "res://maps/written_gallows.txt", "threat": 4,
+			"brief": "Bran sold Ash to the Vacancy for everything it ever ate, back, by Thursday. It said yes. It is Thursday. Find him at the landing in Gallows Ferry as written, and keep the Vacancy's collectors off him while he makes it pay.",
+			"objective": {"kind": "script", "label": "Find Bran at the landing", "steps": [
+				{"do": "talk", "talk": "betrayal_con_intro"},
+				{"do": "goto", "at": "landing", "label": "Find Bran at the landing"},
+				{"do": "talk", "talk": "betrayal_con_bran"},
+				{"do": "hold", "at": "landing", "seconds": 45, "label": "Keep the collectors off Bran while the Vacancy fails to pay",
+					"spawn": {"nibbler": 3, "spitter": 1}, "every": 4.0, "first": 1.5, "protect": {"name": "Bran's contract", "hp": 120},
+					"fail": "The collectors got to the contract. The Vacancy is not in breach any more."},
+				{"do": "talk", "talk": "betrayal_con_outro"},
+				{"do": "exit", "label": "Walk back up Lantern Row"}
+			]},
+			"enemies": {},
+			"rewards": {"renown": 3, "insight": 4},
+			"on_success": {"betrayal": "con_home"},
+			"xp": 80,
+			"loot": {}
+		},
+		{
 			"id": "candlemere_patrol", "name": "Patrol: Candleford", "province": "candlemere",
 			"after": "ch2_candleford",
 			"map": "res://maps/lakeshore.txt",
