@@ -31,7 +31,7 @@ func before_each() -> void:
 	Diag.dir = LOGS
 	_wipe(LOGS)
 	Diag.previous = {}
-	Feedback.override = {}
+	Feedback.override = {"endpoint": ""}  # tests never reach the real inbox
 	for t in Help.topics():
 		Help.mark(t["id"])
 	Access.load_settings()
@@ -42,7 +42,7 @@ func after_each() -> void:
 	Diag.dir = _dir_was
 	Diag.previous = _prev_was
 	Diag.scripted = true
-	Feedback.override = {}
+	Feedback.override = {"endpoint": ""}  # tests never reach the real inbox
 	tree.paused = false
 
 
