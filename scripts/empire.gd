@@ -26,6 +26,7 @@ const FRAY_MOMENTUM := 1  # above 50, unravelling feeds itself
 const FRAY_TENDED := -2  # your people patch up what they can
 const SCAR_FRAY := 2  # per day while a surge scar lasts
 const SURGE_FRAY := 12
+const VELVET_PATRONAGE := 4  # Gilt a day from a Friendly Velvet Nobility (issue #29)
 const SURGE_SCAR_DAYS := 3
 const SURGE_WARNING_DAYS := 2
 const SURGE_GAP := [3, 5]  # days between surges
@@ -1842,8 +1843,15 @@ func _diplomacy_ledger(lines: Array) -> void:
 			lines.append(line)
 	if has_perk("concord"):
 		lines.append({"label": tr("Concord: Tithe Road tolls go easy"), "gilt": 2, "supplies": 0, "ink": 0, "note": tr("Friendly")})
+	if velvet_patronage() > 0:
+		lines.append({"label": tr("Velvet Nobility: patronage"), "gilt": velvet_patronage(), "supplies": 0, "ink": 0, "note": tr("Friendly")})
 	if eraser_insight() > 0:
 		lines.append({"label": tr("Erasers: drafts from the readings"), "gilt": 0, "supplies": 0, "ink": 0, "note": tr("+%d Insight") % eraser_insight()})
+
+
+## Gilt a day the Velvet Nobility pay in patronage once they are Friendly (issue #29).
+func velvet_patronage() -> int:
+	return VELVET_PATRONAGE if has_perk("velvet") and _faction_on_map("velvet") else 0
 
 
 ## Insight a day the Erasers' drafts bring in once they are Friendly (issue #28).

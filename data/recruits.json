@@ -257,6 +257,78 @@
 				"First Reader Askew taught me to read old hands. Then she taught me to burn them. I kept the first lesson.",
 				"Verity came to a reading once. She knew everyone's name. She was kind. I think that's why it worked."
 			]
+		},
+		{
+			"id": "hortense", "name": "Hortense de Saulx", "title": "the Velvet Marquise", "tier": "field", "start": false,
+			"stats": {"might": 5, "craft": 3, "lore": 6, "charm": 9, "grit": 4}, "traits": ["flirt", "ex_concord"],
+			"blurb": "The Velvet Marquise: last of the de Saulx, hostess of the Causeway's best parties and its most dangerous duels. Flirts with everyone, enemies included, and means a little of it. The Concord paid her to bring you in.",
+			"post": "hall", "look": {"outfit": "archer", "colors": {"skin": "f0d0bc", "cloth": "1e2a5a", "leather": "2a1e3a", "boots": "14121c", "trim": "c8d4f0"}},
+			"join": {"type": "story", "mission": "ch3_masquerade"}, "hire": {},
+			"rumour": "A marquise on the Velvet Causeway has been asking after the person who does not exist. You will meet her at the masquerade.",
+			"pitch": "I came for the party and stayed for you, sweet. Mostly for you.",
+			"welcome": "Your town has a great deal of mud in it. I adore it. Where shall I sleep, and who shall I seduce first? Joking. Mostly.",
+			"quips": ["Hortense talked the squad past a toll-gate by complimenting the guard's moustache until he forgot his name.", "Hortense came back from the expedition with every map in the camp, and a love letter from the camp."],
+			"lines": ["The Causeway taught me two things: how to dance, and how to leave before the music stops.", "Your Bran has the manners of a dropped tray. I have decided he is charming.", "Ask me anything, sweet. I will lie beautifully, and you will enjoy it."]
+		},
+		{
+			"id": "saffron", "name": "Saffron Kiss", "title": "cabaret singer", "tier": "field", "start": false,
+			"stats": {"might": 3, "craft": 5, "lore": 4, "charm": 8, "grit": 6}, "traits": ["flirt", "night_owl"],
+			"blurb": "Stage name of Maud Pickering, who was born on a coal barge and says so. Top of the bill at the Gilt Lantern on the Causeway. When she sings, things exist for a few seconds: a bridge, a chorus line, a door that was not there. She has never finished a song.",
+			"post": "tavern", "look": {"outfit": "mage", "colors": {"skin": "c89070", "cloth": "8a2a3a", "leather": "5a1a22", "boots": "241418", "trim": "f0c040"}},
+			"join": {"type": "story", "mission": "ch3_quay"}, "hire": {},
+			"rumour": "Somebody on Lantern Quay is singing a bridge across the ink every night. The bargemen say the bridge only stays up while she does.",
+			"pitch": "You held the quay while I held the note. That's a duet, that is. I'm in.",
+			"welcome": "Hollowmark. Hollow, mark. Hollow little town with a mark on its heart. No. Working on it.",
+			"quips": ["Saffron sang the camp to sleep and a fire into the grate. Nobody had lit it.", "Saffron hummed the squad across a broken bridge. Halfway over she forgot the words, and they ran the rest."],
+			"lines": ["Every song I start turns out to be about someone. I haven't worked out who this one's about. Give it time.", "Maud Pickering's the name on the coal barge. Saffron Kiss is the name on the bill. You can call me either, love, so long as you pay.", "When I stop singing, the thing goes away. The bridge, the chorus girl. People an' all, sometimes. So I try not to stop."]
+		},
+		{
+			"id": "nan", "name": "Nan Cripps", "title": "grifter, and her shadow Tally", "tier": "field", "start": false,
+			"stats": {"might": 6, "craft": 4, "lore": 3, "charm": 7, "grit": 6}, "traits": ["greedy", "night_owl"],
+			"blurb": "A Marches grifter working the Causeway: cards, contracts, word-futures and anything else that sells before it is checked. Her shadow, Tally, talks, signs the contracts she has no intention of honouring, and is the honest one. He hates that.",
+			"post": "market", "look": {"outfit": "warrior", "colors": {"skin": "e0b090", "metal": "8a8278", "accent": "6a4a8a", "boots": "201820"}},
+			"join": {"type": "story", "mission": "ch3_shallows"}, "hire": {},
+			"rumour": "Somebody is selling netted words at Pendower Shallows, by the pound, with a written guarantee. The guarantee is signed by a shadow.",
+			"pitch": "Nan Cripps, at your service. Reasonable rates. Tally, tell them the rates are reasonable.",
+			"welcome": "Lovely town. Honest faces. I'll have most of them by Thursday. Joke! Tally, laugh.",
+			"quips": ["Nan won the squad's supper off a toll-keeper at cards. Tally says she cheated. Nan says Tally cheated.", "Nan sold a farmer the same map twice. Tally gave him his money back the second time, and sulked all the way home."],
+			"lines": ["Every contract's got a loophole. I put 'em in myself. Saves time.", "Tally's my shadow. He talks. He's honest. It's a terrible affliction and we're seeing someone about it.", "Never trust a woman who says never trust her. That's me. Ha! Gotcha."]
+		},
+		{
+			"id": "anselme", "name": "Anselme Brugière", "title": "vintner", "tier": "recruit", "start": false,
+			"stats": {"might": 4, "craft": 8, "lore": 4, "charm": 5, "grit": 5}, "traits": ["stubborn"],
+			"blurb": "Keeps the oldest presses on the Vauclair Terraces and makes the wine the masquerade has drunk for forty years. Lately it tastes of paper, and he takes that personally.",
+			"post": "stores", "look": {"outfit": "soldier", "colors": {"skin": "d8a888", "cloth": "5a2a3a", "metal": "8a7a5a", "boots": "2a2018"}},
+			"join": {"type": "claim", "province": "terraces"}, "hire": {"gilt": 30},
+			"rumour": "The old vintner on the Vauclair Terraces swears his grapes started tasting of paper the day the Blank came. Hold the Terraces and he may come and see whose land he is on.",
+			"pitch": "Monsieur, madame, whoever: your flag is on my vines, so I am your vintner. Thirty Gilt and you will drink better than the Marquis.",
+			"welcome": "Show me your cellar. You have no cellar? Then show me where you will dig one.",
+			"quips": ["Anselme sniffed the squad's water skins and poured two of them away. He was right about both.", "Anselme traded a bottle of the '51 for a cart and a mule. He says the mule got the better of it."],
+			"lines": ["Wine remembers the year. This year, the wine remembers nothing. I do not like it.", "The masquerade drank my wine for forty years and paid for five of them.", "A good press is like a good marriage. Slow, heavy, and you must never leave it alone with the Concord."]
+		},
+		{
+			"id": "margot", "name": "Margot Vasseur", "title": "mask-maker", "tier": "recruit", "start": false,
+			"stats": {"might": 2, "craft": 8, "lore": 5, "charm": 7, "grit": 3}, "traits": ["bookish"],
+			"blurb": "Made every mask at the masquerade for twenty years, including the Host's. Knows who wore what, and which faces were under them. Has not slept well since.",
+			"post": "market", "look": {"outfit": "mage", "colors": {"skin": "ecc8b0", "cloth": "3a2a4a", "leather": "2a1e2a", "boots": "18141c", "trim": "d8b0d0"}},
+			"join": {"type": "standing", "faction": "velvet", "tier": "friendly"}, "hire": {"gilt": 40},
+			"rumour": "The Causeway's mask-maker has closed her shop. Friends of the Velvet Nobility say she would make masks for someone the nobles trust.",
+			"pitch": "The salons say you can be trusted. Nobody in the salons can be trusted, so I came to see what that looks like.",
+			"welcome": "Hold still. Everybody here needs a mask. You most of all, keeper. You have a face that shows everything.",
+			"quips": ["Margot made the squad masks for the road. The bandits let them pass and asked where they could buy one.", "Margot sewed a torn tent in the dark by feel and then complained about the stitching."],
+			"lines": ["I made the Host's mask. It was a small one, at first.", "A mask is not a lie. It is a lie everyone has agreed to. That is called manners.", "On the Causeway you can tell a noble by the mask and a servant by the hands. Mine are a servant's."]
+		},
+		{
+			"id": "gaspard", "name": "Gaspard Pellerin", "title": "word-fisher", "tier": "recruit", "start": false,
+			"stats": {"might": 5, "craft": 5, "lore": 7, "charm": 3, "grit": 6}, "traits": ["night_owl"],
+			"blurb": "Nets words out of the ink at Pendower Shallows and sells them by the pound to printers and poets. Can tell a good catch from a cursed one by the smell. Has thrown back a few he will not repeat.",
+			"post": "gate", "look": {"outfit": "soldier", "colors": {"skin": "c8987a", "cloth": "2a3a4a", "metal": "6a7a8a", "boots": "1e1a18"}},
+			"join": {"type": "claim", "province": "inkmere"}, "hire": {"gilt": 25},
+			"rumour": "The word-fishers of Pendower Shallows say the catches are getting strange. Hold the Shallows and one of them might come looking for steadier work.",
+			"pitch": "Your flag's on the Shallows now, so the nets are yours. Twenty-five Gilt and I'll tell you what we've been pulling out of the ink. You won't like it.",
+			"welcome": "Got any ink about the place? Lake ink, the sort that wriggles. I fish words out of it, and they want feeding.",
+			"quips": ["Gaspard netted a word out of a puddle on the road. He wouldn't say which one. He threw it back.", "Gaspard fished the squad's supper out of an ink-pond. It was a stew. Nobody asked."],
+			"lines": ["Last week the nets came up full of the word 'mouth'. Just that. A hundredweight of it.", "Good words smell of salt. Bad ones smell of the inside of a cupboard.", "The masquerade buys our best catches for their speeches. Long words, by the barrel."]
 		}
 	]
 }

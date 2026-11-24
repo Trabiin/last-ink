@@ -1,6 +1,7 @@
 {
 	"_comment": "Collision footprints: the ground each prop or building stands on, as a convex polygon in pixels around its origin (bottom-centre). Traced from the sprites by tools/footprints.py (read its header before editing; hand fields walk/d/clip/inset/manual are kept, poly/src are regenerated). Read by scripts/footprints.gd. props: by prop kind (maps' @prop lines, scripts/prop.gd); buildings: <look>_<level> (scripts/building_site.gd).",
 	"props": {
+		"balustrade": {"poly": [[-19.0, -8], [19.0, -8], [19.0, -1], [-18.0, 0]], "src": [40, 25]},
 		"banner": {"poly": [[-5.5, -5], [5.5, -5], [5.5, 0], [-5.5, 0]], "src": [15, 34], "d": 5},
 		"barrels": {"poly": [[-8.5, -5], [8.5, -5], [8.5, 0], [-8.5, 0]], "src": [19, 16]},
 		"barricade": {"poly": [[-22.0, -13], [22.0, -13], [22.0, -7], [-1.0, 0], [-13.0, 0], [-22.0, -3]], "src": [46, 42]},
@@ -69,6 +70,7 @@
 		"marshstump_v2": {"of": "marshstump", "poly": [[-17.0, -11], [17.0, -11], [13.0, 0], [-13.0, 0], [-17.0, -2]], "src": [36, 33]},
 		"marshstump_v3": {"of": "marshstump", "poly": [[-18.0, -12], [18.0, -12], [18.0, -5], [13.0, 0], [-13.0, 0], [-18.0, -4]], "src": [38, 36]},
 		"marshstump_v4": {"of": "marshstump", "poly": [[-18.0, -11], [17.0, -11], [15.0, 0], [-10.0, 0], [-18.0, -5]], "src": [38, 34]},
+		"mask_stall": {"poly": [[-29.0, -17], [29.0, -17], [28.0, -6], [19.0, 0], [-20.0, -1], [-29.0, -9]], "src": [60, 54]},
 		"milestone": {"poly": [[-13.0, -14], [13.0, -14], [12.0, 0], [-12.0, 0]], "src": [28, 45]},
 		"milestone_v1": {"of": "milestone", "poly": [[-13.0, -15], [13.0, -15], [13.0, 0], [-13.0, 0]], "src": [28, 46]},
 		"milestone_v2": {"of": "milestone", "poly": [[-11.0, -13], [11.0, -13], [10.0, 0], [-8.0, 0], [-11.0, -2]], "src": [24, 42]},

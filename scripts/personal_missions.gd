@@ -119,7 +119,7 @@ static func apply(m: Dictionary, outcome: String, dry := false) -> Array:
 		Relationships.note_personal(who, outcome == "success")  # fates for the epilogues (issue #116)
 	if outcome == "success":
 		if not dry and Empire.has_bond(who):
-			Empire.bonds[who]["personal_done"] = true
+			Empire._bond(who)["personal_done"] = true  # a bond nobody has talked to yet has no record until now
 			Empire.bond_gain(who, 999, "", true)
 		lines.append(Loc.t("%s has something to tell Ash. (Bonds: H, or find them in Hollowmark.)") % name)
 		var st: Dictionary = m.get("standing", {})

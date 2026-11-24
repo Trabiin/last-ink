@@ -93,6 +93,11 @@ var poise := 1.0
 ## Riposte (Fauvette): while parry_t > 0 the next hit is turned aside and answered (abilities.gd kind "parry").
 var parry_t := 0.0
 var parry_ability := {}
+## Torch Song (Saffron, abilities.gd kind "song", Chapter 3): while song_t > 0 this hero deals song_boost more
+## damage (TreePerks.damage_bonus) and the power gauge fills song_rate faster.
+var song_t := 0.0
+var song_boost := 0.0
+var song_rate := 0.0
 ## Skill tree (issue #25, scripts/skill_tree.gd): passives the hero's learned nodes give (summed values,
 ## handled in scripts/tree_perks.gd), who the ally AI goes for, and the once-a-mission last stand.
 var perks := {}
@@ -177,7 +182,7 @@ func _physics_process(delta: float) -> void:
 			swing_hit_done = true
 			_apply_hit()
 	else:
-		power = min(power + power_rate * delta, 1.0)
+		power = min(power + power_rate * (1.0 + (song_rate if song_t > 0.0 else 0.0)) * delta, 1.0)
 
 	var dir := Vector2.ZERO
 	if controlled and party and party.get("quick_open") == true:
@@ -343,6 +348,7 @@ func _update_abilities(delta: float) -> void:
 	Techs.tick(self)
 	guard_t = maxf(guard_t - delta, 0.0)
 	parry_t = maxf(parry_t - delta, 0.0)
+	song_t = maxf(song_t - delta, 0.0)
 	if vanish_t > 0.0:
 		vanish_t -= delta
 		if vanish_t <= 0.0:
@@ -369,6 +375,7 @@ func _on_death() -> void:
 	vanish_t = 0.0
 	crit_next = 1.0
 	parry_t = 0.0
+	song_t = 0.0
 
 
 func revive() -> void:
@@ -434,7 +441,7 @@ func _nearest_enemy(from: Vector2, max_dist: float) -> Enemy:
 	var best_d := max_dist
 	for e in get_tree().get_nodes_in_group("enemies"):
 		var enemy := e as Enemy
-		if enemy == null or enemy.dead:
+		if enemy == null or enemy.dead or enemy.untargetable():
 			continue
 		var d := enemy.global_position.distance_to(from)
 		if d < best_d:
@@ -586,6 +593,13 @@ func _draw_overlay() -> void:
 		overlay.draw_arc(Vector2(0, -7), 12.0, fa - 1.0, fa + 1.0, 12, Color("e0405a", 0.9), 1.5)
 	if guard_t > 0.0:
 		overlay.draw_arc(Vector2(0, -7), 12.5, PI * 0.15, PI * 0.85, 12, Color("f2a65a", 0.7), 1.5)
+	if song_t > 0.0:  # Torch Song: a gold note drifts up beside the head while the song lasts
+		var ny := -18.0 - fmod(anim_t * 10.0, 10.0)
+		var na := clampf(song_t, 0.0, 1.0) * (1.0 - fmod(anim_t * 10.0, 10.0) / 12.0)
+		var nc := Color("f0c040", na)
+		overlay.draw_circle(Vector2(8, ny), 1.3, nc)
+		overlay.draw_line(Vector2(9.2, ny), Vector2(9.2, ny - 4.0), nc, 1.0)
+		overlay.draw_line(Vector2(9.2, ny - 4.0), Vector2(11.0, ny - 3.0), nc, 1.0)
 	if cast_t > 0.0:
 		overlay.draw_circle(Vector2(0, -22), 2.0 * cast_t / SWING_TIME + 0.5, Color(cast_color, 0.9))
 	Status.draw_marks(overlay, self, -27.0)  # status shapes over the head (issue #112)

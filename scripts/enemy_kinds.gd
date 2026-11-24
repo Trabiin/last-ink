@@ -11,6 +11,10 @@ extends RefCounted
 ##   penitent - scripts/penitent.gd: Chapter 2 Blank monk; lunges, and grabs and holds a hero (issue #206)
 ##   reader   - scripts/reader.gd: Eraser; lunges, and reads a name aloud that spurs other Erasers on (#206)
 ##   whitewasher - scripts/whitewasher.gd: Eraser; spits like a Spitter, and paints stripes that slow and Erase (#206)
+##   reveller - scripts/reveller.gd: Chapter 3 masquerade guest; circles, rises on its toes, spins down a line (#29)
+##   duellist - scripts/duellist.gd: Chapter 3 bridge duellist; front guard parries, salute then double lunge (#29)
+##   inkeel   - scripts/inkeel.gd: Chapter 3 lake eel; swims under the ground, surfaces through a ring biting (#29)
+##   lamplighter - scripts/lamplighter.gd: Chapter 3; hangs back like a Spitter and lobs lanterns that burst in fire (#29)
 ## A kind can reuse another's behaviour with its own art: "script" names the behaviour (a key of
 ## SCRIPTS), "sprite" the sprite set (data/sprites.json). The marsh reedling spits like a Spitter;
 ## the mill scarecrow and the Guild sellsword chase and lunge like a Nibbler.
@@ -24,6 +28,10 @@ const SCRIPTS := {
 	"penitent": preload("res://scripts/penitent.gd"),
 	"reader": preload("res://scripts/reader.gd"),
 	"whitewasher": preload("res://scripts/whitewasher.gd"),
+	"reveller": preload("res://scripts/reveller.gd"),
+	"duellist": preload("res://scripts/duellist.gd"),
+	"inkeel": preload("res://scripts/inkeel.gd"),
+	"lamplighter": preload("res://scripts/lamplighter.gd"),
 }
 
 static var _data := {}
