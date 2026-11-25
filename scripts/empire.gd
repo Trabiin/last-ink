@@ -885,10 +885,18 @@ func job(id: String) -> Dictionary:
 	return job_data.get(id, {})
 
 
-## Jobs worth listing: rescues vanish once the person has joined.
+## Jobs worth listing: rescues vanish once the person has joined, and chapter jobs wait for their
+## story gate ("when", issue #27).
 func job_ids() -> Array:
 	_load_expedition_data()
-	return job_data.keys().filter(func(j): return not recruits.has(job_data[j].get("recruit", "")) and personal_open(j) and FactionAsks.job_listed(job_data[j]))
+	return job_data.keys().filter(func(j): return not recruits.has(job_data[j].get("recruit", "")) and personal_open(j) \
+		and FactionAsks.job_listed(job_data[j]) and job_story_open(j))
+
+
+## Has a job's story gate ("when" in data/expeditions.json) come true? Jobs without one always have.
+func job_story_open(jid: String) -> bool:
+	var w: Dictionary = job(jid).get("when", {})
+	return w.is_empty() or Story.meets(w)
 
 
 ## How many squads the Guildhall can have out at once (one per level).
@@ -912,6 +920,8 @@ func job_blocker(jid: String) -> String:
 		return tr("build the Guildhall first") + Prompts.tag("buildings")
 	if gh < int(needs.get("guildhall", 1)):
 		return tr("needs Guildhall level %d") % int(needs["guildhall"])
+	if not job_story_open(jid):
+		return Story.blocker(j["when"])
 	var p := territory().find(j["province"])
 	if needs.get("erased", false):
 		if p.get("owner", "") != "erased":
@@ -1022,6 +1032,12 @@ func expedition_odds(jid: String, squad: Array) -> Dictionary:
 			why.append([tr("%s is Ex-Concord: knows the toll posts, +10%%") % n, true])
 		if has_trait(id, "greedy") and j.get("reward", {}).has("gilt"):
 			why.append([tr("%s is Greedy: brings back 20%% more Gilt (and pockets some)") % n, true])
+		if has_trait(id, "vowed") and j["kind"] == "Escort":  # no-tr: expedition kinds are ids too
+			chance += 5
+			why.append([tr("%s is Vowed: nobody robs a habit, +5%%") % n, true])
+		if has_trait(id, "salon") and j["kind"] == "Salvage":  # no-tr: expedition kinds are ids too
+			chance -= 5
+			why.append([tr("%s is Salon-bred: will not touch anything dirty, -5%%") % n, false])
 	if has_research("log_fieldmaps"):
 		chance += 10
 		why.append([tr("Field Maps (research), +10%"), true])
@@ -1674,6 +1690,16 @@ func envoy_effect(id: String, fid: String) -> Dictionary:
 	if has_trait(id, "contract") and fid == "guild":
 		drift += 1
 		why.append([tr("Contracted: speaks fluent Guild, +1"), true])
+	if has_trait(id, "vowed") and fid in ["abbey", "erasers"]:
+		drift += 2
+		why.append([tr("Vowed: still wears the habit under the coat, +2"), true])
+	if has_trait(id, "salon"):
+		if fid == "velvet":
+			drift += 2
+			why.append([tr("Salon-bred: knows which fork, +2"), true])
+		elif fid == "guild":
+			drift -= 1
+			why.append([tr("Salon-bred: the Guild finds them insufferable, -1"), false])
 	if int(recruits.get(id, {}).get("injured", 0)) > 0:
 		why.append([tr("Injured: not talking to anyone, no effect"), false])
 		drift = 0
@@ -2836,10 +2862,31 @@ func join_hook(id: String) -> Dictionary:
 	return recruit(id).get("join", {})
 
 
+## The map region a lead belongs to ("" = anywhere): the join hook's own "region", else the region of
+## the province it names (claim) or of its rescue job. Issue #27: people from a later chapter are not
+## even rumoured while their region is still under the fog.
+func lead_region(id: String) -> String:
+	var h := join_hook(id)
+	if h.has("region"):
+		return str(h["region"])
+	var pid := ""
+	match h.get("type", ""):
+		"claim":
+			pid = str(h.get("province", ""))
+		"rescue":
+			pid = str(job(h.get("job", "")).get("province", ""))
+	return str(territory().find(pid).get("region", "")) if pid != "" else ""
+
+
+func lead_open(id: String) -> bool:
+	var rid := lead_region(id)
+	return rid == "" or region_open(rid)
+
+
 ## Everyone who could still join, waiting visitors first, then in roster order.
 func lead_ids() -> Array:
 	_load_recruit_data()
-	var out := recruit_data.keys().filter(func(id): return not recruits.has(id) and not join_hook(id).is_empty())
+	var out := recruit_data.keys().filter(func(id): return not recruits.has(id) and not join_hook(id).is_empty() and (visitors.has(id) or lead_open(id)))
 	var waiting := out.filter(func(id): return visitors.has(id))
 	return waiting + out.filter(func(id): return not visitors.has(id))
 
@@ -2855,6 +2902,8 @@ func hire_cost(id: String) -> Dictionary:
 ## Has this person's hook been met? (Rescues never are: the expedition handles those.)
 func hook_met(id: String) -> bool:
 	var h := join_hook(id)
+	if not lead_open(id):
+		return false
 	match h.get("type", ""):
 		"claim":
 			return territory().find(h.get("province", "")).get("owner", "") == "you"

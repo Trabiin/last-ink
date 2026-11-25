@@ -41,6 +41,8 @@
 @markw gate
 @markm market
 @markx table_side
+@marky well
+@marki bench
 @markA site_barracks
 @markB site_infirmary
 @markD site_inkworks
@@ -50,7 +52,7 @@
 @marku site_market
 @markL lamp
 @markY visitors
-@dirt CFMPNVhvqwmx12LOQZlXU
+@dirt CFMPNVhvqwmx12LOQZlXUi
 @sign1 THE INKLANDS  (south)|Missions leave from the Command Table
 @sign2 HOLLOWMARK|~~pop. 212~~   ~~pop. 40~~   pop. you
 ---
@@ -70,9 +72,9 @@ ttt.t.ttt.tt...ttt.ttt..tt...tt.tt...t.t.tt..t
 ..W......:::::::::::.C::::::::::::O...........
 .R........K....::2:::.:::.:P::::l.............
 ...............l:::x:::::.L::M.:....D.........
-...........f...::::::::F::::::::.........f..c.
+...........f...::::::::F::::::::y........f..c.
 ................:N:..::::::m:::Z............,,
-................:::::::::::::::..............,
+................:i:::::::::::::..............,
 ...,,,........::::..::@::....::::...l........,
 ....,.p...U,,::::...::::.......:::...........,
 ..o.,......::::....Q::::.....E....:..,,,....R,
