@@ -108,15 +108,14 @@ func _draw() -> void:
 		Dialogue.draw_portrait(self, Rect2(40, 40, 200, vs.y - 80), str(c["id"]), "", 0.0, true)
 	# The page: name, then what became of them.
 	var box := Rect2(vs.x * 0.44, 46, vs.x * 0.56 - 18, vs.y - 92)
-	UiSkin.page(self, box)
+	var pg := LedgerPage.begin(self, box, font, 10)  # a worn ledger page: the name in the head band, the text on its lines
 	var ink := UiSkin.PAGE_INK
 	var nm := str(c["name"])
-	var np := box.position + Vector2(26, 34)
+	var np := Vector2(pg.x0, pg.rule_y(0) - 3.0)
 	var nw := UiSkin.TITLE_FONT.get_string_size(nm, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(18)).x
 	UiSkin.brush(self, np + Vector2(-4, 4), nw + 10, accent.darkened(0.1))
 	draw_string(UiSkin.TITLE_FONT, np, nm, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(18), ink)
-	var text := str(c["text"]).substr(0, int(_shown))
-	draw_multiline_string(font, box.position + Vector2(26, 58), text, HORIZONTAL_ALIGNMENT_LEFT, box.size.x - 52, Access.fs(10), -1, ink)
+	Dialogue.draw_text(self, font, Vector2(pg.x0, pg.rule_y(2) - 1.0), str(c["text"]), pg.x1 - pg.x0, Access.fs(10), ink, int(_shown), Color("15101a"), pg.lh)
 	# Header and footer
 	var head := tr("Afterwards")
 	draw_string(UiSkin.TITLE_FONT, Vector2(vs.x * 0.44, 30), head, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(16), Color("e8d9a8"))

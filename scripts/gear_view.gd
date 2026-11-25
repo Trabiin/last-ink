@@ -32,6 +32,7 @@ var slot_i := 0
 var picking := false
 var pick_i := 0
 var shop_i := 0
+var _shop_off := 0.0  # how far the stall's list is scrolled
 var tech_i := 0  # Skills tab: the highlighted tech
 var _tech_rects: Array = []
 var closed_frame := -1
@@ -404,6 +405,14 @@ func _bar(r: Rect2, f: float, col: Color) -> void:
 		UiSkin.bar(self, r, f, Color(col, 1.0), {"dim": col.a < 0.5})  # pixel bar: ink frame, shaded ramp
 
 
+## A small brass pixel chevron over or under a list that has more rows out of sight.
+func _chevron(at: Vector2, up: bool) -> void:
+	for j in 3:
+		var w := 2.0 * j + 1.0
+		var yj := at.y - 3.0 + (j if up else 2 - j)
+		draw_rect(Rect2(floorf(at.x - w / 2.0), yj, w, 1.0), UiSkin.BRASS[2])
+
+
 func _box(r: Rect2, on: bool) -> void:
 	UiSkin.row(self, r, on)
 
@@ -441,7 +450,7 @@ func _draw() -> void:
 	if flash_t > 0.0:
 		var a := clampf(flash_t / 0.4, 0.0, 1.0)
 		var fw := font.get_string_size(flash, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(9)).x
-		draw_rect(Rect2(vs.x - fw - 18, vs.y - 21, fw + 12, 15), Color(0.1, 0.08, 0.06, 0.95 * a))
+		UiSkin.toast(self, Rect2(vs.x - fw - 18, vs.y - 21, fw + 12, 15), a)
 		_text(Vector2(vs.x - fw - 12, vs.y - 10), flash, 9, Color(1, 0.9, 0.7, a))
 
 
@@ -615,18 +624,44 @@ func _draw_shop(vs: Vector2) -> void:
 	var d := Progress.data()
 	_text(Vector2(8, 42), d.get("shop_blurb", ""), 8, SOFT, vs.x - 16)
 	var rows := _shop_rows()
-	var y := 52.0
 	var lw := 330.0
-	var last := ""
 	var row_h := 14.0
+	# Where each row sits on the full list (a heading above each new kind), then the list scrolled so the
+	# highlighted row is in view: the stall's stock is longer than the screen.
+	var tops := []
+	var heads := []
+	var yy := 52.0
+	var last := ""
+	for i in rows.size():
+		var it0 := Progress.item(rows[i][1])
+		var head0: String = Loc.t(Progress.SLOT_NAMES.get(it0["slot"], "")) if rows[i][0] == "buy" else tr("sell")
+		heads.append(head0 != last)
+		if head0 != last:
+			last = head0
+			yy += 10
+		tops.append(yy)
+		yy += row_h
+	var bottom := vs.y - 20.0
+	if not rows.is_empty():
+		var sel := clampi(shop_i, 0, rows.size() - 1)
+		var top_room := 62.0 if heads[sel] else 52.0
+		_shop_off = minf(_shop_off, tops[sel] - top_room)
+		_shop_off = maxf(_shop_off, tops[sel] + row_h - bottom)
+		_shop_off = clampf(_shop_off, 0.0, maxf(0.0, yy - bottom))
+	if _shop_off > 0.0:
+		_chevron(Vector2(8 + lw / 2.0, 50), true)
+	if yy - _shop_off > bottom + 1.0:
+		_chevron(Vector2(8 + lw / 2.0, bottom + 1.0), false)
 	for i in rows.size():
 		var kind: String = rows[i][0]
 		var k: String = rows[i][1]
 		var it := Progress.item(k)
-		var head: String = Loc.t(Progress.SLOT_NAMES.get(it["slot"], "")) if kind == "buy" else tr("sell")
-		if head != last:
-			last = head
-			y += 10
+		var y: float = tops[i] - _shop_off
+		if y < 52.0 or y + row_h - 2 > bottom:
+			_shop_rects.append(Rect2())
+			continue
+		if heads[i] and y - 10 >= 50.0:
+			var head: String = Loc.t(Progress.SLOT_NAMES.get(it["slot"], "")) if kind == "buy" else tr("sell")
 			_text(Vector2(10, y - 2), (tr("SELL SPARE GEAR (half price)") if kind == "sell" else head.to_upper() + "S"), 7,
 				SOFT if kind == "sell" else SLOT_COLORS.get(it["slot"], TEXT))
 		var r := Rect2(8, y, lw, row_h - 2)
@@ -649,7 +684,6 @@ func _draw_shop(vs: Vector2) -> void:
 		else:
 			_text_r(r.position + Vector2(lw - 46, 9), "x%d" % Progress.count(k), 7, SOFT)
 			_text_r(r.position + Vector2(lw - 6, 9), "+%d G" % Progress.sell_price(k), 8, GOOD)
-		y += row_h
 	if rows.is_empty():
 		return
 	shop_i = clampi(shop_i, 0, rows.size() - 1)
@@ -658,22 +692,18 @@ func _draw_shop(vs: Vector2) -> void:
 	var it2 := Progress.item(k2)
 	var rx := lw + 18
 	var rw := vs.x - rx - 8
-	draw_rect(Rect2(rx, 52, rw, vs.y - 52 - 18), Color(0.08, 0.07, 0.1))
-	var ry := 68.0
-	UiSkin.draw_icon(self, k2, Rect2(rx + rw - 42, 58, 32, 32))
-	_text(Vector2(rx + 8, ry), it2["name"], 11, PAPER, rw - 50)
-	ry += 12
+	# The highlighted item, written up on a ledger page, on its lines (LedgerPage).
+	var pg := LedgerPage.begin(self, Rect2(rx, 52, rw, vs.y - 52 - 18), font)
+	pg.heading(it2["name"], 12, LedgerPage.INK, k2)
 	var owner2 := str(it2.get("hero", ""))
-	_text(Vector2(rx + 8, ry), "%s, %s" % [Loc.t(Progress.SLOT_NAMES[it2["slot"]]), (tr("for %s") % PartyPicker.short_of(owner2)) if owner2 != "" else tr("anyone can wear it")], 8, SLOT_COLORS.get(it2["slot"], TEXT))
-	ry += 12
-	_text(Vector2(rx + 8, ry), Progress.item_text(k2), 8, GOOD, rw - 16)
-	ry += 4
-	ry += _wrap(Vector2(rx + 8, ry + 8), it2.get("blurb", ""), rw - 16, 8, Color(0.78, 0.76, 0.74)) + 6
+	pg.line("%s, %s" % [Loc.t(Progress.SLOT_NAMES[it2["slot"]]), (tr("for %s") % PartyPicker.short_of(owner2)) if owner2 != "" else tr("anyone can wear it")], 7, LedgerPage.ink(SLOT_COLORS.get(it2["slot"], TEXT)))
+	pg.line(Progress.item_text(k2), 8, LedgerPage.GREEN)
+	pg.para(it2.get("blurb", ""), 8, LedgerPage.INK)
 	# Compared with what each hero who could wear it has on now
 	var who := _ids.filter(func(id): return Progress.wear_blocker(id, k2) == "")
 	if not who.is_empty():
-		_text(Vector2(rx + 8, ry + 8), tr("Compared with what they wear now"), 8, Color(0.75, 0.72, 0.7))
-		ry += 10
+		pg.skip()
+		pg.line(tr("Compared with what they wear now"), 8, LedgerPage.INK_SOFT)
 		for id in who:
 			var now := Progress.stats(id)
 			var then := Progress.stats(id, {it2["slot"]: k2})
@@ -682,16 +712,14 @@ func _draw_shop(vs: Vector2) -> void:
 				var diff := float(then[k]) - float(now[k])
 				if absf(diff) > 0.001:
 					parts.append("%s%s %s" % ["+" if diff > 0 else "-", _stat_shown(k, absf(diff)).trim_prefix("+"), Loc.t(Progress.STAT_NAMES[k])])
-			ry += 10
 			var cur := str(Progress.gear(id).get(it2["slot"], ""))
-			var line := "%s: %s" % [PartyPicker.short_of(id), ", ".join(parts) if not parts.is_empty() else tr("same as now")]
-			_text(Vector2(rx + 8, ry + 2), line, 8, TEXT if cur != k2 else SOFT, rw - 16)
-	ry += 20
+			pg.para("%s: %s" % [PartyPicker.short_of(id), ", ".join(parts) if not parts.is_empty() else tr("same as now")], 8, LedgerPage.INK if cur != k2 else LedgerPage.INK_SOFT)
+	pg.skip()
 	if kind2 == "buy":
 		var why2 := Progress.shop_blocker(k2)
-		_text(Vector2(rx + 8, ry), (tr("%s to buy for %d Gilt.") % [Prompts.confirm(), int(it2["price"])]) if why2 == "" else (tr("Can't buy: %s.") % why2), 8, GOLD if why2 == "" else BAD, rw - 16)
+		pg.para((tr("%s to buy for %d Gilt.") % [Prompts.confirm(), int(it2["price"])]) if why2 == "" else (tr("Can't buy: %s.") % why2), 8, LedgerPage.GOLD if why2 == "" else LedgerPage.RED)
 	else:
-		_text(Vector2(rx + 8, ry), tr("%s to sell one for %d Gilt.") % [Prompts.confirm(), Progress.sell_price(k2)], 8, GOLD, rw - 16)
+		pg.para(tr("%s to sell one for %d Gilt.") % [Prompts.confirm(), Progress.sell_price(k2)], 8, LedgerPage.GOLD)
 
 
 # ---------------------------------------------------------------- skills tab (issue #24)

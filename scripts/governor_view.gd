@@ -215,7 +215,7 @@ func _draw() -> void:
 			var id: String = row["id"]
 			var col := Color("ece6da") if row["enabled"] else Color(0.42, 0.41, 0.44)
 			if id == gov:
-				draw_circle(rr.position + Vector2(7, (row_h - 2.0) / 2.0), 2.5, GOLD)
+				UiSkin.swatch(self, Rect2(rr.position + Vector2(4, floorf((row_h - 2.0) / 2.0) - 3.0), Vector2(6, 6)), "brass")  # the governor now
 			_text(base + Vector2(hx[0] - 8, 0), Empire.recruit(id)["name"], 9, GOLD if on and row["enabled"] else col)
 			var doing := Empire.role_label(id)
 			if row["note"] != "":
@@ -229,19 +229,21 @@ func _draw() -> void:
 			_text(base + Vector2(hx[4] - 8, 0), Empire.output_text(e), 9, Color("e8d9a8") if row["enabled"] else col)
 		y += row_h
 
-	# Why: every reason behind the highlighted choice
-	y += 8
-	if not _rows.is_empty():
+	# Why: every reason behind the highlighted choice, written up on a ledger page, on its lines (LedgerPage).
+	y += 6
+	if not _rows.is_empty() and vs.y - 18.0 - y >= 40.0:
 		var row: Dictionary = _rows[sel]
+		var pg := LedgerPage.begin(self, Rect2(8, y, vs.x - 16, vs.y - 18.0 - y), font)
 		if row["kind"] == "person":
 			var e := Empire.governor_effect(row["id"], pid)
-			for w in e["why"].slice(0, maxi(int((vs.y - 24.0 - y) / 11.0) - 1, 1)):  # as many reasons as fit
-				_text(Vector2(14, y + 8), ("+ " if w[1] else "- ") + w[0], 8, Color("cfe0b0") if w[1] else BAD)
-				y += 11
+			pg.heading(tr("%s as governor") % Empire.recruit(row["id"])["name"], 12, LedgerPage.INK)
+			for w in e["why"]:
+				pg.line(("+ " if w[1] else "- ") + w[0], 8, LedgerPage.GREEN if w[1] else LedgerPage.RED)
 			if row["id"] != gov and Empire.role_of(row["id"]) != "idle":
-				_text(Vector2(14, y + 8), tr("Leaves their current job: %s.") % Empire.role_label(row["id"]), 8, Color(0.75, 0.72, 0.7))
+				pg.line(tr("Leaves their current job: %s.") % Empire.role_label(row["id"]), 8, LedgerPage.INK_SOFT)
 		else:
-			_text(Vector2(14, y + 8), tr("An ungoverned province frays %d faster a day and delivers %d%% less.") % [Empire.FRAY_UNGOVERNED, int(round((1.0 - Empire.UNGOVERNED_OUTPUT) * 100))], 8, BAD)
+			pg.heading(tr("Recall the governor"), 12, LedgerPage.INK)
+			pg.para(tr("An ungoverned province frays %d faster a day and delivers %d%% less.") % [Empire.FRAY_UNGOVERNED, int(round((1.0 - Empire.UNGOVERNED_OUTPUT) * 100))], 8, LedgerPage.RED)
 
 	_text(Vector2(8, vs.y - 10), Prompts.help([["updown", "choose"], ["ui_accept", "post"], [["ui_cancel", "govern"], "close"]], tr("Tap someone to post them")), 7, Color(0.5, 0.48, 0.52))
 	if flash_t > 0.0:

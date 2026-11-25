@@ -27,7 +27,8 @@ const INK_GREEN := Color("2f5a2a")
 const ROW_H := 15.0
 const LIST_W := 214.0
 const TOP := 34.0
-const LINE := 13.0  # page text line height: matches the page's ruling
+var LINE := 13.0  # page text line height: the ledger page's ruling, set as the page is drawn (it follows the text size)
+var _view_h := 0.0  # how much of the page's text shows at once
 const BODY := 10
 const SECTION_NAMES := {"story": "Main story", "personal": "Personal", "factions": "Factions", "open": "Open missions and threats"}
 const GROUP_NAMES := {"roster": "On the roster", "gate": "Waiting at the south gate", "lead": "Rumours", "figure": "Others met"}
@@ -256,7 +257,7 @@ func _say(s: String) -> void:
 
 
 func _max_scroll() -> float:
-	return ceilf(maxf(page_h - (_page_rect().size.y - 34.0), 0.0) / LINE) * LINE
+	return ceilf(maxf(page_h - (_view_h if _view_h > 0.0 else _page_rect().size.y - 34.0), 0.0) / LINE) * LINE
 
 
 func _gui_input(event: InputEvent) -> void:
@@ -644,15 +645,20 @@ func _person_blocks(row: Dictionary) -> Array:
 	return b
 
 
+## The entry is written on a worn ledger page (LedgerPage): every line on a ruled line and between the
+## margins, and it scrolls a whole ruled line at a time, so the text never leaves the ruling.
 func _draw_page() -> void:
 	var pr := _page_rect()
-	UiSkin.page(self, pr)
-	var x := pr.position.x + 28.0
-	var w := pr.size.x - 28.0 - 30.0
-	var top := pr.position.y + 6.0
-	var bottom := pr.end.y - 6.0
-	var y := top - page_scroll
-	_rule_base = pr.position.y + 14.0 - 3.0 - page_scroll  # baselines sit just above the page's ruling
+	var pg := LedgerPage.begin(self, pr, font, BODY)
+	LINE = pg.lh
+	page_scroll = clampf(roundf(page_scroll / LINE) * LINE, 0.0, maxf(_max_scroll(), 0.0))
+	var x := pg.x0
+	var w := pg.x1 - pg.x0
+	var top := pr.position.y + 3.0
+	var bottom := pg.rule_y(pg.lines - 1) + 1.0
+	_view_h = pg.rule_y(pg.lines - 1) - pg.rule_y(0) + LINE
+	_rule_base = pg.rule_y(0) - 1.0 - page_scroll  # the first line's baseline: one pixel above its rule
+	var y := _rule_base - LINE  # the line before the first; each line written steps down one
 	var tex: Texture2D = null
 	var pw := 0.0
 	var shade := false
@@ -660,77 +666,75 @@ func _draw_page() -> void:
 		if blk[0] == "portrait":
 			tex = blk[1]
 			shade = blk.size() > 2 and blk[2]
+	var ph := 0.0
 	if tex:
 		pw = 78.0
-		var ph := pw * float(tex.get_height()) / float(maxi(tex.get_width(), 1))
-		var prect := Rect2(pr.end.x - pw - 26.0, top - page_scroll, pw, ph)
+		ph = pw * float(tex.get_height()) / float(maxi(tex.get_width(), 1))
+		var prect := Rect2(pg.x1 - pw, top + 3.0 - page_scroll, pw, ph)
 		if prect.end.y > top and prect.position.y < bottom:
 			_clip_tex(Dialogue.fitted(tex, ph), prect, top, bottom, Color(0.16, 0.12, 0.1, 0.8) if shade else Color(1, 1, 1, 0.95))
 	var title_w := w - (pw + 6.0 if tex else 0.0)
+	var beside := top + 6.0 + ph  # text runs beside the portrait down to here, then under it
 	for blk in _blocks():
 		var kind: String = blk[0]
-		var lw := title_w if y + page_scroll < top + 120.0 else w  # text runs beside the portrait, then under it
+		var lw := title_w if y + LINE - 10.0 + page_scroll < beside else w
 		match kind:
 			"title":
 				for line in _wrap(str(blk[1]), lw, 16, UiSkin.TITLE_FONT):
-					y += 15.0
+					y += LINE
 					_clip_text(Vector2(x, y), line, 16, INK, top, bottom, UiSkin.TITLE_FONT)
-				y += 2.0
 			"sub":
 				for line in _wrap(str(blk[1]), lw, 9):
-					y += 11.0
+					y += LINE
 					_clip_text(Vector2(x, y), line, 9, blk[2], top, bottom)
 			"head":
-				y = _ruled(y)
+				y += LINE
 				_clip_text(Vector2(x, y), str(blk[1]).to_upper(), 8, INK_RED, top, bottom)
 			"para":
 				for line in _wrap(str(blk[1]), lw, BODY):
-					y = _ruled(y)
+					y += LINE
 					_clip_text(Vector2(x, y), line, BODY, blk[2], top, bottom)
 			"fact":
 				var label := str(blk[1]) + ": "
 				var lwid := _tw(label, 9)
 				var lines := _wrap(str(blk[2]), lw - lwid, BODY)
 				for i in lines.size():
-					y = _ruled(y)
+					y += LINE
 					if i == 0:
 						_clip_text(Vector2(x, y), label, 9, INK_SOFT, top, bottom)
 					_clip_text(Vector2(x + lwid, y), lines[i], BODY, INK, top, bottom)
 			"bar":
-				y = _ruled(y)
+				y += LINE
 				_clip_text(Vector2(x, y), str(blk[1]), 9, INK_SOFT, top, bottom)
 				if y - 7.0 > top and y < bottom:
 					for i in 10:
-						var on: bool = i < int(blk[2])
-						draw_rect(Rect2(x + 46 + i * 9, y - 7, 7, 6), Color(INK, 0.85) if on else Color(INK, 0.15))
+						var c := Rect2(x + 46 + i * 9, y - 6, 7, 5)
+						if i < int(blk[2]):
+							UiSkin.bar(self, c, 1.0, "bone")  # stat pips, as on the other ledger pages
+						else:
+							draw_rect(Rect2(c.position + Vector2(0.5, 0.5), c.size - Vector2(1, 1)), Color(INK_SOFT, 0.55), false, 1.0)
 					_text(Vector2(x + 46 + 10 * 9 + 4, y), str(blk[2]), 9, INK)
 			"gap":
-				y += 5.0
+				y += LINE  # a blank ruled line
 			"go":
-				y += 6.0
 				var label2 := tr("Show on map") if can_go else tr("Show on map (%s)") % go_note
 				var k := "" if Prompts.touch() else Prompts.confirm()
 				if k != "" and focus == 0:
 					label2 += "  [%s]" % k
 				var bw := _tw(label2, 9) + 20
-				var br := Rect2(x, y, bw, 16)
+				y += LINE * 2.0  # the button takes two ruled lines
+				var br := Rect2(x, floorf(y - LINE - 6.0), bw, 16)
 				if br.position.y > top and br.end.y < bottom:
 					UiSkin.panel(self, br, "button", Color.WHITE if can_go else Color(0.6, 0.6, 0.6))
 					_text(br.position + Vector2(10, 12), label2, 9, GOLD if can_go else SOFT)
 					_go_rect = br
-				y += 18.0
-	page_h = y + page_scroll - top + 8.0
+	page_h = y - (_rule_base - LINE) + 4.0
 	if page_scroll > 0.0:
 		_arrow(Vector2(pr.get_center().x, pr.position.y + 5), true)
 	if page_scroll < _max_scroll():
 		_arrow(Vector2(pr.get_center().x, pr.end.y - 4), false)
 	if focus == 1:
 		UiSkin.highlight(self, Rect2(pr.position + Vector2(2, 2), Vector2(3, pr.size.y - 4)), GOLD)
-
-
-## The next baseline on the page's ruling at least a line below y (a blank ruled line between blocks).
-func _ruled(y: float) -> float:
-	return _rule_base + LINE * ceilf((y + 11.0 - _rule_base) / LINE)
 
 
 func _clip_text(pos: Vector2, s: String, fsize: int, col: Color, top: float, bottom: float, f: Font = null) -> void:

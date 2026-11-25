@@ -33,6 +33,7 @@ var _close_rect := Rect2()
 var _panel := Rect2()
 var _content_h := 0.0
 var _view_h := 0.0
+var _lh := 0.0  # the page's ruling: every line of the log sits on one of its lines
 var font: Font
 
 
@@ -131,7 +132,7 @@ func close() -> void:
 
 
 func _line_h() -> float:
-	return Access.px(13.0)
+	return _lh if _lh > 0.0 else Access.px(13.0)
 
 
 func _input(event: InputEvent) -> void:
@@ -203,62 +204,69 @@ func _process(_delta: float) -> void:
 		queue_redraw()
 
 
+## The log is written on a worn ledger page (LedgerPage, docs/ART_STYLE.md "Ledger pages"): each line on a
+## ruled line, the speaker's name in the margin column, and it scrolls a whole ruled line at a time.
 func _draw() -> void:
 	var vs := get_viewport_rect().size
 	draw_rect(Rect2(Vector2.ZERO, vs), Color(0.03, 0.025, 0.05, 0.7))
 	var w := minf(Access.px(470.0), vs.x - 16.0)
-	_panel = Rect2((vs.x - w) / 2.0, 8.0, w, vs.y - 16.0)
-	UiSkin.panel(self, _panel, "ledger")
-	var head_y := _panel.position.y + Access.px(22.0)
-	draw_string(UiSkin.TITLE_FONT, Vector2(_panel.position.x + 18, head_y), tr("Dialogue log"), HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(16), Color("f3f1ea"))
+	var hint_h := font.get_height(Access.fs(8)) + 4.0
+	_panel = Rect2((vs.x - w) / 2.0, 8.0, w, vs.y - 16.0 - hint_h)
+	var pg := LedgerPage.begin(self, _panel, font, 10)
+	_lh = pg.lh
 	var close_s := tr("Close")
 	var cw := font.get_string_size(close_s, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(9)).x + 14.0
-	_close_rect = Rect2(_panel.end.x - cw - 14, head_y - Access.px(13.0), cw, Access.px(17.0))
+	_close_rect = Rect2(pg.x1 - cw, pg.rule_y(0) - Access.px(16.0), cw, Access.px(17.0))
 	UiSkin.panel(self, _close_rect, "button")
 	draw_string(font, _close_rect.position + Vector2(7, Access.px(12.0)), close_s, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(9), TEXT)
+	pg.x1 = _close_rect.position.x - 6.0  # the heading stops short of Close
+	pg.heading(tr("Dialogue log"), 14, LedgerPage.INK)
+	pg.x1 = _panel.end.x - 10.0
 
-	var top := head_y + Access.px(10.0)
-	var bottom := _panel.end.y - Access.px(20.0)
-	_view_h = bottom - top
-	var x := _panel.position.x + 20.0
+	var first_line := pg.line_i
+	var view_lines := maxi(pg.lines - first_line, 1)
+	var top := pg.rule_y(first_line) - _lh
+	_view_h = view_lines * _lh
+	var x := pg.x0
 	var text_x := x + Access.px(78.0)
-	var text_w := _panel.end.x - 20.0 - text_x
+	var text_w := pg.x1 - 6.0 - text_x  # room for the scroll bar
 	var fsize := Access.fs(10)
-	# Measure every entry, newest last, then draw upwards from the bottom.
-	var heights := []
-	_content_h = 0.0
+	# Count every entry's lines, newest last, then write upwards from the bottom line.
+	var counts := []
+	var total := 0
 	for e in entries:
-		var h := font.get_multiline_string_size(Dialogue.plain(str(e["text"])), HORIZONTAL_ALIGNMENT_LEFT, text_w, fsize).y + Access.px(5.0)
-		heights.append(h)
-		_content_h += h
+		var n := Dialogue.line_count(font, str(e["text"]), text_w, fsize)
+		counts.append(n)
+		total += n
+	_content_h = total * _lh
 	_clamp()
+	var skip := int(roundf(scroll / _lh))  # whole lines scrolled up from the newest
 	if entries.is_empty():
-		draw_string(font, Vector2(x, top + Access.px(20.0)), tr("Nothing has been said yet."), HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(10), SOFT)
-	var y := bottom + scroll
+		pg.line(tr("Nothing has been said yet."), 10, LedgerPage.INK_SOFT)
+	var end_line := first_line + view_lines + skip  # the line just under the newest entry's last line
 	for i in range(entries.size() - 1, -1, -1):
 		var e: Dictionary = entries[i]
-		var h: float = heights[i]
-		y -= h
-		if y > bottom:
+		var n: int = counts[i]
+		end_line -= n
+		var start := end_line
+		if start >= first_line + view_lines:
 			continue
-		if y + h < top:
-			break
-		if y < top - 1.0:
-			continue  # half above the top: hidden rather than drawn over the heading
+		if start < first_line:
+			break  # half above the top: hidden rather than written over the heading
+		var base := pg.rule_y(start) - 1.0
 		var who := str(e["who"])
-		var col := TEXT
+		var col := LedgerPage.INK
 		if who != "":
 			var acc := Dialogue.accent(who)
-			UiSkin.tab(self, Rect2(x - 8, y + 2, 6, h - 6), acc)
-			draw_string(font, Vector2(x, y + Access.px(10.0)), Dialogue.display_name(who), HORIZONTAL_ALIGNMENT_LEFT, text_x - x - 6, Access.fs(9), acc.lightened(0.35))
+			UiSkin.tab(self, Rect2(x - 7, base - _lh + 3.0, 6, n * _lh - 2.0), acc)
+			draw_string(font, Vector2(x, base), Dialogue.display_name(who), HORIZONTAL_ALIGNMENT_LEFT, text_x - x - 6, Access.fs(9), LedgerPage.ink(acc))
 		else:
-			col = SOFT  # narration
-		Dialogue.draw_text(self, font, Vector2(text_x, y + Access.px(10.0)), str(e["text"]), text_w, fsize, col, -1, Color(col, 0.9))
-	# Scroll bar.
+			col = LedgerPage.INK_SOFT  # narration
+		Dialogue.draw_text(self, font, Vector2(text_x, base), str(e["text"]), text_w, fsize, col, -1, LedgerPage.INK, _lh)
+	# Scroll bar, in the right margin.
 	if _content_h > _view_h:
-		var bar := Rect2(_panel.end.x - 10, top, 2, _view_h)
 		var frac := _view_h / _content_h
-		var pos := 1.0 - (scroll + _view_h) / _content_h
-		UiSkin.scrollbar(self, Rect2(bar.position.x - 1, bar.position.y, 3, bar.size.y), _view_h * pos, maxf(_view_h * frac, 6.0))
+		var pos := 1.0 - (skip * _lh + _view_h) / _content_h
+		UiSkin.scrollbar(self, Rect2(pg.x1 - 3.0, top, 3, _view_h), _view_h * pos, maxf(_view_h * frac, 6.0))
 	var hint := Prompts.help([["updown", "scroll"], ["leftright", "page"], ["ui_cancel", "close"]], tr("Drag to scroll, tap outside to close"))
-	draw_string(font, Vector2(x, _panel.end.y - Access.px(8.0)), hint, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(8), DIM)
+	draw_string(font, Vector2(_panel.position.x + 6.0, _panel.end.y + hint_h - 3.0), hint, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(8), Color(0.62, 0.6, 0.62))

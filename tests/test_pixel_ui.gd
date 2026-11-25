@@ -157,6 +157,42 @@ func test_ledger_page_keeps_text_on_its_lines() -> void:
 	c.queue_free()
 
 
+## Fields, the text log the layout tests read, the light paper and ruled dialogue text (pass of 2026-11-25).
+func test_ledger_fields_and_ruled_dialogue() -> void:
+	var c := Control.new()
+	c.size = Vector2(300, 200)
+	tree.root.add_child(c)
+	var font := ThemeDB.fallback_font
+	var got := {}
+	c.draw.connect(func():
+		var pg := LedgerPage.begin(c, Rect2(10, 10, 220, 150), font, 9)
+		pg.log = []
+		pg.heading("Report")
+		got["n"] = pg.field("Found", "word ".repeat(12), 60.0, 9)
+		got["empty"] = pg.field("Time", "", 60.0, 9)
+		got["pg"] = pg, CONNECT_ONE_SHOT)
+	c.queue_redraw()
+	await frames(2)
+	var pg: LedgerPage = got.get("pg")
+	if not check(pg != null, "the page drew"):
+		c.queue_free()
+		return
+	check(int(got["n"]) > 1, "a long value wraps onto more ruled lines")
+	check_eq(got["empty"], 1, "an empty value still takes its line")
+	check_eq(pg.line_i, 1 + int(got["n"]) + 1, "each line written moves down one rule")
+	for d in pg.log:
+		var r: Rect2 = d[0]
+		check(pg.box.encloses(r), "\"%s\" stays on the page" % d[2])
+		check(r.position.x >= pg.x0 - 0.5 and r.end.x <= pg.x1 + 0.5, "\"%s\" stays between the margins" % d[2])
+	var lh := pg.lh
+	var a := Dialogue.line_count(font, "one two three four five six seven eight nine ten", 60.0, Access.fs(10))
+	check(a > 1, "draw_text's wrap is counted (%d lines)" % a)
+	var plain := LedgerPage.paper(Vector2i(220, 150), lh, 20.0).get_image()
+	var light := LedgerPage.paper(Vector2i(220, 150), lh, 20.0, true).get_image()
+	check(plain.get_data() != light.get_data(), "the light page is its own paper")
+	c.queue_free()
+
+
 func test_leader_marker_option_persists() -> void:
 	check_eq(Access.leader_marker, 0, "default: only after a swap")
 	Access.leader_marker = 1

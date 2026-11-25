@@ -46,11 +46,13 @@ var x1 := 0.0  # where text must end: the right margin
 var first := 0.0  # y of the first ruled line
 var line_i := 0  # the next line to write on
 var lines := 0  # how many ruled lines the page has
+var log = null  # an Array to note each text drawn in, as [rect, page box, text], for the layout tests
 
 
 ## Draws the page in box (its shadow too) and returns a writer for it. base_size is the body text size the
-## ruling is spaced for.
-static func begin(on: CanvasItem, r: Rect2, f: Font, base_size := 8) -> LedgerPage:
+## ruling is spaced for. light wears the page less (no tea ring or ink blot, fewer patches): for the
+## dialogue box, where the portraits are the thing to look at.
+static func begin(on: CanvasItem, r: Rect2, f: Font, base_size := 8, light := false) -> LedgerPage:
 	var pg := LedgerPage.new()
 	pg.ci = on
 	pg.font = f
@@ -62,7 +64,7 @@ static func begin(on: CanvasItem, r: Rect2, f: Font, base_size := 8) -> LedgerPa
 	pg.x1 = pg.box.end.x - 10.0
 	pg.lines = maxi(0, int(floorf((pg.box.end.y - 8.0 - pg.first) / pg.lh)) + 1)
 	if pg.box.size.x >= 40.0 and pg.box.size.y >= 30.0:
-		var tex := paper(Vector2i(pg.box.size), pg.lh, pg.first - pg.box.position.y)
+		var tex := paper(Vector2i(pg.box.size), pg.lh, pg.first - pg.box.position.y, light)
 		on.draw_texture(tex, pg.box.position + Vector2(3, 3), Color(0, 0, 0, 0.45))
 		on.draw_texture(tex, pg.box.position)
 	return pg
@@ -117,6 +119,7 @@ func line(s: String, size := 8, col := INK, right := "", right_col := INK) -> vo
 	if right != "":
 		var rw := font.get_string_size(right, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(size)).x
 		ci.draw_string(font, Vector2(x1 - rw, _base()), right, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(size), right_col)
+		_note(font, right, size, x1 - rw)
 		w -= rw + 6.0
 	_write(font, s, size, col, x0, w)
 	line_i += 1
@@ -125,6 +128,25 @@ func line(s: String, size := 8, col := INK, right := "", right_col := INK) -> vo
 ## A label and its value on one line.
 func pair(label: String, value: String, size := 8, col := INK_SOFT, value_col := INK) -> void:
 	line(label, size, col, value, value_col)
+
+
+## A label in a column of its own and a value that wraps beside it, each line of it on a ruled line
+## (a report's "Found: ..." rows). Returns how many lines it took.
+func field(label: String, value: String, label_w: float, size := 8, col := INK_SOFT, value_col := INK) -> int:
+	if full():
+		return 0
+	_write(font, label, size, col, x0, label_w - 6.0)
+	var n := 0
+	for ln in InkMenu.wrap_px(font, value, Access.fs(size), x1 - x0 - label_w):
+		if full():
+			break
+		_write(font, ln, size, value_col, x0 + label_w, x1 - x0 - label_w)
+		line_i += 1
+		n += 1
+	if n == 0:  # an empty value: the label still takes its line
+		line_i += 1
+		n = 1
+	return n
 
 
 ## A line that starts with a small icon (a trait, a role), the text after it.
@@ -182,6 +204,14 @@ func _write(f: Font, s: String, size: int, col: Color, x: float, w: float) -> vo
 		return
 	var t := Access.fit(f, s, Access.fs(size), w)
 	ci.draw_string(f, Vector2(x, _base()), t, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(size), col)
+	_note(f, t, size, x)
+
+
+func _note(f: Font, t: String, size: int, x: float) -> void:
+	if log == null or t == "":
+		return
+	var top := _base() - f.get_ascent(Access.fs(size))
+	log.append([Rect2(x, top, f.get_string_size(t, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(size)).x, f.get_height(Access.fs(size))), box, t])
 
 
 ## A colour from the dark panels turned into an ink that reads on the paper: greys become ink, colours
@@ -193,18 +223,18 @@ static func ink(c: Color) -> Color:
 
 
 ## The paper itself, size px, ruled every lh from first_rule down. Made once per size and kept.
-static func paper(size: Vector2i, lh: float, first_rule: float) -> ImageTexture:
-	var key := "%dx%d:%d:%d" % [size.x, size.y, int(lh), int(first_rule)]
+static func paper(size: Vector2i, lh: float, first_rule: float, light := false) -> ImageTexture:
+	var key := "%dx%d:%d:%d:%s" % [size.x, size.y, int(lh), int(first_rule), light]
 	if _cache.has(key):
 		return _cache[key]
 	if _cache.size() > 24:
 		_cache.clear()
-	var tex := ImageTexture.create_from_image(_make(size, lh, first_rule))
+	var tex := ImageTexture.create_from_image(_make(size, lh, first_rule, light))
 	_cache[key] = tex
 	return tex
 
 
-static func _make(size: Vector2i, lh: float, first_rule: float) -> Image:
+static func _make(size: Vector2i, lh: float, first_rule: float, light := false) -> Image:
 	var w := size.x
 	var h := size.y
 	var img := Image.create(w, h, false, Image.FORMAT_RGBA8)
@@ -233,6 +263,9 @@ static func _make(size: Vector2i, lh: float, first_rule: float) -> Image:
 	var crease_x0 := w * 0.58
 	var crease_x1 := w * 0.5
 	var fold := 9
+	var patch := 0.45 if light else 0.3  # how far the noise must go before a patch shows
+	if light:
+		ring_r = -100.0  # no tea ring
 	for y in h:
 		for x in w:
 			if y < top[x] or y > bot[x] or x < lft[y] or x > rgt[y]:
@@ -242,10 +275,10 @@ static func _make(size: Vector2i, lh: float, first_rule: float) -> Image:
 			var c := PAPER
 			# Big soft patches: lighter where the page caught the light, a mid tone where it has been
 			# handled, each feathered in with a dither at its edge only.
-			if n > 0.3:
-				c = PAPER_LIGHT if n - 0.3 > th * 0.12 else PAPER
-			elif n < -0.3:
-				c = PAPER_MID if -0.3 - n > th * 0.12 else PAPER
+			if n > patch:
+				c = PAPER_LIGHT if n - patch > th * 0.12 else PAPER
+			elif n < -patch:
+				c = PAPER_MID if -patch - n > th * 0.12 else PAPER
 				if n < -0.62 and fine.get_noise_2d(x, y) > 0.35:
 					c = PAPER_DARK
 			# Browned with age towards the edges.
@@ -267,7 +300,7 @@ static func _make(size: Vector2i, lh: float, first_rule: float) -> Image:
 				c = PAPER_MID
 			img.set_pixel(x, y, c)
 	# Foxing: little rust spots.
-	for i in int(w * h / 1400):
+	for i in int(w * h / (2800 if light else 1400)):
 		var p := Vector2i(rng.randi_range(4, w - 5), rng.randi_range(4, h - 5))
 		if img.get_pixelv(p).a > 0.0:
 			img.set_pixelv(p, STAIN if rng.randf() < 0.7 else AGE)
@@ -286,11 +319,12 @@ static func _make(size: Vector2i, lh: float, first_rule: float) -> Image:
 			if img.get_pixel(mx, yy).a > 0.0 and (mx == 18 or (yy / 3) % 5 != 0):
 				img.set_pixel(mx, yy, img.get_pixel(mx, yy).lerp(MARGIN_RED, 0.8 if mx == 18 else 0.45))
 	# Ink: a blot and its spatter near the top right, a smudged thumbprint at the bottom left.
-	_blot(img, rng, Vector2(w - 26, 12), 3.0, INK)
-	for i in 7:
+	for i in (0 if light else 1):
+		_blot(img, rng, Vector2(w - 26, 12), 3.0, INK)
+	for i in (0 if light else 7):
 		var p2 := Vector2(w - 26, 12) + Vector2(rng.randf_range(-12, 12), rng.randf_range(-6, 8))
 		_blot(img, rng, p2, rng.randf_range(0.5, 1.4), INK)
-	for i in 18:
+	for i in (0 if light else 18):
 		var p3 := Vector2(rng.randf_range(10, 22), h - rng.randf_range(10, 20))
 		if img.get_pixelv(Vector2i(p3)).a > 0.0 and rng.randf() < 0.6:
 			img.set_pixelv(Vector2i(p3), img.get_pixelv(Vector2i(p3)).lerp(INK, 0.35))

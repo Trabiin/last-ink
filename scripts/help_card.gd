@@ -177,17 +177,16 @@ func _draw() -> void:
 	var cw := font.get_string_size(count, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(8)).x
 	draw_string_outline(font, Vector2(box.end.x - cw - 4, box.position.y - 6), count, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(8), 3, Color(0, 0, 0, 0.8))
 	draw_string(font, Vector2(box.end.x - cw - 4, box.position.y - 6), count, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(8), SOFT)
-	UiSkin.page(self, box)
-	var tx := box.position.x + 30
-	var ty := box.position.y + 20
+	var pg := LedgerPage.begin(self, box, font, 11, true)  # lightly worn, like the dialogue box: text on the ruled lines
+	var first := 0
 	if who != "":
 		var nm := Dialogue.display_name(who)
 		var nw := UiSkin.TITLE_FONT.get_string_size(nm, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(14)).x
-		UiSkin.brush(self, Vector2(tx - 3, box.position.y + 21), nw + 8, Dialogue.accent(who).darkened(0.15))
-		draw_string(UiSkin.TITLE_FONT, Vector2(tx, box.position.y + 18), nm, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(14), INK)
-		ty += 12
-	var text: String = cur[1]
-	draw_multiline_string(font, Vector2(tx, ty), text.substr(0, int(_shown)), HORIZONTAL_ALIGNMENT_LEFT, box.size.x - 52, Access.fs(11), -1, INK)
+		var np := Vector2(pg.x0, pg.rule_y(0) - 3.0)
+		UiSkin.brush(self, np + Vector2(-3, 3), nw + 8, Dialogue.accent(who).darkened(0.15))
+		draw_string(UiSkin.TITLE_FONT, np, nm, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(14), INK)
+		first = 1
+	Dialogue.draw_text(self, font, Vector2(pg.x0, pg.rule_y(first) - 1.0), str(cur[1]), pg.x1 - pg.x0 - 14.0, Access.fs(11), INK, int(_shown), Color("15101a"), pg.lh)
 	if not _typing():
 		var tip := box.end - Vector2(22, 14 - sin(Time.get_ticks_msec() / 220.0) * 1.5)
 		draw_colored_polygon(PackedVector2Array([tip, tip + Vector2(-3, -7), tip + Vector2(0, -10), tip + Vector2(3, -7)]), INK)

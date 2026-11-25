@@ -663,8 +663,7 @@ func _draw() -> void:
 	var h := 40.0 + shown * row_h + foot
 	var ty := row_h / 2.0 + Access.px(3.0)  # text baseline inside a row
 	_panel = Rect2((vs.x - w) / 2.0, maxf(6.0, (vs.y - h) / 2.0), w, minf(h, vs.y - 12.0))
-	draw_rect(_panel, PANEL)
-	draw_rect(_panel, Color(1, 1, 1, 0.18), false, 1.0)
+	UiSkin.panel(self, _panel, "ledger")
 	var x0 := _panel.position.x + 24.0
 	var x1 := _panel.end.x - 14.0
 	_str(font, Vector2(x0 - 8, _panel.position.y + 22), {"main": tr("Options"), "controls": tr("Controls"), "fx": tr("Visual effects"), "display": tr("Display"),
@@ -699,7 +698,7 @@ func _draw() -> void:
 			continue
 		var on_row := i == sel
 		if on_row:
-			draw_rect(rr, Color(1, 1, 1, 0.06))
+			UiSkin.row(self, rr.grow_individual(-4, 0, -4, 0), true)
 			_marker(x0 - 12.0, y + ty)
 		var col := GOLD if on_row else TEXT
 		_str(font, Vector2(x0, y + ty), str(r["label"]), 11, col)

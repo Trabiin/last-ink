@@ -328,8 +328,7 @@ func _draw() -> void:
 		var a := clampf(flash_t / 0.4, 0.0, 1.0)
 		var fw := font.get_string_size(flash, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(9)).x
 		var fr := Rect2(vs.x - fw - 20, vs.y - 34, fw + 12, 15)
-		draw_rect(fr, Color(0.1, 0.08, 0.06, 0.95 * a))
-		draw_rect(fr, Color(GOLD, 0.5 * a), false, 1.0)
+		UiSkin.toast(self, fr, a)
 		_text(fr.position + Vector2(6, 11), flash, 9, Color(1, 0.9, 0.7, a))
 
 

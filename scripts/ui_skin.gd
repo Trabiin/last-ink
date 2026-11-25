@@ -18,11 +18,9 @@ const TILED := ["paper"]
 ## A FontVariation over Jacquard 12; the readable font option (Access) swaps its base for Atkinson Hyperlegible Bold.
 const TITLE_FONT := preload("res://assets/fonts/heading.tres")
 const PAPER_INK := Color("2a2019")  # text colour on paper
-const PAGE_INK := Color("2a2019")  # dialogue text on the torn ledger page (UiSkin.page)
+const PAGE_INK := Color("2a2019")  # dialogue text on the ledger page (LedgerPage)
 const PAGE_INK_SOFT := Color("5a4a3c")  # narration on the page
 const PAGE_PAPER := Color("d9cfba")
-const PAGE_RULE := Color(0.42, 0.5, 0.62, 0.22)
-const PAGE_MARGIN := Color(0.62, 0.22, 0.18, 0.45)
 
 static var _boxes := {}
 
@@ -142,59 +140,6 @@ static func draw_icon(ci: CanvasItem, id: String, r: Rect2, tint := Color.WHITE)
 	ci.draw_texture_rect(t, r, false, tint)
 	return true
 
-
-
-## The text sits on a torn-out ledger page: deckled edges, faint ruling, a red margin line, ink spatter, and the
-## right edge fraying into blank paper where the Blank has been at it.
-static func page(ci: CanvasItem, box: Rect2) -> void:
-	if box.size.x < 8.0 or box.size.y < 8.0:  # a control not laid out yet: nothing to draw
-		return
-	var rng := RandomNumberGenerator.new()
-	rng.seed = 7
-	var top := PackedVector2Array()
-	var bottom := PackedVector2Array()
-	var x := box.position.x
-	while x <= box.end.x:
-		top.append(Vector2(x, box.position.y + rng.randf_range(-1.5, 1.5) + sin(x * 0.05) * 1.2))
-		bottom.append(Vector2(x, box.end.y + rng.randf_range(-2.5, 1.0)))
-		x += 4.0
-	var poly := PackedVector2Array()
-	poly.append_array(top)
-	var b := bottom.duplicate()
-	b.reverse()
-	poly.append_array(b)
-	# Shadow, then the page.
-	var sh := PackedVector2Array()
-	for p in poly:
-		sh.append(p + Vector2(3, 4))
-	ci.draw_colored_polygon(sh, Color(0, 0, 0, 0.45))
-	ci.draw_colored_polygon(poly, PAGE_PAPER)
-	# Paper grain: soft darker blotches.
-	for i in 70:
-		var gp := Vector2(rng.randf_range(box.position.x + 4, box.end.x - 4), rng.randf_range(box.position.y + 4, box.end.y - 4))
-		ci.draw_rect(Rect2(gp.floor(), Vector2(rng.randi_range(2, 6), 1)), Color(0.45, 0.36, 0.25, rng.randf_range(0.05, 0.12)))
-	# Ledger ruling and the red margin.
-	var ry := box.position.y + 14.0
-	while ry < box.end.y - 6.0:
-		ci.draw_line(Vector2(box.position.x + 6, ry), Vector2(box.end.x - 6, ry), PAGE_RULE, 1.0)
-		ry += 13.0
-	ci.draw_line(Vector2(box.position.x + 22, box.position.y + 2), Vector2(box.position.x + 22, box.end.y - 2), PAGE_MARGIN, 1.0)
-	# Torn edges inked darker.
-	ci.draw_polyline(top, Color(0.35, 0.27, 0.19, 0.7), 1.0)
-	ci.draw_polyline(bottom, Color(0.35, 0.27, 0.19, 0.7), 1.0)
-	# Ink spatter in two corners.
-	for c in [box.position + Vector2(10, box.size.y - 12), Vector2(box.end.x - 60, box.position.y + 8)]:
-		for i in 6:
-			var o := Vector2(rng.randf_range(-8, 8), rng.randf_range(-5, 5))
-			ci.draw_circle(c + o, rng.randf_range(0.6, 2.2), Color(PAGE_INK, 0.55))
-	# The right end frays into blank paper.
-	for i in 24:
-		var k := float(i) / 24.0
-		ci.draw_rect(Rect2(box.end.x - 24 + i, box.position.y + 2, 1, box.size.y - 4), Color(0.95, 0.945, 0.92, k * k * 0.85))
-	for i in 30:
-		var fy := rng.randf_range(box.position.y + 2, box.end.y - 2)
-		var fx := box.end.x - rng.randf() * rng.randf() * 34.0
-		ci.draw_rect(Rect2(Vector2(fx, fy).floor(), Vector2(rng.randi_range(1, 3), 1)), Color(0.95, 0.945, 0.92, 0.8))
 
 
 ## A dry-brush ink stroke under a name.
@@ -437,6 +382,21 @@ static func tab(ci: CanvasItem, r: Rect2, rmp: Variant, dim := false) -> void:
 	ci.draw_rect(Rect2(x, top + h - 2.0, 1.0, 2.0), Color(rp[1], a))
 	ci.draw_rect(Rect2(x + 3.0, top + h - 2.0, 1.0, 2.0), Color(rp[0], a))
 	ci.draw_rect(Rect2(x + 1.0, top + h - 2.0, 2.0, 1.0), Color(rp[0], a))
+
+
+## A pick box (a hero in the party, a squad member): a recessed pixel square, a brass stud in it when on.
+static func check(ci: CanvasItem, r: Rect2, on: bool, dim := false) -> void:
+	r = _snap(r)
+	ci.draw_rect(r, BAR_INK)
+	ci.draw_rect(r.grow(-1.0), BAR_TROUGH)
+	ci.draw_rect(Rect2(r.position.x + 1.0, r.end.y - 2.0, r.size.x - 2.0, 1.0), BAR_TROUGH_LIT)
+	if on:
+		swatch(ci, r.grow(-2.0) if r.size.x >= 9.0 else r.grow(-1.0), "brass", dim)
+
+
+## A short message over a screen ("Bought: Steel Nib"): a leather tag that fades with a.
+static func toast(ci: CanvasItem, r: Rect2, a := 1.0) -> void:
+	panel(ci, _snap(r).grow(2.0), "button", Color(1, 1, 1, a))
 
 
 ## A small square swatch (an Ink colour's chip): framed and shaded like a gem.

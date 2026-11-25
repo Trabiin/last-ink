@@ -20,7 +20,8 @@ const INK_SOFT := UiSkin.PAGE_INK_SOFT
 const ROW_H := 15.0
 const LIST_W := 200.0
 const TOP := 30.0
-const LINE := 13.0
+var LINE := 13.0  # the ledger page's ruling, set as the page is drawn (it follows the text size)
+var _view_h := 0.0  # how much of the page's text shows at once
 const BODY := 10
 
 ## The controls page: [heading, [[what, actions or "move"], ...]].
@@ -192,7 +193,7 @@ func _just(action: String) -> bool:
 
 
 func _max_scroll() -> float:
-	return ceilf(maxf(page_h - (_page_rect().size.y - 30.0), 0.0) / LINE) * LINE
+	return ceilf(maxf(page_h - (_view_h if _view_h > 0.0 else _page_rect().size.y - 30.0), 0.0) / LINE) * LINE
 
 
 func _gui_input(event: InputEvent) -> void:
@@ -417,59 +418,64 @@ func _keys_text(what) -> String:
 	return " / ".join(seen)
 
 
+## The card is written on a worn ledger page (LedgerPage): every line on a ruled line and between the
+## margins, scrolling a whole ruled line at a time.
 func _draw_page() -> void:
 	var pr := _page_rect()
-	UiSkin.page(self, pr)
-	var x := pr.position.x + 30
-	var w := pr.size.x - 52
-	var y := pr.position.y + 20 - page_scroll
-	var top := pr.position.y + 4
-	var bottom := pr.end.y - 4
-	var start := y
+	var pg := LedgerPage.begin(self, pr, font, BODY)
+	LINE = pg.lh
+	page_scroll = clampf(roundf(page_scroll / LINE) * LINE, 0.0, maxf(_max_scroll(), 0.0))
+	var x := pg.x0
+	var w := pg.x1 - pg.x0
+	var top := pr.position.y + 3.0
+	var bottom := pg.rule_y(pg.lines - 1) + 1.0
+	_view_h = pg.rule_y(pg.lines - 1) - pg.rule_y(0) + LINE
+	var start := pg.rule_y(0) - 1.0 - LINE - page_scroll
+	var y := start  # the line before the first; each line written steps down one
+	var vis := func(yy: float) -> bool: return yy - 8.0 > top and yy < bottom
 	var last_who := ""
 	for bl in _blocks():
 		match bl[0]:
 			"title":
-				if y > top and y < bottom:
+				y += LINE
+				if vis.call(y):
 					_text(Vector2(x, y), bl[1], 16, INK, w, UiSkin.TITLE_FONT)
-				y += LINE + 3
 			"sub":
 				for l in _wrap(str(bl[1]), w, 8):
-					if y > top and y < bottom:
-						_text(Vector2(x, y), l, 8, INK_SOFT, w)
 					y += LINE
+					if vis.call(y):
+						_text(Vector2(x, y), l, 8, INK_SOFT, w)
 			"head":
-				if y > top and y < bottom:
-					_text(Vector2(x, y), str(bl[1]).to_upper(), 8, Color("8a2a22"), w)
 				y += LINE
+				if vis.call(y):
+					_text(Vector2(x, y), str(bl[1]).to_upper(), 8, LedgerPage.RED, w)
 			"para":
 				var who: String = bl[2]
 				if who != "" and who != last_who:
-					if y > top and y < bottom:
-						_text(Vector2(x, y), Dialogue.display_name(who), 12, INK, w, UiSkin.TITLE_FONT)
 					y += LINE
+					if vis.call(y):
+						_text(Vector2(x, y), Dialogue.display_name(who), 12, INK, w, UiSkin.TITLE_FONT)
 				last_who = who
 				for l in _wrap(str(bl[1]), w, BODY):
-					if y > top and y < bottom:
-						_text(Vector2(x, y), l, BODY, INK, w)
 					y += LINE
-				y += LINE * 0.35  # a breath between paragraphs
+					if vis.call(y):
+						_text(Vector2(x, y), l, BODY, INK, w)
 			"key":
-				if y > top and y < bottom:
-					_text(Vector2(x, y), str(bl[1]), 9, INK, w * 0.6)
-					_text(Vector2(x + w * 0.62, y), str(bl[2]), 9, Color("2f3a5a"), w * 0.38)
 				y += LINE
+				if vis.call(y):
+					_text(Vector2(x, y), str(bl[1]), 9, INK, w * 0.6)
+					_text(Vector2(x + w * 0.62, y), str(bl[2]), 9, LedgerPage.BLUE, w * 0.38)
 			"gap":
-				y += LINE * 0.5
+				y += LINE  # a blank ruled line
 			"replay":
-				var r := Rect2(x - 4, y - 10, _tw(str(bl[1]), 9) + 22 + _tw(Prompts.confirm(), 7), 15)
+				y += LINE * 2.0  # the button takes two ruled lines
+				var r := Rect2(x - 4, floorf(y - LINE - 6.0), _tw(str(bl[1]), 9) + 22 + _tw(Prompts.confirm(), 7), 15)
 				if r.position.y > top and r.end.y < bottom:
 					_replay_rect = r
 					UiSkin.panel(self, r, "button")
 					_text(r.position + Vector2(8, 11), str(bl[1]), 9, GOLD)
 					_text(r.position + Vector2(r.size.x - _tw(Prompts.confirm(), 7) - 6, 11), Prompts.confirm(), 7, SOFT)
-				y += LINE + 4
-	page_h = y + page_scroll - start
+	page_h = y - start + 4.0
 	if page_scroll > 0.0:
 		_arrow(Vector2(pr.get_center().x, pr.position.y + 6), true)
 	if page_scroll < _max_scroll():
