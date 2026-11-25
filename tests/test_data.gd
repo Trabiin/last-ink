@@ -46,6 +46,7 @@ func _talks() -> Dictionary:
 	t.merge(D["story.json"]["talks"])
 	t.merge(D["personal.json"]["talks"])
 	t.merge(D["betrayal.json"]["talks"])  # the climax betrayal (issue #186)
+	t.merge(D["gestures.json"]["talks"])  # Ash's gestures and their later payoffs
 	return t
 
 
@@ -60,6 +61,8 @@ func _speakers() -> Dictionary:
 	for id in D["personal.json"]["speakers"]:
 		s[id] = true
 	for id in D["betrayal.json"]["speakers"]:
+		s[id] = true
+	for id in D["gestures.json"]["speakers"]:
 		s[id] = true
 	return s
 

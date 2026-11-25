@@ -129,8 +129,10 @@ func _physics_process(delta: float) -> void:
 			if target:
 				var to := target.global_position - global_position
 				dir = to.normalized()
+				if Paths.active and not Paths.clear(global_position, target.global_position):
+					dir = Paths.toward(self, target.global_position)  # round the walls (scripts/paths.gd)
 				facing = dir
-				if to.length() < LUNGE_RANGE:
+				if to.length() < LUNGE_RANGE and Paths.clear(global_position, target.global_position):
 					_set_state(State.WINDUP, WINDUP_TIME)
 		State.WINDUP:
 			if target and not target.dead:

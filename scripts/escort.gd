@@ -47,7 +47,7 @@ func _ai(delta: float) -> Vector2:
 			if threat != null:  # flinch, but don't wander off the job
 				facing = (threat.global_position - global_position).normalized()
 			return Vector2.ZERO
-		return to.normalized() * (0.75 if threat != null else 1.0)
+		return path_dir(dest) * (0.75 if threat != null else 1.0)
 	if threat != null:
 		var away := (global_position - threat.global_position).normalized()
 		if leader != null and not leader.dead:
@@ -60,5 +60,5 @@ func _ai(delta: float) -> Vector2:
 		global_position = leader.global_position - leader.facing * 18.0
 		return Vector2.ZERO
 	if to_leader.length() > FOLLOW:
-		return to_leader.normalized() * (1.0 if to_leader.length() > FOLLOW * 2.0 else 0.6)
+		return path_dir(leader.global_position) * (1.0 if to_leader.length() > FOLLOW * 2.0 else 0.6)
 	return Vector2.ZERO

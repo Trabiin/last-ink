@@ -8,7 +8,7 @@ const PERK_KEYS := ["gilt", "supplies", "insight", "gilt_per_held", "heal", "res
 	"surge_warning", "job_speed", "build_discount", "standing_bonus", "fray_home", "mission_hp", "mission_damage",
 	"mission_revive", "mission_guard", "mission_power_rate"]
 const PARTY_KEYS := ["damage", "hp", "guard", "power_rate", "revive"]
-const WHEN_KEYS := ["romance", "rank_min", "rank_max", "personal", "home", "missions_min", "injuries_min", "choice", "lost", "pair", "betrayal"]
+const WHEN_KEYS := ["romance", "rank_min", "rank_max", "personal", "home", "missions_min", "injuries_min", "choice", "lost", "pair", "betrayal", "lean", "flag", "not_flag"]
 
 var Empire: Node
 var Saves: Node

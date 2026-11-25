@@ -29,6 +29,8 @@ static func data() -> Dictionary:
 		var parsed = Loc.load_json(PATH)
 		if typeof(parsed) == TYPE_DICTIONARY:
 			_data = parsed
+			# The gestures' later payoffs (data/gestures.json "beats", Morrow's letters...) play after the story's own.
+			_data["beats"] = _data.get("beats", []) + Stance.data().get("beats", [])
 	return _data
 
 
@@ -54,9 +56,15 @@ static func command_on() -> bool:
 ##   owns: [ids]        provinces you hold       day: n               on day n or later
 ##   governs: [ids]     provinces you hold with a governor posted (issue #28)
 ##   built: {building id: level}   Hollowmark buildings at that level or higher (issue #190)
+##   not_joined: [ids]              recruits not on the roster yet
+##   chose: [talk id, i] / not_chose: [talk id, i]   Ash picked (or didn't pick) option i of that talk's choice
+##   saved: {group: n} / lost: {group: n}   at least n people of that group got out / were lost (Incidents)
+##   incident: {id: state}          an incident's state (Incidents.blocker: open, done, ignored, closed, none)
 ##   standing: {faction id: tier}   at least that standing tier with each faction (issue #28)
 ##   not_seen: [talk ids]           conversations not played yet
 ##   betrayal / betrayer / betrayal_top   the climax betrayal's stage (issue #186, Betrayal.blocker)
+##   flag / not_flag: name or [names]   a gesture Ash made set (or did not set) it (data/gestures.json, Stance.blocker)
+##   lean: "mercy" | "hard" | "spite" | "none" | "any"   Ash's lean from the gestures so far
 static func meets(c: Dictionary) -> bool:
 	return blocker(c) == ""
 
@@ -81,6 +89,9 @@ static func blocker(c: Dictionary) -> String:
 	for id in c.get("joined", []):
 		if not Empire.recruits.has(id):
 			return Loc.t("%s has to join first") % Empire.recruit(id).get("name", id)
+	for id in c.get("not_joined", []):
+		if Empire.recruits.has(id):
+			return Loc.t("already done")
 	if int(Empire.res.get("renown", 0)) < int(c.get("renown", 0)):
 		return Loc.t("needs %d Renown") % int(c["renown"])
 	if held() < int(c.get("held", 0)):
@@ -105,8 +116,32 @@ static func blocker(c: Dictionary) -> String:
 	for fid in want:
 		if not Empire.at_least(fid, str(want[fid])):
 			return Loc.t("needs %s standing with the %s") % [Empire.tier_name(str(want[fid])), Empire.faction(fid).get("short", fid)]
+	# A choice Ash made in a talk (Dialogue.choice_made): [talk id, option index].
+	var ch: Array = c.get("chose", [])
+	if ch.size() == 2 and Dialogue.choice_made(str(ch[0])) != int(ch[1]):
+		return Loc.t("the story is not there yet")
+	var nch: Array = c.get("not_chose", [])
+	if nch.size() == 2 and Dialogue.choice_made(str(nch[0])) == int(nch[1]):
+		return Loc.t("the story is not there yet")
+	# People got out, or lost, on missions (scripts/incidents.gd): {"group": at least n}.
+	var sv: Dictionary = c.get("saved", {})
+	for g in sv:
+		if int(Incidents.people(str(g))["saved"]) < int(sv[g]):
+			return Loc.t("the story is not there yet")
+	var ls: Dictionary = c.get("lost", {})
+	for g in ls:
+		if int(Incidents.people(str(g))["lost"]) < int(ls[g]):
+			return Loc.t("the story is not there yet")
+	if c.has("incident"):
+		var why := Incidents.blocker(c["incident"])
+		if why != "":
+			return why
 	if Empire.day < int(c.get("day", 0)):
 		return Loc.t("not before day %d") % int(c["day"])
+	if c.has("flag") or c.has("not_flag") or c.has("lean"):  # Ash's gestures (data/gestures.json, Stance.blocker)
+		var why := Stance.blocker(c)
+		if why != "":
+			return why
 	if c.has("betrayal") or c.has("betrayer") or c.has("betrayal_top"):
 		return Betrayal.blocker(c)
 	return ""
@@ -126,7 +161,7 @@ static func held() -> int:
 ## talk has not been seen (beats with repeat: true play every time their conditions hold).
 ## A beat with "pick" instead of "talk" asks the betrayal which talk it is (Betrayal.beat_talk, issue #186).
 static func next_beat() -> Dictionary:
-	for b0 in data().get("beats", []):
+	for b0 in data().get("beats", []) + Incidents.beats():  # requests' asks and aftermaths after the story's own
 		var b: Dictionary = b0
 		if b.has("pick"):
 			b = b.duplicate()

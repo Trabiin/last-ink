@@ -10,9 +10,11 @@ extends Control
 ## accessibility option (Access.auto_advance).
 ##
 ## play("talk_id") plays a conversation from data/dialogue.json; play_lines([...]) plays any lines.
-## A talk with "choice" ends on a choice for Ash (issue #186): [{"text", "reply": [lines], "betrayal": effect}].
-## Up/Down (or a tap) picks; the reply plays on; Skip jumps to the choice but never past it. The pick is
-## remembered (Dialogue.choice_made) and its "betrayal" effect goes to Betrayal.choose.
+## A talk with a choice for Ash (issue #186; Ash's gestures, data/gestures.json) stops on it after its last line, or
+## after the line it is anchored to: [{"text", "reply": [lines], effects}]. Ash is silent, so options are gestures,
+## shown in [brackets]. Up/Down (or a tap) picks; the reply plays, then the rest of the talk. Skip jumps to the
+## choice but never past it. The pick is remembered (Dialogue.choice_made) and its effects land
+## (Dialogue.make_choice: the betrayal's gesture, then Stance.apply).
 ## Portraits come from Dialogue.portrait (assets/portraits/); a letter read aloud stands as a sheet of paper.
 
 signal finished(id: String)
@@ -37,6 +39,7 @@ var _skip_rect := Rect2()
 var _log_rect := Rect2()
 var _auto_t := 0.0  # seconds the finished line has waited (auto-advance)
 var _choices: Array = []  # the talk's choice for Ash, while it has not been made
+var _choice_at := -1  # the line the choice follows (-1: the last one)
 var _choosing := false
 var _choice := 0
 var _choice_rects: Array = []
@@ -57,6 +60,7 @@ func play(talk_id: String) -> bool:
 	Dialogue.mark_seen("talk:" + talk_id)
 	play_lines(ls, Dialogue.talk_title(talk_id), talk_id)
 	_choices = Dialogue.talk_choice(talk_id)
+	_choice_at = Dialogue.choice_at(talk_id) if not _choices.is_empty() else -1
 	return true
 
 
@@ -68,6 +72,7 @@ func play_lines(ls: Array, heading := "", talk_id := "") -> void:
 	id = talk_id
 	title = heading
 	_choices = []
+	_choice_at = -1
 	_choosing = false
 	_choice = 0
 	_at = 0
@@ -115,8 +120,8 @@ func _advance() -> void:
 	if _typing():
 		_shown = 99999.0
 		return
-	if _at + 1 >= _lines.size() and not _choices.is_empty():
-		_choosing = true  # the last line stays up behind the choice
+	if not _choices.is_empty() and _at >= _choice_line():
+		_choosing = true  # the line stays up behind the choice
 		_choice = 0
 		return
 	_at += 1
@@ -136,12 +141,12 @@ func _pick(i: int) -> void:
 	_choices = []
 	_choosing = false
 	Dialogue.make_choice(id, i, opt)
-	DialogueLog.add("", "[%s]" % str(opt.get("text", "")), "talk")
+	DialogueLog.add("", gesture_label(opt), "talk")
 	var reply := Dialogue.lines(opt.get("reply", []))
-	if reply.is_empty():
+	_lines = _lines.slice(0, _at + 1) + reply + _lines.slice(_at + 1)
+	if _at + 1 >= _lines.size():
 		_close()
 		return
-	_lines = _lines.slice(0, _at + 1) + reply
 	_at += 1
 	_shown = 0.0
 	_auto_t = 0.0
@@ -153,13 +158,24 @@ func _skip() -> void:
 	if _choosing:
 		return
 	if not _choices.is_empty():
-		_at = _lines.size() - 1
+		_at = maxi(_at, _choice_line())
 		_shown = 99999.0
 		_place_speaker()
 		_choosing = true
 		_choice = 0
 		return
 	_close()
+
+
+## The line the choice waits behind.
+func _choice_line() -> int:
+	return _choice_at if _choice_at >= 0 and _choice_at < _lines.size() else _lines.size() - 1
+
+
+## A choice as Ash's gesture: "[Shrug]". Text already in brackets is left alone.
+static func gesture_label(opt: Dictionary) -> String:
+	var t := str(opt.get("text", ""))
+	return t if t.begins_with("[") else "[%s]" % t
 
 
 func _close() -> void:
@@ -311,7 +327,7 @@ func _draw_choices(box: Rect2) -> void:
 	_choice_rects = []
 	var w := 0.0
 	for o in _choices:
-		w = maxf(w, font.get_string_size(str(o.get("text", "")), HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(11)).x)
+		w = maxf(w, font.get_string_size(gesture_label(o), HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(11)).x)
 	w = minf(w + 44.0, box.size.x - 40.0)  # the page's margins and the nib
 	var lh := LedgerPage.height_for(1, font, 11) - LedgerPage.height_for(0, font, 11)
 	var h := LedgerPage.height_for(_choices.size() - 1, font, 11)
@@ -325,7 +341,7 @@ func _draw_choices(box: Rect2) -> void:
 			draw_rect(rr, Color(GOLD, 0.28))
 			var tip := Vector2(pg.x0 - 7.0, pg.rule_y(i) - 5.0)
 			draw_colored_polygon(PackedVector2Array([tip + Vector2(-4, -3), tip + Vector2(2, 0), tip + Vector2(-4, 3)]), INK)
-		draw_string(font, Vector2(pg.x0, pg.rule_y(i) - 1.0), str(_choices[i].get("text", "")),
+		draw_string(font, Vector2(pg.x0, pg.rule_y(i) - 1.0), gesture_label(_choices[i]),
 			HORIZONTAL_ALIGNMENT_LEFT, pg.x1 - pg.x0, Access.fs(11), INK if on else INK_SOFT)
 
 

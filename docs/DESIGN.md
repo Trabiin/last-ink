@@ -377,6 +377,29 @@ the Command Table, each briefing showing type, threat (1 to 5 with a name), rewa
   exit) with its own speakers, talks and portraits. Success opens the rank-5 scene and moves faction standing;
   failure can be retried. Blocked when the character is away, injured or tied up in another role.
 
+**Meaning pass (Ojon 2026-11-25, "I don't feel anything about the choices"):**
+
+- **Stakes on every brief.** A mission's `stakes` line (and a request's asker, what is at stake, what it costs if
+  nobody goes, the days left and the rival it would leave) leads its briefing on the Command Table
+  (`Missions.stake_lines`).
+- **Requests (incidents)** (`scripts/incidents.gd`, `data/incidents.json`): someone with a name asks (a lamplighter,
+  a schoolmistress, a shepherd, Gristle, Daro). The request sits on the territory map for a few days with a deadline
+  tag; if nobody goes, what was at stake is lost for good (people, a province's Fray, supplies, a friend's bond).
+  Some come in **rival pairs** that open on the same day: answering one lets the other lapse. The ask, the thanks and
+  the consequence play as town beats. Six in Act 1, two of them pairs (the Gristle/Daro pair forces that hero into
+  the party).
+- **People** saved and lost are counted per group (`Incidents.people`) from lead steps and lapses, and story beats
+  can ask about them (Story conditions `saved`, `lost`, `incident`, `chose`, `not_chose`, `not_joined`).
+- **Set pieces with a choice.** The four Act 1 story missions (the tax office breakout, Gristle's tree, Daro's farm,
+  Millbrook) run on premade maps from `tools/make_act1_maps.py` with a choice in the middle (people or money, the
+  family or the evidence), branch steps (`"when"` on a step), a lead step (walk people to safety while the white or
+  a press gang comes) and a beat back in town that remembers what you picked. Bonus pay or cost by choice
+  (`"bonus"`). Gristle and Daro now join through their story missions (a campaign without the story keeps the
+  old rescue expeditions through the join hook's `"free"`).
+- **Premade layouts with enterable buildings** use the building kit (docs/MAP_KIT.md, `scripts/structures.gd`):
+  walls, windows, doorways and roofs that fade while the hero is inside; allies and enemies path round walls
+  (`scripts/paths.gd`).
+
 Mission maps are text maps from `tools/make_biomes.py`: every biome has 3 layouts (a/b/c) with `@spot` lines for
 the start, wardstone, Blot, rescue, caches and spawns. Each visit picks a layout, a subset of the spawns, shuffled
 caches and a Blank edge moved a few tiles, so the same province plays differently each time.
@@ -499,6 +522,15 @@ a name, a voice, or a Ledger entry. Officially they do not exist. Mechanically t
 oddly: they can walk short distances into it, and the **Inkblade** they wake up holding can "re-write" small things
 the Blank has taken. Other characters project wildly different personalities onto the silent hero, which is a
 running joke. Default name: **Ash** (player can rename).
+
+**Gestures, not words.** At choice points Ash *does* something instead of speaking: "[Shrug]", "[Hand Morrow the
+empty strongbox]", "[Nail it back up, upside down]". Everyone present reads the gesture in their own voice. Each
+gesture leans **mercy**, **hard-nosed** or **spite**; once one leads clearly it becomes Ash's lean, and the world
+answers it: Bran's name for Ash ("smudge" until then; "saint", "boss" or "sparks"), what the townsfolk say as Ash
+walks past, Verity's Act 1 letter, and the epilogues (including a card for Hollowmark itself). Some gestures also pay
+off later on their own: sparing Tithe-Captain Morrow makes him a Concord informant in Chapters 2 and 3, and the other
+two ways of dealing with him have their own Chapter 2 scenes. Gestures can also move bonds, faction standing and
+resources. Data: `data/gestures.json`; code: `scripts/stance.gd`, `scripts/town_chatter.gd`.
 
 ### The villains: a duo
 

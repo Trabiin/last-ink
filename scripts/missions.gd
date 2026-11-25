@@ -108,7 +108,7 @@ static func list_for_province(pid: String) -> Array:
 	for m in all():
 		if m.get("province", "") == pid and offered(m):
 			(story if m.get("story", false) else repeat).append(_gated(m) if m.get("story", false) else _varied(m))
-	return story + MissionTypes.for_province(pid) + repeat
+	return story + Incidents.for_province(pid) + MissionTypes.for_province(pid) + repeat
 
 
 ## A story mission with "gate" conditions is on the map as soon as it is offered, but locked with the first
@@ -187,6 +187,10 @@ static func settle(m: Dictionary, outcome: String, found: Dictionary, stats: Dic
 		var r: Dictionary = m.get("rewards", {})
 		for k in r:
 			pay[k] = int(pay.get(k, 0)) + int(r[k])
+		for b in bonuses(m):  # what a choice on the mission added (the strongbox, the bounty purse)
+			var br: Dictionary = b.get("rewards", {})
+			for k in br:
+				pay[k] = int(pay.get(k, 0)) + int(br[k])
 		fray = int(m.get("fray", 0))
 	var p := Empire.territory().find(m.get("province", ""))
 	var md := m.duplicate(true)
@@ -203,6 +207,7 @@ static func settle(m: Dictionary, outcome: String, found: Dictionary, stats: Dic
 		"objective": stats.get("objective", ""),
 		"rewards": m.get("rewards", {}) if outcome == "success" else {},
 		"lines": _effect_lines(md, outcome, stats),  # mission-type effects, issue #51
+		"changed": people_changes(md, outcome, stats.get("info", {})),  # who got out and who didn't, first on the results
 		"mission_dict": md,
 	}
 
@@ -248,6 +253,20 @@ static func story_effects(m: Dictionary, dry_run := false) -> Array:
 		lines.append(Loc.t("%s standing %+d.") % [Empire.faction(fid).get("short", fid), int(st[fid])])
 		if not dry_run:
 			Empire.change_standing(fid, int(st[fid]), str(m.get("name", "")), true)
+	for b in bonuses(m):  # a choice's price and its standing (the bounty purse makes the Coven angrier)
+		var cost: Dictionary = b.get("cost", {})
+		for k in cost:
+			var paid := mini(int(cost[k]), maxi(int(Empire.res.get(k, 0)), 0))
+			lines.append(Loc.t("Paid %s.") % res_text({k: int(cost[k])}))
+			if not dry_run:
+				Empire.gain(k, -paid)
+		var bst: Dictionary = b.get("standing", {})
+		for fid in bst:
+			if Empire.faction(fid).is_empty():
+				continue
+			lines.append(Loc.t("%s standing %+d.") % [Empire.faction(fid).get("short", fid), int(bst[fid])])
+			if not dry_run:
+				Empire.change_standing(fid, int(bst[fid]), str(m.get("name", "")), true)
 	match str(fx.get("betrayal", "")):
 		"foreshadow":
 			if not dry_run:
@@ -260,6 +279,69 @@ static func story_effects(m: Dictionary, dry_run := false) -> Array:
 			if not dry_run:
 				Betrayal.con_home()
 	return lines
+
+
+## The mission's "bonus" entries whose conditions hold now: [{"when": Story conditions, "rewards", "cost",
+## "standing"}]. A choice made in a talk on the mission picks which (Story condition "chose").
+static func bonuses(m: Dictionary) -> Array:
+	return (m.get("bonus", []) as Array).filter(func(b): return Story.meets(b.get("when", {})))
+
+
+## What changed for people, for the top of the results (results_view.gd renders result["changed"]): who got out
+## of each "people" group on the mission and who didn't. A group whose lead step never ran (the other branch of
+## a choice) is lost whole. Only on success: a failed mission can be tried again.
+##   "people": {group: {"count": n, "place": where they were, "saved_text": "%d ...", "lost_text": "%d ..."}}
+static func people_changes(m: Dictionary, outcome: String, info: Dictionary) -> Array:
+	var out := []
+	if outcome != "success":
+		return out
+	# Only the dictionary forms: a Rescue mission's "people" (and its objective's "saved") are plain counts.
+	var saved: Dictionary = info["saved"] if typeof(info.get("saved")) == TYPE_DICTIONARY else {}
+	var lost_d: Dictionary = info["lost"] if typeof(info.get("lost")) == TYPE_DICTIONARY else {}
+	var groups: Dictionary = m["people"] if typeof(m.get("people")) == TYPE_DICTIONARY else {}
+	for g in groups:
+		var pg: Dictionary = groups[g]
+		var n := int(saved.get(g, 0))
+		var gone := int(pg.get("count", 0)) - n
+		if n > 0:
+			out.append({"kind": "people", "count": n, "from": str(pg.get("place", "")), "group": str(g),
+				"text": _fmt(str(pg.get("saved_text", Loc.t("%d people walk into Hollowmark."))), n)})
+		if gone > 0:
+			out.append({"kind": "lost", "count": gone, "group": str(g),
+				"text": _fmt(str(pg.get("lost_text", Loc.t("%d of them didn't make it."))), gone)})
+	if not lost_d.is_empty() and groups.is_empty():
+		var total := 0
+		for g in lost_d:
+			total += int(lost_d[g])
+		out.append({"kind": "lost", "count": total, "text": Loc.n("%d person didn't make it out.", "%d people didn't make it out.", total) % total})
+	for c in m.get("changed", []):  # hand-written lines, each behind its own conditions
+		if Story.meets(c.get("when", {})):
+			var e: Dictionary = c.duplicate()
+			e.erase("when")
+			out.append(e)
+	return out
+
+
+static func _fmt(t: String, n: int) -> String:
+	return t % n if t.contains("%d") else t
+
+
+## The lines that say what is at stake, first in the briefing: who is asking, who is affected, what happens if you
+## don't go, and how long it waits (incidents, scripts/incidents.gd; story missions' "stakes").
+static func stake_lines(m: Dictionary) -> Array:
+	var out := []
+	if m.has("asker_name"):
+		out.append(Loc.t("Asked by: %s") % str(m["asker_name"]))
+	if str(m.get("stakes", "")) != "":
+		out.append(Loc.t("At stake: %s") % str(m["stakes"]))
+	if str(m.get("if_ignored", "")) != "":
+		out.append(Loc.t("If you don't go: %s") % str(m["if_ignored"]))
+	if m.has("days_left"):
+		var left := int(m["days_left"])
+		out.append(Loc.t("It can't wait: this is the last day.") if left <= 0 else Loc.n("It can't wait: %d day left.", "It can't wait: %d days left.", left) % left)
+	if str(m.get("rival_name", "")) != "":
+		out.append(Loc.t("Going means %s goes unanswered.") % str(m["rival_name"]))
+	return out
 
 
 ## Pays out a settled result and marks the mission cleared.
@@ -281,6 +363,7 @@ static func apply(result: Dictionary) -> void:
 	Satchel.restock(true)  # free rations and the town stores repack the satchel (issues #6, #112)
 	Empire.active_mission = {}
 	Empire.last_mission = result
+	Incidents.record(result)  # people got out or lost, incidents done (scripts/incidents.gd)
 	Relationships.note_mission(PartyPicker.mission_party(m), str(result["outcome"]))  # fates for the epilogues (issue #116)
 	Achievements.mission_done(result)  # issue #150
 

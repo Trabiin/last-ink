@@ -262,7 +262,7 @@
 				],
 				[
 					"bran",
-					"Don't look at me like that, smudge. Clause nine: someone pays more, I tell the client first. I'm tellin' you. Ain't nobody paid me nothin' yet."
+					"Don't look at me like that, {nick}. Clause nine: someone pays more, I tell the client first. I'm tellin' you. Ain't nobody paid me nothin' yet."
 				]
 			]
 		},
@@ -652,7 +652,7 @@
 				],
 				[
 					"bran",
-					"Evenin', smudge. Clause nine. Someone pays more, I tell the client first. So. I'm tellin' you."
+					"Evenin', {nick}. Clause nine. Someone pays more, I tell the client first. So. I'm tellin' you."
 				],
 				[
 					"vacancy",
@@ -1059,7 +1059,7 @@
 				],
 				[
 					"bran",
-					"Hazard pay, smudge. On the bill. Big bill."
+					"Hazard pay, {nick}. On the bill. Big bill."
 				]
 			]
 		}

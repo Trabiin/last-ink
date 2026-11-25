@@ -44,46 +44,64 @@ static func data() -> Dictionary:
 			if not _data.has(k):
 				_data[k] = {}
 			_data[k].merge(Story.data().get(k, {}))
+			_data[k].merge(Incidents.data().get(k, {}))  # requests with a deadline (data/incidents.json)
 			_data[k].merge(PersonalMissions.data().get(k, {}))
 			_data[k].merge(Betrayal.data().get(k, {}))
+			_data[k].merge(Stance.data().get(k, {}))  # Ash's gestures and their later payoffs (data/gestures.json)
 	return _data
 
 
 ## [speaker, text, expression] from either list or {"who", "text", "expr"} form.
-## Button tokens in the text ({tag:ledger}...) are filled for the device in use (Prompts.fill, issue #115).
+## Button tokens in the text ({tag:ledger}...) are filled for the device in use (Prompts.fill, issue #115), and
+## {nick} with Bran's name for Ash, which follows Ash's lean (Stance.fill).
 static func line(l) -> Array:
 	if typeof(l) == TYPE_DICTIONARY:
-		return [String(l.get("who", "")), Prompts.fill(String(l.get("text", ""))), String(l.get("expr", ""))]
+		return [String(l.get("who", "")), Stance.fill(Prompts.fill(String(l.get("text", "")))), String(l.get("expr", ""))]
 	var a: Array = l
-	return [String(a[0]) if a.size() > 0 else "", Prompts.fill(String(a[1])) if a.size() > 1 else "", String(a[2]) if a.size() > 2 else ""]
+	return [String(a[0]) if a.size() > 0 else "", Stance.fill(Prompts.fill(String(a[1]))) if a.size() > 1 else "", String(a[2]) if a.size() > 2 else ""]
 
 
 static func lines(raw: Array) -> Array:
 	return raw.map(func(l): return line(l))
 
 
-## A whole conversation's lines, normalised. Empty when the id is unknown.
+## A talk as written in its data file: {"lines", "choice", ...} or a bare list of lines ({} when unknown).
+static func raw_talk(id: String):
+	return data().get("talks", {}).get(id, {})
+
+
+## A whole conversation's lines, normalised, with any lines data/gestures.json splices in for the campaign so far
+## (Stance.splice: Verity's letter answering Ash's lean, say). Empty when the id is unknown.
 static func talk(id: String) -> Array:
-	var t = data().get("talks", {}).get(id, {})
-	if typeof(t) == TYPE_DICTIONARY:
-		return lines(t.get("lines", []))
-	return lines(t)
+	var t = raw_talk(id)
+	var raw: Array = t.get("lines", []) if typeof(t) == TYPE_DICTIONARY else t
+	return lines(Stance.splice(id, raw)["lines"])
 
 
-## A talk's choice for Ash ([] when it has none): [{"text", "reply": [lines], "betrayal": effect}] (issue #186).
+## A talk's choice for Ash ([] when it has none): [{"text", "reply": [lines], effects...}]. The talk's own
+## "choice" (issue #186) with data/gestures.json's effects laid over it, or a gesture from gestures.json.
 static func talk_choice(id: String) -> Array:
-	var t = data().get("talks", {}).get(id, {})
-	return t.get("choice", []) if typeof(t) == TYPE_DICTIONARY else []
+	return Stance.options(id)
 
 
-## Ash picked option i of a talk's choice: remembered with the campaign, and its effect applied.
+## The index in talk(id) of the line Ash's choice follows (-1: after the last line).
+static func choice_at(id: String) -> int:
+	var t = raw_talk(id)
+	var raw: Array = t.get("lines", []) if typeof(t) == TYPE_DICTIONARY else t
+	return int(Stance.splice(id, raw)["at"])
+
+
+## Ash picked option i of a talk's choice: remembered with the campaign, and its effects applied (the betrayal's
+## gesture every time, as before; the rest only the first time Ash answers, see Stance.apply).
 static func make_choice(talk_id: String, i: int, opt: Dictionary) -> void:
+	var first := choice_made(talk_id) < 0
 	for k in seen.keys():
 		if str(k).begins_with("choice:%s:" % talk_id):
 			seen.erase(k)
 	mark_seen("choice:%s:%d" % [talk_id, i])
 	if opt.has("betrayal"):
 		Betrayal.choose(str(opt["betrayal"]))
+	Stance.apply(opt, first)
 
 
 ## Which option Ash picked in a talk's choice (-1 if none yet).

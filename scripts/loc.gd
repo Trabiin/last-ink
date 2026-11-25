@@ -23,6 +23,7 @@ const SOURCE := "en"  # the language the game is written in
 
 ## Keys whose string values (or arrays of strings, at any depth) are player text, in any data file.
 const TEXT_KEYS := [
+	"stakes", "if_ignored", "saved_text", "lost_text", "asker_name", "place",  # missions and requests
 	"name", "title", "text", "desc", "blurb", "label", "summary", "flavor", "brief", "hint",
 	"plural", "short", "weapon", "special", "staff_title", "envoy_title", "favors_why", "why_claim",
 	"why_erased", "why_lamp", "drift_why", "wants", "done_text", "fail_text", "success", "fail",
@@ -30,7 +31,7 @@ const TEXT_KEYS := [
 	"likes_text", "dislikes_text", "locked", "card", "tip", "notice", "mood", "habits", "weakness",
 	"work_label", "shop_name", "shop_blurb", "intro_text", "prompt", "options", "labels",
 	"welcome_title", "ai_short", "heading", "more", "outro", "body", "caption", "subtitle",
-	"question", "answer", "note", "message", "say", "text_insight",
+	"question", "answer", "note", "message", "say", "text_insight", "nick",
 ]
 ## Keys holding spoken lines: [speaker, text] / [speaker, text, expression] (only the text is
 ## translated), lists of those, or plain strings (help topics speak in plain strings).
@@ -50,7 +51,7 @@ const KEYED_TEXT := {
 	"expeditions.json": ["kind"],
 }
 ## Keys that are never text, whatever the value looks like (ids, refs, art, conditions).
-const NEVER_TEXT := ["id", "ids", "_comment", "color", "colors", "map", "maps", "path", "sprite", "portrait"]
+const NEVER_TEXT := ["id", "ids", "_comment", "color", "colors", "map", "maps", "path", "sprite", "portrait", "anchor"]
 
 static var _ready := false
 static var _lang := SOURCE

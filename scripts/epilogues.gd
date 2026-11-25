@@ -21,7 +21,9 @@ static func variants(id: String) -> Array:
 
 
 ## The cards, in order: the core cast who joined (bond order), then the rest of the roster, then those the
-## white took. Ash gets none (the ending is Ash's). Each: {"id", "name", "text", "color", "lost"}.
+## white took, then people Ash met but never hired ("people": Tithe-Captain Morrow), and last Hollowmark itself
+## ("town": what the town remembers of the person running it, from Ash's lean). Ash gets none (the ending is
+## Ash's). Each: {"id" (also the portrait), "name", "text", "color", "lost"}.
 static func cards() -> Array:
 	var ids := []
 	for id in Empire.bond_ids():
@@ -38,7 +40,27 @@ static func cards() -> Array:
 		if t != "":
 			out.append({"id": id, "name": Empire.recruit(id).get("name", id), "text": t, "lost": Relationships.was_lost(id),
 				"color": Empire.bond_info(id).get("color", "c9c3b6")})
+	var people: Dictionary = data().get("people", {})
+	for pid in people:
+		var p: Dictionary = people[pid]
+		var t := _first_text(p.get("variants", []), "")
+		if t != "":
+			out.append({"id": str(p.get("portrait", pid)), "name": str(p.get("name", pid)), "text": t, "lost": false,
+				"color": str(p.get("color", "c9c3b6"))})
+	var town: Dictionary = data().get("town", {})
+	var tt := _first_text(town.get("variants", []), "")
+	if tt != "":
+		out.append({"id": str(town.get("portrait", "letter")), "name": str(town.get("name", Loc.t("Hollowmark"))), "text": tt, "lost": false,
+			"color": str(town.get("color", "c9c3b6"))})
 	return out
+
+
+## The first variant whose "when" holds, for a card that is not a recruit's ("" when none does: no card).
+static func _first_text(vs: Array, id: String) -> String:
+	for v in vs:
+		if meets(id, v.get("when", {})):
+			return str(v.get("text", ""))
+	return ""
 
 
 ## The epilogue text for one person ("" if none fits, which tests rule out).
@@ -51,6 +73,12 @@ static func text_for(id: String) -> String:
 
 
 static func meets(id: String, w: Dictionary) -> bool:
+	if id == "":  # someone who never joined (data "people", "town"): only the story and Ash's gestures apply
+		for k in w:
+			if not k in ["lean", "flag", "not_flag", "seen", "cleared"]:
+				push_warning("epilogues.json: condition '%s' needs a recruit" % k)
+				return false
+		return Story.meets(w)
 	var f := Relationships.fate(id)
 	for k in w:
 		var v = w[k]
@@ -93,6 +121,9 @@ static func meets(id: String, w: Dictionary) -> bool:
 			"betrayal":
 				var b := Betrayal.outcome(id)
 				if (b if b != "" else "none") != str(v):
+					return false
+			"lean", "flag", "not_flag":  # Ash's gestures (data/gestures.json, Stance)
+				if Stance.blocker({k: v}) != "":
 					return false
 			_:
 				push_warning("epilogues.json: unknown condition '%s' for %s" % [k, id])

@@ -1,0 +1,1241 @@
+{
+	"_comment": "Ash's gestures (scripts/stance.gd). Ash never speaks: at a choice point Ash does something, and everyone reads it in their own voice. choices: talk id -> {at (index of the line the choice follows; none = after the last), anchor (a piece of that line's English text, checked by tests/test_gestures.gd, never shown), choice: [options]}, for talks with no choice of their own. overlays: talk id -> [effects for option 0, option 1, ...], laid over a talk's own choice (story.json writes the words, this file the consequences). An option: text (the gesture, shown in [brackets]), reply (lines), stance (mercy, hard or spite), weight (default 1), flag (name or list), bond {recruit: n}, standing {faction: n} with notice (the diplomacy log line), gain {resource: n}. threshold / lead: a stance becomes Ash's lean with at least threshold points and lead more than the next. nick: Bran's name for Ash with no lean; stances.<s>.nick with one ({nick} in any line), and stances.<s>.banter: what Bran says the first time he uses it. inserts: talk id -> [{after (line index; none = the end), anchor, when (Story conditions, including flag, not_flag and lean), lines}]. chatter: what townsfolk say as Ash walks past (scripts/town_chatter.gd): {id, when, text, repeat}. speakers / talks are merged into Dialogue.data(); beats play after the story's own (Story.data), the later payoffs of a gesture.",
+	"threshold": 3,
+	"lead": 2,
+	"nick": "smudge",
+	"stances": {
+		"mercy": {
+			"name": "Mercy",
+			"nick": "saint",
+			"banter": [
+				[
+					"bran",
+					"Saint. That's you now. Saint Ash of the Empty 'Ands. Don't look at me like that, I don't make the rules. I make the nicknames.",
+					"smug"
+				]
+			]
+		},
+		"hard": {
+			"name": "Hard-nosed",
+			"nick": "boss",
+			"banter": [
+				[
+					"bran",
+					"Boss. Yeah, all right. You pay on time and you don't cry about it. Don't let it go to your 'ead, boss."
+				]
+			]
+		},
+		"spite": {
+			"name": "Spite",
+			"nick": "sparks",
+			"banter": [
+				[
+					"bran",
+					"Sparks. 'Cause everywhere you go, somethin' catches fire. I like it. I'm billin' you for the smoke.",
+					"happy"
+				]
+			]
+		}
+	},
+	"choices": {
+		"ch1_arrest": {
+			"at": 4,
+			"anchor": "Name, please. For the Ledger.",
+			"choice": [
+				{
+					"text": "Hold out your empty hands",
+					"stance": "mercy",
+					"reply": [
+						[
+							"",
+							"Ash holds out both hands, palms up. Nothing in them, nothing up the sleeves."
+						],
+						[
+							"clerk",
+							"Empty hands are not a name. I note them as a courtesy. 'Hands: two. Contents: none.'"
+						]
+					]
+				},
+				{
+					"text": "Shrug",
+					"stance": "hard",
+					"reply": [
+						[
+							"clerk",
+							"A shrug is not a name. It is barely a form of words. I shall record it as 'declined to state'."
+						]
+					]
+				},
+				{
+					"text": "Point at Bran",
+					"stance": "spite",
+					"reply": [
+						[
+							"",
+							"Ash points at Bran."
+						],
+						[
+							"bran",
+							"Don't point at me! I ain't payin' your entry fee. I'm the one what's owed.",
+							"angry"
+						]
+					]
+				}
+			]
+		},
+		"ch1_breakout_intro": {
+			"at": 2,
+			"anchor": "Services cost money",
+			"choice": [
+				{
+					"text": "Shake on it",
+					"stance": "hard",
+					"bond": {
+						"bran": 2
+					},
+					"reply": [
+						[
+							"",
+							"Ash shakes on it. Bran has the grip of a man who has had people back out before."
+						],
+						[
+							"bran",
+							"Clause one: you pay me. Clause two: see clause one. Pleasure doin' business.",
+							"smug"
+						]
+					]
+				},
+				{
+					"text": "Walk past him to the door",
+					"stance": "spite",
+					"reply": [
+						[
+							"",
+							"Ash steps round him and out into the corridor without a word."
+						],
+						[
+							"bran",
+							"Oi! A verbal contract's still a contract. Your face agreed to it. I saw it agree.",
+							"angry"
+						]
+					]
+				},
+				{
+					"text": "Point at the cell next door",
+					"stance": "mercy",
+					"flag": "agnes_freed",
+					"reply": [
+						[
+							"",
+							"In the next cell an old woman in a nightcap is watching the white come through her wall with polite interest. She gives Ash a little wave."
+						],
+						[
+							"",
+							"Her name, she says, is Agnes Pruitt, and she is in for an unlicensed dog."
+						],
+						[
+							"bran",
+							"'Er? Nobody's payin' for 'er. ...Fine. Fine! She walks out with us. She's on your bill.",
+							"angry"
+						]
+					]
+				}
+			]
+		},
+		"ch1_takeover": {
+			"anchor": "Somebody has to hold the line",
+			"choice": [
+				{
+					"text": "Give Thale's coat to a cold boy",
+					"stance": "mercy",
+					"flag": "coat_given",
+					"bond": {
+						"tobble": 2
+					},
+					"reply": [
+						[
+							"",
+							"The governor dropped a fur-lined coat getting into his carriage. Ash picks it out of the mud and puts it round a boy in a nightshirt, who is blue at the lips."
+						],
+						[
+							"tobble",
+							"Aye. First thing anyone's given this town since the Concord came. That coat's worth more than the lad's house.",
+							"happy"
+						],
+						[
+							"bran",
+							"It 'ad a silver button on it. I'm sayin' nothin'. I'm just sayin' it 'ad a silver button.",
+							"sad"
+						]
+					]
+				},
+				{
+					"text": "Drop the tax register down the well",
+					"stance": "spite",
+					"flag": "register_drowned",
+					"gain": {
+						"renown": 2
+					},
+					"standing": {
+						"concord": -3
+					},
+					"notice": "Hollowmark's tax register went down the well",
+					"reply": [
+						[
+							"",
+							"The tax register lies in the mud at the edge of the white. Ash carries it to the well and drops it in. It takes a long time to hit the water."
+						],
+						[
+							"quill",
+							"That was the only copy of eleven years of arrears. Half this town owed on that. I don't know whether to file a complaint or buy you a drink.",
+							"surprised"
+						],
+						[
+							"tobble",
+							"Buy 'em a drink. I'll pour.",
+							"happy"
+						]
+					]
+				},
+				{
+					"text": "Sit in the governor's chair",
+					"stance": "hard",
+					"bond": {
+						"quill": 2
+					},
+					"reply": [
+						[
+							"",
+							"Ash walks to the table, pulls out the governor's chair and sits. It is still warm. It creaks like it disapproves."
+						],
+						[
+							"quill",
+							"Good. Somebody sat down. Things get decided once somebody sits down. I'll fetch the books.",
+							"happy"
+						],
+						[
+							"bran",
+							"Two days ago you didn't exist. Now you got furniture.",
+							"smug"
+						]
+					]
+				}
+			]
+		},
+		"ninefingers_first": {
+			"at": 3,
+			"anchor": "They flex the hand",
+			"choice": [
+				{
+					"text": "Salute",
+					"stance": "hard",
+					"bond": {
+						"ninefingers": 2
+					},
+					"reply": [
+						[
+							"",
+							"Ash salutes. It is not a good salute."
+						],
+						[
+							"ninefingers",
+							"Elbow's wrong. Hand's wrong. Keep it anyway, sir. Better than most I got.",
+							"smug"
+						]
+					]
+				},
+				{
+					"text": "Hold up nine fingers",
+					"stance": "spite",
+					"bond": {
+						"ninefingers": 2
+					},
+					"reply": [
+						[
+							"",
+							"Ash holds up nine fingers, very seriously."
+						],
+						[
+							"ninefingers",
+							"Ha. Do that at a warden sometime. On a parade ground. I'll bring a chair.",
+							"happy"
+						]
+					]
+				},
+				{
+					"text": "Turn their hand over and look",
+					"stance": "mercy",
+					"bond": {
+						"ninefingers": 1
+					},
+					"reply": [
+						[
+							"",
+							"Ash takes the hand, turns it over, and looks at the gap."
+						],
+						[
+							"ninefingers",
+							"Don't. Pity's a form too. I don't sign those.",
+							"angry"
+						],
+						[
+							"",
+							"They don't pull the hand back straight away."
+						]
+					]
+				}
+			]
+		},
+		"act1_writ": {
+			"anchor": "Then we stop being a footnote",
+			"choice": [
+				{
+					"text": "Turn the writ over",
+					"stance": "mercy",
+					"flag": "writ_route",
+					"bond": {
+						"ninefingers": 1
+					},
+					"reply": [
+						[
+							"",
+							"On the back of the writ, in smaller print, are the hamlets the column will assess on its way down. A sum beside each, and beside the sums a column headed 'Persons'."
+						],
+						[
+							"ninefingers",
+							"That's the route. Assess means collect. Whatever can't pay walks behind the wagon.",
+							"angry"
+						],
+						[
+							"quill",
+							"Then sooner is better than later. Noted, as it were.",
+							"sad"
+						]
+					]
+				},
+				{
+					"text": "Fold it into your coat",
+					"stance": "hard",
+					"gain": {
+						"insight": 5
+					},
+					"bond": {
+						"quill": 1
+					},
+					"reply": [
+						[
+							"",
+							"Ash folds the writ in four and puts it away inside the coat, carefully, seal outward."
+						],
+						[
+							"quill",
+							"Keeping it? Good. A writ with a seal on it is evidence, and evidence is the only coin the Concord respects.",
+							"smug"
+						]
+					]
+				},
+				{
+					"text": "Nail it back up, upside down",
+					"stance": "spite",
+					"flag": "writ_nailed",
+					"gain": {
+						"renown": 1
+					},
+					"bond": {
+						"ninefingers": 2
+					},
+					"reply": [
+						[
+							"",
+							"Ash takes the writ, finds the hammer on the well-post, and nails it back up. Upside down. With four more nails than it needs."
+						],
+						[
+							"ninefingers",
+							"Ha. Form R-9, Insolence to a Notice. Five years' hard labour. Bloody worth it.",
+							"happy"
+						]
+					]
+				}
+			]
+		},
+		"act1_concord_after": {
+			"anchor": "We have time",
+			"choice": [
+				{
+					"text": "Hand Morrow the empty strongbox",
+					"stance": "mercy",
+					"weight": 2,
+					"flag": "morrow_spared",
+					"reply": [
+						[
+							"",
+							"Ash picks up the empty strongbox and sets it in his lap."
+						],
+						[
+							"captain",
+							"An empty box, duly returned. They will have my stripes for this. Then the box. Then me."
+						],
+						[
+							"captain",
+							"Very well. I owe you one, herewith. I do not write that down for anybody."
+						],
+						[
+							"",
+							"He walks back up the Tithe Road with the box under his arm, alone, and does not look round."
+						],
+						[
+							"ninefingers",
+							"Never saw a captain carry his own box. Hope it's heavy."
+						]
+					]
+				},
+				{
+					"text": "Step aside for Gristle",
+					"stance": "spite",
+					"weight": 2,
+					"flag": "morrow_dosed",
+					"bond": {
+						"gristle": 3
+					},
+					"reply": [
+						[
+							"",
+							"Ash looks at Morrow. Then at Gristle. Then steps aside."
+						],
+						[
+							"gristle",
+							"Oh, there's lovely. Open wide, Captain. This one's for the liver, mostly.",
+							"happy"
+						],
+						[
+							"",
+							"Morrow walks back to the Concord on his own feet. For a week afterwards everything he says comes out as a receipt."
+						],
+						[
+							"captain",
+							"Received with thanks, one hiccup. Received with thanks, one hiccup.",
+							"surprised"
+						]
+					]
+				},
+				{
+					"text": "Take his boots and his ledger",
+					"stance": "hard",
+					"weight": 2,
+					"flag": "morrow_stripped",
+					"gain": {
+						"gilt": 40,
+						"insight": 10
+					},
+					"reply": [
+						[
+							"",
+							"Ash points at his boots. Then at the ledger chained to his belt."
+						],
+						[
+							"captain",
+							"Those are Concord issue. Taking Concord issue is theft from the Office of Supply. It is also, I grant you, sensible."
+						],
+						[
+							"",
+							"He walks home in his stockings. The ledger lists every hamlet's arrears, and where the column hid its own pay: in the wagon axle."
+						],
+						[
+							"bran",
+							"Forty gilt in an axle. Now that's what I call an assessment.",
+							"happy"
+						]
+					]
+				}
+			]
+		},
+		"auditor_outro": {
+			"at": 2,
+			"anchor": "There is no form for YOU",
+			"choice": [
+				{
+					"text": "Close his ledger for him",
+					"stance": "mercy",
+					"reply": [
+						[
+							"",
+							"Ash closes his ledger for him, gently, the way you close someone's eyes."
+						]
+					]
+				},
+				{
+					"text": "Pocket the steel nib",
+					"stance": "hard",
+					"flag": "red_nib",
+					"gain": {
+						"insight": 8
+					},
+					"reply": [
+						[
+							"",
+							"Ash snaps the steel nib off the broken quill and pockets it. It is still warm, and it still wants to write."
+						]
+					]
+				},
+				{
+					"text": "Sign his ledger with a cross",
+					"stance": "spite",
+					"reply": [
+						[
+							"",
+							"Ash takes the broken quill and makes a large, untidy cross where his signature goes."
+						]
+					]
+				}
+			]
+		},
+		"act1_end": {
+			"at": 6,
+			"anchor": "Polite letters are the worst kind",
+			"choice": [
+				{
+					"text": "Burn it",
+					"stance": "spite",
+					"flag": "letter_burned",
+					"reply": [
+						[
+							"",
+							"Ash holds the letter over the brazier until it catches. It burns with a clean white flame and gives off no smoke at all."
+						],
+						[
+							"quill",
+							"Thank you. I was going to do that, and then feel terrible about the handwriting.",
+							"happy"
+						]
+					]
+				},
+				{
+					"text": "Set the white stone outside the gate",
+					"stance": "mercy",
+					"flag": "stone_returned",
+					"reply": [
+						[
+							"",
+							"Ash carries the smooth white stone out through the south gate and sets it down at the edge of the road, facing the Blank. Returned to sender."
+						],
+						[
+							"quill",
+							"Very civil. She will read it as an answer, you know. She reads everything as an answer.",
+							"sad"
+						]
+					]
+				},
+				{
+					"text": "Pin it to the Command Table",
+					"stance": "hard",
+					"flag": "letter_pinned",
+					"reply": [
+						[
+							"",
+							"Ash pins the letter to the map, out in the white, past the last province anyone has drawn."
+						],
+						[
+							"bran",
+							"Keep your enemy's letters where you can see 'em. That ain't a clause. That's just sense.",
+							"smug"
+						]
+					]
+				}
+			]
+		},
+		"morrow_letter_1": {
+			"choice": [
+				{
+					"text": "Send a sack of flour back with him",
+					"stance": "mercy",
+					"flag": "morrow_paid",
+					"gain": {
+						"supplies": -6,
+						"insight": 15
+					},
+					"reply": [
+						[
+							"",
+							"Ash loads a sack of flour onto the carter's cart and points north."
+						],
+						[
+							"quill",
+							"Very proper. A receipt for a receipt. He'll be insufferable about it.",
+							"happy"
+						]
+					]
+				},
+				{
+					"text": "Pin the schedule to the table",
+					"stance": "hard",
+					"gain": {
+						"insight": 15
+					},
+					"reply": [
+						[
+							"",
+							"Ash pins the schedule up beside the map and starts moving the barge markers to match it."
+						],
+						[
+							"quill",
+							"Fifteen dates, fifteen barges. I'll have it in every governor's hands by supper."
+						]
+					]
+				},
+				{
+					"text": "Send back his receipt, torn in half",
+					"stance": "spite",
+					"flag": "morrow_spurned",
+					"gain": {
+						"insight": 15
+					},
+					"reply": [
+						[
+							"",
+							"Ash finds the receipt Morrow's column nailed to the gate, the one for 'all outstanding sums', tears it neatly in half and hands it to the carter."
+						],
+						[
+							"ninefingers",
+							"Message received. He won't write again. Good. Never trust a captain who pays his debts."
+						]
+					]
+				}
+			]
+		},
+		"morrow_pension": {
+			"choice": [
+				{
+					"text": "Frame the notice over the table",
+					"stance": "spite",
+					"gain": {
+						"renown": 3
+					},
+					"standing": {
+						"concord": -4
+					},
+					"notice": "Hollowmark framed a Concord notice",
+					"reply": [
+						[
+							"",
+							"Ash hangs the notice over the Command Table in a gilt frame Quill swears he has never seen before."
+						],
+						[
+							"gristle",
+							"There. Something to look at while you plan, isn't it.",
+							"happy"
+						]
+					]
+				},
+				{
+					"text": "Pay his pension",
+					"stance": "mercy",
+					"gain": {
+						"gilt": -30
+					},
+					"standing": {
+						"concord": 5
+					},
+					"notice": "Hollowmark paid Captain Morrow's pension",
+					"reply": [
+						[
+							"",
+							"Ash counts out thirty gilt and hands it to Quill without looking at the statement."
+						],
+						[
+							"quill",
+							"Paid in full. The Office of Audits will not know what to do with that. Nobody pays them.",
+							"surprised"
+						]
+					]
+				},
+				{
+					"text": "File it with the other notices",
+					"stance": "hard",
+					"reply": [
+						[
+							"",
+							"Ash takes the notice down, folds it, and drops it in the box under the table where the Concord's mail goes to wait."
+						],
+						[
+							"bran",
+							"The box of things we ain't payin'. It's gettin' full. I love that box."
+						]
+					]
+				}
+			]
+		},
+		"morrow_ledger": {
+			"choice": [
+				{
+					"text": "Send one page to the Office of Audits",
+					"stance": "hard",
+					"gain": {
+						"gilt": 80
+					},
+					"reply": [
+						[
+							"",
+							"Ash tears out a single page, the worst one, and sends it to the Office of Audits with nothing else in the envelope."
+						],
+						[
+							"",
+							"Nine days later a strongbox is left at the south gate. It is not empty. There is no note."
+						]
+					]
+				},
+				{
+					"text": "Send each hamlet its own page",
+					"stance": "mercy",
+					"flag": "pages_sent",
+					"gain": {
+						"renown": 3
+					},
+					"reply": [
+						[
+							"",
+							"Ash tears the ledger apart, hamlet by hamlet, and gives the pages to the carters going down the Tithe Road."
+						],
+						[
+							"quill",
+							"Every village will know what it paid and what was declared. There will be a great many very loud meetings. I'm almost sorry to miss them."
+						]
+					]
+				},
+				{
+					"text": "Nail it to the well, open",
+					"stance": "spite",
+					"gain": {
+						"renown": 4
+					},
+					"standing": {
+						"concord": -6
+					},
+					"notice": "Hollowmark nailed a tithe-captain's ledger to its well",
+					"reply": [
+						[
+							"",
+							"Ash nails the ledger to the well-post, open at the worst page, and leaves the hammer hanging by it for anyone with something to add."
+						],
+						[
+							"ninefingers",
+							"Ha. By tonight half the Inklands will have read it. By tomorrow the Office will want our heads. Worth it.",
+							"happy"
+						]
+					]
+				}
+			]
+		}
+	},
+	"overlays": {
+		"ch1_ledger_room": [
+			{
+				"stance": "mercy",
+				"weight": 2
+			},
+			{
+				"stance": "hard",
+				"weight": 2
+			}
+		],
+		"act1_gristle_tree": [
+			{
+				"stance": "hard"
+			},
+			{
+				"stance": "spite"
+			}
+		],
+		"act1_daro_farm": [
+			{
+				"stance": "mercy",
+				"weight": 2
+			},
+			{
+				"stance": "hard",
+				"weight": 2
+			}
+		],
+		"act1_concord_hamlet": [
+			{
+				"stance": "mercy",
+				"weight": 2
+			},
+			{
+				"stance": "hard",
+				"weight": 2
+			}
+		]
+	},
+	"inserts": {
+		"act1_concord_after": [
+			{
+				"anchor": "We have time",
+				"lines": [
+					[
+						"",
+						"Behind them, Tithe-Captain Morrow is still sitting in the mud beside the strongbox, counting his wardens on his fingers. The count keeps coming out short."
+					],
+					[
+						"captain",
+						"Well? Proceed. There are three procedures for a captured officer, and I have seen all three carried out."
+					]
+				]
+			}
+		],
+		"act1_end": [
+			{
+				"after": 2,
+				"anchor": "Congratulations on the Auditor",
+				"when": {
+					"lean": "mercy"
+				},
+				"lines": [
+					[
+						"letter",
+						"'They tell me you are kind. Not the clever sort of kind, which is common, but the old, expensive sort, where it costs you something every time. I was, once. It is why I am writing to you and not to them.'"
+					]
+				]
+			},
+			{
+				"after": 2,
+				"anchor": "Congratulations on the Auditor",
+				"when": {
+					"lean": "hard"
+				},
+				"lines": [
+					[
+						"letter",
+						"'They tell me you keep accounts. You take what is owed, you leave the rest, and nobody in Hollowmark can quite call you cruel. I admire that more than I ought to. The Concord was built by people like you, before it forgot how to add.'"
+					]
+				]
+			},
+			{
+				"after": 2,
+				"anchor": "Congratulations on the Auditor",
+				"when": {
+					"lean": "spite"
+				},
+				"lines": [
+					[
+						"letter",
+						"'They tell me you have a temper, and that you spend it on the right people. Small insults to large men, by the dozen. I laughed, I confess it. But I have watched a great many fires, and they all leave the same thing behind: very little, and all of it grey.'"
+					]
+				]
+			},
+			{
+				"after": 2,
+				"anchor": "Congratulations on the Auditor",
+				"when": {
+					"lean": "none"
+				},
+				"lines": [
+					[
+						"letter",
+						"'Nobody can tell me what you are like. One says soft, one says hard, one says you set things alight for the pleasure of it. I find I like you better for that. The undecided are the only ones who read to the end.'"
+					]
+				]
+			}
+		],
+		"morrow_letter_2": [
+			{
+				"after": 0,
+				"anchor": "Third Under-Clerk again",
+				"when": {
+					"flag": "morrow_paid"
+				},
+				"lines": [
+					[
+						"letter",
+						"'The flour was very good. My landlady baked it into something with currants and asked who sent it. I said a person of no fixed name. She said they all are, these days.'"
+					]
+				]
+			}
+		]
+	},
+	"talks": {
+		"morrow_letter_1": {
+			"title": "A Letter from the Crossing",
+			"lines": [
+				[
+					"",
+					"A letter comes up from Old Mill Crossing with a carter who swears he was paid not to say who gave it him. It is written in the careful, upright hand of a man who used to fill in forms for a living."
+				],
+				[
+					"letter",
+					"'To the person standing where nobody is written. I was relieved of my column for losing a strongbox. I am now Third Under-Clerk, Tithe Office, Old Mill Crossing. I sharpen pens.'"
+				],
+				[
+					"letter",
+					"'I owe you one, and I keep my accounts. Enclosed: the Office's schedule for the north. The Erasers buy their tapers from us, and they are billed by the barge. Where the bills go, the fires follow. M.'"
+				],
+				[
+					"quill",
+					"This is real. Those are Concord tally codes. Every barge they mean to burn, with a date beside it. He's handed us their whole season, as it were.",
+					"surprised"
+				],
+				[
+					"bran",
+					"A tax man payin' a debt. I've seen everythin' now. Somebody check 'e ain't dyin'."
+				]
+			]
+		},
+		"morrow_letter_2": {
+			"title": "Another Letter from the Crossing",
+			"lines": [
+				[
+					"letter",
+					"'Third Under-Clerk again. They have not noticed me yet. Nobody notices a man who sharpens pens.'"
+				],
+				[
+					"letter",
+					"'A warning, since you are going south. The Office of Corrections is paying somebody on the Velvet Causeway for names. The payments go through a purser called Gaudin. I have seen the vouchers. The sums are large, and the names are yours.'"
+				],
+				[
+					"letter",
+					"'If you have a friend on the Causeway who is very charming, count your spoons. With respect, and still owing: M.'"
+				],
+				[
+					"quill",
+					"Gaudin. I'll remember it. I remember every name that pays somebody else.",
+					"angry"
+				]
+			]
+		},
+		"morrow_pension": {
+			"title": "Retired, with Thanks",
+			"lines": [
+				[
+					"",
+					"A Concord notice is nailed to the south gate overnight. It is signed by somebody at the Office of Audits who has run out of patience."
+				],
+				[
+					"quill",
+					"'Tithe-Captain Morrow is retired on medical grounds, having been unable since Old Mill Crossing to issue any assessment that does not end in the words, quote, with thanks, one hiccup, unquote.'",
+					"smug"
+				],
+				[
+					"quill",
+					"'Hollowmark is liable for his pension.' They've attached a statement of account. It's very long."
+				],
+				[
+					"gristle",
+					"Lovely work, that tonic was. Frame the notice, I would. Pay the pension, I wouldn't.",
+					"smug"
+				],
+				[
+					"bran",
+					"Send 'em one gilt. With a note: 'Received with thanks.'",
+					"happy"
+				]
+			]
+		},
+		"morrow_ledger": {
+			"title": "The Captain's Ledger",
+			"lines": [
+				[
+					"quill",
+					"I've been reading Captain Morrow's ledger. The one you took off him with his boots. It's the dullest book I have ever loved."
+				],
+				[
+					"quill",
+					"Six years of tithes taken on the Tithe Road, and what the column declared. The difference comes to eleven thousand gilt. Somebody at the Office of Audits has been eating very well.",
+					"smug"
+				],
+				[
+					"ninefingers",
+					"Blackmail. Lovely. I'll fetch the good paper."
+				]
+			]
+		}
+	},
+	"speakers": {},
+	"beats": [
+		{
+			"talk": "morrow_letter_1",
+			"when": {
+				"seen": [
+					"ch2_bells"
+				],
+				"flag": "morrow_spared"
+			}
+		},
+		{
+			"talk": "morrow_pension",
+			"when": {
+				"seen": [
+					"ch2_bells"
+				],
+				"flag": "morrow_dosed"
+			}
+		},
+		{
+			"talk": "morrow_ledger",
+			"when": {
+				"seen": [
+					"ch2_bells"
+				],
+				"flag": "morrow_stripped"
+			}
+		},
+		{
+			"talk": "morrow_letter_2",
+			"when": {
+				"seen": [
+					"ch3_invitation",
+					"morrow_letter_1"
+				],
+				"flag": "morrow_spared",
+				"not_flag": "morrow_spurned"
+			}
+		}
+	],
+	"chatter": [
+		{
+			"id": "agnes",
+			"when": {
+				"seen": [
+					"ch1_takeover"
+				],
+				"flag": "agnes_freed"
+			},
+			"text": "An old woman in a nightcap, to anyone who will listen: \"Walked me out of a tax office while it was being eaten. Never said a word. Lovely manners.\""
+		},
+		{
+			"id": "agnes_chalk",
+			"when": {
+				"seen": [
+					"ch1_takeover"
+				],
+				"not_flag": "agnes_freed"
+			},
+			"text": "Someone has chalked a name on the well: Agnes Pruitt, cell four. Under it, in another hand: \"Gone white.\""
+		},
+		{
+			"id": "coat",
+			"when": {
+				"seen": [
+					"ch1_takeover"
+				],
+				"flag": "coat_given"
+			},
+			"text": "A boy goes past in a governor's fur coat that trails behind him in the mud like a wedding train. He salutes Ash with both hands."
+		},
+		{
+			"id": "register",
+			"when": {
+				"seen": [
+					"ch1_takeover"
+				],
+				"flag": "register_drowned"
+			},
+			"text": "Two women at the well, laughing: \"Drew up a bucket this morning and it had arrears in it.\" \"Pour 'em back. Pour 'em back!\""
+		},
+		{
+			"id": "writ_nailed",
+			"when": {
+				"seen": [
+					"ch1_takeover"
+				],
+				"flag": "writ_nailed",
+				"not_cleared": [
+					"act1_concord"
+				]
+			},
+			"text": "A man stops under the upside-down writ on the well, tilts his head right over to read it, and walks off chuckling."
+		},
+		{
+			"id": "writ_route",
+			"when": {
+				"seen": [
+					"ch1_takeover"
+				],
+				"flag": "writ_route",
+				"not_cleared": [
+					"act1_concord"
+				]
+			},
+			"text": "A carter at the gate, to his horse: \"They read the back of the writ, they say. The bit with the names on.\" He pats the horse as if it had asked."
+		},
+		{
+			"id": "morrow_spared",
+			"when": {
+				"seen": [
+					"ch1_takeover"
+				],
+				"flag": "morrow_spared"
+			},
+			"text": "A trader back from the Tithe Road: \"Passed that tithe-captain walking north with an empty box. Holding it like it was a baby.\""
+		},
+		{
+			"id": "morrow_boots",
+			"when": {
+				"seen": [
+					"ch1_takeover"
+				],
+				"flag": "morrow_stripped"
+			},
+			"text": "A tanner, delighted: \"Concord boots! Somebody's selling Concord boots at the north gate, and they're my size.\""
+		},
+		{
+			"id": "morrow_hiccup",
+			"when": {
+				"seen": [
+					"ch1_takeover"
+				],
+				"flag": "morrow_dosed"
+			},
+			"text": "Somebody is doing an impression of a man hiccuping receipts. A small crowd is helpless with laughter. Mother Gristle is in the middle of it, taking a bow."
+		},
+		{
+			"id": "red_nib",
+			"when": {
+				"seen": [
+					"ch1_takeover"
+				],
+				"flag": "red_nib"
+			},
+			"text": "A schoolteacher, following Quill across the square: \"Is it true they kept the Auditor's nib? Is it true it still writes?\" Quill walks faster."
+		},
+		{
+			"id": "stone",
+			"when": {
+				"seen": [
+					"ch1_takeover"
+				],
+				"flag": "stone_returned"
+			},
+			"text": "Children dare each other to touch the white stone outside the south gate. Nobody has. It seems to be a little nearer the gate than it was yesterday."
+		},
+		{
+			"id": "letter_burned",
+			"when": {
+				"seen": [
+					"ch1_takeover"
+				],
+				"flag": "letter_burned"
+			},
+			"text": "A man at the brazier, to his neighbour: \"Burned a saint's letter, I heard. Didn't even read it twice.\" \"I'd have read it twice.\""
+		},
+		{
+			"id": "mercy_1",
+			"repeat": true,
+			"when": {
+				"seen": [
+					"ch1_takeover"
+				],
+				"lean": "mercy"
+			},
+			"text": "An old man, to a younger one: \"They say you can ask that one for anything. Don't, mind. But they say you can.\""
+		},
+		{
+			"id": "mercy_2",
+			"repeat": true,
+			"when": {
+				"seen": [
+					"ch1_takeover"
+				],
+				"lean": "mercy"
+			},
+			"text": "Two traders comparing notes: \"Gave it back. Gave it back! I'd have kept it.\" \"That's why nobody follows you about.\""
+		},
+		{
+			"id": "mercy_3",
+			"repeat": true,
+			"when": {
+				"seen": [
+					"ch1_takeover"
+				],
+				"lean": "mercy"
+			},
+			"text": "A woman with a basket of turnips: \"Soft, that one. Gives things away. You watch, one day they'll give the whole town away, and we'll go with it, happy as you like.\""
+		},
+		{
+			"id": "hard_1",
+			"repeat": true,
+			"when": {
+				"seen": [
+					"ch1_takeover"
+				],
+				"lean": "hard"
+			},
+			"text": "A man counting coins on the well step: \"Fair's fair with that one. You pay, you're seen to. You don't pay, you're seen to as well.\""
+		},
+		{
+			"id": "hard_2",
+			"repeat": true,
+			"when": {
+				"seen": [
+					"ch1_takeover"
+				],
+				"lean": "hard"
+			},
+			"text": "A mother, to a child dragging its feet: \"Do your sums properly, or the one with no name will come and check them.\""
+		},
+		{
+			"id": "hard_3",
+			"repeat": true,
+			"when": {
+				"seen": [
+					"ch1_takeover"
+				],
+				"lean": "hard"
+			},
+			"text": "Two men by the stalls: \"Cold, I'd call it.\" \"I'd call it fed. My kids are fed.\""
+		},
+		{
+			"id": "spite_1",
+			"repeat": true,
+			"when": {
+				"seen": [
+					"ch1_takeover"
+				],
+				"lean": "spite"
+			},
+			"text": "A barrow-boy, grinning: \"Heard the new lot made a Concord man cry. I'd follow 'em off a cliff, me.\""
+		},
+		{
+			"id": "spite_2",
+			"repeat": true,
+			"when": {
+				"seen": [
+					"ch1_takeover"
+				],
+				"lean": "spite"
+			},
+			"text": "An old woman, tutting: \"All very funny till the Concord sends somebody without a sense of humour.\""
+		},
+		{
+			"id": "spite_3",
+			"repeat": true,
+			"when": {
+				"seen": [
+					"ch1_takeover"
+				],
+				"lean": "spite"
+			},
+			"text": "A man to his friend, as Ash passes: \"Don't catch their eye. Last one who did got a nickname.\""
+		},
+		{
+			"id": "none_1",
+			"repeat": true,
+			"when": {
+				"seen": [
+					"ch1_takeover"
+				],
+				"lean": "none"
+			},
+			"text": "A woman at the well: \"Nobody knows what to make of that one. Kind, is it? Crooked? A ghost? Do ghosts eat?\""
+		},
+		{
+			"id": "none_2",
+			"repeat": true,
+			"when": {
+				"seen": [
+					"ch1_takeover"
+				],
+				"lean": "none"
+			},
+			"text": "Two men are arguing outside the tavern about whether Ash is a saint or a swindler. Money changes hands. Nobody seems sure who won."
+		}
+	]
+}
