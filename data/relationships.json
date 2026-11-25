@@ -462,7 +462,7 @@
 				"banter": [
 					[["velvette", "You left your guard open on the third pass, marquise."], ["hortense", "I know. I wanted to see if you would notice. You did. How irritating."]]
 				]}},
-		{"ids": ["saffron", "ottoline"], "kind": "friends", "name": "Cabaret hours", "text": "Saffron sang at the Gilt Lantern and Ottoline kept the Encore's door, two streets apart, for years. They have a hundred stories about the same drunks.",
+		{"ids": ["saffron", "ottoline"], "kind": "friends", "name": "Cabaret hours", "text": "For years Saffron sang at the Gilt Lantern on Lantern Quay and Ottoline kept the Encore's door at Gallows Ferry. The same drunks did the rounds of both, and the two of them have a hundred stories about them.",
 			"effects": {"expedition": 5, "building": 1, "party": {"hp": 5}, "bond": 1},
 			"banter": [
 				[["saffron", "Ottoline, remember the magistrate at the Lantern? The one who sang along?"], ["ottoline", "I remember. I threw him out by the second chorus. You thanked me."]],

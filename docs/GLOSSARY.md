@@ -103,7 +103,8 @@ the Auditor, Ozias Crane, Hester Vane, Notary Fennick, Augustin Sallow.
 | **word-fishers**, **word-nets** | Hyphenated. They net words out of the ink lake at Pendower Shallows. |
 | **the ink lake** | Lower case. The Causeway stands on it. |
 | **the Crimson Encore** / **the Encore** | Fauvette's old cabaret on Gallows Ferry, where Ottoline kept the door. |
-| **the Gilt Lantern** | Saffron's old cabaret, "till it fell in the lake". |
+| **the Gilt Lantern** | Saffron's old cabaret on Lantern Quay, by the ink lake, "till it fell in the lake" (Ojon, 2026-11-25). |
+| **the house ink** | Saint Ledger's copies the Ledger in ink mixed with the copyists' own blood (Ojon, 2026-11-25). Write "ink mixed with their own blood", not just "in blood". |
 
 ## People (Chapter 2)
 

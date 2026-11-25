@@ -273,7 +273,7 @@
 		{
 			"id": "saffron", "name": "Saffron Kiss", "title": "cabaret singer", "tier": "field", "start": false,
 			"stats": {"might": 3, "craft": 5, "lore": 4, "charm": 8, "grit": 6}, "traits": ["flirt", "night_owl"],
-			"blurb": "Stage name of Maud Pickering, who was born on a coal barge and says so. Top of the bill at the Gilt Lantern on the Causeway, until it fell in the lake. When she sings, things exist for a few seconds: a bridge, a chorus line, a door that was not there. She has never finished a song.",
+			"blurb": "Stage name of Maud Pickering, who was born on a coal barge and says so. Top of the bill at the Gilt Lantern on Lantern Quay, until it fell in the lake. When she sings, things exist for a few seconds: a bridge, a chorus line, a door that was not there. She has never finished a song.",
 			"post": "tavern", "look": {"outfit": "mage", "colors": {"skin": "c89070", "cloth": "8a2a3a", "leather": "5a1a22", "boots": "241418", "trim": "f0c040"}},
 			"join": {"type": "story", "mission": "ch3_quay"}, "hire": {},
 			"rumour": "Somebody on Lantern Quay is singing a bridge across the ink every night. The bargemen say the bridge only stays up while she does.",

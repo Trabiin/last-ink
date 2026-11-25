@@ -106,7 +106,7 @@
 			["odo", "So I came to the person the Concord is most annoyed with. Brother Cellarer said that was practical. Brother Cellarer is blank now. Or dead. We are not sure which."],
 			["quill", "Saint Ledger's keeps the second copy of the Ledger. Every name, every deed, every debt. If the capital's copy burned, the monks would write the world back."],
 			["odo", "We would. We are trying. The Abbot has us copying day and night. He has every hour rung at once, so that no brother sleeps through his turn."],
-			["odo", "And the pages come out blank. We write, and the ink sinks into the paper and does not come back up. Some brothers have started copying the blank pages. Very carefully."],
+			["odo", "And the pages come out blank. The Rule puts a drop of the copyist's own blood in every inkwell, and still the ink sinks into the paper and does not come back up. Some brothers have started copying the blank pages. Very carefully."],
 			["bran", "So the monks have gone mad and the bells won't shut up. What's that to us?"],
 			["odo", "Candleford makes our candles. Without candles we copy in the dark. And the Erasers are burning the wax barges on the lake."],
 			["ninefingers", "Erasers. White coats, tapers. Read the names out before they light a fire. Verity's lot. Saw one burn a tithe barn once. Read every name off the door first. Very polite."],
@@ -228,7 +228,7 @@
 			["ebba", "Watch his hands. The real one's hands are always inky. He never in his life wrote clean."]
 		]},
 		"abbot_phase2": {"title": "The Second Copy", "lines": [
-			["", "The Abbot staggers. Ink runs out of his sleeves onto the grass. Around the garth every copy stops, turns, and looks at him at once."],
+			["", "The Abbot staggers. Ink and blood run out of his sleeves onto the grass. Around the garth every copy stops, turns, and looks at him at once."],
 			["wulfstan", "Half. You have struck out half of me. Then the other half shall be copied twice as carefully."],
 			["ebba", "He is calling the penitents in from the walk. And mind the gold leaf: when he illuminates, get well back."]
 		]},
