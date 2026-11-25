@@ -262,7 +262,7 @@ func _draw() -> void:
 	draw_string(font, Vector2(vs.x - hw - 12, 18), head, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(10), accent.lightened(0.2))
 
 	var box := Rect2(12, vs.y - 96, vs.x - 24, 86)
-	UiSkin.page(self, box)
+	var pg := LedgerPage.begin(self, box, font, 11, true)  # lightly worn, like the dialogue box: text on the ruled lines
 	_choice_rects.clear()
 	var ink := UiSkin.PAGE_INK
 	match _stage:
@@ -270,34 +270,31 @@ func _draw() -> void:
 			var cur := _current()
 			var speaker: String = cur[0]
 			var text: String = cur[1]
-			var shown := text.substr(0, int(_shown))
-			var tx := box.position.x + 30
-			var ty := box.position.y + 22
+			var first := 0
 			if speaker != "":
 				var nm := Dialogue.display_name(speaker)  # recruits, and non-recruit speakers (Tally)
 				var nw := UiSkin.TITLE_FONT.get_string_size(nm, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(14)).x
-				var np := Vector2(tx, box.position.y + 18)
+				var np := Vector2(pg.x0, pg.rule_y(0) - 3.0)
 				UiSkin.brush(self, np + Vector2(-3, 3), nw + 8, Dialogue.accent(speaker).darkened(0.15))
 				draw_string(UiSkin.TITLE_FONT, np, nm, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(14), ink)
-				ty += 12
-			draw_multiline_string(font, Vector2(tx, ty), shown, HORIZONTAL_ALIGNMENT_LEFT, box.size.x - 52, Access.fs(11), -1,
-				ink if speaker != "" else UiSkin.PAGE_INK_SOFT)
+				first = 1
+			Dialogue.draw_text(self, font, Vector2(pg.x0, pg.rule_y(first) - 1.0), text, pg.x1 - pg.x0 - 14.0, Access.fs(11),
+				ink if speaker != "" else UiSkin.PAGE_INK_SOFT, int(_shown), Color("15101a"), pg.lh)
 			if not _typing():
 				var tip := box.end - Vector2(22, 14 - sin(Time.get_ticks_msec() / 220.0) * 1.5)
 				draw_colored_polygon(PackedVector2Array([tip, tip + Vector2(-3, -7), tip + Vector2(0, -10), tip + Vector2(3, -7)]), ink)
 		"choice":
-			draw_string(font, box.position + Vector2(30, 14), tr("Ash..."), HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(9), UiSkin.PAGE_INK_SOFT)
+			draw_string(font, Vector2(pg.x0, pg.rule_y(0) - 3.0), tr("Ash..."), HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(9), UiSkin.PAGE_INK_SOFT)
 			var opts: Array = sc.get("choice", [])
-			var y := box.position.y + 20
-			for i in opts.size():
-				var rr := Rect2(box.position.x + 28, y, box.size.x - 60, 17)
+			for i in opts.size():  # one answer on each ruled line
+				var rr := Rect2(pg.x0 - 2.0, pg.rule_y(1 + i) - pg.lh + 1.0, pg.x1 - pg.x0 - 20.0, pg.lh - 1.0)
 				_choice_rects.append(rr)
 				var on := i == _choice
 				if on:  # an ink wash under the picked answer, with a nib pointing at it
 					draw_rect(rr, Color(0.35, 0.27, 0.19, 0.18))
-					draw_colored_polygon(PackedVector2Array([rr.position + Vector2(-8, 5), rr.position + Vector2(-3, 8.5), rr.position + Vector2(-8, 12)]), ink)
-				draw_string(font, rr.position + Vector2(8, 12), opts[i]["label"], HORIZONTAL_ALIGNMENT_LEFT, rr.size.x - 16, Access.fs(10), ink if on else UiSkin.PAGE_INK_SOFT)
-				y += 20
+					var nib := Vector2(rr.position.x, pg.rule_y(1 + i) - 5.0)
+					draw_colored_polygon(PackedVector2Array([nib + Vector2(-8, -3.5), nib + Vector2(-3, 0), nib + Vector2(-8, 3.5)]), ink)
+				draw_string(font, Vector2(rr.position.x + 8, pg.rule_y(1 + i) - 1.0), opts[i]["label"], HORIZONTAL_ALIGNMENT_LEFT, rr.size.x - 16, Access.fs(10), ink if on else UiSkin.PAGE_INK_SOFT)
 		"done":
 			draw_multiline_string(font, box.position + Vector2(30, 22), _outro, HORIZONTAL_ALIGNMENT_LEFT, box.size.x - 52, Access.fs(10), -1, Color("3f6a32"))
 	var hint := Prompts.help([["ui_accept", "next"], ["ui_cancel", "skip"]], tr("Tap: next")) if _stage != "choice" \

@@ -369,7 +369,7 @@ func _draw() -> void:
 	if flash_t > 0.0:
 		var a := clampf(flash_t / 0.4, 0.0, 1.0)
 		var fw := minf(font.get_string_size(flash, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(9)).x, vs.x - 40)
-		draw_rect(Rect2(vs.x - fw - 18, vs.y - 21, fw + 12, 15), Color(0.1, 0.08, 0.06, 0.95 * a))
+		UiSkin.toast(self, Rect2(vs.x - fw - 18, vs.y - 21, fw + 12, 15), a)
 		_text(Vector2(vs.x - fw - 12, vs.y - 10), flash, 9, Color(1, 0.9, 0.7, a), fw + 4)
 
 
@@ -521,8 +521,8 @@ func _draw_pack_row(r: Rect2, i: int, on: bool, nx: float) -> void:
 	var pr := Rect2(r.position + Vector2(168, 1), Vector2(10, 10))
 	_minus_rects[i] = mr
 	_plus_rects[i] = pr
-	draw_rect(mr, Color(0.2, 0.17, 0.12))
-	draw_rect(pr, Color(0.2, 0.17, 0.12))
+	UiSkin.check(self, mr, false)  # recessed pixel stepper buttons
+	UiSkin.check(self, pr, false)
 	_text(mr.position + Vector2(3, 8), "-", 8, SOFT)
 	_text(pr.position + Vector2(2, 8), "+", 8, SOFT)
 	var packed := Armory.pack_of(id)

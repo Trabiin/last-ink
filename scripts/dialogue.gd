@@ -471,6 +471,21 @@ static func plain(text: String) -> String:
 	return text.replace(BAR_OPEN, "").replace(BAR_CLOSE, "")
 
 
+## How many lines draw_text wraps text into at this width and size.
+static func line_count(font: Font, text: String, width: float, fsize: int) -> int:
+	var space := font.get_string_size(" ", HORIZONTAL_ALIGNMENT_LEFT, -1, fsize).x
+	var n := 1
+	var x := 0.0
+	for w in plain(text).split(" ", false):
+		var ww := font.get_string_size(w, HORIZONTAL_ALIGNMENT_LEFT, -1, fsize).x
+		if x > 0.0 and x + space + ww > width:
+			n += 1
+			x = ww
+		else:
+			x += (space if x > 0.0 else 0.0) + ww
+	return n
+
+
 ## Splits text into [[segment, barred], ...] runs.
 static func bar_runs(text: String) -> Array:
 	var runs := []
@@ -494,9 +509,10 @@ static func bar_runs(text: String) -> Array:
 ## Draws text like CanvasItem.draw_multiline_string (top-left of the first baseline at pos, wrapped at
 ## width), showing only the first `shown` characters of plain(text) (-1 = all), with barred words as ink
 ## bars. Lines without bars go straight to draw_multiline_string, so they look exactly as before.
+## line_h > 0 spaces the lines that far apart (a ledger page's ruling) instead of the font's height.
 static func draw_text(ci: CanvasItem, font: Font, pos: Vector2, text: String, width: float, fsize: int, col: Color,
-		shown := -1, bar_col := Color("15101a")) -> void:
-	if not has_bars(text):
+		shown := -1, bar_col := Color("15101a"), line_h := -1.0) -> void:
+	if not has_bars(text) and line_h <= 0.0:
 		ci.draw_multiline_string(font, pos, text if shown < 0 else text.substr(0, shown), HORIZONTAL_ALIGNMENT_LEFT, width, fsize, -1, col)
 		return
 	# Words in order, each split into its plain and barred pieces.
@@ -511,7 +527,8 @@ static func draw_text(ci: CanvasItem, font: Font, pos: Vector2, text: String, wi
 			if parts[j] != "":
 				cur.append([parts[j], run[1]])
 	words.append(cur)
-	var line_h := font.get_height(fsize)
+	if line_h <= 0.0:
+		line_h = font.get_height(fsize)
 	var space := font.get_string_size(" ", HORIZONTAL_ALIGNMENT_LEFT, -1, fsize).x
 	var x := 0.0
 	var y := 0.0

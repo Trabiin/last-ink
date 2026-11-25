@@ -135,16 +135,17 @@ func _draw() -> void:
 		return
 	var r := _panel_rect()
 	var who: String = _cur[0]
-	var tw := r.size.x - (49.0 if who != "" else 14.0)
-	var need := font.get_multiline_string_size(Dialogue.plain(String(_cur[1])), HORIZONTAL_ALIGNMENT_LEFT, tw, Access.fs(9)).y
-	r.size.y = maxf(r.size.y, need + (22.0 if who != "" else 12.0))
-	UiSkin.page(self, r)  # the same torn ledger page as the dialogue box
-	var tx := r.position.x + 8
+	# The same lightly worn ledger page as the dialogue box: the name in the head band, the line on the ruling.
+	var tx := r.position.x + (42.0 if who != "" else 24.0)
+	var n := Dialogue.line_count(font, String(_cur[1]), r.end.x - 10.0 - tx, Access.fs(9))
+	r.size.y = maxf(LedgerPage.height_for(n - 1 + (1 if who != "" else 0), font, 9), 40.0 if who != "" else 0.0)
+	var pg := LedgerPage.begin(self, r, font, 9, true)
+	var first := 0
 	if who != "":
 		var face := Rect2(r.position + Vector2(5, 5), Vector2(30, 30))
 		Dialogue.draw_face(self, face, who, _cur[2])
-		tx = face.end.x + 7
-		draw_string(font, Vector2(tx, r.position.y + 13), Dialogue.display_name(who), HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(9),
+		draw_string(font, Vector2(tx, pg.rule_y(0) - 1.0), Dialogue.display_name(who), HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(9),
 			Dialogue.accent(who).darkened(0.35))
-	Dialogue.draw_text(self, font, Vector2(tx, r.position.y + (25 if who != "" else 15)), String(_cur[1]), r.end.x - tx - 6,
-		Access.fs(9), UiSkin.PAGE_INK if who != "" else UiSkin.PAGE_INK_SOFT, mini(int(_shown), 1 << 30))
+		first = 1
+	Dialogue.draw_text(self, font, Vector2(tx, pg.rule_y(first) - 1.0), String(_cur[1]), r.end.x - 10.0 - tx,
+		Access.fs(9), UiSkin.PAGE_INK if who != "" else UiSkin.PAGE_INK_SOFT, mini(int(_shown), 1 << 30), Color("15101a"), pg.lh)

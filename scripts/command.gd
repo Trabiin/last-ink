@@ -1335,10 +1335,11 @@ func _can_govern(i: int) -> bool:
 
 
 var _gov_button_y := -100.0  # set while drawing the panel
+var _gov_button_x := 0.0
 
 
 func _governor_button_rect() -> Rect2:
-	return Rect2(Vector2(size.x - 92, _gov_button_y - 10), Vector2(86, 14))
+	return Rect2(Vector2(_gov_button_x, _gov_button_y - 10), Vector2(86, 14))
 
 
 func _roster_button_rect() -> Rect2:
@@ -1667,35 +1668,39 @@ func _draw_res_deltas() -> void:
 ## The ledger: where every point of daily income and upkeep comes from.
 func _draw_ledger() -> void:
 	var lines := Empire.ledger()
-	var r := Rect2(Vector2(6, 22), Vector2(300, 54 + 13 * lines.size()))
-	_cv.draw_rect(r, Color(0.06, 0.05, 0.08, 0.95))
-	_cv.draw_rect(r, Color(0.45, 0.4, 0.48), false, 1.0)
-	var y := r.position.y + 14
-	_text(Vector2(r.position.x + 8, y), tr("Daily ledger"), 10, Color("f3efe4"))
-	_text(Vector2(r.position.x + 150, y), tr("Gilt"), 8, RES_COLORS["gilt"])
-	_text(Vector2(r.position.x + 182, y), tr("Supplies"), 8, RES_COLORS["supplies"])
-	_text(Vector2(r.position.x + 226, y), tr("Ink"), 8, RES_COLORS["ink"])
-	y += 14
+	var h := LedgerPage.height_for(lines.size() + 3, font)
+	var pg := LedgerPage.begin(_cv, Rect2(Vector2(6, 24), Vector2(316, h)), font)
+	var cx := [pg.x0 + 140.0, pg.x0 + 174.0, pg.x0 + 220.0]
+	var ks := ["gilt", "supplies", "ink"]
+	var heads := [tr("Gilt"), tr("Supplies"), tr("Ink")]
+	var hb := pg.rule_y(0) - 1.0
+	for i in 3:
+		_text(Vector2(cx[i], hb), heads[i], 8, LedgerPage.ink(RES_COLORS[ks[i]]))
+	pg.x1 = cx[0] - 6.0  # the heading stops short of the column heads
+	pg.heading(tr("Daily ledger"), 11, LedgerPage.INK)
+	pg.x1 = pg.box.end.x - 10.0
 	for line in lines:
-		_text(Vector2(r.position.x + 8, y), line["label"], 9, Color(0.85, 0.83, 0.78))
-		if line["note"] != "":
-			_text(Vector2(r.position.x + 248, y), line["note"], 7, Color(0.6, 0.58, 0.6))
-		var cx := [150, 182, 226]
-		var ks := ["gilt", "supplies", "ink"]
+		if pg.full():
+			break
+		var by := pg.rule_y(pg.line_i) - 1.0
 		for i in 3:
 			var v := int(line[ks[i]])
 			if v != 0:
-				_text(Vector2(r.position.x + cx[i], y), ("+%d" if v > 0 else "%d") % v, 9, Color("9fd18b") if v > 0 else Color("ff8a7a"))
-		y += 13
-	_cv.draw_line(Vector2(r.position.x + 8, y - 8), Vector2(r.end.x - 8, y - 8), Color(0.3, 0.27, 0.33))
+				_text(Vector2(cx[i], by), ("+%d" if v > 0 else "%d") % v, 8, LedgerPage.GREEN if v > 0 else LedgerPage.RED)
+		if line["note"] != "":
+			_text(Vector2(cx[2] + 22.0, by), Access.fit(font, str(line["note"]), Access.fs(7), pg.x1 - cx[2] - 22.0), 7, LedgerPage.INK_SOFT)
+		pg.x1 = cx[0] - 6.0
+		pg.line(line["label"], 8, LedgerPage.INK)
+		pg.x1 = pg.box.end.x - 10.0
 	var net := Empire.daily_net()
-	_text(Vector2(r.position.x + 8, y + 3), tr("Each dawn"), 9, Color("f3efe4"))
-	var cx2 := [150, 182, 226]
-	var ks2 := ["gilt", "supplies", "ink"]
-	for i in 3:
-		var v := int(net[ks2[i]])
-		_text(Vector2(r.position.x + cx2[i], y + 3), ("+%d" if v >= 0 else "%d") % v, 9, Color("9fd18b") if v > 0 else (Color("ff8a7a") if v < 0 else Color(0.6, 0.58, 0.6)))
-	_text(Vector2(r.position.x + 8, r.end.y - 6), tr("L / Back / tap the bar to toggle"), 7, Color(0.5, 0.48, 0.52))
+	if not pg.full():
+		var ny := pg.rule_y(pg.line_i) - 1.0
+		_cv.draw_rect(Rect2(pg.x0, ny - pg.lh + 2.0, pg.x1 - pg.x0, 1.0), Color(LedgerPage.INK_SOFT, 0.6))  # the sum line
+		for i in 3:
+			var v := int(net[ks[i]])
+			_text(Vector2(cx[i], ny), ("+%d" if v >= 0 else "%d") % v, 8, LedgerPage.GREEN if v > 0 else (LedgerPage.RED if v < 0 else LedgerPage.INK_SOFT))
+		pg.line(tr("Each dawn"), 8, LedgerPage.INK)
+	pg.line(tr("L / Back / tap the bar to toggle"), 7, LedgerPage.INK_SOFT)
 
 
 func _draw_clock() -> void:
@@ -1713,13 +1718,13 @@ func _draw_clock() -> void:
 	for i in Empire.SPEEDS.size():
 		var r := _speed_rect(i)
 		var on := i == Empire.speed
-		_cv.draw_rect(r, Color(0.22, 0.17, 0.08) if on else Color(0.1, 0.09, 0.12))
-		_cv.draw_rect(r, GOLD if on else Color(0.3, 0.27, 0.33), false, 1.0)
+		UiSkin.panel(_cv, r, "button", Color(1.1, 1.0, 0.85) if on else Color(0.75, 0.72, 0.7))
+		if on:
+			UiSkin.frame(_cv, r.grow(1.0))
 		var label := "II" if i == 0 else "%dx" % Empire.SPEEDS[i]  # no-tr: pause symbol
 		_text_c(Vector2(r.get_center().x, r.position.y + 11), label, 9, GOLD if on else Color(0.75, 0.72, 0.7))
 	var mr := _menu_button_rect()
-	_cv.draw_rect(mr, Color(0.1, 0.09, 0.12))
-	_cv.draw_rect(mr, Color(0.3, 0.27, 0.33), false, 1.0)
+	UiSkin.panel(_cv, mr, "button", Color(0.75, 0.72, 0.7))
 	_text_c(Vector2(mr.get_center().x, mr.position.y + 11), tr("Menu"), 9, Color(0.75, 0.72, 0.7))
 
 
@@ -1871,28 +1876,23 @@ func _draw_region_names() -> void:
 
 
 ## A province under the fog: what the region is, what is rumoured there, and when the story opens it.
-func _draw_region_panel(r: Dictionary, x: float, w: float) -> void:
-	var y := 42.0
-	_text(Vector2(x, y), str(r.get("name", tr("Uncharted"))), 15, Color("f3efe4"))
-	y += 15
-	_cv.draw_rect(Rect2(x, y - 7, 7, 7), FOG)
-	_text(Vector2(x + 11, y), tr("Beyond the fog"), 9, Color(0.8, 0.78, 0.74))
-	y += 20
-	_text(Vector2(x, y), str(r.get("mood", "")), 9, Color("e8d9a8"))
-	y += 16
-	var hint: String = r.get("hint", "")
-	_cv.draw_multiline_string(font, Vector2(x, y), hint, HORIZONTAL_ALIGNMENT_LEFT, w, Access.fs(9), -1, Color(0.85, 0.83, 0.78))
-	y += 13 * ceilf(font.get_string_size(hint, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(9)).x / w) + 10
+func _draw_region_panel(r: Dictionary, pg: LedgerPage) -> void:
+	pg.heading(str(r.get("name", tr("Uncharted"))), 13, LedgerPage.INK)
+	if not pg.full():
+		var sq := Rect2(pg.x0, pg.rule_y(pg.line_i) - 8.0, 7, 7)
+		_cv.draw_rect(sq, FOG)
+		_cv.draw_rect(sq, MARK_INK, false, 1.0)
+	pg.field("", tr("Beyond the fog"), 11.0, 8, LedgerPage.INK, LedgerPage.INK)
+	pg.skip()
+	pg.para(str(r.get("mood", "")), 8, LedgerPage.GOLD)
+	pg.para(str(r.get("hint", "")), 8, LedgerPage.INK)
+	pg.skip()
 	var n: int = (r.get("provinces", []) as Array).size()
-	_text(Vector2(x, y), tr("Provinces"), 9, Color(0.7, 0.68, 0.7))
-	_text(Vector2(x + 60, y), tr("%d, uncharted") % n, 9, Color(0.85, 0.83, 0.78))
-	y += 13
+	pg.field(tr("Provinces"), tr("%d, uncharted") % n, 60.0, 8, LedgerPage.INK_SOFT, LedgerPage.INK)
 	var ch := int(r.get("chapter", 0))
-	_text(Vector2(x, y), tr("Opens"), 9, Color(0.7, 0.68, 0.7))
-	_text(Vector2(x + 60, y), (tr("with Chapter %d of the story") % ch) if ch > 0 else tr("later in the story"), 9, Color(0.85, 0.83, 0.78))
-	y += 18
-	_cv.draw_multiline_string(font, Vector2(x, y), tr("Nobody you could send has been past the fog. The Blank's work there waits until the story takes you in, and so does yours."),
-		HORIZONTAL_ALIGNMENT_LEFT, w, Access.fs(9), -1, Color(0.62, 0.6, 0.62))
+	pg.field(tr("Opens"), (tr("with Chapter %d of the story") % ch) if ch > 0 else tr("later in the story"), 60.0, 8, LedgerPage.INK_SOFT, LedgerPage.INK)
+	pg.skip()
+	pg.para(tr("Nobody you could send has been past the fog. The Blank's work there waits until the story takes you in, and so does yours."), 8, LedgerPage.INK_SOFT)
 	var pr := _play_rect()
 	_text_c(Vector2(pr.get_center().x, pr.position.y + 16), tr("No missions past the fog"), 8, Color(0.45, 0.44, 0.47))
 
@@ -1965,59 +1965,56 @@ func _draw_panel() -> void:
 	var x := PANEL_X
 	var w := size.x - PANEL_X - 6
 	UiSkin.panel(_cv, Rect2(x - 6, 20, w + 10, size.y - 22), "ledger")
+	# The province is written up on a worn ledger page (LedgerPage), every line on a ruled line; the
+	# mission button stays on the leather under it.
+	var pg := LedgerPage.begin(_cv, Rect2(x - 3, 27, w + 4, _play_rect().position.y - 31), font)
+	_gov_button_y = -100.0
 	if not Empire.province_open(p):
-		_draw_region_panel(territory.region_of(p), x, w)
+		_draw_region_panel(territory.region_of(p), pg)
 		return
-	var y := 42.0
-	_text(Vector2(x, y), p["name"], 15, Color("f3efe4"))
-	y += 11
+	pg.heading(p["name"], 13, LedgerPage.INK)
 	var reg := territory.region_of(p)
-	_text(Vector2(x, y), "%s  ·  %s" % [reg.get("name", ""), territory.biomes.get(p.get("biome", ""), {}).get("name", "")], 8, Color(0.62, 0.6, 0.62))
-	y += 13
+	pg.line("%s  ·  %s" % [reg.get("name", ""), territory.biomes.get(p.get("biome", ""), {}).get("name", "")], 7, LedgerPage.INK_SOFT)
 	var owner: String = p["owner"]
-	_cv.draw_rect(Rect2(x, y - 7, 7, 7), owner_color(owner))
-	if Access.map_symbols:
-		_owner_mark(_cv, owner, Vector2(x + 3.5, y - 3.5), 2.2)
-	_text(Vector2(x + 11, y), owner_name(owner), 9, Color(0.8, 0.78, 0.74))
+	if not pg.full():
+		var sq := Rect2(pg.x0, pg.rule_y(pg.line_i) - 8.0, 7, 7)
+		_cv.draw_rect(sq, owner_color(owner))
+		_cv.draw_rect(sq, MARK_INK, false, 1.0)
+		if Access.map_symbols:
+			_owner_mark(_cv, owner, sq.get_center(), 2.2)
+	pg.field("", owner_name(owner), 11.0, 8, LedgerPage.INK, LedgerPage.INK)
 	if owner in Empire.faction_ids():
 		var tier := Empire.tier_of(owner)
-		_text(Vector2(x + 11, y + 11), tr("Standing: %s %+d   Diplomacy%s") % [Empire.tier_name(tier), Empire.standing_of(owner), Prompts.tag("diplomacy")], 8,
-			Color("9fd18b") if Empire.has_perk(owner) else (Color("ff9b8a") if tier == "hostile" else Color(0.7, 0.68, 0.7)))
-		y += 10
-	y += 18
+		pg.field("", tr("Standing: %s %+d   Diplomacy%s") % [Empire.tier_name(tier), Empire.standing_of(owner), Prompts.tag("diplomacy")], 11.0, 7, LedgerPage.INK,
+			LedgerPage.GREEN if Empire.has_perk(owner) else (LedgerPage.RED if tier == "hostile" else LedgerPage.INK_SOFT))
 
 	# Fray
 	var fray := int(p["fray"])
 	var state := tr("Safe") if fray < 25 else (tr("Fraying") if fray < 60 else (tr("Unravelling") if fray < 100 else tr("Erased")))
-	_text(Vector2(x, y), tr("Fray"), 9, Color(0.7, 0.68, 0.7))
 	var ftext := "%d / 100   %s" % [fray, state]
-	_text(Vector2(x + 30, y), ftext, 9, Color("f3efe4") if fray < 60 else Color("ff9b8a"))
-	if Access.map_symbols and owner != "erased":  # the same box the map shows by the name, so its look is learned here
-		_fray_chip(Vector2(x + 36 + font.get_string_size(ftext, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(9)).x, y), fray)
-	y += 5
+	var fy := pg.rule_y(pg.line_i) - 1.0
+	var fray_shown := not pg.full()
+	pg.field(tr("Fray"), ftext, 30.0, 8, LedgerPage.INK_SOFT, LedgerPage.INK if fray < 60 else LedgerPage.RED)
+	if fray_shown and Access.map_symbols and owner != "erased":  # the same box the map shows by the name, so its look is learned here
+		_fray_chip(Vector2(pg.x0 + 36 + font.get_string_size(ftext, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(8)).x, fy), fray)
 	# Fray fills in the Blank's bone-white, notched where it turns Fraying (25), Unravelling (60); striped
 	# once it unravels (with danger patterns), so the state never rests on the shade alone.
-	UiSkin.bar(_cv, Rect2(x, y, w, 5), fray / 100.0, "bone", {"notches": [0.25, 0.6], "hatch": Access.danger_patterns and fray >= 60})
-	y += 16
+	var fb := pg.space(1)
+	if fb.size != Vector2.ZERO:
+		UiSkin.bar(_cv, Rect2(fb.position.x, floorf(fb.position.y + (fb.size.y - 5.0) / 2.0), fb.size.x, 5), fray / 100.0, "bone", {"notches": [0.25, 0.6], "hatch": Access.danger_patterns and fray >= 60})
 	if owner != "erased":
 		var rate := Empire.fray_rate(p)
-		var rcol := Color("ff8a7a") if rate > 0 else (Color("9fd18b") if rate < 0 else Color(0.7, 0.68, 0.7))
+		var rcol := LedgerPage.RED if rate > 0 else (LedgerPage.GREEN if rate < 0 else LedgerPage.INK_SOFT)
 		var eta := ""
 		if rate > 0:
 			eta = "   " + Loc.n("erased in ~%d day", "erased in ~%d days", ceili((100.0 - fray) / rate)) % ceili((100.0 - fray) / rate)
-		_text(Vector2(x, y), tr("Per day: %s%d%s") % ["+" if rate > 0 else "", rate, eta], 9, rcol)
-		y += 11
+		pg.line(tr("Per day: %s%d%s") % ["+" if rate > 0 else "", rate, eta], 8, rcol)
 		for src in Empire.fray_sources(p):
 			var v := int(src[1])
-			_text(Vector2(x + 6, y), ("+%d" if v > 0 else "%d") % v, 8, Color("ff9b8a") if v > 0 else Color("9fd18b"))
-			_text(Vector2(x + 24, y), src[0], 8, Color(0.7, 0.68, 0.7))
-			y += 10
+			pg.field(("+%d" if v > 0 else "%d") % v, src[0], 20.0, 7, LedgerPage.RED if v > 0 else LedgerPage.GREEN, LedgerPage.INK_SOFT)
 		if Empire.surge.get("id", "") == p["id"]:
-			_text(Vector2(x, y + 1), tr("Surge gathering: +%d Fray when it lands") % Empire.surge_fray(), 8, Color(1, 0.55, 0.5))
-			y += 11
-		y += 6
-	else:
-		y += 2
+			pg.para(tr("Surge gathering: +%d Fray when it lands") % Empire.surge_fray(), 7, LedgerPage.RED)
+	pg.skip()
 
 	# Output
 	var out: Dictionary = p.get("output", {})
@@ -2026,43 +2023,37 @@ func _draw_panel() -> void:
 		if out.has(k):
 			parts.append("+%d %s" % [out[k], Loc.t(RES_NAMES[k])])
 	var out_label := tr("Lost output") if owner == "erased" else (tr("Output per day") if owner == "you" else tr("Would give"))
-	_text(Vector2(x, y), out_label, 9, Color(0.7, 0.68, 0.7))
-	y += 12
-	_text(Vector2(x, y), "   ".join(parts) if not parts.is_empty() else Loc.t("nothing"), 9, Color("e8d9a8") if owner != "erased" else Color(0.55, 0.54, 0.56))
-	y += 17
+	pg.line(out_label, 8, LedgerPage.INK_SOFT)
+	pg.line("   ".join(parts) if not parts.is_empty() else Loc.t("nothing"), 8, LedgerPage.GOLD if owner != "erased" else LedgerPage.INK_SOFT)
+	pg.skip()
 
 	# Governor and sites
-	_text(Vector2(x, y), tr("Governor"), 9, Color(0.7, 0.68, 0.7))
 	var gov := Empire.governor_of(p["id"])
 	var gov_text := "-"
-	var gov_col := Color(0.85, 0.83, 0.78)
+	var gov_col := LedgerPage.INK
 	if owner == "you":
 		if gov != "":
 			gov_text = tr("%s (%s fit)") % [Empire.recruit(gov)["name"], Empire.governor_fit(gov, p["id"])]
 		else:
 			gov_text = tr("none posted!")
-			gov_col = Color("ff9b8a")
+			gov_col = LedgerPage.RED
 	elif owner == "free":
 		gov_text = tr("claim it to post one")
-	_text(Vector2(x + 52, y), gov_text, 9, gov_col)
-	_gov_button_y = y if _can_govern(selected) else -100.0
+	var lw := 52.0
+	pg.field(tr("Governor"), gov_text, lw, 8, LedgerPage.INK_SOFT, gov_col)
 	if _can_govern(selected):
-		y += 13
 		var fav: String = p.get("favors", "charm")
-		_text(Vector2(x, y), tr("Wants"), 9, Color(0.7, 0.68, 0.7))
-		_text(Vector2(x + 52, y), tr("high %s") % Loc.t(Empire.STAT_NAMES[fav]), 9, Color(0.85, 0.83, 0.78))
-		var gb := _governor_button_rect()
-		gb.position.y += 13  # sits beside the "Wants" line, under the name
-		_gov_button_y += 13
-		_cv.draw_rect(gb, Color(0.22, 0.17, 0.08))
-		_cv.draw_rect(gb, GOLD, false, 1.0)
-		var label := (tr("Claim") if owner == "free" else (tr("Change") if gov != "" else tr("Post one"))) + "  G"
-		_text_c(Vector2(gb.get_center().x, gb.position.y + 10), label, 8, GOLD)
-	y += 13
+		pg.field(tr("Wants"), tr("high %s") % Loc.t(Empire.STAT_NAMES[fav]), lw, 8, LedgerPage.INK_SOFT, LedgerPage.INK)
+		var room := pg.space(2)  # the button gets lines of its own, under the governor
+		if room.size != Vector2.ZERO:
+			_gov_button_x = room.position.x + lw
+			_gov_button_y = floorf(room.position.y + (room.size.y - 14.0) / 2.0) + 10.0
+			var gb := _governor_button_rect()
+			UiSkin.panel(_cv, gb, "button", Color(1.1, 1.0, 0.85))
+			var label := (tr("Claim") if owner == "free" else (tr("Change") if gov != "" else tr("Post one"))) + "  G"
+			_text_c(Vector2(gb.get_center().x, gb.position.y + 10), label, 8, GOLD)
 	var sites: Array = p.get("sites", [])
-	_text(Vector2(x, y), tr("Sites"), 9, Color(0.7, 0.68, 0.7))
-	_text(Vector2(x + 52, y), ", ".join(sites) if not sites.is_empty() else tr("none left"), 9, Color(0.85, 0.83, 0.78))
-	y += 13
+	pg.field(tr("Sites"), ", ".join(sites) if not sites.is_empty() else tr("none left"), lw, 8, LedgerPage.INK_SOFT, LedgerPage.INK)
 	var nb := []
 	var fogged := {}
 	for b in territory.neighbors[selected]:
@@ -2072,12 +2063,11 @@ func _draw_panel() -> void:
 		elif not fogged.has(q["region"]):
 			fogged[q["region"]] = true
 			nb.append(tr("the fog over %s") % territory.region_of(q).get("name", "?"))
-	_text(Vector2(x, y), tr("Borders"), 9, Color(0.7, 0.68, 0.7))
-	_cv.draw_multiline_string(font, Vector2(x + 52, y), ", ".join(nb), HORIZONTAL_ALIGNMENT_LEFT, w - 52, Access.fs(9), -1, Color(0.85, 0.83, 0.78))
-	y += 13 * ceilf(font.get_string_size(", ".join(nb), HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(9)).x / (w - 52)) + 8
+	pg.field(tr("Borders"), ", ".join(nb), lw, 8, LedgerPage.INK_SOFT, LedgerPage.INK)
+	pg.skip()
 
 	# Flavour
-	_cv.draw_multiline_string(font, Vector2(x, y), p["blurb"], HORIZONTAL_ALIGNMENT_LEFT, w, Access.fs(9), -1, Color(0.62, 0.6, 0.62))
+	pg.para(p["blurb"], 8, LedgerPage.INK_SOFT)
 
 	# Mission button
 	var m := _mission(selected)
@@ -2085,8 +2075,9 @@ func _draw_panel() -> void:
 	if not m.is_empty():
 		var more := Missions.list_for_province(p["id"]).size() - 1
 		var blocked: bool = str(m.get("blocker", "")) != ""
-		_cv.draw_rect(r, Color(0.22, 0.17, 0.08) if not blocked else Color(0.12, 0.11, 0.13))
-		_cv.draw_rect(r, GOLD if not blocked else Color(0.45, 0.42, 0.4), false, 1.0)
+		UiSkin.panel(_cv, r, "button", Color(1.1, 1.0, 0.85) if not blocked else Color(0.6, 0.58, 0.58))
+		if not blocked:
+			UiSkin.frame(_cv, r.grow(1.0))
 		var label: String = m["name"] if m.has("type") else tr("Play: %s") % m["name"]
 		_text_c(Vector2(r.get_center().x, r.position.y + 12), label + (tr("  (+%d more)") % more if more > 0 else ""), 9, GOLD if not blocked else Color(0.7, 0.67, 0.62))
 		var sub := (tr("Tap again") if Prompts.touch() else Prompts.key("ui_accept")) if not blocked else tr("Locked: %s") % str(m["blocker"])

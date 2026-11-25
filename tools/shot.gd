@@ -1,7 +1,7 @@
 extends SceneTree
 ## Screenshot helper for art review (not exported: tools/* is excluded).
 ##   xvfb-run -a godot --path . -s tools/shot.gd -- out=/tmp/x.png scene=mission party=ash,bran,gristle,ninefingers frames=90
-## scene: mission (Frayed Meadow patrol), town (Hollowmark), command (Command Table), picker (Command Table party picker).
+## scene: mission (Frayed Meadow patrol), town (Hollowmark), command (Command Table), picker: scene=command act=picker.
 ## Autoloads exist only after the first frame, so setup happens in _process.
 
 var frame := 0
@@ -114,7 +114,7 @@ func _process(_delta: float) -> bool:
 			for j in path.size() - 1:
 				obj = obj.get(path[j])
 			var v = kv[1]
-			obj.set(path[path.size() - 1], int(v) if v.is_valid_int() else v)
+			obj.set(path[path.size() - 1], (v == "true") if v in ["true", "false"] else (int(v) if v.is_valid_int() else v))
 	if frame == total - 25 and args.has("talk") and current_scene != null and "dialogue_box" in current_scene:
 		# talk=quill_first opens that conversation in town; portraits=DIR swaps in <id>.png from DIR (a
 		# style trial from tools/portrait_style.py) without touching assets/portraits.
@@ -152,6 +152,21 @@ func _act(what: String) -> void:
 		for j in path.size() - 1:
 			obj = obj.get(path[j])
 		obj.callv(path[path.size() - 1], Array(parts.slice(1)))
+		return
+	if what.begins_with("popup:"):  # act=popup:help_view opens an overlay screen (its static popup) for a UI shot
+		var bits := what.substr(6).split(":")
+		var scr = load("res://scripts/%s.gd" % bits[0])
+		var a := [cur] + Array(bits.slice(1))
+		scr.callv("popup" if scr.has_method("popup") else "open", a)
+		return
+	if what.begins_with("log:"):  # act=log:quill_first: that talk's lines written into the dialogue log, then the log
+		for t in what.substr(4).split(","):
+			for l in load("res://scripts/dialogue.gd").talk(t):
+				load("res://scripts/dialogue_log.gd").add(str(l[0]), str(l[1]))
+		load("res://scripts/dialogue_log.gd").popup(cur)
+		return
+	if what == "picker" and cur != null and "party_picker" in cur:  # act=picker on scene=command: the party picker
+		cur.party_picker.open(load("res://scripts/missions.gd").find(str(args.get("mission", "meadow_patrol"))))
 		return
 	if cur == null or not ("heroes" in cur):
 		return

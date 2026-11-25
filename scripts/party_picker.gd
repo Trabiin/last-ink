@@ -303,7 +303,8 @@ func _scroll_arrow(at: Vector2, up: bool) -> void:
 func _draw() -> void:
 	var vs := size
 	drawn_text.clear()
-	draw_rect(Rect2(Vector2.ZERO, vs), Color(0.05, 0.04, 0.07, 0.985))
+	draw_rect(Rect2(Vector2.ZERO, vs), Color(0.04, 0.035, 0.06))  # nothing of the table shows through
+	UiSkin.screen(self, vs)
 	var screen := Rect2(Vector2.ZERO, vs)
 	var party := mission_party(mission)
 	_text(Vector2(LIST_X, 4), tr("Choose your party"), 15, PAPER, vs.x - 16)
@@ -333,8 +334,7 @@ func _draw() -> void:
 		ch = minf(ch, (list_bottom - list_top) * 0.45)  # rows come first: a long card is cut short
 		_card_rect = Rect2(LIST_X, list_bottom - ch, LIST_W, ch)
 		list_bottom = _card_rect.position.y - 5.0
-		draw_rect(_card_rect, Color(0.07, 0.06, 0.09))
-		draw_rect(_card_rect, Color(0.2, 0.19, 0.23), false, 1.0)
+		UiSkin.row(self, _card_rect)
 		var cy := _card_rect.position.y + 4.0
 		for c in wrapped:
 			for line in c[0]:
@@ -375,15 +375,10 @@ func _draw() -> void:
 		_row_rects.append(row)
 		y += heights[i] + ROW_GAP
 		var on := i == sel
-		draw_rect(row, Color(0.16, 0.13, 0.09) if on else Color(0.09, 0.08, 0.11))
-		if on:
-			draw_rect(row, GOLD, false, 1.0)
+		UiSkin.row(self, row, on)
 		var box := Rect2(row.position + Vector2(8, row.size.y / 2.0 - 6.0), Vector2(12, 12))
 		var picked := id in party
-		draw_rect(box, Color(0.05, 0.04, 0.07))
-		draw_rect(box, GOLD if picked else Color(0.35, 0.32, 0.38), false, 1.0)
-		if picked:
-			draw_rect(box.grow(-3), GOLD)
+		UiSkin.check(self, box, picked)
 		var tx := row.position.x + 28.0
 		var tw := LIST_W - 34.0
 		var ny := row.position.y + ROW_PAD
@@ -406,11 +401,11 @@ func _draw() -> void:
 
 	var go_on := sel == ids.size()
 	# Only the focused row or button wears the gold frame, so there is never a second cursor on screen.
-	draw_rect(_go_rect, Color(0.26, 0.2, 0.08) if go_on else Color(0.13, 0.11, 0.09))
-	draw_rect(_go_rect, GOLD if go_on else Color(0.45, 0.38, 0.24), false, 2.0 if go_on else 1.0)
+	UiSkin.panel(self, _go_rect, "button", Color(1.2, 1.1, 0.9) if go_on else Color(0.85, 0.8, 0.75))
+	if go_on:
+		UiSkin.frame(self, _go_rect.grow(1.0))
 	_text(_go_rect.position + Vector2(10, (bh - _lh(10)) / 2.0), go_label, 10, GOLD if go_on else Color("ece6da"), go_w - 14, _go_rect)
-	draw_rect(_back_rect, Color(0.1, 0.09, 0.12))
-	draw_rect(_back_rect, Color(0.3, 0.27, 0.33), false, 1.0)
+	UiSkin.panel(self, _back_rect, "button", Color(0.75, 0.72, 0.7))
 	_text(_back_rect.position + Vector2(12, (bh - _lh(9)) / 2.0), tr("Back"), 9, Color(0.75, 0.72, 0.7), back_w - 16, _back_rect)
 
 	# The party, standing in a row, above the controls line
@@ -424,8 +419,7 @@ func _draw() -> void:
 		_text(Vector2(x, foot), tip, 7, Color("9fe07a") if pn.all(func(p): return p["kind"] != "rivals") else Color("ffc48a"), w, screen)
 	var dh := 54.0 + _lh(8)  # the names under the dolls grow with the text; the dolls' feet stay clear of them
 	var doll_box := Rect2(x, foot - 2.0 - dh, w, dh)
-	draw_rect(doll_box, Color(0.08, 0.07, 0.1))
-	draw_rect(doll_box, Color(0.25, 0.22, 0.28), false, 1.0)
+	UiSkin.row(self, doll_box)
 	for i in Empire.PARTY_SIZE:
 		var cx := x + w * (i + 0.5) / Empire.PARTY_SIZE
 		var cw := w / Empire.PARTY_SIZE - 6.0
@@ -440,12 +434,12 @@ func _draw() -> void:
 
 	# Detail: how the highlighted hero fights
 	var dbox := Rect2(x, list_top, w, doll_box.position.y - DOLL_HEAD - list_top)
-	var bottom := dbox.end.y
 	if sel < ids.size():
 		_draw_detail(ids[sel], party, dbox)
 	else:
-		_text(Vector2(x, list_top + 4), tr("Ready?"), 13, PAPER, w, dbox)
-		_wrap(list_top + 6 + _lh(13), x, tr("The clock stops while you are out. Whoever stays home keeps working their post."), w, 8, Color(0.68, 0.66, 0.68), bottom, dbox)
+		var pg := _page(dbox)
+		pg.heading(tr("Ready?"), 12, LedgerPage.INK)
+		pg.para(tr("The clock stops while you are out. Whoever stays home keeps working their post."), 8, LedgerPage.INK_SOFT)
 
 	var help := Prompts.help([["updown", "choose"], ["ui_accept", tr("pick or drop")], ["roster", "roster"], ["ui_cancel", "back"]], tr("Tap heroes to pick or drop them"))
 	_text(Vector2(DETAIL_X, vs.y - 2.0 - _lh(7)), help, 7, Color(0.5, 0.48, 0.52), w, screen)
@@ -454,22 +448,24 @@ func _draw() -> void:
 		var fl := Access.fit(font, flash, Access.fs(9), LIST_W - 12)
 		var fw := font.get_string_size(fl, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(9)).x
 		var fr := Rect2(LIST_X, gy - 6.0 - _lh(9) - 4.0, fw + 12.0, _lh(9) + 4.0)
-		draw_rect(fr, Color(0.1, 0.08, 0.06, 0.95 * a))
-		draw_rect(fr, Color(GOLD, 0.5 * a), false, 1.0)
+		UiSkin.toast(self, fr, a)
 		_text(fr.position + Vector2(6, 2), fl, 9, Color(1, 0.9, 0.7, a), LIST_W - 12, fr)
 
 
+## A ledger page for the detail pane, its text noted for the layout tests.
+func _page(box: Rect2) -> LedgerPage:
+	var pg := LedgerPage.begin(self, box, font)
+	pg.log = drawn_text
+	return pg
+
+
+## How the highlighted hero fights, written up on a ledger page, on its lines (LedgerPage).
 func _draw_detail(id: String, party: Array, box: Rect2) -> void:
-	var x := box.position.x
-	var w := box.size.x
-	var bottom := box.end.y
 	var r := Empire.recruit(id)
 	var hd := hero_data(id)
-	var y := box.position.y + 4.0
-	_text(Vector2(x, y), str(r["name"]), 13, PAPER, w, box)
-	y += _lh(13)
-	_text(Vector2(x, y), tr("Weapon: %s") % str(hd.get("weapon", "?")), 9, Color("e8c66a"), w, box)
-	y += _lh(9) + 3.0
+	var pg := _page(box)
+	pg.heading(str(r["name"]), 12, LedgerPage.INK)
+	pg.line(tr("Weapon: %s") % str(hd.get("weapon", "?")), 8, LedgerPage.GOLD)
 	var bars := [[tr("HP"), float(hd.get("hp", 40)), 70.0], [tr("Damage"), float(hd.get("damage", 10)), 16.0],
 			[tr("Reach"), float(hd.get("reach", 20)), 30.0], [tr("Speed"), float(hd.get("speed", 68)), 80.0],
 			[tr("Recovery"), float(hd.get("power_rate", 0.95)) * 100.0, 110.0]]
@@ -478,24 +474,18 @@ func _draw_detail(id: String, party: Array, box: Rect2) -> void:
 		lw = maxf(lw, font.get_string_size(bar[0], HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(8)).x)
 	lw += 8.0
 	var numw := font.get_string_size("000", HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(8)).x + 6.0
-	var bw := clampf(w - lw - numw, 40.0, 120.0)
-	var step := maxf(11.0, _lh(8) + 1.0)
 	for bar in bars:
-		if y + step > bottom:
+		if pg.full():
 			break
-		_text(Vector2(x, y), bar[0], 8, Color(0.72, 0.7, 0.72), lw, box)
-		var by := y + (_lh(8) - 7.0) / 2.0
-		draw_rect(Rect2(x + lw, by, bw, 7), Color(0.18, 0.16, 0.2))
-		draw_rect(Rect2(x + lw, by, bw * clampf(bar[1] / bar[2], 0.05, 1.0), 7), Color(0.85, 0.78, 0.6))
-		_text(Vector2(x + lw + bw + 6.0, y), str(int(bar[1])), 8, Color(0.85, 0.83, 0.78), numw, box)
-		y += step
+		var line_top := pg.rule_y(pg.line_i) - pg.lh
+		pg.line(bar[0], 8, LedgerPage.INK_SOFT, str(int(bar[1])), LedgerPage.INK)
+		var bw := maxf(pg.x1 - pg.x0 - lw - numw, 20.0)
+		var by := floorf(line_top + (pg.lh - 5.0) / 2.0)
+		UiSkin.bar(self, Rect2(pg.x0 + lw, by, bw, 5.0), clampf(bar[1] / bar[2], 0.05, 1.0), "brass")
 	var style: Dictionary = _load().get("styles", {}).get(AllyAI.preset_id(str(hd.get("ai", "balanced"))), {})
-	y += 6.0
-	if y + _lh(9) <= bottom:
-		_text(Vector2(x, y), tr("As an ally: %s") % str(style.get("name", "?")), 9, Color("8fa7e8"), w, box)
-		y += _lh(9) + 1.0
-	y += _wrap(y, x, str(style.get("desc", "")), w, 8, Color(0.68, 0.66, 0.68), bottom, box) + 4.0
-	y += _wrap(y, x, str(hd.get("special", "")), w, 8, Color("cfe0b0"), bottom, box) + 4.0
+	pg.line(tr("As an ally: %s") % str(style.get("name", "?")), 8, LedgerPage.BLUE)
+	pg.para(str(style.get("desc", "")), 8, LedgerPage.INK_SOFT)
+	pg.para(str(hd.get("special", "")), 8, LedgerPage.GREEN)
 	var kit := []
 	for a in Abilities.for_ids(hd.get("abilities", [])):
 		kit.append(str(a.get("name", "")))
@@ -503,12 +493,12 @@ func _draw_detail(id: String, party: Array, box: Rect2) -> void:
 	var kit_line := tr("Abilities: %s") % ", ".join(kit)
 	if not known.is_empty():  # weapon skill (issue #24): the techs learned so far
 		kit_line += tr("   Techs (%s Lv %d): %s") % [Skills.weapon_name(id), Skills.weapon_level(id), ", ".join(known.map(func(t): return str(t.get("name", ""))))]
-	y += _wrap(y, x, kit_line, w, 8, Color(0.78, 0.74, 0.86), bottom, box) + 4.0
+	pg.para(kit_line, 8, LedgerPage.PLUM)
 	# Friends and rivals among the party (issue #116), as it would be with this hero in it.
 	var with_me := party.filter(func(p): return p != id) + [id]
 	for n in Relationships.notes(with_me, "party"):
 		if Empire.short_name(id) in str(n[0]):
-			y += _wrap(y, x, (str(n[0]) if id in party else tr("If picked: %s") % str(n[0])), w, 8, Color("9fe07a") if n[1] else Color("ff9b8a"), bottom, box) + 1.0
+			pg.para((str(n[0]) if id in party else tr("If picked: %s") % str(n[0])), 8, LedgerPage.GREEN if n[1] else LedgerPage.RED)
 
 
 func _update_dolls() -> void:

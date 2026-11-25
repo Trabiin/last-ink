@@ -164,6 +164,16 @@ and between the red margin and the right edge, at every text size; a page that r
 paper use the page inks (`LedgerPage.INK`, `INK_SOFT`, `GOLD`, `GREEN`, `RED`, `BLUE`, `PLUM`, or
 `LedgerPage.ink(colour)`), never the light colours made for the dark panels.
 
+Where the ledger is used (pass of 2026-11-25): every reading pane in the menus, the party picker's detail, the
+gear shop's item, the governor's reasons, the Command Table's province panel and Daily ledger, the mission
+report, the Journal and Help pages, the dialogue log, and every conversation surface (dialogue box and its
+choices, bond scenes, epilogue cards, tip cards, banter). Conversations use `begin(..., light = true)`: fewer
+patches, no tea ring or blot, so the portraits stay the thing to look at. Pages that scroll (Journal, Help,
+dialogue log) scroll a whole ruled line at a time, so text never leaves the ruling. Text from
+`Dialogue.draw_text` follows the ruling with its `line_h` argument. Lists, buttons, the quick menu, Options and
+forms stay on the dark leather; buttons are `UiSkin.panel(r, "button")`, pick boxes `UiSkin.check`, short
+messages `UiSkin.toast`. `UiSkin.page` (the old clean page) is gone.
+
 ## Effects (from 2026-11-24)
 
 Skills, techs, weapon swings, guards, the swap marker and every burst are drawn in code, and drawn straight

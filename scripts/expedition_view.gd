@@ -300,7 +300,7 @@ func _draw() -> void:
 	if flash_t > 0.0:
 		var a := clampf(flash_t / 0.4, 0.0, 1.0)
 		var w := font.get_string_size(flash, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(9)).x
-		draw_rect(Rect2(vs.x - w - 18, vs.y - 21, w + 12, 15), Color(0.1, 0.08, 0.06, 0.95 * a))
+		UiSkin.toast(self, Rect2(vs.x - w - 18, vs.y - 21, w + 12, 15), a)
 		_text(Vector2(vs.x - w - 12, vs.y - 10), flash, 9, Color(1, 0.9, 0.7, a))
 
 
@@ -415,10 +415,7 @@ func _draw_squad(vs: Vector2) -> void:
 			var picked: bool = id in squad
 			var col := TEXT if row["enabled"] else DIM
 			var box := Rect2(rr.position + Vector2(5, 4), Vector2(7, 7))
-			draw_rect(box, Color(0.2, 0.18, 0.22))
-			draw_rect(box, Color(0.5, 0.46, 0.5) if row["enabled"] else Color(0.28, 0.26, 0.3), false, 1.0)
-			if picked:
-				draw_rect(box.grow(-2), GOLD)
+			UiSkin.check(self, box, picked, not row["enabled"])
 			_text(base + Vector2(18, 0), Empire.recruit(id)["name"], 9, GOLD if on and row["enabled"] else col, 96)
 			_text(base + Vector2(116, 0), "%d" % int(round(Empire.job_strength(job_id, id))), 9, Color("cfe0b0") if row["enabled"] else col)
 			var doing: String = row["note"] if row["note"] != "" else Empire.role_label(id)

@@ -265,23 +265,24 @@ func _draw() -> void:
 
 	if title != "":
 		draw_string(UiSkin.TITLE_FONT, Vector2(14, 20), title, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(16), SOFT)
-	UiSkin.page(self, box)
+	# A lightly worn ledger page (LedgerPage): the name in the head band, every line of the text on a ruled
+	# line and between the margins.
+	var pg := LedgerPage.begin(self, box, font, 11, true)
 	var text: String = cur[1]
-	var ty := box.position.y + Access.px(22.0)
-	var tx := box.position.x + 30  # right of the ledger's red margin line
+	var first := 0
 	if speaker != "":
 		# The speaker's name, written in the heading face with a brushed underline in their colour.
 		var nm := Dialogue.display_name(speaker)
 		var acc := Dialogue.accent(speaker)
 		var nw := UiSkin.TITLE_FONT.get_string_size(nm, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(14)).x
-		var np := Vector2(tx, box.position.y + Access.px(18.0))
+		var np := Vector2(pg.x0, pg.rule_y(0) - 3.0)
 		if _slots[1] == speaker and _slots[0] != speaker:  # name on the speaker's side
-			np.x = box.end.x - 20 - nw
+			np.x = pg.x1 - nw
 		UiSkin.brush(self, np + Vector2(-3, 3), nw + 8, acc.darkened(0.15))
 		draw_string(UiSkin.TITLE_FONT, np, nm, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(14), INK)
-		ty += Access.px(12.0)
-	Dialogue.draw_text(self, font, Vector2(tx, ty), text, box.size.x - 52, Access.fs(11), INK if speaker != "" else INK_SOFT,
-		mini(int(_shown), 1 << 30))  # black bars for redacted words (issue #186)
+		first = 1
+	Dialogue.draw_text(self, font, Vector2(pg.x0, pg.rule_y(first) - 1.0), text, pg.x1 - pg.x0 - 14.0, Access.fs(11), INK if speaker != "" else INK_SOFT,
+		mini(int(_shown), 1 << 30), Color("15101a"), pg.lh)  # black bars for redacted words (issue #186)
 	if _choosing:
 		_draw_choices(box)
 	elif not _typing():
@@ -308,24 +309,26 @@ func _draw() -> void:
 ## Ash's choice: a small stack of options just above the text box, the picked one in gold with a nib.
 func _draw_choices(box: Rect2) -> void:
 	_choice_rects = []
-	var row_h := Access.px(16.0)
 	var w := 0.0
 	for o in _choices:
 		w = maxf(w, font.get_string_size(str(o.get("text", "")), HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(11)).x)
-	w = minf(w + 34.0, box.size.x - 40.0)
-	var h := row_h * _choices.size() + 8.0
+	w = minf(w + 44.0, box.size.x - 40.0)  # the page's margins and the nib
+	var lh := LedgerPage.height_for(1, font, 11) - LedgerPage.height_for(0, font, 11)
+	var h := LedgerPage.height_for(_choices.size() - 1, font, 11)
 	var r := Rect2(box.end.x - w - 16.0, box.position.y - h - 4.0, w, h)
-	UiSkin.page(self, r)
+	var pg := LedgerPage.begin(self, r, font, 11, true)  # one choice on each ruled line
 	for i in _choices.size():
-		var rr := Rect2(r.position.x + 4, r.position.y + 4 + i * row_h, r.size.x - 8, row_h)
+		var rr := Rect2(pg.x0 - 14.0, pg.rule_y(i) - lh + 1.0, pg.x1 - pg.x0 + 14.0, lh - 1.0)
 		_choice_rects.append(rr)
 		var on := i == _choice
 		if on:
 			draw_rect(rr, Color(GOLD, 0.28))
-			var tip := rr.position + Vector2(9, row_h * 0.5)
+			var tip := Vector2(pg.x0 - 7.0, pg.rule_y(i) - 5.0)
 			draw_colored_polygon(PackedVector2Array([tip + Vector2(-4, -3), tip + Vector2(2, 0), tip + Vector2(-4, 3)]), INK)
-		draw_string(font, rr.position + Vector2(16, row_h * 0.5 + Access.fs(11) * 0.32), str(_choices[i].get("text", "")),
-			HORIZONTAL_ALIGNMENT_LEFT, rr.size.x - 18, Access.fs(11), INK if on else INK_SOFT)
+		draw_string(font, Vector2(pg.x0, pg.rule_y(i) - 1.0), str(_choices[i].get("text", "")),
+			HORIZONTAL_ALIGNMENT_LEFT, pg.x1 - pg.x0, Access.fs(11), INK if on else INK_SOFT)
+
+
 
 
 ## A small tag under the box (Text speed, Skip, Log). Returns its tap rect.
