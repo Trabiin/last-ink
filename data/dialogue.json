@@ -123,6 +123,12 @@
 			["tally", "Quill counts everything twice. Leave him alone."],
 			["nan", "That's Tally. My shadow. He talks, he's honest and he's not paid. Don't let him tell you different.", "smug"],
 			["tally", "I am not paid. She is right about that one."]
+		]},
+		"ilse_first": {"title": "A Better Mirror", "lines": [
+			["ilse", "Hollowmark. She has been looking forward to this. A town with walls that are the right way round, she was told."],
+			["ilse", "They are not. That well is on the wrong side. That tavern sign reads backwards. Ilse will get used to it, or the town will.", "smug"],
+			["", "She finds a rain barrel and looks into it for some time, turning her head. The face in the water does not quite keep up."],
+			["ilse", "There she is. A little slow, but she always was in water. Put Ilse somewhere with a mirror, and she will be no trouble at all."]
 		]}
 	},
 	"first_talk": {
@@ -138,7 +144,8 @@
 		"velvette": "velvette_first",
 		"hortense": "hortense_first",
 		"saffron": "saffron_first",
-		"nan": "nan_first"
+		"nan": "nan_first",
+		"ilse": "ilse_first"
 	},
 	"events": {
 		"first_kill": {"once": true, "lines": [["bran", "It popped. Like a thought you weren't supposed to have."]]},

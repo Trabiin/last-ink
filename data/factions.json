@@ -340,6 +340,66 @@
 						"text": "Velvet bravos 'borrow' %d Supplies from a cart out of %s, for a party. They leave a very charming note."}
 				]
 			}
+		},
+		{
+			"id": "moot", "name": "The Harbour Moot", "short": "Moot", "province": "saltgrave",
+			"start": -22, "respects": "grit", "drift": 0, "floor": -100, "color": "3a6a7a", "ui_color": "8ac0d0",
+			"wants": "The boats home. The tide back. Nobody from inland telling them how to fish.",
+			"blurb": "The fishing families of the Unfinished Coast, who settle everything that matters in the net loft at Trevail by a show of hands. They have outlived storms, the Concord's harbour tax and three wars, and they are not about to be told what to do by a sea that has stopped.",
+			"envoy_title": "Guest in the net loft",
+			"react": {"claim_near": -3, "erased_near": -6, "lamp_near": 5, "why_claim": "Inland folk planting flags on the coast", "why_erased": "The Blank ate a stretch of the coast", "why_lamp": "A Wardlamp lit on the coast, like a second lighthouse"},
+			"perk": {"text": "The Moot puts Hollowmark on the catch list: 3 Supplies a day in salt fish"},
+			"deals": {
+				"gift": {"name": "Send rope, tar and sailcloth", "cost": {"gilt": 25, "supplies": 6}, "standing": 8, "cooldown": 2,
+					"text": "A cart of rope, tar and sailcloth goes down to Trevail. The Moot counts every coil, finds nothing short, and decides you may be all right after all."},
+				"intel": {"name": "Ask the boats what they saw", "cost": {"gilt": 20, "supplies": 3}, "cooldown": 4, "insight": 4, "warning_days": 5,
+					"text": "Your envoy stands a round in the net loft and the skippers talk. Boats see a long way. The white moves before the land knows it: +1 day of surge warning for a few days."},
+				"trade": {"name": "Buy the morning catch", "cost": {"gilt": 40}, "daily": {"supplies": 3},
+					"text": "A cart of salt fish comes up from the coast every week. Hollowmark smells of pilchards. Nobody goes hungry."},
+				"aid": {"name": "Call out the lifeboat crews", "standing": -15,
+					"text": "The lifeboat crews come inland with boathooks and oilskins and stand your line against the surge as if it were a sea. The Blank lands at half strength."},
+				"cede": {"name": "Ask the Moot for Trevail", "standing": -35,
+					"text": "The Moot votes, a forest of hands. Trevail goes into Hollowmark's keeping, on the understanding that the harbour book stays at the harbour and nobody inland ever touches the bell."}
+			},
+			"asks": [
+				{"id": "moot_nets", "name": "Mend the fleet's nets", "tier": "hostile", "below": "neutral", "kind": "deliver",
+					"cost": {"supplies": 12, "gilt": 15}, "days": 5, "repeat": 9, "refuse": -3,
+					"text": "Half of what is left of the fleet came back with its nets torn on things in the water that were not fish. The Moot asks for rope and twine, and wants to see whether inland folk keep their word.",
+					"reward": {"standing": 9, "supplies": 4},
+					"fail": {"standing": -5},
+					"done_text": "The nets are mended by the Saturday. The Moot sends back the first catch in a basket with no note, which on the coast means thank you.",
+					"fail_text": "No rope came. The boats stayed in. The Moot has written you down as 'inland' in the harbour book, which is not a compliment."},
+				{"id": "moot_wrecks", "name": "Bring back what the white took", "tier": "wary", "kind": "salvage", "near": true,
+					"days": 8, "repeat": 12, "refuse": -3,
+					"text": "Boats that sailed into the white come back sometimes, as wreck, on the edge of it. Go into the white beside the coast and bring back what you can find: a name board, a lantern, anything a family can bury.",
+					"reward": {"standing": 11, "mats": {"wreck_oak": 2, "saltglass": 1}},
+					"fail": {"standing": -5},
+					"done_text": "You brought back the name board of the Morwenna. Her skipper's widow put it over the door. The Moot stood in the street with their caps off.",
+					"fail_text": "Nothing came back. The families waited on the quay till dark."},
+				{"id": "moot_tideline", "name": "Keep the white off the harbours", "tier": "neutral", "kind": "fray",
+					"max": 30, "days": 10, "repeat": 16, "refuse": -3,
+					"text": "The coast frays faster than anywhere: the sea forgets itself and the land forgets with it. Keep the white back from every province of yours on the coast for ten days, and the Moot will believe you mean to stay.",
+					"reward": {"standing": 12, "ink": 2, "boon": {"kind": "ward", "per_day": -1, "days": 5}},
+					"fail": {"standing": -5},
+					"done_text": "Ten days and the harbour walls still say where the sea stops. The Moot votes Hollowmark a share in the pilchard season.",
+					"fail_text": "The white came up the slipway at Trevail. The Moot remembers who said they would hold it."},
+				{"id": "moot_light", "name": "Light a second lamp", "tier": "neutral", "kind": "lamp",
+					"days": 10, "repeat": 0, "refuse": -2,
+					"text": "One lighthouse is not enough on a coast where the sea has stopped and the boats sail the wrong way. A Wardlamp on the coast would give the skippers a second light to steer home by.",
+					"reward": {"standing": 9, "gilt": 25},
+					"fail": {"standing": -4},
+					"done_text": "The skippers steer by your lamp now, and call it Hollowmark's candle. Two more boats came in out of the white on the first night it burned.",
+					"fail_text": "No second lamp. The skippers steer by Polgarrow alone, and it is a long way round."}
+			],
+			"trouble": {
+				"hostile_gap": [5, 7], "wary_gap": [8, 11],
+				"events": [
+					{"kind": "fine", "gilt": [10, 20], "tiers": ["hostile", "wary"],
+						"text": "The Moot charges Hollowmark harbour dues for a cart that only came within sight of the sea. Paying them costs %d Gilt, and saves an argument."},
+					{"kind": "seize", "supplies": [5, 9], "tiers": ["hostile"],
+						"text": "Wreckers off the coast take %d Supplies from a cart out of %s. The Moot says they have never heard of them. Everyone on the coast is somebody's cousin."}
+				]
+			}
 		}
 	]
 }

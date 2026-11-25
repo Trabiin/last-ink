@@ -48,7 +48,12 @@
 		"duellist": {"chance": 0.32, "most": 2, "table": {"velvet_cord": 2, "scrap_iron": 1}},
 		"inkeel": {"chance": 0.3, "most": 2, "table": {"ink_pearl": 2, "blank_pith": 1}},
 		"lamplighter": {"chance": 0.28, "most": 2, "table": {"ink_pearl": 1, "lamp_brass": 2}},
-		"host": {"chance": 1.0, "most": 5, "table": {"ink_pearl": 2, "velvet_cord": 2}}
+		"host": {"chance": 1.0, "most": 5, "table": {"ink_pearl": 2, "velvet_cord": 2}},
+		"breaker": {"chance": 0.3, "most": 2, "table": {"saltglass": 1, "blank_pith": 2}},
+		"netcaster": {"chance": 0.32, "most": 2, "table": {"wreck_oak": 2, "moth_silk": 1}},
+		"gannet": {"chance": 0.28, "most": 1, "table": {"saltglass": 1, "blank_pith": 1}},
+		"saltwight": {"chance": 0.34, "most": 2, "table": {"saltglass": 2, "wreck_oak": 1}},
+		"lowwater": {"chance": 1.0, "most": 5, "table": {"saltglass": 2, "wreck_oak": 2}}
 	},
 	"regions": {
 		"marches": {"chance": 0.12, "most": 1, "table": {"blank_pith": 2, "scrap_iron": 2, "oak_gall": 1}},

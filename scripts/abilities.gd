@@ -83,6 +83,7 @@ static func desc_of(a: Dictionary) -> String:
 	v["rate_pct"] = int(round(float(a.get("rate", 0)) * 100.0))
 	v["weak_pct"] = int(round((1.0 - float(a.get("mult", 1))) * 100.0))
 	v["slow_pct"] = int(round((1.0 - float(a.get("slow", 1))) * 100.0))
+	v["erase_pct"] = int(round(float(a.get("erase", 0)) * 100.0))  # Chapter 4 (#30)
 	return str(a.get("desc", "")).format(v) + tree_text(a)
 
 
@@ -122,6 +123,8 @@ static func tree_text(a: Dictionary) -> String:
 		parts.append(Loc.t("She stays out of sight for %s s after.") % _num(a["vanish"]))
 	if kind == "shadow" and float(a.get("weaken_hits", 0)) > 0.0:
 		parts.append(Loc.t("Every punch signs its target up to the Small Print for %s s.") % _num(a["weaken_hits"]))
+	if kind == "unwrite" and int(a.get("pierce_heal", 0)) > 0:
+		parts.append(Loc.t("Every enemy it unwrites heals her %d.") % int(a["pierce_heal"]))
 	if kind == "conjure" and float(a.get("song", 0)) > 0.0:
 		parts.append(Loc.t("When it bows out, the party nearby gets %s s of Torch Song.") % _num(a["song"]))
 	return "" if parts.is_empty() else " " + " ".join(parts)
@@ -211,6 +214,8 @@ static func use(h: Hero, i: int) -> bool:
 			_weaken(h, a, parent)
 		"shadow":
 			_shadow(h, a, parent)
+		"unwrite":
+			_unwrite(h, a, parent)
 	Fx.damage_number(parent, h.global_position + Vector2(0, -26), str(a.get("name", "")), color_of(a))
 	return true
 
@@ -574,6 +579,63 @@ static func _shadow(h: Hero, a: Dictionary, parent: Node) -> void:
 	Fx.burst(parent, t.position + Vector2(0, -8), [Color("1a1424"), color_of(a)], 14, 45.0)
 
 
+# ---------------------------------------------------------------- Chapter 4 kinds (#30)
+
+## Unwrite (Ilse, White Ink): a straight white line from her spear point, reach long and width wide. Enemies on it that
+## are at or under erase of their health (and any Salt Wight's heap) are taken off the page outright (Enemy.erase_out);
+## the rest take damage and a short stun. Bosses never unwrite: they take the damage. Things out of reach (under the
+## ink, up in the air) are missed.
+static func _unwrite(h: Hero, a: Dictionary, parent: Node) -> void:
+	var reach := float(a.get("reach", 90))
+	var width := float(a.get("width", 16))
+	var col := color_of(a)
+	var dir := h.facing.normalized()
+	Fx.sweep(parent, h.global_position + Vector2(0, -6), dir.angle(), deg_to_rad(5), reach, Color.WHITE)
+	for i in 4:
+		Fx.burst(parent, h.global_position + Vector2(0, -6) + dir * reach * (0.25 + 0.25 * i), [Color.WHITE, col], 4, 25.0)
+	var erased := 0
+	var hit_any := false
+	for e in h.get_tree().get_nodes_in_group("enemies"):
+		var enemy := e as Enemy
+		if enemy == null or enemy.dead or enemy.untargetable():
+			continue
+		var local := (enemy.global_position - h.global_position).rotated(-dir.angle())
+		if local.x < -enemy.radius or local.x > reach + enemy.radius or absf(local.y) > width / 2.0 + enemy.radius:
+			continue
+		hit_any = true
+		if not enemy.boss and (enemy.heaped() or float(enemy.hp) <= float(enemy.max_hp) * float(a.get("erase", 0.25))):
+			enemy.erase_out()
+			erased += 1
+			continue
+		if TreePerks.strike(h, enemy, int(a.get("damage", 14)), h.global_position, float(a.get("knock", 120)), a):
+			enemy.stun(float(a.get("stun", 0)))
+	if erased > 0 and int(a.get("pierce_heal", 0)) > 0:  # skill tree rider (issue #25)
+		TreePerks._heal_self(h, int(a["pierce_heal"]) * erased)
+	if hit_any and h.party:
+		h.party.shake(2.5 if erased > 0 else 1.5)
+		Rumble.landed(h, 0.8)
+
+
+## The enemy Unwrite would take off the page right now (or the best one to hit), within range in front of her or
+## not: used by the ally rule "line". Erasable ones first, then the nearest.
+static func unwrite_target(h: Hero, a: Dictionary, rng: float) -> Enemy:
+	var best: Enemy = null
+	var best_score := INF
+	for e in h.get_tree().get_nodes_in_group("enemies"):
+		var enemy := e as Enemy
+		if enemy == null or enemy.dead or enemy.untargetable():
+			continue
+		var d := enemy.global_position.distance_to(h.global_position)
+		if d > rng:
+			continue
+		var erasable := not enemy.boss and (enemy.heaped() or float(enemy.hp) <= float(enemy.max_hp) * float(a.get("erase", 0.25)))
+		var score := d - (1000.0 if erasable else 0.0)
+		if score < best_score:
+			best_score = score
+			best = enemy
+	return best
+
+
 ## Enemies a dash runs through (each one once per dash).
 static func dash_hits(h: Hero) -> void:
 	for e in h.get_tree().get_nodes_in_group("enemies"):
@@ -636,6 +698,11 @@ static func rule_fires(h: Hero, i: int) -> bool:
 				return true
 		"threat":
 			if leader and _count_near(h, leader.global_position, float(rule.get("range", 60))) >= int(rule.get("count", 2)):
+				return true
+		"line":  # Unwrite (Chapter 4): only worth White Ink on something it would unwrite, or on a boss in reach
+			var tgt := unwrite_target(h, h.abilities[i], float(rule.get("range", 80)))
+			if tgt != null and (tgt.boss or tgt.heaped() or float(tgt.hp) <= float(tgt.max_hp) * float(h.abilities[i].get("erase", 0.25))):
+				h.facing = (tgt.global_position - h.global_position).normalized()
 				return true
 	return false
 

@@ -12,7 +12,9 @@
 		"askew": {"name": "First Reader Askew", "color": "d8d2c4", "colors": {"skin": "e8ccb0", "cloth": "e8e4d8", "trim": "a08a5a", "hair": "8a6a4a"}},
 		"lantenay": {"name": "Duc de Lantenay", "color": "4a5ab0", "colors": {"skin": "ecd6c4", "cloth": "2a2e5a", "trim": "d8c070", "hair": "e8e4dc"}},
 		"gaudin": {"name": "Purser Gaudin", "color": "5a5a6a", "colors": {"skin": "dcc4ac", "cloth": "30303c", "trim": "a8a8b8", "hair": "4a3a2a"}},
-		"host": {"name": "The Host", "color": "8a2a4a", "colors": {"skin": "e8d8d0", "cloth": "4a1028", "trim": "e0c070", "hair": "1a0a10"}}
+		"host": {"name": "The Host", "color": "8a2a4a", "colors": {"skin": "e8d8d0", "cloth": "4a1028", "trim": "e0c070", "hair": "1a0a10"}},
+		"pascoe": {"name": "Harbourmaster Pascoe", "color": "3a6a7a", "colors": {"skin": "d8b090", "cloth": "2a3a4a", "trim": "c8b070", "hair": "8a6a4a"}},
+		"keeper": {"name": "Keeper Hocking", "color": "5a7a8a", "colors": {"skin": "c8a888", "cloth": "c8a040", "trim": "3a4a5a", "hair": "d8d4cc"}}
 	},
 	"talks": {
 		"ch1_arrest": {"title": "Chapter 1  ·  No Such Person", "lines": [
@@ -415,6 +417,129 @@
 			["saffron", "I'm writing a song about tonight. I'm going to finish it. You see if I don't."],
 			["", "That night a letter lies on the Command Table, weighed down with a white mask. It says only: 'That one was not mine. Someone else is setting places at the table. Fondly, V.'"],
 			["", "Under her name, in a different ink, someone has drawn two black bars."]
+		]},
+		"ch4_tide": {"title": "A Piece of the Sea", "lines": [
+			["", "A fishing boat comes up the Hollowmark road on a cart, pulled by four men and a donkey. It is dry inside. There is a wave in it."],
+			["", "The wave stands in the boat like a sheet of green glass, curled over at the top, with a crab halfway up it, stopped in the act of falling."],
+			["pascoe", "Loveday Pascoe, harbourmaster at Trevail. That's the sea, that is. A bit of it. We cut a piece off to show you, since nobody up here would believe us."],
+			["bran", "You cut a bit off the sea.", "surprised"],
+			["pascoe", "Saw, chisel, three days. It don't move and it don't drip. Five nights back the whole bay stopped mid-wave, and the boats out past the bar kept sailing, on into the white."],
+			["pascoe", "The Moot says ask the town with nobody in charge. The Moot reckons nobody might know what to do about nothing."],
+			["bran", "That's us. Nobody, at your service. Rates on request.", "smug"],
+			["", "The crab moves one leg. Everyone pretends not to see it."]
+		]},
+		"ch4_harbour_intro": {"title": "Trevail Harbour", "lines": [
+			["", "Trevail is a harbour town built up a cliff, and over all of it, roofs, chapel and quay, hangs a wave. It is green at the bottom and white at the top, and it has been about to fall for five days."],
+			["", "Under it the town has carried on. Washing hangs from its underside on hooks. A boy is fishing up into it with a bent pin."],
+			["pascoe", "Mind your heads. She don't fall, but she's cold to brush against, and she gets in your hair."],
+			["pascoe", "Thirty-two boats were out past the bar when she stopped. They'm still sailing, look, out there. Sailing for home and getting further off."],
+			["pascoe", "The bell's how we call boats in, fog or night. If I ring it, some of them might hear and come about. Only the sea's walked up the slipway in pieces, and it don't like the bell."]
+		]},
+		"ch4_harbour_outro": {"title": "Eleven Home", "lines": [
+			["", "The bell goes for a long time. Out past the bar, small and far off, sails turn. Eleven boats come about and come in under the wave, slowly, the crews looking up at it with their mouths open."],
+			["pascoe", "Eleven. Out of thirty-two."],
+			["", "She writes it in the harbour book: eleven home, twenty-one out. She does not write 'lost'. Trevail has a word for boats still sailing, and it is 'out'."],
+			["pascoe", "There's a thing at Halfwave you should see. The chapel there kept a looking-glass for the drowned, so they could find their faces. Since the sea stopped there's a knight in it. She talks. Mostly about herself."],
+			["pascoe", "And Polgarrow Light's gone dark. The keeper's still up there, Jory Hocking. He keeps saying things, his girl says. Not in his own voice."]
+		]},
+		"ch4_harbour_after": {"title": "Pilchards and a Chart", "lines": [
+			["bran", "Eleven boats. The Moot's sent a barrel of pilchards and a letter sayin' they're in our debt. I've framed the letter. I've eaten the pilchards."],
+			["", "Quill has pinned a coast chart to the Command Table. Halfwave Bay is shaded where the sea stopped short of the shore: a long white line where the tide should be."],
+			["quill", "Halfwave Bay. Unclaimed, unregistered, and per the harbourmaster, haunted by a knight in a looking-glass. I have filed it under 'other'."],
+			["quill", "The chapel stands on the beach. If we want to look in that glass, the bay will have to be ours first. Nobody at Halfwave lets strangers onto the sand since the drowned started walking out of it."]
+		]},
+		"ch4_mirror_intro": {"title": "Halfwave Bay", "lines": [
+			["", "At Halfwave the sea stopped short of the beach. Twenty yards out the tide stands up in a long green wall, and fish hang in it like flies in amber. The sand between is dry and full of footprints that point the wrong way."],
+			["", "Up the beach is a chapel with no roof. From inside it, someone is talking."],
+			["ilse", "...and then she said, the tide will come back, and Ilse said, it would not dare. Is somebody out there? Ilse can hear boots."],
+			["bran", "There's a woman in that chapel talkin' about 'erself. In the third person. On a Tuesday."]
+		]},
+		"ch4_ilse": {"title": "The Knight in the Glass", "lines": [
+			["", "On the chapel's back wall hangs a tall looking-glass in a frame of driftwood, salt-white to the elbow. In it stands a knight in silvered armour, with a spear, her helmet under her arm, and nobody in the chapel for her to be the reflection of."],
+			["ilse", "At last. An audience. Turn round, let her look at you. Hm. No face to speak of. You will do.", "smug"],
+			["ilse", "Ilse. Dame Ilse, if anyone is still counting. The woman who owned this face looked into this glass every Sunday. Then the Blank took her off the beach, and it forgot to take the reflection."],
+			["ilse", "So here Ilse is, everything back to front. She parts her hair on the wrong side and she cannot read a word of the hymn board."],
+			["", "The tideline groans. Through the chapel door the green wall bulges, and white shapes start to climb out of it."],
+			["ilse", "Ah. The verger and his friends. They come for the glass every night. Ilse would rather they did not break it, as she is still inside it."]
+		], "choice": [{"text": "Hold out your hand to the glass", "reply": [["ilse", "Bold. She likes bold. Wait there.", "smug"], ["", "Her gauntlet comes out of the mirror the way a hand comes out of water. Then the rest of her, armour, spear and all. The glass behind her is empty."]]}, {"text": "Turn to face the door", "reply": [["ilse", "Yes, good, guard her. She will see to the rest herself."], ["", "Behind Ash there is a sound like someone stepping out of a pond. When Ash looks back, the knight is standing in the chapel and the glass is empty."]]}]},
+		"ch4_mirror_outro": {"title": "Dame Ilse", "lines": [
+			["", "The last salt wight goes down in a spray of white grit. Ilse stands over the heap with her spear, admiring the angle she is standing at."],
+			["ilse", "The glass held. Good. If it breaks, she does not know what happens to her, and she would rather not find out in front of people."],
+			["ilse", "Now. She has spent a week in a chapel with nothing to look at but fish. You have a town. Does it have mirrors?"],
+			["bran", "It's got a puddle outside the tavern."],
+			["ilse", "Then Ilse will make do. She is told she is very good at making do. She was told it backwards, but the meaning came through.", "happy"]
+		]},
+		"ch4_mirror_after": {"title": "The Keeper's Daughter", "lines": [
+			["", "A girl in a sou'wester is waiting at the Hollowmark gate with a lantern that is not lit. She has walked from Polgarrow, which is forty miles."],
+			["kerra", "Kerra Hocking. Me dad keeps Polgarrow Light. Kept. It went out the night the sea stopped, and he won't come down."],
+			["kerra", "He talks all night. Only 'tis not his talk. There's gaps in it, like someone took a knife to the words. And he says your name. The one you haven't got."],
+			["ilse", "A man who speaks in gaps. How dull for him. Ilse will come, naturally."],
+			["kerra", "Halfwave's got nobody watching it now the drowned are walking. Put somebody in charge there and I'll take you up the Light. I won't leave the village to look after itself."]
+		]},
+		"ch4_light_intro": {"title": "Polgarrow Light", "lines": [
+			["", "Polgarrow Light stands on a black rock at the end of the land. The lamp is dark. Below it the sea has stopped in the middle of breaking over the rock, and the spray stands in a white fan, every drop in place."],
+			["kerra", "Mind the spray. 'Tis like walking through a bead curtain, only it cuts."],
+			["kerra", "The gannets nest up top. Since the sea stopped there's only half of each one. They still dive. Don't stand where their shadow stops."],
+			["ilse", "Half a bird. Ilse sympathises. She is half a person, and she has never looked better.", "smug"]
+		]},
+		"ch4_keeper": {"title": "The Keeper's Voice", "lines": [
+			["", "The lamp room is cold. Jory Hocking sits by the dark lamp in his oilskins, very upright, hands on his knees. His clothes are wet, as if he has just come up out of the sea. He has not been in the sea for five days."],
+			["kerra", "Dad. 'Tis me. I've brought the one with no name, like you kept saying."],
+			["keeper", "Kerra. Good maid. Stand by the door."],
+			["", "He turns his head to Ash. His mouth keeps moving after his face has stopped."],
+			["vacancy", "[[You]] [[were]] [[on]] [[the]] [[plate]]. [[You]] [[were]] [[not]] [[finished]]. back."],
+			["vacancy", "[[The]] [[sea]] [[is]] [[in]] [[the]] [[larder]]. [[The]] [[tide]] [[is]] [[a]] [[crumb]]. supper [[soon]]."],
+			["vacancy", "[[Every]] [[name]] [[on]] [[the]] [[shelf]]. [[One]] [[left]] [[out]]. door [[open]]."],
+			["ilse", "That is no man talking. That is a hole talking through a man. Ilse knows the difference. She is the other way round."],
+			["vacancy", "[[Glass]] [[girl]]. [[You]] [[were]] [[left]] [[on]] [[the]] [[side]]. later."],
+			["", "Ilse takes one step back from the keeper, and for a moment, in the black window behind her, she has no reflection at all."],
+			["kerra", "Light the lamp! He's better in the light. He was always better in the light."]
+		]},
+		"ch4_light_outro": {"title": "Five Days", "lines": [
+			["", "The lamp catches. A beam goes out over the stopped sea, and for the first time in five days the spray on the rock glitters instead of just hanging there."],
+			["", "Jory Hocking blinks at the light, then at his daughter, then at the wet sleeves of his own coat."],
+			["keeper", "Kerra? What day is it? I was in the middle of telling somebody something. Long story. Couldn't get to the end of it."],
+			["kerra", "Five days, Dad. You've been talking five days."],
+			["keeper", "Have I? Then I'm dry. Put the kettle on, maid."],
+			["", "He cannot remember a word of it. Kerra can, all of it. On the way down the rock she asks whether Hollowmark wants a diver, because she is not going to sit at home and listen to him not remember."]
+		]},
+		"ch4_light_after": {"title": "Three Words", "lines": [
+			["quill", "Item: one lighthouse, relit. Item: one keeper, dry. Item: one diver, Kerra Hocking, signed on, wages in pilchards, per her own terms."],
+			["quill", "Item: the keeper's words, as his daughter remembers them. I wrote them down. Half the page came out black."],
+			["", "He turns the ledger round. Where he wrote the keeper's words, the ink has run together into thick black bars, neat as a censor's. Three words are left clear: 'back', 'supper', 'door'."],
+			["quill", "I used my good ink, as well."]
+		]},
+		"ch4_verity": {"title": "Elsewhere", "lines": [
+			["", "Elsewhere. In a room with no windows, Verity Hale is marking a map of the Inklands in chalk, the way she has every evening for two years. A ring here, where the Blank will go next. A line there, where it should stop."],
+			["", "There is a ring on the coast. She did not draw it. She looks at her chalk, and then at her fingers. They are clean."],
+			["verity", "Polgarrow. I have never once aimed at Polgarrow. There is nothing there that needs a clean page. A lighthouse and some very stubborn fish."],
+			["verity", "Halfwave. Trevail. I did not draw these either. I should think I would remember."],
+			["", "She takes a fresh sheet and begins a letter. 'Dear Ash. I believe I owe you an explanation.' She reads it twice."],
+			["", "Then she folds it, holds it in the candle until it is gone, and draws a neat chalk ring round Polgarrow herself, so that the map is correct again."],
+			["verity", "There. My mistake."]
+		]},
+		"lowwater_intro": {"title": "Low Water", "lines": [
+			["", "At the bottom of the bay the water has gathered itself into one shape, taller than a house, green and full of wrecks. A ship's figurehead turns in it like a face. Things that drowned move behind its skin."],
+			["pascoe", "That's her. Everything the tide forgot to bring back. My grandad's boat's in there, look. Second from the top."],
+			["ilse", "It is looking at her. Ilse knows when she is being looked at. It wants to come in, and it cannot remember where in is."],
+			["", "Low Water leans up the bay towards the shore it lost, and the sand begins to move."]
+		]},
+		"lowwater_phase2": {"title": "High Water", "lines": [
+			["", "Low Water rears up and the sea bed shakes. Far up the bay, the standing wall of the tide groans and leans."],
+			["pascoe", "Tide's turning! Get up on the high banks, quick, where the sand's pale!"]
+		]},
+		"lowwater_outro": {"title": "The Tide Comes Home", "lines": [
+			["", "Low Water comes apart. The wrecks drop out of it onto the sea bed one by one, with a sound like furniture. Then the water runs out of the shape and down the bay, and keeps running, and does not stop."],
+			["", "Far up the beach, the standing wall of the tide shivers. A fish drops out of it, flaps on the sand, and looks surprised."],
+			["pascoe", "She's moving. Look at her. Slow as cold treacle, but she's moving."],
+			["ilse", "And Ilse has saved the bay. You helped. Somebody make a note.", "happy"]
+		]},
+		"ch4_end": {"title": "One Black Bar More", "lines": [
+			["", "By the time the party is back in Hollowmark the news has come up the road ahead of it: at Halfwave the tide moved a hand's width in a day. At Trevail two more boats came in out of the white."],
+			["pascoe", "The Moot's voted. Hollowmark's welcome in every harbour on the coast, and pays half for pilchards. 'Tis the highest honour we've got."],
+			["ilse", "Ilse has found a mirror in the town hall that shows her the right way round. She has been standing in front of it for an hour. She recommends it."],
+			["", "That night there is no letter on the Command Table. Quill checks twice. It is the first chapter of all this that has ended without one from Verity Hale."],
+			["", "In the dust where the letter would be, someone has drawn three black bars with a finger."]
 		]}
 	},
 	"beats": [
@@ -453,7 +578,13 @@
 		{"talk": "ch3_wharf_after", "when": {"cleared": ["ch3_wharf"]},
 			"card": ["New story mission: The Host", "The Velvet Causeway. Lantenay opens the stairs once the Velvet Nobility are at least Neutral with you (Diplomacy)."]},
 		{"talk": "ch3_end", "when": {"cleared": ["ch3_host"]},
-			"card": ["Chapter 3 complete: Masquerade", "The music has stopped on the Causeway and the Concord knows Hortense's name. The lake is yours to hold until the sea calls. New goals are in the journal."]}
+			"card": ["Chapter 3 complete: Masquerade", "The music has stopped on the Causeway and the Concord knows Hortense's name. The lake is yours to hold until the sea calls. New goals are in the journal."]},
+		{"talk": "ch4_tide", "when": {"seen": ["ch3_end"], "held": 11}, "then": "open_region:coast", "card": ["Chapter 4: The Sea Stops", "New story mission: The Wave at Trevail. Trevail Harbour, on the coast in the south-east (territory map)."]},
+		{"talk": "ch4_harbour_after", "when": {"cleared": ["ch4_harbour"]}, "card": ["New story mission: The Knight in the Glass", "Halfwave Bay (territory map). Claim the bay first: the chapel stands on its beach."]},
+		{"talk": "ch4_mirror_after", "when": {"cleared": ["ch4_mirror"]}, "card": ["New story mission: The Keeper's Light", "Polgarrow Light (territory map). Put a governor in Halfwave Bay first: Kerra will not leave the village unwatched."]},
+		{"talk": "ch4_light_after", "when": {"cleared": ["ch4_light"]}},
+		{"talk": "ch4_verity", "when": {"seen": ["ch4_light_after"]}, "card": ["New story mission: Low Water", "Halfwave Bay (territory map). The Harbour Moot will row you out onto the sea bed once they are at least Neutral with you (Diplomacy)."]},
+		{"talk": "ch4_end", "when": {"cleared": ["ch4_lowwater"]}, "card": ["Chapter 4 complete: The Sea Stops", "The tide is coming home to Halfwave a hand's width a day, and the coast knows Ilse's name. Hold the south-east until the capital calls. New goals are in the journal."]}
 	],
 	"goals": [
 		{"text": "Escape the tax office", "chapter": "ch1", "hint": "Get past the wardens and out through the front door", "done": {"cleared": ["ch1_breakout"]}, "show": {"active": true}},
@@ -485,6 +616,16 @@
 		{"text": "The Host", "chapter": "ch3", "hint": "Story mission at the Velvet Causeway", "done": {"cleared": ["ch3_host"]}, "show": {"seen": ["ch3_wharf_after"]}},
 		{"text": "Win the Velvet Nobility's friendship", "chapter": "ch3", "hint": "A Friendly Nobility pays patronage, and a mask-maker comes to Hollowmark", "done": {"standing": {"velvet": "friendly"}}, "show": {"seen": ["ch3_end"]}},
 		{"text": "Hold Pendower Shallows", "chapter": "ch3", "hint": "Claim it from the Command Table", "done": {"owns": ["inkmere"]}, "show": {"seen": ["ch3_end"]}},
-		{"text": "Hold twelve provinces", "chapter": "ch3", "hint": "Claim, reclaim or win land by treaty", "done": {"held": 12}, "show": {"seen": ["ch3_end"]}}
+		{"text": "Hold twelve provinces", "chapter": "ch3", "hint": "Claim, reclaim or win land by treaty", "done": {"held": 12}, "show": {"seen": ["ch3_end"]}},
+		{"text": "The Wave at Trevail: ring the boats home", "chapter": "ch4", "hint": "Story mission at Trevail Harbour, in the south-east", "done": {"cleared": ["ch4_harbour"]}, "show": {"seen": ["ch4_tide"]}},
+		{"text": "Take Halfwave Bay", "chapter": "ch4", "hint": "Claim it from the Command Table: the chapel with the looking-glass stands on its beach", "done": {"owns": ["halfwave"]}, "show": {"seen": ["ch4_harbour_after"]}},
+		{"text": "The Knight in the Glass: find the voice in the chapel", "chapter": "ch4", "hint": "Story mission at Halfwave Bay", "done": {"cleared": ["ch4_mirror"]}, "show": {"seen": ["ch4_harbour_after"]}},
+		{"text": "Put a governor in Halfwave Bay", "chapter": "ch4", "hint": "Kerra Hocking will not leave the village unwatched", "done": {"governs": ["halfwave"]}, "show": {"seen": ["ch4_mirror_after"]}},
+		{"text": "The Keeper's Light: relight Polgarrow", "chapter": "ch4", "hint": "Story mission at Polgarrow Light", "done": {"cleared": ["ch4_light"]}, "show": {"seen": ["ch4_mirror_after"]}},
+		{"text": "Win Neutral standing with the Harbour Moot", "chapter": "ch4", "hint": "Gifts, trade and the Moot's asks in Diplomacy{tag:diplomacy}", "done": {"standing": {"moot": "neutral"}}, "show": {"seen": ["ch4_light_after"]}},
+		{"text": "Low Water", "chapter": "ch4", "hint": "Story mission at Halfwave Bay", "done": {"cleared": ["ch4_lowwater"]}, "show": {"seen": ["ch4_verity"]}},
+		{"text": "Win the Harbour Moot's friendship", "chapter": "ch4", "hint": "A Friendly Moot fishes for Hollowmark too, and a salt trader comes up from the coast", "done": {"standing": {"moot": "friendly"}}, "show": {"seen": ["ch4_end"]}},
+		{"text": "Hold Polgarrow Light", "chapter": "ch4", "hint": "Claim it from the Command Table", "done": {"owns": ["lighthouse"]}, "show": {"seen": ["ch4_end"]}},
+		{"text": "Hold fifteen provinces", "chapter": "ch4", "hint": "Claim, reclaim or win land by treaty", "done": {"held": 15}, "show": {"seen": ["ch4_end"]}}
 	]
 }

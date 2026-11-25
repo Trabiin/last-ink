@@ -2102,7 +2102,7 @@ const MARK_INK := Color("15111b")
 const UNRAVEL := 0.6  # Fray from which a province counts as Unravelling (and is hatched on the map)
 ## Each owner's shape on the map, the legend and the panel, so ownership never rests on colour alone.
 ## Yours keeps its flag (and the capital its tower). A faction without an entry takes the next spare shape.
-const OWNER_MARKS := {"free": "ring", "erased": "cross", "concord": "square", "coven": "triangle", "guild": "diamond", "abbey": "hex", "erasers": "bar", "velvet": "mask"}
+const OWNER_MARKS := {"free": "ring", "erased": "cross", "concord": "square", "coven": "triangle", "guild": "diamond", "abbey": "hex", "erasers": "bar", "velvet": "mask", "moot": "anchor"}
 const SPARE_MARKS := ["hex", "bar", "dot"]
 
 
@@ -2140,6 +2140,12 @@ func _owner_mark(ci: CanvasItem, owner: String, c: Vector2, r: float, col := MAR
 				c + Vector2(r * 0.8, r * 0.45), c + Vector2(0, r * 0.25), c + Vector2(-r * 0.8, r * 0.45)]), col)
 			ci.draw_circle(c + Vector2(-r * 0.45, 0), r * 0.2, Color(1, 1, 1, 0.85))
 			ci.draw_circle(c + Vector2(r * 0.45, 0), r * 0.2, Color(1, 1, 1, 0.85))
+		"anchor":  # the Harbour Moot (issue #30): a shank, a stock across the top and a curved crown with flukes
+			ci.draw_rect(Rect2(c + Vector2(-r * 0.14, -r * 0.8), Vector2(r * 0.28, r * 1.45)), col)
+			ci.draw_rect(Rect2(c + Vector2(-r * 0.55, -r * 0.62), Vector2(r * 1.1, r * 0.24)), col)
+			ci.draw_arc(c + Vector2(0, r * 0.05), r * 0.7, 0.25, PI - 0.25, 10, col, maxf(r * 0.28, 1.0))
+			ci.draw_colored_polygon(PackedVector2Array([c + Vector2(-r * 0.95, r * 0.15), c + Vector2(-r * 0.5, r * 0.35), c + Vector2(-r * 0.8, r * 0.55)]), col)
+			ci.draw_colored_polygon(PackedVector2Array([c + Vector2(r * 0.95, r * 0.15), c + Vector2(r * 0.5, r * 0.35), c + Vector2(r * 0.8, r * 0.55)]), col)
 		_:
 			ci.draw_circle(c, r * 0.7, col)
 

@@ -1303,6 +1303,120 @@
 				},
 				"desc": "The lights go out, Tally signs everyone up, and the lights come back on. Everything round her takes a hard hit, is under the Small Print for 8 s and takes 40% more from everyone for 6 s. Nan slips out of sight with her next hit doubled."
 			}
+		],
+		"ilse": [
+			{
+				"id": "tilt",
+				"name": "Tilt",
+				"mult": 2.8,
+				"reach": 64,
+				"arc": 10,
+				"offset": 0,
+				"knock": 260,
+				"step": 16,
+				"color": "c8e0f0",
+				"fx": "line",
+				"sound": {
+					"tone": 820,
+					"sweep": -480,
+					"noise": 0.4,
+					"len": 0.26,
+					"ring": 0.5,
+					"thump": 0.2
+				},
+				"desc": "The charge a knight makes at the tilt, on foot: one long straight thrust with all of her behind it."
+			},
+			{
+				"id": "mirror_stroke",
+				"name": "Mirror Stroke",
+				"mult": 2.1,
+				"reach": 58,
+				"arc": 8,
+				"offset": 0,
+				"knock": 240,
+				"step": 6,
+				"spread": [
+					0,
+					180
+				],
+				"color": "9fd0e0",
+				"fx": "line",
+				"sound": {
+					"tone": 1100,
+					"sweep": -300,
+					"noise": 0.3,
+					"len": 0.28,
+					"ring": 0.7,
+					"thump": 0.1
+				},
+				"desc": "One thrust in front of her and its reflection behind, at the same moment. She does not look round. She does not need to."
+			},
+			{
+				"id": "glass_wall",
+				"name": "Glass Wall",
+				"mult": 1.7,
+				"reach": 42,
+				"arc": 180,
+				"offset": 0,
+				"knock": 300,
+				"hits": 2,
+				"every": 0.18,
+				"stun": 0.8,
+				"color": "dff0f8",
+				"fx": "sweep",
+				"sound": {
+					"tone": 1300,
+					"sweep": 200,
+					"noise": 0.5,
+					"len": 0.4,
+					"ring": 0.8,
+					"thump": 0.2
+				},
+				"desc": "The spear goes round twice, flat, like a pane of glass turning on its edge. Everything near her is struck and stunned."
+			},
+			{
+				"id": "back_to_front",
+				"name": "Back to Front",
+				"mult": 2.5,
+				"reach": 30,
+				"arc": 180,
+				"offset": -30,
+				"knock": 280,
+				"step": 60,
+				"color": "b8d8e8",
+				"fx": "slash",
+				"sound": {
+					"tone": 420,
+					"sweep": 380,
+					"noise": 0.7,
+					"len": 0.3,
+					"ring": 0.2,
+					"thump": 0.3
+				},
+				"desc": "She walks through the line the wrong way round, spear first, and comes out the other side without a mark on her."
+			},
+			{
+				"id": "the_last_reflection",
+				"name": "The Last Reflection",
+				"mult": 4.8,
+				"reach": 108,
+				"arc": 7,
+				"offset": 0,
+				"knock": 440,
+				"step": 18,
+				"stun": 1.2,
+				"color": "ffffff",
+				"fx": "beam",
+				"sound": {
+					"tone": 640,
+					"sweep": -520,
+					"noise": 0.5,
+					"len": 0.5,
+					"ring": 0.8,
+					"thump": 0.8
+				},
+				"desc": "A thrust so long and so white that it seems to carry on in the glass after it has stopped. Nearly the longest line in the party, and it stuns everything it passes."
+			}
 		]
 	}
 }

@@ -147,6 +147,22 @@
 			{"when": {"rank_min": 3}, "text": "Nan Cripps sold the Concord a bridge across the Blank and spent the proceeds on rebuilding Hollowmark's market. Tally signed the receipt. The Concord is still trying to find the bridge."},
 			{"text": "Nan took her share and left by the back door, with three decks of cards and somebody else's horse. Tally sent a letter a month later apologising for the horse. Nan did not sign it."}
 		],
+		"ilse": [
+			{"when": {"romance": "partner"}, "text": "Dame Ilse of the Mirror never went back into the glass. She hung the town hall mirror in the house she shared with Ash, and in it, every morning, there were two people, the right way round."},
+			{"when": {"romance": "ex"}, "text": "Ilse went back to the coast and took up the old Kernick post on the headland. She kept a mirror in every room and stood in front of each of them alone, and the tenants said she looked magnificent and a little lost."},
+			{"when": {"rank_min": 5}, "text": "Ilse held Kernick Head in her own name. The tenants call her the Dame and do not ask which one. The gallery has forty new mirrors, and in every one of them she moves first."},
+			{"when": {"personal": "lost"}, "text": "The white took Kernick Head with the gallery still in it. Ilse never looked into the last mirror. She still checks every morning that she is in front of the glass and not behind it, and one morning she was not there to check."},
+			{"when": {"rank_min": 3}, "text": "Ilse rode the coast road as its knight, which nobody had asked for and everybody came to expect. She stops at every chapel to fix her hair in the glass. She is never late, and she is never the wrong way round."},
+			{"text": "Ilse left Hollowmark for the capital, where the mirrors are the biggest in the Inklands. Somebody saw her in the Spire's hall of glass, admiring herself, and swore that her reflection was a beat behind."}
+		],
+		"kerra": [
+			{"when": {"missions_min": 6}, "text": "Kerra Hocking dived every wreck on the coast and brought up the name board of every boat the white had taken. The families hung them in Trevail chapel. There is room left on the wall, and she means to fill it."},
+			{"text": "Kerra went home to Polgarrow and kept the light with her father. She writes his five lost days in the margin of every log, small, so that somebody does."}
+		],
+		"yann": [
+			{"when": {"missions_min": 4}, "text": "Yann Le Goff sold Halfwave salt in every market in the Inklands and got rich on it. The salt from the year the sea stopped fetches the most. People say a pinch of it lets you taste a day you have lost."},
+			{"text": "Yann went back to the pans at Halfwave and sold salt to the Moot at a fair price, which nobody on the coast will believe."}
+		],
 		"anselme": [
 			{"text": "Anselme Brugière kept the old presses running on the Vauclair Terraces, and the year after the Blank was driven back the wine tasted of grapes again. He named the vintage after Hollowmark. It is terrible. He is very proud of it."}
 		],

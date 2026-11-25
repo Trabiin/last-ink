@@ -295,6 +295,18 @@
 			"lines": ["Every contract's got a loophole. I put 'em in myself. Saves time.", "Tally's my shadow. He talks. He's honest. It's a terrible affliction and we're seeing someone about it.", "Never trust a woman who says never trust her. That's me. Ha! Gotcha."]
 		},
 		{
+			"id": "ilse", "name": "Dame Ilse", "title": "of the Mirror", "tier": "field", "start": false,
+			"stats": {"might": 7, "craft": 3, "lore": 5, "charm": 8, "grit": 6}, "traits": ["unwritten", "flirt"],
+			"blurb": "A knight who is really a reflection. Her original, Dame Ilse Kernick, was taken off Halfwave beach by the Blank, and it forgot to take what was in the chapel's looking-glass. Vain, precise and back to front, and the only one besides Ash who can touch White Ink.",
+			"post": "hall", "look": {"outfit": "warrior", "colors": {"skin": "efe6e0", "metal": "c8d4dc", "accent": "9fd0e0", "boots": "2a3038"}},
+			"join": {"type": "story", "mission": "ch4_mirror"}, "hire": {},
+			"rumour": "At Halfwave Bay, they say, there is a woman in armour in the chapel's looking-glass, and nobody in the chapel for her to be the reflection of.",
+			"pitch": "Ilse is not anybody's reflection now. She is her own. You may have her, if you have a mirror.",
+			"welcome": "So this is the town. Smaller in real life. Which way round is the tavern? She will need to approach it from the left.",
+			"quips": ["Ilse spent the expedition's first night polishing her armour by a stream, and the second night telling the squad how it looked.", "Ilse read the map upside down, then back to front, and got the squad there a day early."],
+			"lines": ["Ilse does not have a past. She has a reflection of one. It is in excellent condition.", "Your Bran parts his beard on the left. Ilse finds that very restful to look at. It is the right way round for her.", "If you stand there, she can see you and herself at once in that window. Stay there. That is perfect."]
+		},
+		{
 			"id": "anselme", "name": "Anselme Brugière", "title": "vintner", "tier": "recruit", "start": false,
 			"stats": {"might": 4, "craft": 8, "lore": 4, "charm": 5, "grit": 5}, "traits": ["stubborn"],
 			"blurb": "Keeps the oldest presses on the Vauclair Terraces and makes the wine the masquerade has drunk for forty years. Lately it tastes of paper, and he takes that personally.",
@@ -329,6 +341,30 @@
 			"welcome": "Got any ink about the place? Lake ink, the sort that wriggles. I fish words out of it, and they want feeding.",
 			"quips": ["Gaspard netted a word out of a puddle on the road. He wouldn't say which one. He threw it back.", "Gaspard fished the squad's supper out of an ink-pond. It was a stew. Nobody asked."],
 			"lines": ["Last week the nets came up full of the word 'mouth'. Just that. A hundredweight of it.", "Good words smell of salt. Bad ones smell of the inside of a cupboard.", "The masquerade buys our best catches for their speeches. Long words, by the barrel."]
+		},
+		{
+			"id": "kerra", "name": "Kerra Hocking", "title": "diver", "tier": "recruit", "start": false,
+			"stats": {"might": 6, "craft": 6, "lore": 3, "charm": 4, "grit": 8}, "traits": ["stubborn"],
+			"blurb": "The keeper of Polgarrow Light's daughter, and the best wreck diver on the coast. Walked forty miles to fetch help for her father. Can hold her breath for longer than most people can hold a conversation.",
+			"post": "gate", "look": {"outfit": "soldier", "colors": {"skin": "d8b090", "cloth": "c8a040", "metal": "5a6a7a", "boots": "2a2620"}},
+			"join": {"type": "story", "mission": "ch4_light"}, "hire": {},
+			"rumour": "Polgarrow Light went dark the night the sea stopped. The keeper's girl is the only one who will climb up to him.",
+			"pitch": "I'm Kerra. I dive. Wages in pilchards, and you don't ask me about Dad.",
+			"welcome": "No sea up here. Funny. You can hear yourself think. I don't like it much.",
+			"quips": ["Kerra swam the flooded ford ahead of the squad with a rope in her teeth, then complained the water was warm.", "Kerra dived into a sunk cellar on the way and came up with a crate of wine and a very old cheese. She kept the cheese."],
+			"lines": ["Down under, everything goes quiet and slow and green. Then you come up and everybody's shouting. I prefer down.", "Dad keeps his log again, every hour. He don't remember the five days. I write 'em in the margin, small.", "Wreck diving's simple. Go down, look, come up before you run out. Most folk can't manage the last bit."]
+		},
+		{
+			"id": "yann", "name": "Yann Le Goff", "title": "salt trader", "tier": "recruit", "start": false,
+			"stats": {"might": 4, "craft": 5, "lore": 5, "charm": 7, "grit": 5}, "traits": ["greedy"],
+			"blurb": "Buys salt off the pans at Halfwave and sells it inland at four times the price. Since the sea stopped, the pans have dried white and the salt has started remembering things. He sells that too, at a premium.",
+			"post": "market", "look": {"outfit": "soldier", "colors": {"skin": "d0a080", "cloth": "3a5a6a", "metal": "8a8a80", "boots": "2a2420"}},
+			"join": {"type": "standing", "faction": "moot", "tier": "friendly"}, "hire": {"gilt": 35},
+			"rumour": "The salt trader who works the Halfwave pans says he will only do business with people the Moot trusts. Get on the right side of the Harbour Moot and he may come looking for you.",
+			"pitch": "The Moot says you're good for it. The Moot never says that. Thirty-five Gilt and you'll have the best salt this side of the white.",
+			"welcome": "No salt in the stores? None? How do you keep anything? How do you keep anyone?",
+			"quips": ["Yann sold a toll-keeper a sack of salt that made his soup taste of his mother's. The squad went through the toll for nothing.", "Yann licked a rock on the road, pronounced it 'not bad', and filled two bags."],
+			"lines": ["Old salt, new salt, salt from a sea that stopped. The last kind keeps fish for ever. It also keeps secrets, a little.", "Every family on the coast owes me something and I owe them something back. It's called a coast.", "Pinch of Halfwave salt on a fish and you can taste the day it was caught. Pinch more and you taste the day you were."]
 		}
 	]
 }

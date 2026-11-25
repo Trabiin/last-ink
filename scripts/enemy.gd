@@ -269,6 +269,30 @@ func untargetable() -> bool:
 	return false
 
 
+## Unwritten by White Ink (Ilse's Unwrite, abilities.gd kind "unwrite", Chapter 4): taken off the page outright, with
+## no last tricks (a Salt Wight does not crumble into a heap first). Callers keep bosses out.
+var erasing := false
+
+
+func erase_out() -> void:
+	if dead:
+		return
+	erasing = true
+	invuln_t = 0.0
+	Fx.burst(get_parent(), global_position + Vector2(0, -8), [Color.WHITE, Color("f4f2ec"), Color("c8c4bc")], 18, 70.0)
+	Fx.damage_number(get_parent(), global_position + Vector2(0, -24), Loc.t("Unwritten"), Color("f4f2ec"))
+	hp = 0  # no damage number and no difficulty scaling: it is simply not there any more
+	dead = true
+	Audio.hit(false, true)
+	_on_death()
+	died.emit(self)
+
+
+## A Salt Wight's heap (scripts/saltwight.gd): down but not gone, waiting to stand up again unless it is broken.
+func heaped() -> bool:
+	return false
+
+
 ## How much its lunge deals before the party's armour (kinds with a "damage" stat override this).
 func lunge_damage() -> int:
 	return DAMAGE

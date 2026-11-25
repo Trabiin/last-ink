@@ -15,6 +15,10 @@ extends RefCounted
 ##   duellist - scripts/duellist.gd: Chapter 3 bridge duellist; front guard parries, salute then double lunge (#29)
 ##   inkeel   - scripts/inkeel.gd: Chapter 3 lake eel; swims under the ground, surfaces through a ring biting (#29)
 ##   lamplighter - scripts/lamplighter.gd: Chapter 3; hangs back like a Spitter and lobs lanterns that burst in fire (#29)
+##   breaker  - scripts/breaker.gd: Chapter 4 stopped wave; rears up over a lane and crashes down it, then lies flat (#30)
+##   netcaster - scripts/netcaster.gd: Chapter 4 drowned netter; hangs back, whirls and throws a net that slows (#30)
+##   gannet   - scripts/gannet.gd: Chapter 4 half-gannet; circles out of reach, marks a spot, dives, sticks in the sand (#30)
+##   saltwight - scripts/saltwight.gd: Chapter 4; lunges, and crumbles into a heap that stands up again unless broken (#30)
 ## A kind can reuse another's behaviour with its own art: "script" names the behaviour (a key of
 ## SCRIPTS), "sprite" the sprite set (data/sprites.json). The marsh reedling spits like a Spitter;
 ## the mill scarecrow and the Guild sellsword chase and lunge like a Nibbler.
@@ -32,6 +36,10 @@ const SCRIPTS := {
 	"duellist": preload("res://scripts/duellist.gd"),
 	"inkeel": preload("res://scripts/inkeel.gd"),
 	"lamplighter": preload("res://scripts/lamplighter.gd"),
+	"breaker": preload("res://scripts/breaker.gd"),
+	"netcaster": preload("res://scripts/netcaster.gd"),
+	"gannet": preload("res://scripts/gannet.gd"),
+	"saltwight": preload("res://scripts/saltwight.gd"),
 }
 
 static var _data := {}

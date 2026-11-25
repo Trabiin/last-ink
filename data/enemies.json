@@ -30,7 +30,15 @@
 		"inkeel": {"name": "Ink Eel", "plural": "Ink Eels", "sprite": "inkeel", "blank": true, "hp": 30, "damage": 8, "speed": 40, "xp": 6, "pack": 2, "inflict": {"status": "poison", "chance": 0.35, "time": 6},
 			"tip": "Ink Eels: they swim under the ground where you can't hit them. Get out of the dark ring before it comes up, then hit it while it is on the surface."},
 		"lamplighter": {"name": "Lamplighter", "plural": "Lamplighters", "sprite": "lamplighter", "hp": 34, "damage": 8, "speed": 32, "xp": 6, "pack": 1, "inflict": {"status": "burn", "chance": 0.5, "time": 4},
-			"tip": "Lamplighter: it lobs oil lanterns that burst into a ring of fire where the circle is. Step out of the circle, then close in between throws."}
+			"tip": "Lamplighter: it lobs oil lanterns that burst into a ring of fire where the circle is. Step out of the circle, then close in between throws."},
+		"breaker": {"name": "Stopped Wave", "plural": "Stopped Waves", "sprite": "breaker", "blank": true, "hp": 44, "damage": 11, "speed": 34, "xp": 7, "pack": 2,
+			"tip": "Stopped Waves: when one rears up tall, it crashes down along the strip marked in front of it. Step out of the strip, then hit the puddle it leaves before it pulls itself back up."},
+		"netcaster": {"name": "Drowned Netter", "plural": "Drowned Netters", "sprite": "netcaster", "hp": 36, "damage": 7, "speed": 40, "xp": 7, "pack": 1,
+			"tip": "Drowned Netter: when it whirls its net overhead, a ring follows you. Step out before it throws, or you are caught and slowed. A hit while it whirls spoils the throw."},
+		"gannet": {"name": "Half-Gannet", "plural": "Half-Gannets", "sprite": "gannet", "blank": true, "hp": 26, "damage": 9, "speed": 46, "xp": 6, "pack": 2,
+			"tip": "Half-Gannets: you cannot hit them while they fly. When one hangs over a ring on the ground, it is about to dive there. Step out, then hit it while its beak is stuck in the sand."},
+		"saltwight": {"name": "Salt Wight", "plural": "Salt Wights", "sprite": "saltwight", "hp": 52, "damage": 9, "speed": 30, "xp": 8, "pack": 2, "inflict": {"status": "poison", "chance": 0.3, "time": 5},
+			"tip": "Salt Wights: the first time one falls, it crumbles into a heap and gathers itself. Hit the heap before the ring round it closes, or it stands up again."}
 	},
 	"rosters": {
 		"default": {"nibbler": 3, "spitter": 1},
@@ -50,6 +58,9 @@
 		"lanternquay": {"lamplighter": 2, "inkeel": 2, "sellsword": 1},
 		"causeway": {"reveller": 3, "duellist": 2, "lamplighter": 1},
 		"inkmere": {"inkeel": 3, "lamplighter": 1, "nibbler": 1},
-		"terraces": {"reveller": 2, "duellist": 1, "scarecrow": 1, "inkeel": 1}
+		"terraces": {"reveller": 2, "duellist": 1, "scarecrow": 1, "inkeel": 1},
+		"saltgrave": {"breaker": 2, "netcaster": 2, "nibbler": 1},
+		"halfwave": {"saltwight": 3, "netcaster": 1, "breaker": 1},
+		"lighthouse": {"gannet": 3, "saltwight": 1, "breaker": 1}
 	}
 }

@@ -754,6 +754,8 @@ func _draw_skills(vs: Vector2) -> void:
 	var used := Skills.colors_of(id)
 	var abil := Abilities.for_ids(PartyPicker.hero_data(id).get("abilities", []), id)
 	for c in Skills.INKS:
+		if c in Skills.RARE_INKS and not c in used:
+			continue  # White Ink: only Ilse's page lists it
 		var lv := Skills.ink_level(id, c)
 		var on: bool = c in used
 		var cc := Skills.ink_color(c)

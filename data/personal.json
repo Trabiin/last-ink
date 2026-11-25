@@ -316,6 +316,26 @@
 			["nan", "...Fine. Fine! Bundle them up, Ash, love. We'll drop them off at every door on the Quay, and none of them will ever know who to thank. That's how you know it's a proper con.", "happy"],
 			["pratt", "You'll pay for this, Nan Cripps."],
 			["nan", "Put it on my account, Mr. Pratt."]
+		]},
+		"personal_ilse_intro": {"title": "Kernick Head", "lines": [
+			["", "Kernick Head is a green headland with a grey hall on the end of it, and behind the hall, eating its way up the lawn, is the white."],
+			["ilse", "There. Kernick Hall. She has never been here. She has seen it, though, every Sunday, in the back of Ilse Kernick's eyes when she talked about home."],
+			["ilse", "The gallery is in the west wing, at the far end. Forty mirrors. If the white gets there first, everything in them goes with it."],
+			["ilse", "The gannets nest on the cliff path. The drowned have come up the cove. Keep up, and keep her in sight. She will be the one in front."]
+		]},
+		"personal_ilse_hall": {"title": "The Gallery", "lines": [
+			["", "The gallery is a long room of tall mirrors, and in every one of them stands Ilse Kernick: in a riding coat, in a ball gown, in armour, at twelve, at forty. None of them is moving."],
+			["ilse", "Look at them. Forty of her. All facing the wrong way. All waiting for somebody to stand in front of them who is not coming back."],
+			["", "At the end of the gallery a suit of armour steps down off its stand. There is nobody in it. Salt runs out of the joints."],
+			["ilse", "Her armour. Of course it is. It is still trying to do her job. Ash, it is not her. It is only her habits."]
+		]},
+		"personal_ilse_outro": {"title": "The Last Mirror", "lines": [
+			["", "The last mirror in the gallery is small and old, in a black frame. Ilse stands in front of it, and in the glass, a long way back, in the white, stands Ilse Kernick."],
+			["", "The woman in the glass raises her hand. Ilse does not. For a long breath nothing happens at all."],
+			["", "Then, slowly, a beat behind, the woman in the glass lowers her hand, as if she were the one keeping up."],
+			["ilse", "There. That is how it is, then. She is the one who moves first."],
+			["ilse", "Goodbye, Dame Kernick. Your hair is on the wrong side. Ilse will look after the face."],
+			["", "She takes the old lance down from over the gallery hearth, tucks it under her arm, and walks out of the west wing without looking back at a single mirror."]
 		]}
 	},
 	"missions": [
@@ -612,6 +632,7 @@
 				{"do": "talk", "talk": "personal_nan_outro"},
 				{"do": "exit", "label": "Leave the Quay with five hundred and twelve contracts"}
 			]
-		}
+		},
+		{"id": "personal_ilse", "who": "ilse", "name": "The Hall of Glass", "province": "lighthouse", "map": "res://maps/personal_ilse.txt", "threat": 5, "xp": 60, "brief": "Dame Ilse Kernick's hall on Kernick Head is going white a room at a time, and with it the gallery of forty mirrors where the Kernicks kept their faces. Ilse means to get to the last mirror before the Blank does, and see who is in it.", "enemies": {"gannet": 2, "saltwight": 2, "breaker": 1}, "rewards": {"gilt": 35, "renown": 1}, "label": "Reach the gallery at Kernick Hall", "steps": [{"do": "talk", "talk": "personal_ilse_intro"}, {"do": "goto", "at": "cliff", "label": "Up the cliff path past the gannets"}, {"do": "clear", "at": "cliff", "label": "Gannets and the drowned on the cliff", "count": 4, "spawn": {"gannet": 2, "saltwight": 2}, "banter": [["ilse", "Watch their shadows, not the birds. Ilse finds that a good rule in general."]]}, {"do": "goto", "at": "hall", "label": "Into Kernick Hall"}, {"do": "talk", "talk": "personal_ilse_hall"}, {"do": "clear", "at": "hall", "label": "Dame Kernick's armour", "count": 3, "spawn": {"breaker": 1, "saltwight": 1}, "elite": {"kind": "saltwight", "name": "Dame Kernick's Armour", "hp": 3.0, "damage": 1.3}, "done_banter": [["ilse", "Down. It fought well. She would expect nothing less of it."]]}, {"do": "use", "at": "gallery", "seconds": 6.0, "label": "Keep the white back while Ilse walks to the last mirror", "work_label": "THE LAST MIRROR", "spawn": {"breaker": 1}, "every": 4.5, "first": 2.0}, {"do": "talk", "talk": "personal_ilse_outro"}, {"do": "exit", "label": "Walk off Kernick Head with the Kernick lance"}]}
 	]
 }
