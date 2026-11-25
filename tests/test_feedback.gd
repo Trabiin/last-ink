@@ -110,6 +110,16 @@ func test_one_browser_error_counts_once() -> void:
 	check_eq(Diag.count_problems(old_log)["errors"], 1, "logs written by the old counter count the error once too")
 
 
+## A report should say how the game ran and what it was asked to draw (LI-01BE5E54 had neither).
+func test_reports_carry_frame_times_and_visual_settings() -> void:
+	check_eq(Diag.perf_line([16.0, 17.0, 16.0, 120.0]), "perf 24 fps, worst frame 120 ms, 1 frames over 50 ms", "perf line from frame times")
+	check_eq(Diag.perf_line([]), "perf (no frames)", "no frames: no division by zero")
+	var c: Dictionary = Diag.game_context()
+	check(str(c.get("visual_fx", "")).contains("shadows "), "the Visual effects sliders are in the report")
+	check(str(c.get("display", "")).begins_with("vsync "), "vsync and the frame cap are in the report")
+	check(not Diag.web_froze(), "the web clean-close flag is only read in the browser")
+
+
 func test_sessions_rotate_and_a_crash_is_noticed() -> void:
 	# A clean first session.
 	Diag.start_session()
