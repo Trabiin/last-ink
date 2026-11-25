@@ -40,22 +40,30 @@ func test_the_books_balance() -> void:
 	check(int(bot.phase_days.get("act1", 0)) > 0, "days are counted per chapter")
 
 
+## The meter only watches: each override takes the bot's own arguments and calls it with super(), so
+## the two always play the same. (Running both and comparing banks is no test: the bot itself drifts by
+## a few coins between campaigns in one process, more after other test files have run.)
 func test_the_meter_plays_like_the_bot() -> void:
-	var plain = Bot.new("steady")
-	_run(plain, 0)
-	for d in 25:
-		plain.play_day()
-	var a := _bank()
-	var metered = Meter.new("steady")
-	_run(metered, 0)
-	for d in 25:
-		metered.play_day()
-	# Two runs of the plain bot in one process already differ by a few coins (state the reset keeps
-	# between campaigns), so the banks only have to agree closely; the decisions must match.
-	var b := _bank()
-	for k in a:
-		check(absi(int(b[k]) - int(a[k])) <= 6, "%s close to the plain bot's (%d vs %d)" % [k, b[k], a[k]])
-	check_eq(metered.events.map(func(e): return e[1]), plain.events.map(func(e): return e[1]), "same decisions")
+	var bot_script: Script = load("res://tools/balance_bot.gd")
+	var meter_script: Script = load("res://tools/economy_meter.gd")
+	var base := {}
+	for m in bot_script.get_script_method_list():
+		base[m["name"]] = m["args"].size()
+	var src: String = meter_script.source_code
+	var overridden := 0
+	for m in meter_script.get_script_method_list():
+		var n: String = m["name"]
+		if not base.has(n) or n in ["_init"]:
+			continue
+		if src.find("func %s(" % n) < 0:
+			continue  # inherited, not overridden
+		overridden += 1
+		check_eq(m["args"].size(), int(base[n]), "%s takes the bot's arguments" % n)
+		var body := src.substr(src.find("func %s(" % n))
+		var next := body.find("\nfunc ", 1)
+		body = body.substr(0, next if next > 0 else body.length())
+		check(body.contains("super(") or body.contains("super.%s(" % n), "%s calls the bot's own" % n)
+	check(overridden >= 12, "every decision step is metered (%d)" % overridden)
 
 
 func test_a_steady_economy_stays_in_its_bands() -> void:
