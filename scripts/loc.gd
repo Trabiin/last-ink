@@ -23,6 +23,7 @@ const SOURCE := "en"  # the language the game is written in
 
 ## Keys whose string values (or arrays of strings, at any depth) are player text, in any data file.
 const TEXT_KEYS := [
+	"stakes", "if_ignored", "saved_text", "lost_text", "asker_name", "place",  # missions and requests
 	"name", "title", "text", "desc", "blurb", "label", "summary", "flavor", "brief", "hint",
 	"plural", "short", "weapon", "special", "staff_title", "envoy_title", "favors_why", "why_claim",
 	"why_erased", "why_lamp", "drift_why", "wants", "done_text", "fail_text", "success", "fail",
@@ -31,7 +32,6 @@ const TEXT_KEYS := [
 	"work_label", "shop_name", "shop_blurb", "intro_text", "prompt", "options", "labels",
 	"welcome_title", "ai_short", "heading", "more", "outro", "body", "caption", "subtitle",
 	"question", "answer", "note", "message", "say", "text_insight",
-	"stakes", "if_ignored", "saved_text", "lost_text", "asker_name", "place",
 ]
 ## Keys holding spoken lines: [speaker, text] / [speaker, text, expression] (only the text is
 ## translated), lists of those, or plain strings (help topics speak in plain strings).

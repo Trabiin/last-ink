@@ -244,9 +244,9 @@ func tick_frame(delta: float) -> void:
 
 ## Moves the clock on by delta real seconds (tests and the balance bot step whole days at once).
 func tick(delta: float) -> void:
+	Incidents.check()
 	_check_leads()
 	FactionAsks.check()
-	Incidents.check()
 	if SPEEDS[speed] == 0:
 		return
 	var days: float = delta * SPEEDS[speed] / DAY_SECONDS

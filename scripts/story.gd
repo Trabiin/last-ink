@@ -54,13 +54,13 @@ static func command_on() -> bool:
 ##   owns: [ids]        provinces you hold       day: n               on day n or later
 ##   governs: [ids]     provinces you hold with a governor posted (issue #28)
 ##   built: {building id: level}   Hollowmark buildings at that level or higher (issue #190)
-##   standing: {faction id: tier}   at least that standing tier with each faction (issue #28)
-##   not_seen: [talk ids]           conversations not played yet
 ##   not_joined: [ids]              recruits not on the roster yet
-##   betrayal / betrayer / betrayal_top   the climax betrayal's stage (issue #186, Betrayal.blocker)
 ##   chose: [talk id, i] / not_chose: [talk id, i]   Ash picked (or didn't pick) option i of that talk's choice
 ##   saved: {group: n} / lost: {group: n}   at least n people of that group got out / were lost (Incidents)
-##   incident: {id: state}          an incident's state (Incidents.blocker: open, done, ignored, missed)
+##   incident: {id: state}          an incident's state (Incidents.blocker: open, done, ignored, closed, none)
+##   standing: {faction id: tier}   at least that standing tier with each faction (issue #28)
+##   not_seen: [talk ids]           conversations not played yet
+##   betrayal / betrayer / betrayal_top   the climax betrayal's stage (issue #186, Betrayal.blocker)
 static func meets(c: Dictionary) -> bool:
 	return blocker(c) == ""
 
@@ -112,8 +112,6 @@ static func blocker(c: Dictionary) -> String:
 	for fid in want:
 		if not Empire.at_least(fid, str(want[fid])):
 			return Loc.t("needs %s standing with the %s") % [Empire.tier_name(str(want[fid])), Empire.faction(fid).get("short", fid)]
-	if Empire.day < int(c.get("day", 0)):
-		return Loc.t("not before day %d") % int(c["day"])
 	# A choice Ash made in a talk (Dialogue.choice_made): [talk id, option index].
 	var ch: Array = c.get("chose", [])
 	if ch.size() == 2 and Dialogue.choice_made(str(ch[0])) != int(ch[1]):
@@ -134,6 +132,8 @@ static func blocker(c: Dictionary) -> String:
 		var why := Incidents.blocker(c["incident"])
 		if why != "":
 			return why
+	if Empire.day < int(c.get("day", 0)):
+		return Loc.t("not before day %d") % int(c["day"])
 	if c.has("betrayal") or c.has("betrayer") or c.has("betrayal_top"):
 		return Betrayal.blocker(c)
 	return ""
