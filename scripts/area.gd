@@ -36,6 +36,9 @@ var _signs := {}
 var _custom := {}  # char -> [kind, plate text] from @prop lines
 var _marks := {}  # char -> marker id
 var _dirt_chars := ":@"
+var kit := Structures.DEFAULT_KIT  # @kit <name>: the building kit's art set (scripts/structures.gd)
+var kit_at: Array = []  # @kitat x,y <name>: [Vector2i, name] for one building in another set
+var roofs: Array = []  # Structures.Roof nodes, one per room
 var ground_set := ""  # @ground <name>: art pass corner tiles in res://assets/tiles/<name>/ (else the old CC0 look)
 ## @mood: the biome's own light and air, read by scripts/ambience.gd. grade multiplies the day/night light
 ## (a gentle tint: cool forest, cold marsh, warm hills); mist scales the ground mist; motes tints the drifting
@@ -59,6 +62,10 @@ func build(path: String, entities: Node2D) -> void:
 	_parse(path)
 	_build_tiles()
 	_build_objects(entities)
+	if Structures.has_any(_rows):
+		roofs = Structures.build(self, entities, _rows, kit, kit_at)["roofs"]
+	else:
+		Paths.reset()
 	var words := Node2D.new()
 	add_child(words)
 	if blank_x < 1e8:
@@ -101,6 +108,14 @@ func _parse(path: String) -> void:
 				written = true
 				mood["page"] = true  # Ambience: page light, no weather, ink flecks for motes
 				mood["motes"] = Color(0.12, 0.1, 0.14)
+			elif key == "kit":
+				kit = val.strip_edges()
+			elif key == "kitat":
+				var kp := val.split(" ", false)
+				if kp.size() == 2:
+					var at := parse_tiles([kp[0]])
+					if not at.is_empty():
+						kit_at.append([at[0], kp[1]])
 			elif key == "ground":
 				ground_set = val.strip_edges()
 			elif key == "mood":
