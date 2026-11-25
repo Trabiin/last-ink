@@ -726,7 +726,46 @@
 			]
 		}
 	},
-	"overlays": {},
+	"overlays": {
+		"ch1_ledger_room": [
+			{
+				"stance": "mercy",
+				"weight": 2
+			},
+			{
+				"stance": "hard",
+				"weight": 2
+			}
+		],
+		"act1_gristle_tree": [
+			{
+				"stance": "hard"
+			},
+			{
+				"stance": "spite"
+			}
+		],
+		"act1_daro_farm": [
+			{
+				"stance": "mercy",
+				"weight": 2
+			},
+			{
+				"stance": "hard",
+				"weight": 2
+			}
+		],
+		"act1_concord_hamlet": [
+			{
+				"stance": "mercy",
+				"weight": 2
+			},
+			{
+				"stance": "hard",
+				"weight": 2
+			}
+		]
+	},
 	"inserts": {
 		"act1_concord_after": [
 			{
