@@ -18,7 +18,9 @@ const PALE_MAX := 10  # per mille of the ring
 ## Reviewed 2026-11-23 (portraits redrawn to match the sprites): Quill's steel-grey hair, white quill and papers;
 ## Verity's cream robe and erased hem.
 ## Reviewed 2026-11-23 (painted redraws): Hesper's pale rolled map, open at the end (Nell is her Chapter 2 stand-in).
-const PALE_OK := {"abeyance": 160, "auditor": 35, "hesper": 30, "ilse": 200, "merrow": 50, "nell": 30, "quill": 135, "verity": 175}
+## Chapter 4 stand-ins (2026-11-25, data/placeholders.json): Kerra is recoloured from Merrow and Pascoe from Nell,
+## so they carry those reviewed edges and take the same ceilings until the final art replaces them (#255).
+const PALE_OK := {"abeyance": 160, "auditor": 35, "hesper": 30, "ilse": 200, "kerra": 50, "merrow": 50, "nell": 30, "pascoe": 30, "quill": 135, "verity": 175}
 const SPECK := 20  # opaque islands (8-connected) smaller than this float free of the figure
 
 

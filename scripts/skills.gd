@@ -6,7 +6,8 @@ class_name Skills
 ## hero's five charged techs (data/techs.json). The Barracks drills benched heroes, but only up to
 ## barracks_cap: the last techs are learned in real fights.
 ##
-## Ink skill: each hero has a level 1 to 5 in every Ink colour (red, blue, gold, green, black). Spending
+## Ink skill: each hero has a level 1 to 5 in every Ink colour (red, blue, gold, green, black; and white, which only
+## Ilse can hold, Chapter 4 #30: menus show it only for heroes with a White Ink ability). Spending
 ## Ink on an ability of that colour raises it (data/abilities.json "ink_skill"). Levels 2 and 4 put the
 ## colour's abilities on their stronger tiers; 3 and 5 shorten their cooldowns.
 ##
@@ -15,7 +16,9 @@ class_name Skills
 ##   heroes[id]["inks"]   = {color: {"xp": int, "level": int}}   (colours never used are left out)
 ##   heroes[id]["tech"]   = picked tech id, or "" to choose by how long Attack is held
 
-const INKS := ["red", "blue", "gold", "green", "black"]
+const INKS := ["red", "blue", "gold", "green", "black", "white"]
+## Colours only listed for heroes who use them (Ilse alone touches White Ink).
+const RARE_INKS := ["white"]
 
 
 static func _skills() -> Dictionary:

@@ -27,6 +27,8 @@ const RIDERS := {
 	"conjure": ["song", "poison", "leech", "mark", "mark_mult"],
 	"weaken": ["damage"],
 	"shadow": ["weaken_hits", "poison", "leech", "mark", "mark_mult"],
+	# Chapter 4 kinds (#30)
+	"unwrite": ["pierce_heal"],
 }
 
 var Empire: Node

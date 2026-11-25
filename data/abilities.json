@@ -662,6 +662,69 @@
 					"every": 0.55
 				}
 			}
+		},
+		"looking_glass": {
+			"name": "Looking Glass",
+			"short": "Glass",
+			"kind": "parry",
+			"cost": 3,
+			"cooldown": 4,
+			"color": "9fd0e0",
+			"time": 0.9,
+			"damage": 24,
+			"stun": 1.0,
+			"reach": 80,
+			"knock": 240,
+			"refund": 2,
+			"desc": "She holds the spear across herself like a pane of glass. The next blow is turned back the way it came: {damage} damage and a {stun} s stun. A clean parry refunds {refund} Ink.",
+			"ai": {
+				"when": "windup",
+				"range": 44
+			},
+			"ink": "blue",
+			"tiers": {
+				"2": {
+					"damage": 30,
+					"time": 1.0
+				},
+				"4": {
+					"damage": 38,
+					"stun": 1.4,
+					"refund": 3,
+					"time": 1.1
+				}
+			}
+		},
+		"unwrite": {
+			"name": "Unwrite",
+			"short": "Unwrite",
+			"kind": "unwrite",
+			"cost": 5,
+			"cooldown": 8,
+			"color": "f4f2ec",
+			"damage": 16,
+			"stun": 0.6,
+			"knock": 120,
+			"reach": 90,
+			"width": 16,
+			"erase": 0.25,
+			"desc": "A white line from her spear point, {reach} px long. Anything on it under {erase_pct}% health, and any heap of salt, is taken off the page outright. The rest take {damage} damage and a {stun} s stun. Bosses only take the damage.",
+			"ai": {
+				"when": "line",
+				"range": 80
+			},
+			"ink": "white",
+			"tiers": {
+				"2": {
+					"damage": 20,
+					"erase": 0.3
+				},
+				"4": {
+					"damage": 26,
+					"erase": 0.35,
+					"reach": 104
+				}
+			}
 		}
 	},
 	"inks": {
@@ -689,6 +752,11 @@
 			"name": "Black",
 			"color": "8a7fb0",
 			"desc": "Erasure. Shadows, knives and lines struck through."
+		},
+		"white": {
+			"name": "White",
+			"color": "f4f2ec",
+			"desc": "Absence. It writes nothing; it takes the writing away. Only Ilse can hold it."
 		}
 	},
 	"ink_skill": {

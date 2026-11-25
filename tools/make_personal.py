@@ -104,6 +104,14 @@ MAPS = {
         "marks": [("wharf", (40, 31)), ("counting_house", (54, 28), 2), ("strongbox", (58, 20), 2)],
         "setpiece": [("z", (56, 18)), ("~", (40, 35)), ("~", (46, 35)), ("x", (44, 28)), ("c", (37, 28)), ("l", (48, 34)), ("l", (60, 26))],
     },
+    # Chapter 4 (issue #30): Ilse
+    "personal_ilse": {
+        "biome": "coast", "layout": "b", "name": "Kernick Head: the Hall of Glass",
+        "mood": "grade=0.84,0.92,1.04 mist=1.7 motes=0.95,1.0,1.0",
+        "sign": "KERNICK HALL|Seat of the Kernicks|of Kernick Head. Knock.",
+        "marks": [("cliff", (32, 30)), ("hall", (48, 24), 2), ("gallery", (54, 18), 2)],
+        "setpiece": [("p", (52, 16)), ("q", (46, 20)), ("q", (54, 22)), ("l", (42, 26)), ("l", (58, 24))],
+    },
 }
 
 

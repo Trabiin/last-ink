@@ -461,6 +461,87 @@
 			"on_success": {"standing": {"velvet": 25, "concord": -10}},
 			"xp": 100,
 			"loot": {}
+		},
+		{
+			"id": "ch4_harbour", "name": "Chapter 4: The Wave at Trevail", "province": "saltgrave", "story": true,
+			"needs": {"seen": ["ch4_tide"]}, "gate": {"renown": 62},
+			"map": "res://maps/ch4_harbour.txt",
+			"brief": "Trevail Harbour lives under a wave that stopped before it broke. The fleet that was out past the bar is still sailing into the white, and the harbour bell is the only thing that turns boats round. Get Harbourmaster Pascoe to the bell tower, then keep the sea's leftovers off her while she rings them home.",
+			"enemies": {"breaker": 2, "netcaster": 2, "saltwight": 1},
+			"rewards": {"gilt": 130, "supplies": 30, "renown": 3},
+			"on_success": {"standing": {"moot": 8}},
+			"xp": 75,
+			"fray": -6,
+			"loot": {"gilt": [0.4, 1, 3], "supplies": [0.2, 1, 2], "ink": [0.06, 1, 1]},
+			"objective": {"kind": "script", "label": "Down to the harbour", "steps": [
+				{"do": "talk", "talk": "ch4_harbour_intro"},
+				{"do": "goto", "at": "quay", "label": "Walk down the quay under the wave", "banter": [["bran", "There's a wave over the 'ole town. Holdin' still. I don't trust things that hold still."]]},
+				{"do": "clear", "at": "quay", "label": "Breakers on the slipway", "count": 4, "spawn": {"breaker": 2, "netcaster": 2}, "banter": [["pascoe", "Those are bits of the wave walked off on their own. When one rears up, get out from under it."]], "done_banter": [["bran", "Right. The bell."]]},
+				{"do": "goto", "at": "bell", "label": "Get the harbourmaster to the bell tower"},
+				{"do": "hold", "at": "bell", "seconds": 40, "label": "Keep the drowned off the tower while Pascoe rings the boats home", "spawn": {"netcaster": 1, "breaker": 1, "saltwight": 1}, "every": 4.5, "first": 1.5, "protect": {"name": "Pascoe, ringing the bell", "hp": 220}, "say": "Every boat that hears the bell comes about. Keep the sea off the tower steps.", "fail": "The bell stopped. Out past the bar, the last boats sailed on into the white."},
+				{"do": "talk", "talk": "ch4_harbour_outro"},
+				{"do": "exit", "label": "Walk back up the quay with the fishing families"}
+			]}
+		},
+		{
+			"id": "ch4_mirror", "name": "Chapter 4: The Knight in the Glass", "province": "halfwave", "story": true,
+			"after": "ch4_harbour",
+			"gate": {"owns": ["halfwave"], "renown": 66},
+			"map": "res://maps/ch4_mirror.txt",
+			"brief": "At Halfwave the sea stopped twenty yards short of the beach, and the tideline is a wall of standing water. The drowned walk out of it crusted in salt. In the bay's chapel hangs the looking-glass the fishing families kept for their dead, and since the sea stopped there has been a woman in armour in it, talking.",
+			"enemies": {"saltwight": 3, "netcaster": 1, "breaker": 1},
+			"rewards": {"gilt": 120, "supplies": 20, "ink": 3, "renown": 3},
+			"on_success": {"join": ["ilse"], "standing": {"moot": 4}},
+			"xp": 75,
+			"fray": -7,
+			"loot": {"gilt": [0.4, 1, 3], "supplies": [0.2, 1, 2], "ink": [0.06, 1, 1]},
+			"objective": {"kind": "script", "label": "Onto the strand", "steps": [
+				{"do": "talk", "talk": "ch4_mirror_intro"},
+				{"do": "goto", "at": "strand", "label": "Along the strand to the chapel"},
+				{"do": "clear", "at": "strand", "label": "The drowned walk out of the tideline", "count": 4, "spawn": {"saltwight": 3, "netcaster": 1}, "banter": [["ilse", "You on the beach! The salt ones get up again unless you break the heap. Ilse has watched them do it all week. She was magnificent about it."]], "done_banter": [["bran", "Voice is comin' from the chapel. Course it is."]]},
+				{"do": "goto", "at": "chapel", "label": "Into the roofless chapel"},
+				{"do": "talk", "talk": "ch4_ilse"},
+				{"do": "clear", "at": "chapel", "label": "The tideline breaks into the chapel", "count": 5, "spawn": {"saltwight": 2, "breaker": 1, "netcaster": 1}, "elite": {"kind": "saltwight", "name": "The Drowned Verger", "hp": 3.0, "damage": 1.3}, "banter": [["ilse", "Left! Your other left. Everything is the wrong way round out here. Ilse is adjusting beautifully."]], "done_banter": [["ilse", "There. That was well done. Ilse was well done. You were adequate."]]},
+				{"do": "talk", "talk": "ch4_mirror_outro"},
+				{"do": "exit", "label": "Walk the knight up off the beach"}
+			]}
+		},
+		{
+			"id": "ch4_light", "name": "Chapter 4: The Keeper's Light", "province": "lighthouse", "story": true,
+			"after": "ch4_mirror",
+			"gate": {"governs": ["halfwave"], "renown": 70},
+			"map": "res://maps/ch4_light.txt",
+			"brief": "Polgarrow Light stands on a rock at the end of the coast, shining out over nothing. Its keeper went up the tower the night the sea stopped and has not come down. Kerra Hocking says he talks all night in a voice with gaps in it. Climb the rock, relight the lamp, and hear what he has to say.",
+			"enemies": {"gannet": 3, "saltwight": 1, "netcaster": 1},
+			"rewards": {"gilt": 140, "supplies": 25, "ink": 6, "renown": 3, "insight": 4},
+			"on_success": {"join": ["kerra"], "standing": {"moot": 5}, "betrayal": "foreshadow"},
+			"xp": 80,
+			"fray": -8,
+			"loot": {"gilt": [0.4, 1, 3], "supplies": [0.2, 1, 2], "ink": [0.06, 1, 1]},
+			"objective": {"kind": "script", "label": "Up the rock", "steps": [
+				{"do": "talk", "talk": "ch4_light_intro"},
+				{"do": "goto", "at": "path", "label": "Up the rock path to the Light"},
+				{"do": "clear", "at": "path", "label": "Gannets over the rock", "count": 4, "spawn": {"gannet": 3, "saltwight": 1}, "banter": [["kerra", "Watch the shadow on the ground! When it stops moving, it's coming down."]]},
+				{"do": "goto", "at": "tower", "label": "Up to the lamp room"},
+				{"do": "talk", "talk": "ch4_keeper"},
+				{"do": "use", "at": "lamp", "seconds": 6.0, "label": "Relight the lamp", "work_label": "LAMP", "spawn": {"gannet": 1}, "every": 5.0, "first": 2.0},
+				{"do": "clear", "at": "tower", "label": "Something out on the water answers the light", "count": 4, "spawn": {"gannet": 2, "netcaster": 1, "breaker": 1}, "elite": {"kind": "netcaster", "name": "The Drowned Mate", "hp": 3.0, "damage": 1.3}, "done_banter": [["kerra", "It's lit. Dad. It's lit."]]},
+				{"do": "talk", "talk": "ch4_light_outro"},
+				{"do": "exit", "label": "Take the keeper down off the rock"}
+			]}
+		},
+		{
+			"id": "ch4_lowwater", "name": "Boss: Low Water", "province": "halfwave", "story": true,
+			"after": "ch4_light",
+			"gate": {"standing": {"moot": "neutral"}, "renown": 74},
+			"map": "res://maps/coast_seabed.txt",
+			"brief": "Out past the standing wall of the tide at Halfwave the sea bed is bare for a mile, and at the bottom of the bay something has gathered up all the water the tide forgot to bring back. The Moot calls it Low Water. It rolls waves down the bay, spits brine and turns the sand to whirlpools. When the tide turns it sinks, and the whole bay floods except the pale high banks: get onto one.",
+			"enemies": {"breaker": 1},
+			"rewards": {"gilt": 260, "supplies": 45, "ink": 10, "renown": 6, "insight": 6},
+			"on_success": {"standing": {"moot": 25}},
+			"xp": 110,
+			"loot": {},
+			"objective": {"kind": "boss", "boss": "lowwater", "label": "Walk out onto the sea bed"}
 		}
 	]
 }

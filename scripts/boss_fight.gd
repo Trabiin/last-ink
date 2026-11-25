@@ -38,6 +38,13 @@ const BOSSES := {
 		"approach": "Go up to the head of the table", "done": "The party is over",
 		"phase2_at": 0.5, "adds": "reveller", "adds_max": 3, "adds_every": 14.0, "plural": "the Host",
 	},
+	"lowwater": {  # Chapter 4 (issue #30)
+		"script": preload("res://scripts/lowwater.gd"),
+		"name": "LOW WATER", "title": "What the Tide Forgot", "phase2_title": "High Water",
+		"phase_say": "The tide is turning. When the bay is hatched, find a dry bank.",
+		"approach": "Walk out onto the sea bed", "done": "The sea comes home",
+		"phase2_at": 0.5, "adds": "breaker", "adds_max": 2, "adds_every": 16.0, "plural": "Low Water",
+	},
 	"turncoat": {  # the climax betrayal (issue #186): the name and title come from who it is
 		"script": preload("res://scripts/turncoat.gd"),
 		"name": "", "title": "Written Over", "phase2_title": "Rewritten",

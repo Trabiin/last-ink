@@ -72,6 +72,21 @@
 			"ai": "balanced", "ink": 14, "abilities": ["small_print", "tallys_turn"],
 			"trail": {"color": "9a86c0", "style": "thrust"},
 			"special": "Two fighters for one fee. Small Print makes everything nearby hit softer and walk slower; Tally's Turn sends her shadow off to punch on his own."
+		},
+		"ilse": {
+			"short": "Ilse",
+			"weapon": "Knight's spear",
+			"hp": 44,
+			"speed": 70,
+			"damage": 13,
+			"power_rate": 1.05,
+			"reach": 34,
+			"arc": 22,
+			"ai": "balanced",
+			"ink": 14,
+			"abilities": ["looking_glass", "unwrite"],
+			"trail": {"color": "c8e0f0", "style": "thrust"},
+			"special": "Long, narrow spear thrusts. Looking Glass turns a blow back the way it came. Unwrite, in White Ink, takes the weak and the fallen off the page entirely."
 		}
 	}
 }

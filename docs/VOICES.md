@@ -426,6 +426,23 @@ examples written to this sheet.
 - *(in game)* Tally: "It shook my hand. I do not have hands."
 - *(in game)* Tally: "'The debt falls due at the new moon. The collateral will be recovered.' The collateral is me."
 
+### Dame Ilse of the Mirror (`ilse`)
+- **Who:** a reflection that walked out of Halfwave chapel's looking-glass when the Blank took her original, Dame
+  Ilse Kernick of Kernick Head, off the beach (Chapter 4). Vain, precise, gorgeous, and the only one besides Ash
+  who can touch White Ink. Knows the original's face perfectly and only fifty-two Sundays a year of her life.
+- **Talks:** cool, amused, self-admiring. Refers to herself as "Ilse" or "she", never "I". Describes the world
+  back to front ("that well is on the wrong side", "she was told it backwards, but the meaning came through").
+  Compliments are measured against herself ("nearly as well as her"). When she is frightened she checks a mirror
+  instead of saying so.
+- **Speech:** knightly, slightly old-fashioned English with no dialect; full words, few contractions. The coast
+  folk round her have the coast speech (4.2); she does not.
+- **Owns:** mirrors, glass, "the right way round", "back to front", "her best side", moving first.
+- **Never:** "I"; "I remember" (she has seen, she has never remembered); "sweet" (Hortense's), "darling"; admits
+  fear in words. The rank 3 scene comes closest: "She checks every morning."
+- "Ilse does not have a past. She has a reflection of one. It is in excellent condition."
+- "Then Ilse will make do. She is told she is very good at making do. She was told it backwards, but the meaning came through."
+- "Goodbye, Dame Kernick. Your hair is on the wrong side. Ilse will look after the face."
+
 ### Light recruits
 Short lines (quips, hooks, a line or two in town). One clear angle each; never a mini-speech.
 
@@ -436,6 +453,8 @@ Short lines (quips, hooks, a line or two in town). One clear angle each; never a
 | **Dunmore Vellacott** (`dunmore`), debt-tattooed cobbler | polite, ground-down, counts debts in body parts. Hollowmark working man, deferential: "miss", "sir", "if it please" | elbows, forearms, "paid off" | complains |
 | **Mr. Biscuits** (`biscuits`) | one bark or growl, then a narrated bracket explaining his dignity | the bracket | words |
 | **The Merrow Three** (`merrow`) | one voice between three girls, in capitals when they sing; finish each other's lines. Unfinished Coast Cornish: "proper", "dreckly", "my bird", "where's that to?" | the hot-coal voice | speak at the same time in normal text |
+| **Kerra Hocking** (`kerra`), diver | short, flat, practical; dislikes talk, likes being underwater. Coast speech: "'tis", "they'm", "don't" for "doesn't" | "down", holding her breath, her dad's log | talks about her feelings, or her dad, unless asked twice |
+| **Yann Le Goff** (`yann`), salt trader | a smiling dealer who sells everything by taste; turns every subject to salt. Coast speech, lighter | salt, pinches, "a premium" | gives anything away |
 
 ### Saint Verity Hale (`verity`), antagonist
 - **Talks:** polite, tired, dry, genuinely kind. Long, well-built sentences, like a good archivist's letter.
@@ -518,11 +537,17 @@ Causeway nobles share Hortense's court English (4.2); quay people share Saffron'
 | Firmin Gosse (`firmin`) | The Host's under-cook. Gruff kitchen talk; won't discuss the main course, will discuss sauces at length. Every joke about food has a floor under it. |
 | Rémy Morel (`remy`, they/them) | Duel second. Light, flirty, businesslike; quotes rates for first blood and for the death. Talks about their four paper deaths like bad jobs. |
 
+### Chapter 4 people (the Unfinished Coast)
+Coast people share the coast speech (4.2): "they'm", "'tis", "look" tacked on the end, "maid" for a girl. Low Water
+never speaks; the Vacancy speaks once, through the keeper.
+
+| Who | Note |
+|---|---|
+| Harbourmaster Loveday Pascoe (`pascoe`) | Trevail's harbourmaster and the Moot's voice when they let her. Dry, practical, proud; counts boats, never says "lost" (boats are "out"). |
+| Keeper Jory Hocking (`keeper`) | Polgarrow's keeper. In his own voice: short, kind, a little deaf ("Put the kettle on, maid"). For five days the Vacancy talks through him in black bars. |
+
 ### Not built yet
 Seeds for chapters #28 to #32; flesh these out into full sheets when the character is written.
 
-- **Ilse of the Mirror:** a reflection that walked out when her original was erased. Vain, precise, slightly
-  backwards: describes things left-to-right reversed, compliments herself in the third person, never says "I
-  remember".
 - **Cass & Kit Pruett:** twin chemists who disagree about everything; never finish each other's sentences, they
   contradict them.

@@ -41,7 +41,7 @@
 		"lakeshore": {"name": "Lakeshore", "maps": ["lakeshore", "lakeshore_b", "lakeshore_c"]},
 		"mountain": {"name": "Mountain pass", "maps": ["scarth", "scarth_b", "scarth_c"]},
 		"causeway": {"name": "Bridge-city", "maps": ["causeway", "causeway_b", "causeway_c"]},
-		"coast": {"name": "Unfinished coast", "maps": []},
+		"coast": {"name": "Unfinished coast", "maps": ["coast", "coast_b", "coast_c"]},
 		"capital": {"name": "Capital streets", "maps": []}
 	},
 	"provinces": [
@@ -173,13 +173,13 @@
 		},
 		{
 			"id": "saltgrave", "name": "Trevail Harbour", "region": "coast", "biome": "coast", "pos": [0.56, 0.811], "weight": 1.0,
-			"owner": "free", "fray": 28, "output": {"gilt": 6, "supplies": 3}, "sites": ["Shipyard"],
+			"owner": "moot", "fray": 28, "output": {"gilt": 6, "supplies": 3}, "sites": ["Shipyard", "Bell tower"],
 			"favors": "craft", "favors_why": "Half the fleet needs patching before it can sail anywhere.", "claim": {"gilt": 80, "supplies": 16},
 			"blurb": "Ships still leave Trevail. They sail east into the white, and nobody writes back."
 		},
 		{
 			"id": "halfwave", "name": "Halfwave Bay", "region": "coast", "biome": "coast", "pos": [0.775, 0.781], "weight": 1.0,
-			"owner": "free", "fray": 40, "output": {"supplies": 5, "gilt": 2}, "sites": ["Fish market"],
+			"owner": "free", "fray": 40, "output": {"supplies": 5, "gilt": 2}, "sites": ["Fish market", "Drowned chapel"],
 			"favors": "grit", "favors_why": "Living next to a sea that stopped takes a strong stomach.", "claim": {"gilt": 70, "supplies": 14},
 			"blurb": "The sea stops mid-wave here. Children dare each other to touch the edge."
 		},

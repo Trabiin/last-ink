@@ -590,6 +590,27 @@ The Vacancy speaks for the first time, through a drowned lighthouse keeper, in r
 Mirror**, a knight who is actually a reflection that walked out of her mirror when the original was erased. Verity
 realizes the Blank is eating places she did not aim it at. She does not tell anyone. Boss: **Low Water**.
 
+**Built (#30, on tracked stand-in art):** four story missions on the three coast provinces (Trevail Harbour,
+Halfwave Bay, Polgarrow Light), with Trevail owned by the new **Harbour Moot** faction (fishing families who vote
+by show of hands; salt fish every day when Friendly, rope-and-catch deals, four asks, harbour dues and wreckers as
+trouble). The Wave at Trevail (escort the harbourmaster to the bell and hold the tower while she rings eleven of
+thirty-two boats home), the Knight in the Glass (needs Halfwave; Ilse steps out of the chapel's looking-glass and
+joins), the Keeper's Light (needs a governor at Halfwave; the Vacancy speaks for the first time, in black bars,
+through the keeper; Kerra joins; this mission starts the betrayal's foreshadowing, #186), and Low Water (needs
+Neutral with the Moot). Verity's beat is "Elsewhere": chalk rings on her map she did not draw, a letter burned
+unsent. Low Water fights on the dry sea bed: rolling swells down marked lanes, a fan of brine, a whirlpool that
+drags heroes in, called waves; at half the tide turns and it sinks, the bay floods except for a few dry banks,
+and it surfaces at a marked spot and lies beached (hits land 30% harder). The chapter ends with no letter, only
+three black bars in the dust. New enemies: Stopped Wave (rears, crashes down a lane, lies as a puddle), Drowned
+Netter (a tracking ring, then a net that slows), Half-Gannet (untouchable aloft, dives on a mark, sticks in the
+sand), Salt Wight (crumbles into a heap on its first death and stands up again unless the heap is broken). Ilse is
+a field hero with a full kit: Looking Glass (a parry, Blue) and Unwrite (White Ink, which only she can hold: a
+line that takes the weak and any salt heap off the page, never a boss), five techs, a skill tree, six weapons, a
+bond, romance, a rivalry with Hortense, a friendship with Jessamy, epilogues and a personal mission (the Hall of
+Glass at Kernick Head). Light recruits Kerra Hocking (story) and Yann Le Goff (Friendly Moot). Story missions
+gate on Renown from 62 to 74, continuing Chapter 3's. Save step `20261127_chapter4` gives old saves the Moot's
+Trevail. All stand-in art is listed in `data/placeholders.json` and tracked in the Chapter 4 art swap issue.
+
 **Chapter 5: The Gilded Spire** (~35 min)
 The party storms the capital, alongside or against Verity depending on the scene (still linear). The Concord's
 High Scribes try to write the Blank out of existence and instead get erased mid-sentence. Verity reaches the Great

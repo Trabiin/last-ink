@@ -80,7 +80,7 @@ func test_every_hero_has_five_techs() -> void:
 
 func test_abilities_have_ink_colours_and_tiers() -> void:
 	var ab: Dictionary = D["abilities.json"]
-	check_eq((ab["inks"] as Dictionary).keys(), Skills.INKS, "the five Ink colours, in order")
+	check_eq((ab["inks"] as Dictionary).keys(), Skills.INKS, "the six Ink colours, in order (white is Ilse's alone)")
 	check_eq((ab["ink_skill"]["xp"] as Array).size(), 4, "points for levels 2 to 5")
 	for id in ab["abilities"]:
 		var a: Dictionary = ab["abilities"][id]

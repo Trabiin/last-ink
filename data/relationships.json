@@ -318,6 +318,23 @@
 					"Every song I write's about you now. It's very bad for business. Nobody wants a sad song about mud any more.",
 					"Come and sit at the front tonight. I like to know where you are when I hit the high bits."
 				]
+			},
+			"ilse": {
+				"perk": {"name": "Two of Us", "desc": "The party deals 2 more damage on missions.", "effect": {"mission_damage": 2}},
+				"moment": {"title": "Who She Is Looking At", "lines": [
+					["", "The town hall again, with the candle lit. Ilse is in front of the mirror, but tonight she is not looking at herself. She is looking past her own shoulder."],
+					["ilse", "Something has gone wrong with her. She noticed it on Tuesday. She looks in the glass, the way she always has, and she is not looking at Ilse any more."],
+					["ilse", "She is looking at whoever is standing behind her. Which is usually you. It is very annoying. She has the best face in Hollowmark, and she keeps missing it."],
+					["ilse", "So she has to ask, before it gets worse. Is this a thing that happens to two people, or only to her?"]
+				], "choice": [{"label": "[Step round the mirror and kiss her]", "bond": 3, "romance": true, "reply": [["ilse", "Two people, then. Good. She would have hated to be the only one.", "happy"], ["", "When you look up, the mirror shows the two of you, the right way round, and for once Ilse does not check it."]]}, {"label": "[Laugh, and turn her back to the glass]", "bond": 2, "romance": false, "reply": [["ilse", "Only her. That is a relief, honestly. It was very distracting.", "smug"], ["ilse", "Friends, then. You may stand behind her in mirrors whenever you like. She will try to look at herself."]]}]},
+				"talk": ["She caught herself looking at you in a spoon at breakfast. A spoon. She has standards.", "If anyone asks, Ilse is still the most beautiful person in Hollowmark. You are second, which is still very good.", "In the chapel glass she only ever saw people on Sundays. She sees you every day. She is still getting used to it.", "The tavern window shows the two of you the wrong way round. She stands on the other side of you so it looks right."],
+				"rank5": {"rank": 5, "title": "First to Move", "lines": [
+					["ilse", "She was in the last mirror. Ilse Kernick, a long way back in the glass, in the white."],
+					["ilse", "She raised her hand, and Ilse did not follow. Then the other one lowered hers, a beat behind, as if she were the reflection."],
+					["ilse", "Do you know what Ilse was thinking about, in that moment? Not the question. Not the glass. Whether you were watching."],
+					["ilse", "You were. So she is staying on this side. With you, the right way round, for as long as the world keeps its shape.", "happy"]
+				], "choice": [{"label": "[Take her hand]", "bond": 3, "reply": [["ilse", "Warm. Yes. She is the warm one. You knew that.", "happy"]]}, {"label": "[Hold up a hand-mirror so she can see you both]", "bond": 2, "reply": [["ilse", "Oh, look at us. She knew we would look well. She was right again.", "smug"]]}]},
+				"ended": [["ilse", "So. She will look at herself in the glass again. It is what she was made for.", "sad"], ["ilse", "Do not stand behind her in mirrors any more. She keeps looking for you there, and it spoils the view."]]
 			}
 		}
 	},
@@ -484,6 +501,19 @@
 				"effects": {"expedition": 5, "building": 1},
 				"banter": [
 					[["quill", "I found your six Gilt, Nan."], ["nan", "And I found your seven. Call it square?"]]
-				]}}
+				]}},
+		{"ids": ["ilse", "hortense"], "kind": "rivals", "name": "Mirror, mirror", "text": "The two most beautiful people in Hollowmark, by their own count, and they cannot both be first. They compete for every mirror, every compliment and every door anyone holds open.",
+			"effects": {"expedition": -5, "building": -1, "bond": -1},
+			"banter": [
+				[["hortense", "Dame Ilse. You are standing in my light."], ["ilse", "Ilse is the light, Marquise. You are standing in her reflection."]],
+				[["ilse", "Your mask is on crooked."], ["hortense", "It is on exactly as crooked as I meant. You would not understand. You only have the one face."]]
+			],
+			"truce": {"days": 10, "name": "Turns at the glass", "text": "Ilse and Hortense drew up a rota for the town hall mirror, signed, sealed and witnessed by Quill. Mornings are Ilse's. Evenings are Hortense's. Hollowmark has never been so well turned out.", "effects": {"expedition": 5, "party": {"damage": 1}}, "banter": [[["hortense", "It is gone six, Dame Ilse. The mirror is mine."], ["ilse", "She was just leaving. You look very well tonight. Nearly as well as her."]]]}},
+		{"ids": ["ilse", "jessamy"], "kind": "friends", "name": "What the Ledger forgot", "text": "Jessamy paid to be struck out of the Ledger and fades in daylight. Ilse is what was left when the Blank struck out somebody else. They sit up together at night comparing which bits of them are still there.",
+			"effects": {"expedition": 5, "building": 1, "party": {"hp": 5}, "bond": 1},
+			"banter": [
+				[["jessamy", "Can you see me all right? It's gettin' light."], ["ilse", "Most of you. The best bits. Ilse would tell you if you went."]],
+				[["ilse", "You have no reflection in that puddle."], ["jessamy", "Haven't had one since the Ledger. You can borrow mine when I get it back, mind."]]
+			]}
 	]
 }

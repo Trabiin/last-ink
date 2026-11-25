@@ -59,7 +59,9 @@ SIZE = {"fortree": (3, 4), "tree": (3, 4), "fungus": (2, 2), "log": (2, 2), "fer
         # Chapter 2 (issue #28): the Abbey's lands
         "yew": (3, 4), "pine": (3, 4), "ruin": (2, 2), "candles": (1, 2), "chapel": (6, 6), "grave": (1, 2),
         # Chapter 3 (issue #29): the Velvet Causeway
-        "townhall": (7, 7), "lamppost": (1, 3), "mask_stall": (4, 4), "balustrade": (3, 2)}
+        "townhall": (7, 7), "lamppost": (1, 3), "mask_stall": (4, 4), "balustrade": (3, 2),
+        # Chapter 4 (issue #30): the Unfinished Coast
+        "lighthouse": (6, 6)}
 
 BIOMES = {
     # The Frayed Meadow's own layout "a" is hand-made (maps/frayed_meadow.txt); b and c are generated.
@@ -202,6 +204,21 @@ BIOMES = {
         "landmarks": [("W", (30, 22)), ("L", (26, 20)), ("L", (35, 20)), ("M", (40, 40)), ("M", (46, 41)), ("Q", (43, 37)),
                       ("J", (22, 44)), ("J", (27, 45)), ("X", (24, 40))],
         "groves": [("K", 4, 4, 6), ("L", 3, 4, 5), ("X", 2, 4, 4)],
+    },
+    # Chapter 4 (issue #30): the Unfinished Coast, harbours and beaches beside a sea that stopped mid-wave. The ground
+    # set is a tracked placeholder (data/placeholders.json tiles:coast); the props are existing ones.
+    "coast": {
+        "name": "The Unfinished Coast", "mood": "grade=0.94,0.98,1.04 mist=1.4 motes=0.95,1.0,1.0", "ground": "coast", "seed": 113,
+        "sign": "THE UNFINISHED COAST|Tide tables suspended|until further notice.",
+        "props": {"J": "dock", "K": "planks", "X": "crates", "B": "barrels", "Z": "drygrass", "P": "boulder",
+                  "Q": "outcrop", "U": "ruin", "A": "roadlamp", "H": "house_d"},
+        "border": ["Q", "P", "Z"],
+        "scatter": [("Z", 0.05, 0.35), ("P", 0.03, 0.5), ("Q", 0.02, 0.5), ("K", 0.015, 0.4), ("U", 0.01, 0.3)],
+        "path_r": 1.6, "patches": (7, 0.6),
+        # Landmarks: a landing stage with nets and barrels, a wreck on the sand, a lamp on the cliff path.
+        "landmarks": [("J", (36, 33)), ("J", (42, 35)), ("X", (38, 29)), ("B", (41, 28)), ("U", (28, 40)),
+                      ("K", (31, 42)), ("A", (26, 22)), ("A", (48, 24))],
+        "groves": [("Q", 3, 4, 5), ("P", 3, 4, 5), ("Z", 4, 5, 7)],
     },
 }
 
@@ -539,3 +556,6 @@ if __name__ == "__main__":
     if not only or "chapter3" in only:
         import make_chapter3  # Chapter 3's story maps (issue #29)
         make_chapter3.build_all(build, BIOMES)
+    if not only or "chapter4" in only:
+        import make_chapter4  # Chapter 4's story maps (issue #30)
+        make_chapter4.build_all(build, BIOMES)

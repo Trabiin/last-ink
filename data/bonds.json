@@ -797,6 +797,48 @@
 					{"label": "[Smile]", "bond": 2, "reply": [["nan", "Look at that. A smile. Now I know you're a mark.", "smug"]]}
 				]}
 			]
+		},
+		"ilse": {
+			"color": "9fd0e0",
+			"likes": ["envoy", "party"], "likes_text": "being looked at (envoy work), and being looked at in armour (the party)",
+			"dislikes": ["expedition", "staff:inkworks"], "dislikes_text": "weeks with no mirror (expeditions), and fumes that fog the glass (the Inkworks)",
+			"perks": {
+				"3": {"name": "Admired", "desc": "Every faction standing gain is 1 bigger: envoys come home talking about her.", "effect": {"standing_bonus": 1}},
+				"5": {"name": "Standing Glass", "desc": "The party takes 10% less damage on missions.", "effect": {"mission_guard": 0.1}}
+			},
+			"scenes": [
+				{"rank": 1, "title": "The Town Hall Mirror", "lines": [
+					["", "The tall mirror in the town hall has a chair in front of it now, and a cushion on the chair, and Ilse on the cushion, with her spear across her knees."],
+					["ilse", "It shows her the right way round. Do you understand how rare that is? Every pond, every window, every spoon, back to front. This one is correct."],
+					["ilse", "She parts her hair on the left. In the chapel glass it was on the right for a week, and she could not stand it."],
+					["ilse", "Come and stand behind her. No, a little to the side. There. Now she can see you and her at once. You are not as plain as she thought. It is the light in here."]
+				], "choice": [{"label": "[Stand where she says]", "bond": 3, "reply": [["ilse", "Good. Most people fidget. You stand like a pillar. Ilse approves of pillars.", "smug"]]}, {"label": "[Make a face in the mirror]", "bond": 2, "reply": [["ilse", "Don't do that. If it sticks, she will have to look at it.", "angry"], ["", "A moment later she makes the same face back, very precisely, and keeps it until you look away first."]]}, {"label": "[Turn the mirror to the wall]", "bond": 0, "reply": [["ilse", "Turn it back. Now, please.", "angry"], ["", "She does not say anything else until it is facing her again, and then she sits very still for a while."]]}]},
+				{"rank": 2, "title": "Fifty-Two Sundays", "lines": [
+					["ilse", "Ask her who Dame Ilse Kernick was. Go on. Everyone wants to and nobody does."],
+					["ilse", "Ilse Kernick of Kernick Head. A knight of the coast, when the coast still had knights. She came to Halfwave chapel every Sunday to look into the glass for her drowned brother, and to fix her hair."],
+					["ilse", "That is all Ilse knows of her. Fifty-two Sundays a year. A woman fixing her hair and saying a dead man's name. Never a Monday. Never what she had for supper."],
+					["ilse", "So Ilse knows that face better than anyone living. And nothing that went on behind it. You would think she would mind. She minds a little.", "sad"]
+				], "choice": [{"label": "[Ask with a look: what was the brother's name?]", "bond": 3, "reply": [["ilse", "Piran. She said it fifty-two times a year. It is the one word Ilse has always said the right way round."]]}, {"label": "[Fix a strand of her hair]", "bond": 2, "reply": [["ilse", "It was perfect before. It is still perfect. Thank you for checking.", "smug"]]}]},
+				{"rank": 3, "title": "Which Way Round", "lines": [
+					["", "Late. The town hall is dark except for one candle, and the mirror, and Ilse in front of it in her shift, with her armour stacked on the floor."],
+					["ilse", "She has a question nobody can answer, so she is asking you, because you will not try to."],
+					["ilse", "If the Blank gives Ilse Kernick back. If it coughs her up on Halfwave beach one morning, wet and confused, with her hair on the wrong side. What happens to the reflection?"],
+					["ilse", "Does she go back into the glass? Does she just go? Every morning she comes here and checks that she is still in front of the mirror and not behind it."],
+					["ilse", "Ilse has never been afraid of anything. She has looked. It is not in her. But she checks every morning.", "sad"]
+				], "choice": [{"label": "[Stand in front of the mirror with her]", "bond": 3, "reply": [["ilse", "Two of us on this side. That is a better count than one.", "sad"], ["", "She does not look at the glass again that night. She looks at you."]]}, {"label": "[Touch the glass, then her hand]", "bond": 2, "reply": [["ilse", "Cold, then warm. Yes. She is the warm one. Good. Keep that in mind for her."]]}, {"label": "[Shrug]", "bond": 0, "reply": [["ilse", "That is fair. It is not your problem. Good night.", "angry"]]}], "end": [["ilse", "Send her as an envoy now and then. People look at her when she talks. It is the best way she knows to be sure she is here.", "happy"]]},
+				{"rank": 4, "title": "Kernick Head", "lines": [
+					["ilse", "A boat came in at Trevail yesterday with a message for Ilse, from the Kernick tenants. The white is on Kernick Head. It is taking the hall a room at a time."],
+					["ilse", "Kernick Hall has a gallery of mirrors. Forty of them, the length of the west wing. The Kernicks were a vain family. She is told it runs in the blood. She has no blood, but it runs in her anyway."],
+					["ilse", "If anything of Ilse Kernick is left anywhere, it is in that gallery. Another reflection. A shoe. The answer to the question from the other night."],
+					["ilse", "She would like you to come. She would like somebody there who knows which one of her is real, in case she gets confused in the glass."]
+				], "choice": [{"label": "[Nod]", "bond": 3, "reply": [["ilse", "Kernick Head, then. Wear something nice. There will be forty mirrors.", "happy"]]}, {"label": "[Point at her: that one is real]", "bond": 2, "reply": [["ilse", "Yes. Well. She knew that. It is nice to hear it from the outside.", "smug"]]}], "end": [["", "A personal mission is on the Command Table: \"The Hall of Glass\", at Kernick Head by Polgarrow Light. Ilse is going, and Ash goes with her."]]},
+				{"rank": 5, "title": "First to Move", "lines": [
+					["ilse", "She was in the last mirror. Ilse Kernick. A long way back in the glass, in the white, standing in a room that was not there."],
+					["ilse", "She raised her hand. And Ilse did not. For the first time in her whole life, Ilse did not follow."],
+					["ilse", "Then the other one lowered her hand, slowly, a beat behind. As if she were the reflection. As if she were the one who had to keep up."],
+					["ilse", "So. That question is answered. Ilse is the one in front of the mirror. She is going to stay there.", "happy"]
+				], "choice": [{"label": "[Raise your hand, and wait for her]", "bond": 3, "reply": [["ilse", "No. You first, then her, a beat behind. She will allow it for you. Only for you.", "happy"]]}, {"label": "[Bow to her like a knight]", "bond": 2, "reply": [["ilse", "Dame Ilse of the Mirror accepts. She always knew she would look well being bowed to. She was right.", "smug"]]}]}
+			]
 		}
 	}
 }

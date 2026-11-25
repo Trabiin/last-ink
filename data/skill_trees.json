@@ -2130,6 +2130,199 @@
 					]
 				}
 			]
+		},
+		"ilse": {
+			"root": {
+				"id": "ilse_best_side",
+				"name": "Her Best Side",
+				"cost": 1,
+				"desc": "+6 HP.",
+				"flavor": "Ilse has two best sides. She has checked.",
+				"effects": {
+					"stats": {
+						"hp": 6
+					}
+				}
+			},
+			"branches": [
+				{
+					"id": "mirror_knight",
+					"name": "Mirror Knight",
+					"color": "6a9ae8",
+					"blurb": "The glass she came out of: every blow sent back the way it came, and the party behind her kept out of harm.",
+					"nodes": [
+						{
+							"id": "ilse_bright_glass",
+							"name": "Bright Glass",
+							"cost": 1,
+							"desc": "Looking Glass stays up 0.3 s longer.",
+							"flavor": "Polish, Ilse says, is half of any defence.",
+							"effects": {
+								"abilities": {
+									"looking_glass": {
+										"add": {
+											"time": 0.3
+										}
+									}
+								}
+							}
+						},
+						{
+							"id": "ilse_hard_reflection",
+							"name": "Hard Reflection",
+							"cost": 1,
+							"desc": "Looking Glass hits 8 harder.",
+							"flavor": "What comes back is a little worse than what went in. Glass is like that.",
+							"effects": {
+								"abilities": {
+									"looking_glass": {
+										"add": {
+											"damage": 8
+										}
+									}
+								}
+							}
+						},
+						{
+							"id": "ilse_poise",
+							"name": "Poise",
+							"cost": 2,
+							"desc": "Knockback moves Ilse 40% less.",
+							"flavor": "She does not stagger. She leans, at an angle she has chosen.",
+							"effects": {
+								"perks": {
+									"poise_cut": 0.4
+								}
+							}
+						},
+						{
+							"id": "ilse_splinters",
+							"name": "Splinters",
+							"cost": 3,
+							"desc": "Enemies that hit Ilse take 20% of it back.",
+							"flavor": "Anything that strikes a mirror comes away bleeding.",
+							"bond": 2,
+							"effects": {
+								"perks": {
+									"thorns": 0.2
+								}
+							}
+						},
+						{
+							"id": "ilse_standing_glass",
+							"name": "Standing Glass",
+							"cost": 3,
+							"desc": "Allies within 70 px take 10% less damage. Once a mission, a killing blow leaves Ilse on 1 HP.",
+							"flavor": "The glass held at Halfwave. It holds now.",
+							"bond": 3,
+							"effects": {
+								"perks": {
+									"aura_guard": 0.1,
+									"last_stand": 1
+								},
+								"ai": {
+									"focus": "leader_threat"
+								}
+							},
+							"capstone": true
+						}
+					]
+				},
+				{
+					"id": "white_lance",
+					"name": "White Lance",
+					"color": "dfe8ee",
+					"blurb": "The ink nobody else can hold: a longer, wider white line, and the weak taken off the page before they can get up.",
+					"nodes": [
+						{
+							"id": "ilse_long_line",
+							"name": "Long Line",
+							"cost": 1,
+							"desc": "Unwrite reaches 14 px further.",
+							"flavor": "She reads the page from the back. It is shorter that way.",
+							"effects": {
+								"abilities": {
+									"unwrite": {
+										"add": {
+											"reach": 14
+										}
+									}
+								}
+							}
+						},
+						{
+							"id": "ilse_wide_line",
+							"name": "Wide Line",
+							"cost": 1,
+							"desc": "Unwrite's line is 6 px wider.",
+							"flavor": "Margins are for people who make mistakes.",
+							"effects": {
+								"abilities": {
+									"unwrite": {
+										"add": {
+											"width": 6
+										}
+									}
+								}
+							}
+						},
+						{
+							"id": "ilse_coup_de_grace",
+							"name": "Coup de Grace",
+							"cost": 2,
+							"desc": "Ilse deals 25% more damage to enemies under 35% HP.",
+							"flavor": "A knight finishes what she starts. Usually in front of an audience.",
+							"effects": {
+								"perks": {
+									"dmg_wounded": 0.25
+								}
+							}
+						},
+						{
+							"id": "ilse_clean_page",
+							"name": "Clean Page",
+							"cost": 3,
+							"desc": "Every enemy Unwrite takes off the page heals Ilse 6.",
+							"flavor": "Where something was, there is room. She fills it.",
+							"bond": 2,
+							"effects": {
+								"abilities": {
+									"unwrite": {
+										"set": {
+											"pierce_heal": 6
+										}
+									}
+								}
+							}
+						},
+						{
+							"id": "ilse_blank_verse",
+							"name": "Blank Verse",
+							"cost": 3,
+							"desc": "Unwrite comes back 2 s sooner and takes enemies under 10% more health. Every kill gives Ilse 1 Ink.",
+							"flavor": "The white does not know she is there. She has decided to take advantage.",
+							"bond": 3,
+							"effects": {
+								"abilities": {
+									"unwrite": {
+										"add": {
+											"cooldown": -2,
+											"erase": 0.1
+										}
+									}
+								},
+								"perks": {
+									"kill_ink": 1
+								},
+								"ai": {
+									"focus": "wounded"
+								}
+							},
+							"capstone": true
+						}
+					]
+				}
+			]
 		}
 	}
 }

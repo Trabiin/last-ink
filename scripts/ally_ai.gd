@@ -229,8 +229,8 @@ static func _follow(h: Hero, leader: Hero, behind: float) -> Vector2:
 
 ## Which ability this preset reaches for right now, or -1. Balanced uses each ability's own
 ## "ai" rule from data/abilities.json; the others bend those rules their way.
-## Ability kinds that follow their own "ai" rule (data/abilities.json) under every preset (Chapter 3, #29).
-const OWN_RULE := ["charm", "blink", "song", "conjure", "weaken", "shadow"]
+## Ability kinds that follow their own "ai" rule (data/abilities.json) under every preset (Chapter 3, #29; Unwrite, #30).
+const OWN_RULE := ["charm", "blink", "song", "conjure", "weaken", "shadow", "unwrite"]
 
 
 static func pick_ability(h: Hero, id: String, leader: Hero) -> int:

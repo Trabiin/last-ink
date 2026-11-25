@@ -18,7 +18,7 @@
 	"hero_mats": {
 		"ash": "oak_gall", "bran": "scrap_iron", "gristle": "oak_gall", "ninefingers": "scrap_iron",
 		"ottoline": "lamp_brass", "jessamy": "moth_silk", "odile": "tithe_wax", "velvette": "lamp_brass",
-		"hortense": "lamp_brass", "saffron": "moth_silk", "nan": "scrap_iron"
+		"hortense": "lamp_brass", "saffron": "moth_silk", "nan": "scrap_iron", "ilse": "relic_silver"
 	},
 	"recipes": {
 		"padded_coat": {"mats": {"moth_silk": 2, "scrap_iron": 1}, "gilt": 10, "days": 1},
