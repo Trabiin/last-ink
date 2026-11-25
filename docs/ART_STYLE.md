@@ -152,8 +152,17 @@ strip is drawn as pixel art by `scripts/ui_skin.gd`, in whole pixels only:
   from any data colour (a tech's or an Ink colour's), pulled toward night slate so it sits in the art.
 
 **Panels (2026-11-25)**: the ledger frame's dark inner band is a single shadow line now, so text and rows sit on
-the panel's face, never on a band (`UiSkin.inner(rect)` gives the face). Ledger panels and rows carry a fixed
-pixel grain (`UiSkin.grain`): sparse lighter and darker specks and short fibres, so no surface is one flat colour.
+the panel's face, never on a band (`UiSkin.inner(rect)` gives the face). The ledger panels carry no grain; there is a fixed
+pixel grain (`UiSkin.grain`) on full-screen menu backgrounds only: sparse specks and short fibres.
+
+**Ledger pages (2026-11-25)**: every menu pane you *read* (item, skill, person, building, deal, report details)
+is a page torn out of a ledger (`scripts/ledger_page.gd`), like the dialogue box; lists you pick from stay dark.
+The paper is pixel art made per size: soft paper tones, foxing, a tea ring, a crease, a folded corner, browned
+edges, torn edges, an ink blot, each size worn differently. Text is written with `LedgerPage` calls only
+(`heading`, `line`, `pair`, `para`, `icon_line`, `space` for bars and pips), so it always sits on a ruled line
+and between the red margin and the right edge, at every text size; a page that runs out of lines stops. On
+paper use the page inks (`LedgerPage.INK`, `INK_SOFT`, `GOLD`, `GREEN`, `RED`, `BLUE`, `PLUM`, or
+`LedgerPage.ink(colour)`), never the light colours made for the dark panels.
 
 ## Effects (from 2026-11-24)
 

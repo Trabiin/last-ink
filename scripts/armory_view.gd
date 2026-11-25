@@ -544,58 +544,60 @@ func _draw_detail(vs: Vector2) -> void:
 	if rows.is_empty() or sel >= rows.size() or rows[sel].has("head"):
 		return
 	var row: Dictionary = rows[sel]
-	var x := rx + 10.0
-	var w := rw - 20.0
-	var y := box.position.y + 18.0
+	# Written up on a ledger page (LedgerPage), on its lines.
+	var pg := LedgerPage.begin(self, box.grow(-9.0), font)
 	match str(row["kind"]):
 		"weapon", "recipe":
 			var r: Dictionary = row["recipe"]
 			if r.is_empty():
 				var now := Armory.weapon_now(row["hero"])
-				y = _item_head(now, x, y, w)
-				_wrap(Vector2(x, y + 4), tr("Tier %d, the last of %s's line. Nothing in the Inklands improves on it.") % [Armory.tier_of(now), PartyPicker.short_of(row["hero"])], w, 8, SOFT)
+				_item_head(pg, now)
+				pg.para(tr("Tier %d, the last of %s's line. Nothing in the Inklands improves on it.") % [Armory.tier_of(now), PartyPicker.short_of(row["hero"])], 8, LedgerPage.INK_SOFT)
 				return
-			y = _item_head(r["result"], x, y, w)
+			_item_head(pg, r["result"])
 			if r["kind"] == "weapon":
-				_text(Vector2(x, y), tr("From the %s (%s)") % [Progress.item(r["from"]).get("name", r["from"]),
-					tr("in %s's hands until it's done") % PartyPicker.short_of(r["hero"]) if Armory.weapon_now(r["hero"]) == r["from"] else tr("from the bag")], 7, SOFT, w)
-				y += 11
-			y += _wrap(Vector2(x, y + 2), Armory.result_blurb(r["result"]), w, 8, Color(0.78, 0.76, 0.74)) + 6
-			y = _needs(r, x, y, w)
+				pg.line(tr("From the %s (%s)") % [Progress.item(r["from"]).get("name", r["from"]),
+					tr("in %s's hands until it's done") % PartyPicker.short_of(r["hero"]) if Armory.weapon_now(r["hero"]) == r["from"] else tr("from the bag")], 7, LedgerPage.INK_SOFT)
+			pg.para(Armory.result_blurb(r["result"]), 8, LedgerPage.INK)
+			pg.skip()
+			_needs(pg, r)
 			var why := Armory.craft_blocker(r)
-			y += 4
+			pg.skip()
 			if why == "":
 				var d := Armory.days_for(r)
-				_text(Vector2(x, y + 8), tr("%s: forge it. Ready %s.") % [_ok_word(), tr("at dawn") if d <= 1 else Loc.n("in %d day", "in %d days", d) % d], 8, GOOD, w)
+				pg.line(tr("%s: forge it. Ready %s.") % [_ok_word(), tr("at dawn") if d <= 1 else Loc.n("in %d day", "in %d days", d) % d], 8, LedgerPage.GREEN)
 			else:
-				_wrap(Vector2(x, y + 8), tr("Can't yet: %s.") % why, w, 8, BAD)
+				pg.para(tr("Can't yet: %s.") % why, 8, LedgerPage.RED)
 		"job":
 			var j: Dictionary = row["job"]
-			y = _item_head(j["result"], x, y, w)
-			_text(Vector2(x, y + 4), tr("On a bench. Ready %s.") % Armory.job_eta(j), 8, GOLD, w)
-			_wrap(Vector2(x, y + 18), Armory.result_blurb(j["result"]), w, 8, Color(0.78, 0.76, 0.74))
+			_item_head(pg, j["result"])
+			pg.line(tr("On a bench. Ready %s.") % Armory.job_eta(j), 8, LedgerPage.GOLD)
+			pg.para(Armory.result_blurb(j["result"]), 8, LedgerPage.INK)
 		"stall":
 			var st: Dictionary = row["stall"]
 			match str(st["kind"]):
 				"materials":
-					y = _mat_head(st["id"], x, y, w)
+					_mat_head(pg, st["id"])
 				"items":
-					y = _item_head(st["id"], x, y, w)
-					y += _wrap(Vector2(x, y + 2), Armory.result_blurb(st["id"]), w, 8, Color(0.78, 0.76, 0.74)) + 4
-					_text(Vector2(x, y + 8), tr("In the satchel %d, in the stores %d.") % [Satchel.count(st["id"]), Armory.stored(st["id"])], 8, SOFT, w)
+					_item_head(pg, st["id"])
+					pg.para(Armory.result_blurb(st["id"]), 8, LedgerPage.INK)
+					pg.line(tr("In the satchel %d, in the stores %d.") % [Satchel.count(st["id"]), Armory.stored(st["id"])], 8, LedgerPage.INK_SOFT)
 				_:
-					y = _item_head(st["id"], x, y, w)
-					y += _wrap(Vector2(x, y + 2), Armory.result_blurb(st["id"]), w, 8, Color(0.78, 0.76, 0.74)) + 4
+					_item_head(pg, st["id"])
+					pg.para(Armory.result_blurb(st["id"]), 8, LedgerPage.INK)
 			var why2 := Armory.buy_blocker(int(row["i"]), st)
-			_text(Vector2(x, box.end.y - 10), (tr("%s: buy one for %d Gilt.") % [_ok_word(), Armory.price(st["kind"], st["id"])]) if why2 == "" else tr("Can't: %s.") % why2, 8, GOOD if why2 == "" else BAD, w)
+			pg.line_i = maxi(pg.line_i, pg.lines - 1)  # the deal on the page's last line
+			pg.line((tr("%s: buy one for %d Gilt.") % [_ok_word(), Armory.price(st["kind"], st["id"])]) if why2 == "" else tr("Can't: %s.") % why2, 8, LedgerPage.GREEN if why2 == "" else LedgerPage.RED)
 		"sell", "mat":
-			_mat_head(row["id"], x, y, w)
+			_mat_head(pg, row["id"])
 			if row["kind"] == "sell":
-				_text(Vector2(x, box.end.y - 10), tr("%s: sell one for %d Gilt.") % [_ok_word(), Armory.sell_price_mat(row["id"])], 8, GOOD, w)
+				pg.line_i = maxi(pg.line_i, pg.lines - 1)
+				pg.line(tr("%s: sell one for %d Gilt.") % [_ok_word(), Armory.sell_price_mat(row["id"])], 8, LedgerPage.GREEN)
 		"pack":
 			var id: String = row["id"]
-			y = _item_head(id, x, y, w)
-			y += _wrap(Vector2(x, y + 2), Armory.result_blurb(id), w, 8, Color(0.78, 0.76, 0.74)) + 6
+			_item_head(pg, id)
+			pg.para(Armory.result_blurb(id), 8, LedgerPage.INK)
+			pg.skip()
 			var it := Satchel.item(id)
 			var lines := [tr("Packed: %d (carry at most %d).") % [Armory.pack_of(id), Armory.carry(id)], tr("In the satchel now: %d. In the stores: %d.") % [Satchel.count(id), Armory.stored(id)]]
 			if int(it.get("start", 0)) > 0:
@@ -605,69 +607,53 @@ func _draw_detail(vs: Vector2) -> void:
 			if Armory.forge_data().get("recipes", {}).has(id):
 				lines.append(tr("The Forge makes them: %s.") % Armory.mats_text(Armory.recipe(id)["mats"]))
 			for l in lines:
-				_text(Vector2(x, y + 8), l, 8, SOFT, w)
-				y += 11
+				pg.para(l, 8, LedgerPage.INK_SOFT)
 
 
-## Icon, name, tier and slot, and the stats line. Returns the y below it.
-func _item_head(id: String, x: float, y: float, w: float) -> float:
-	UiSkin.draw_icon(self, id, Rect2(x + w - 32, y - 10, 32, 32))
-	_text(Vector2(x, y), Armory.result_name(id), 11, PAPER, w - 36)
-	y += 12
+## Icon, name, tier and slot, and the stats line, at the top of the page.
+func _item_head(pg: LedgerPage, id: String) -> void:
+	pg.heading(Armory.result_name(id), 11, LedgerPage.INK, id)
 	var it := Progress.item(id)
 	if not it.is_empty():
 		var owner := str(it.get("hero", ""))
 		var what := tr("%s, tier %d, %s") % [{"weapon": tr("Weapon"), "armor": tr("Armour"), "trinket": tr("Trinket")}.get(it.get("slot", ""), tr("Gear")), int(it.get("tier", 1)),
 			(tr("for %s") % PartyPicker.short_of(owner)) if owner != "" else tr("anyone can wear it")]
-		_text(Vector2(x, y), what, 8, SLOT_COLORS.get(it.get("slot", ""), TEXT), w - 36)
-		y += 11
-		y += _wrap(Vector2(x, y), Progress.item_text(id), w - 36, 8, GOOD)
+		pg.line(what, 8, LedgerPage.ink(SLOT_COLORS.get(it.get("slot", ""), TEXT)))
+		pg.para(Progress.item_text(id), 8, LedgerPage.GREEN)
 		var owned := Progress.count(id) + Progress.worn_by(id).size()
 		if owned > 0:
-			_text(Vector2(x, y + 9), tr("You have %d.") % owned, 7, SOFT, w)
-			y += 10
+			pg.line(tr("You have %d.") % owned, 7, LedgerPage.INK_SOFT)
 	elif not Satchel.item(id).is_empty():
-		_text(Vector2(x, y), tr("Field item, used from the quick menu"), 8, SLOT_COLORS["item"], w - 36)
-		y += 11
+		pg.line(tr("Field item, used from the quick menu"), 8, LedgerPage.ink(SLOT_COLORS["item"]))
 	else:
-		_text(Vector2(x, y), tr("Satchel upgrade"), 8, SLOT_COLORS["upgrade"], w - 36)
-		y += 11
-	return y + 4
+		pg.line(tr("Satchel upgrade"), 8, LedgerPage.ink(SLOT_COLORS["upgrade"]))
 
 
 ## The materials and Gilt a recipe takes, each marked by whether you have enough.
-func _needs(r: Dictionary, x: float, y: float, w: float) -> float:
-	_text(Vector2(x, y + 8), tr("Takes"), 8, Color(0.75, 0.72, 0.7))
-	y += 11
+func _needs(pg: LedgerPage, r: Dictionary) -> void:
+	pg.line(tr("Takes"), 8, LedgerPage.INK)
 	for k in r["mats"]:
 		var need := int(r["mats"][k])
 		var have := Armory.mat_count(k)
 		var open := Armory.region_ok(str(Armory.mat(k).get("region", "")))
-		UiSkin.draw_icon(self, k, Rect2(x, y, 10, 10))
 		var note := "" if open else tr("  (%s, later in the story)") % Armory.region_name(str(Armory.mat(k).get("region", "")))
-		_text(Vector2(x + 13, y + 8), "%s  %d/%d%s" % [Armory.mat_name(k), have, need, note], 8, GOOD if have >= need else (DIM if not open else BAD), w - 13)
-		y += 11
+		pg.icon_line(k, "%s  %d/%d%s" % [Armory.mat_name(k), have, need, note], 8, LedgerPage.GREEN if have >= need else (LedgerPage.INK_SOFT if not open else LedgerPage.RED))
 	var g := int(r["gilt"])
-	UiSkin.draw_icon(self, "gilt", Rect2(x, y, 10, 10))
-	_text(Vector2(x + 13, y + 8), tr("%d Gilt") % g, 8, GOOD if int(Empire.res.get("gilt", 0)) >= g else BAD, w - 13)
-	return y + 12
+	pg.icon_line("gilt", tr("%d Gilt") % g, 8, LedgerPage.GREEN if int(Empire.res.get("gilt", 0)) >= g else LedgerPage.RED)
 
 
-func _mat_head(k: String, x: float, y: float, w: float) -> float:
-	UiSkin.draw_icon(self, k, Rect2(x + w - 32, y - 10, 32, 32))
-	_text(Vector2(x, y), Armory.mat_name(k), 11, PAPER, w - 36)
-	y += 12
+func _mat_head(pg: LedgerPage, k: String) -> void:
+	pg.heading(Armory.mat_name(k), 11, LedgerPage.INK, k)
 	var m := Armory.mat(k)
-	_text(Vector2(x, y), tr("Material, tier %d, %s. You have %d.") % [int(m.get("tier", 2)), Armory.region_name(str(m.get("region", ""))), Armory.mat_count(k)], 8, MAT_COL, w - 36)
-	y += 6
-	y += _wrap(Vector2(x, y + 8), str(m.get("blurb", "")), w, 8, Color(0.78, 0.76, 0.74)) + 6
+	pg.line(tr("Material, tier %d, %s. You have %d.") % [int(m.get("tier", 2)), Armory.region_name(str(m.get("region", ""))), Armory.mat_count(k)], 8, LedgerPage.ink(MAT_COL))
+	pg.para(str(m.get("blurb", "")), 8, LedgerPage.INK)
+	pg.skip()
 	var src := Armory.sources(k)
-	y += _wrap(Vector2(x, y + 8), tr("Found on: %s") % (", ".join(src) if not src.is_empty() else tr("nothing you can reach yet")), w, 8, SOFT) + 4
+	pg.para(tr("Found on: %s") % (", ".join(src) if not src.is_empty() else tr("nothing you can reach yet")), 8, LedgerPage.INK_SOFT)
 	var uses := Armory.uses(k).map(func(u): return Armory.result_name(u))
 	if uses.size() > 8:
 		uses = uses.slice(0, 8) + [tr("and %d more") % (Armory.uses(k).size() - 8)]
-	y += _wrap(Vector2(x, y + 8), tr("Makes: %s") % ", ".join(uses), w, 8, SOFT)
-	return y
+	pg.para(tr("Makes: %s") % ", ".join(uses), 8, LedgerPage.INK_SOFT)
 
 
 ## What to press to act on this device: "Enter", "A", "Tap twice" (issue #115).

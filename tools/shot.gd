@@ -107,6 +107,14 @@ func _process(_delta: float) -> bool:
 		_spread()
 	if frame == total - int(args.get("lead", "30")) and args.has("act"):
 		_act(str(args["act"]))
+		for pair in str(args.get("set", "")).split(",", false):  # set=gear_view.tab:skills: a property on the opened screen
+			var kv := pair.split(":", true, 1)
+			var path := kv[0].split(".")
+			var obj: Object = current_scene
+			for j in path.size() - 1:
+				obj = obj.get(path[j])
+			var v = kv[1]
+			obj.set(path[path.size() - 1], int(v) if v.is_valid_int() else v)
 	if frame == total - 25 and args.has("talk") and current_scene != null and "dialogue_box" in current_scene:
 		# talk=quill_first opens that conversation in town; portraits=DIR swaps in <id>.png from DIR (a
 		# style trial from tools/portrait_style.py) without touching assets/portraits.

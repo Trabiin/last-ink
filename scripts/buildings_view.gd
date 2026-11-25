@@ -509,45 +509,63 @@ func _draw() -> void:
 	if rows.is_empty():
 		return
 
-	# Detail
+	# Detail: written up on a ledger page (LedgerPage) sized to its text, the actions under it.
 	var row: Dictionary = rows[sel]
 	var w := vs.x - DETAIL_X - 8
-	var dy := 44.0
+	var entries := []  # [text, size, colour, wrapped?], heading first
+	var bar_job := {}
+	var bar_label := ""
+	var icon_id := ""
 	if row["kind"] == "feast":
-		_text(Vector2(DETAIL_X, dy), tr("Tavern feast"), 15, Color("f3efe4"))
-		dy += 8
-		dy += _wrap(Vector2(DETAIL_X, dy + 9), tr("Long tables in the square, a pig on the spit and everyone who works for you at one sitting. It costs a little for every mouth, and the tavern needs a week to recover."), w, 8, Color(0.62, 0.6, 0.62)) + 6
-		dy += _wrap(Vector2(DETAIL_X, dy + 9), Sinks.feast_text(), w, 8, Color("cfe0b0")) + 6
+		entries.append([tr("Tavern feast"), 13, LedgerPage.INK, false])
+		entries.append([tr("Long tables in the square, a pig on the spit and everyone who works for you at one sitting. It costs a little for every mouth, and the tavern needs a week to recover."), 8, LedgerPage.INK_SOFT, true])
+		entries.append([Sinks.feast_text(), 8, LedgerPage.GREEN, true])
 	elif row["kind"] == "lamp":
 		var p := Empire.territory().find(row["id"])
-		_text(Vector2(DETAIL_X, dy), tr("Wardlamp: %s") % p["name"], 15, Color("f3efe4"))
-		dy += 8
-		dy += _wrap(Vector2(DETAIL_X, dy + 9), Empire.lamp_data["blurb"], w, 8, Color(0.62, 0.6, 0.62)) + 6
+		entries.append([tr("Wardlamp: %s") % p["name"], 13, LedgerPage.INK, false])
+		entries.append([Empire.lamp_data["blurb"], 8, LedgerPage.INK_SOFT, true])
 		var rate := Empire.fray_rate(p)
-		_text(Vector2(DETAIL_X, dy + 9), tr("Fray %d / 100, changing %+d a day") % [int(p["fray"]), rate], 9, BAD if rate > 0 else GOOD)
-		dy += 16
+		entries.append([tr("Fray %d / 100, changing %+d a day") % [int(p["fray"]), rate], 8, LedgerPage.RED if rate > 0 else LedgerPage.GREEN, false])
 		if Empire.lamp_jobs.has(row["id"]):
-			dy = _draw_job(Empire.lamp_jobs[row["id"]], tr("Going up"), dy, w)
+			bar_job = Empire.lamp_jobs[row["id"]]
+			bar_label = tr("Going up")
 	else:
 		var id: String = row["id"]
 		var b := Empire.building(id)
 		var lv := Empire.level_of(id)
-		UiSkin.draw_icon(self, id, Rect2(DETAIL_X + w - 34, dy - 14, 32, 32))
-		_text(Vector2(DETAIL_X, dy), b["name"], 15, Color("f3efe4"))
-		var lvl_s := tr("Not built") if lv == 0 else tr("Level %d of %d") % [lv, Empire.max_level(id)]
-		_text(Vector2(DETAIL_X + font.get_string_size(b["name"], HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(15)).x + 10, dy), lvl_s, 9, Color(0.75, 0.72, 0.7))
-		dy += 8
-		dy += _wrap(Vector2(DETAIL_X, dy + 9), Prompts.fill(str(b["blurb"])), w, 8, Color(0.62, 0.6, 0.62)) + 6
+		icon_id = id
+		entries.append([b["name"], 13, LedgerPage.INK, false])
+		entries.append([tr("Not built") if lv == 0 else tr("Level %d of %d") % [lv, Empire.max_level(id)], 8, LedgerPage.INK_SOFT, false])
+		entries.append([Prompts.fill(str(b["blurb"])), 8, LedgerPage.INK, true])
 		if lv > 0:
-			_text(Vector2(DETAIL_X, dy + 9), tr("Now: %s") % Empire.current_effect(id)["text"], 9, Color("cfe0b0"))
-			dy += 16
+			entries.append([tr("Now: %s") % Empire.current_effect(id)["text"], 8, LedgerPage.GREEN, true])
 			var up := Sinks.building_upkeep(id)
 			if not up.is_empty():  # levels 4 and 5 (issue #189)
 				var unpaid := Sinks.working_level(id) < lv
-				_text(Vector2(DETAIL_X, dy + 9), (tr("Upkeep %s a day. Unpaid at the last dawn: working as level 3.") if unpaid else tr("Upkeep %s a day, paid at dawn.")) % _cost_text(up), 8, BAD if unpaid else Color(0.7, 0.68, 0.7))
-				dy += 13
+				entries.append([(tr("Upkeep %s a day. Unpaid at the last dawn: working as level 3.") if unpaid else tr("Upkeep %s a day, paid at dawn.")) % _cost_text(up), 8, LedgerPage.RED if unpaid else LedgerPage.INK_SOFT, true])
 		if Empire.construction.get("id", "") == id:
-			dy = _draw_job(Empire.construction, tr("Building") if lv == 0 else tr("Upgrading to level %d") % (lv + 1), dy, w)
+			bar_job = Empire.construction
+			bar_label = tr("Building") if lv == 0 else tr("Upgrading to level %d") % (lv + 1)
+	var pw := w + 8.0
+	var need := 0
+	for i in range(1, entries.size()):
+		need += LedgerPage.lines_for(entries[i][0], font, entries[i][1], pw) if entries[i][3] else 1
+	if not bar_job.is_empty():
+		need += 2
+	var ph := minf(LedgerPage.height_for(need, font), vs.y * 0.55)
+	var pg := LedgerPage.begin(self, Rect2(DETAIL_X - 6, 36, pw, ph), font)
+	pg.heading(entries[0][0], entries[0][1], entries[0][2], icon_id)
+	for i in range(1, entries.size()):
+		if entries[i][3]:
+			pg.para(entries[i][0], entries[i][1], entries[i][2])
+		else:
+			pg.line(entries[i][0], entries[i][1], entries[i][2])
+	if not bar_job.is_empty():
+		pg.line(tr("%s: %s left") % [bar_label, Empire.job_left_text(bar_job)], 8, LedgerPage.GOLD)
+		var jr := pg.space()
+		if jr.size.x > 0.0:
+			UiSkin.bar(self, Rect2(jr.position.x, jr.end.y - 5.0, jr.size.x, 4), Empire.job_progress(bar_job), "brass", {"notches": [0.25, 0.5, 0.75]})
+	var dy := 36.0 + ph
 
 	# Actions
 	var acts := _actions()
@@ -584,12 +602,6 @@ func _draw() -> void:
 	if flash_t > 0.0:
 		var a2 := clampf(flash_t / 0.4, 0.0, 1.0)
 		_wrap(Vector2(LIST_X, vs.y - 18), flash, LIST_W, 8, Color(1, 0.9, 0.7, a2))
-
-
-func _draw_job(job: Dictionary, label: String, dy: float, w: float) -> float:
-	_text(Vector2(DETAIL_X, dy + 9), tr("%s: %s left") % [label, Empire.job_left_text(job)], 9, GOLD)
-	UiSkin.bar(self, Rect2(DETAIL_X, dy + 13, w, 4), Empire.job_progress(job), "brass", {"notches": [0.25, 0.5, 0.75]})
-	return dy + 22
 
 
 func _draw_picker(py: float, w: float) -> void:

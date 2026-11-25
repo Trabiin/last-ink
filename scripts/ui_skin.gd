@@ -50,8 +50,6 @@ static func panel(ci: CanvasItem, r: Rect2, kind := "ledger", tint := Color.WHIT
 	var sb := box(kind)
 	sb.modulate_color = tint
 	ci.draw_style_box(sb, r.grow(2.0))
-	if kind == "ledger":
-		grain(ci, r.grow(-7.0), tint.a)
 
 
 ## Where text and rows go inside a panel: past the frame and its inner shadow, with a pixel of air.
@@ -60,7 +58,7 @@ static func inner(r: Rect2, kind := "ledger") -> Rect2:
 
 
 ## Hand-made surfaces are never one flat colour: a sparse speckle of lighter and darker pixels (with the odd
-## short fibre) over a panel or row, like the dithered shading on the sprites. One fixed pattern, so it never
+## short fibre), like the dithered shading on the sprites. Used on full-screen menu backgrounds (screen()). One fixed pattern, so it never
 ## crawls; anchored to the screen, so rows side by side share it.
 static var _grain: ImageTexture = null
 
@@ -102,6 +100,7 @@ static func screen(ci: CanvasItem, vs: Vector2, header_h := 25.0) -> void:
 	ci.draw_rect(Rect2(Vector2.ZERO, vs), Color(0.04, 0.035, 0.06, 0.9))
 	# Pushed past the screen edge so the brass corners only peek in and never sit under the header text.
 	panel(ci, Rect2(Vector2(-7, -7), vs + Vector2(14, 14)), "ledger")
+	grain(ci, Rect2(Vector2(2, 2), vs - Vector2(4, 4)))  # texture in the background only (Ojon, 2026-11-25)
 	var y := floorf(header_h)
 	ci.draw_rect(Rect2(10, y, vs.x - 20, 1), Color("a07a4e"))
 	ci.draw_rect(Rect2(10, y + 1, vs.x - 20, 1), Color(0.07, 0.06, 0.1, 0.8))
@@ -399,7 +398,6 @@ static func row(ci: CanvasItem, r: Rect2, on := false, focused := true) -> void:
 	if r.size.x < 3.0 or r.size.y < 3.0:
 		return
 	ci.draw_rect(r, Color("2a2019") if on else Color("191a26"))
-	grain(ci, r.grow(-1.0))
 	ci.draw_rect(Rect2(r.position, Vector2(r.size.x, 1.0)), BAR_INK)  # dark top edge: the row sits recessed
 	ci.draw_rect(Rect2(r.position.x, r.end.y - 1.0, r.size.x, 1.0), Color("3a2a1c") if on else Color("262838"))  # lit lower lip
 	if on:

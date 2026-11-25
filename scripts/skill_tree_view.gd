@@ -466,8 +466,7 @@ func _draw_details(area: Rect2) -> void:
 	var id := hero_id()
 	var x := area.position.x + 8
 	var w := area.size.x - 16
-	var y := area.position.y + 16
-	# Reset button pinned to the bottom of the panel.
+	# Reset button pinned to the bottom of the panel, under the page.
 	_reset_rect = Rect2(x, area.end.y - 22, w, 16)
 	var rwhy := SkillTree.respec_blocker(id, where == "mission")
 	UiSkin.panel(self, _reset_rect, "button", Color(1, 1, 1, 1.0 if rwhy == "" else 0.55))
@@ -477,12 +476,15 @@ func _draw_details(area: Rect2) -> void:
 	if _confirm_reset == id:
 		rlabel = tr("Press again: unlearn for %d Gilt") % SkillTree.respec_cost(id)
 	_text_c(_reset_rect.position + Vector2(w / 2.0, 11), rlabel, 8, (GOLD if sel == RESET else TEXT) if rwhy == "" else DIM, w - 8)
+	# The rest is written up on a ledger page (LedgerPage), on its lines.
+	var pg := LedgerPage.begin(self, Rect2(area.position + Vector2(5, 5), Vector2(area.size.x - 10, _reset_rect.position.y - area.position.y - 9)), font)
 	if sel == RESET:
-		_text(Vector2(x, y), tr("Unlearn the tree"), 12, PAPER, w)
-		y += 14
-		y += _wrap(Vector2(x, y), tr("Every node %s has learned is forgotten and every Skill Point comes back, to spend another way. Costs %d Gilt, plus %d for each point spent.") % [
-			PartyPicker.short_of(id), int(SkillTree.data().get("respec", {}).get("base", 30)), int(SkillTree.data().get("respec", {}).get("per_point", 10))], w, 8, Color(0.82, 0.8, 0.76)) + 6
-		_text(Vector2(x, y), (tr("Ready: %d Gilt.") % SkillTree.respec_cost(id)) if rwhy == "" else tr("Can't: %s.") % rwhy, 8, GOLD if rwhy == "" else BAD, w)
+		pg.heading(tr("Unlearn the tree"), 12)
+		pg.para(tr("Every node %s has learned is forgotten and every Skill Point comes back, to spend another way. Costs %d Gilt, plus %d for each point spent.") % [
+			PartyPicker.short_of(id), int(SkillTree.data().get("respec", {}).get("base", 30)), int(SkillTree.data().get("respec", {}).get("per_point", 10))], 8, LedgerPage.INK)
+		pg.skip()
+		pg.line((tr("Ready: %d Gilt.") % SkillTree.respec_cost(id)) if rwhy == "" else tr("Can't: %s.") % rwhy, 8, LedgerPage.GOLD if rwhy == "" else LedgerPage.RED)
+		_learn_rect = Rect2()
 		return
 	var n := SkillTree.node(sel)
 	if n.is_empty():
@@ -491,54 +493,45 @@ func _draw_details(area: Rect2) -> void:
 	var col := _node_color(id, sel)
 	var branch_name := tr("Root") if int(inf["branch"]) < 0 else str(SkillTree.branches(id)[int(inf["branch"])].get("name", ""))
 	var tag := branch_name if int(inf["branch"]) < 0 else "%s, %s" % [branch_name, tr("capstone") if SkillTree.is_capstone(sel) else tr("step %d of 5") % int(inf["tier"])]
-	draw_string(UiSkin.TITLE_FONT, Vector2(x, y + 2), str(n.get("name", "?")), HORIZONTAL_ALIGNMENT_LEFT, w, Access.fs(14), col.lightened(0.35))
-	y += 13
-	_text(Vector2(x, y), tag, 8, col.lightened(0.1), w)
-	_text_r(Vector2(area.end.x - 8, y), Loc.n("%d Skill Point", "%d Skill Points", SkillTree.cost(sel)) % SkillTree.cost(sel), 8, GOLD)
-	y += 6
-	draw_rect(Rect2(x, y, w, 1), Color(0.63, 0.48, 0.31, 0.6))
-	y += 4
-	y += _wrap(Vector2(x, y + 9), str(n.get("desc", "")), w, 9, TEXT) + 6
-	y += _wrap(Vector2(x, y + 8), str(n.get("flavor", "")), w, 8, Color(0.62, 0.58, 0.52)) + 8
+	pg.heading(str(n.get("name", "?")), 14, LedgerPage.ink(col))
+	pg.line(tag, 8, LedgerPage.ink(col), Loc.n("%d Skill Point", "%d Skill Points", SkillTree.cost(sel)) % SkillTree.cost(sel), LedgerPage.GOLD)
+	pg.para(str(n.get("desc", "")), 8, LedgerPage.INK)
+	pg.para(str(n.get("flavor", "")), 8, LedgerPage.INK_SOFT)
 	if int(inf["branch"]) >= 0 and int(inf["tier"]) == 1:
-		y += _wrap(Vector2(x, y + 8), str(SkillTree.branches(id)[int(inf["branch"])].get("blurb", "")), w, 7, SOFT) + 6
+		pg.para(str(SkillTree.branches(id)[int(inf["branch"])].get("blurb", "")), 7, LedgerPage.INK_SOFT)
 	if SkillTree.is_capstone(sel):
-		y += _wrap(Vector2(x, y + 8), tr("Capstone: a hero can hold only one. Unlearn the tree to switch."), w, 7, SOFT) + 6
+		pg.para(tr("Capstone: a hero can hold only one. Unlearn the tree to switch."), 7, LedgerPage.INK_SOFT)
 	var gate := SkillTree.gate_text(id, sel)
 	if gate != "":
 		var met := SkillTree.gate_met(id, sel)
-		_text(Vector2(x, y + 8), (tr("Needs %s") if not met else tr("Unlocked by %s")) % gate, 8, GOOD if met else BAD, w)
-		y += 12
+		pg.line((tr("Needs %s") if not met else tr("Unlocked by %s")) % gate, 8, LedgerPage.GREEN if met else LedgerPage.RED)
 		if not met and id != "ash":
-			y += _wrap(Vector2(x, y + 7), tr("Bonds grow by fighting beside %s, talking in Hollowmark and giving them work they like%s.") % [PartyPicker.short_of(id), Prompts.tag("bonds")], w, 7, DIM) + 4
+			pg.para(tr("Bonds grow by fighting beside %s, talking in Hollowmark and giving them work they like%s.") % [PartyPicker.short_of(id), Prompts.tag("bonds")], 7, LedgerPage.INK_SOFT)
 		elif not met:
-			y += _wrap(Vector2(x, y + 7), tr("Ash is written by the people around them: grow your bonds with the others%s.") % Prompts.tag("bonds"), w, 7, DIM) + 4
-	# Learn button.
+			pg.para(tr("Ash is written by the people around them: grow your bonds with the others%s.") % Prompts.tag("bonds"), 7, LedgerPage.INK_SOFT)
+	# Learn button, on the next two lines of the page (or its last two, if the text ran long).
 	var why := SkillTree.blocker(id, sel)
-	_learn_rect = Rect2(x, minf(y + 6, _reset_rect.position.y - 22), w, 16)
+	pg.line_i = mini(pg.line_i, pg.lines - 2)
+	var br := pg.space(2)
+	_learn_rect = Rect2(br.position.x, br.end.y - 16.0, br.size.x, 15.0)
 	if why == "learned":
-		_text_c(_learn_rect.position + Vector2(w / 2.0, 11), tr("Learned"), 9, GOOD, w)
+		_text_c(_learn_rect.get_center() + Vector2(0, 4), tr("Learned"), 9, LedgerPage.GREEN, _learn_rect.size.x)
 	else:
 		UiSkin.panel(self, _learn_rect, "button", Color(1, 1, 1, 1.0 if why == "" else 0.5))
 		var label := (tr("%s  Learn for %d") % [Prompts.confirm(), SkillTree.cost(sel)]) if why == "" else tr("Can't yet: %s") % why
-		_text_c(_learn_rect.position + Vector2(w / 2.0, 11), label, 8, GOLD if why == "" else DIM, w - 8)
-	y = _learn_rect.end.y + 8
+		_text_c(_learn_rect.get_center() + Vector2(0, 4), label, 8, GOLD if why == "" else DIM, _learn_rect.size.x - 8)
 	# The abilities this node changes, as they read with it (a preview until it is learned).
-	var room := _reset_rect.position.y - 6
 	for aid in n.get("effects", {}).get("abilities", {}):
 		var a := _ability_with(id, str(aid), sel)
-		if a.is_empty() or y > room - 24:
+		if a.is_empty() or pg.left() < 2:
 			continue
-		_text(Vector2(x, y + 8), "%s %s" % [a.get("name", aid), Loc.t("now") if why == "learned" else tr("with it")], 8, GOLD, w)
+		pg.line("%s %s" % [a.get("name", aid), Loc.t("now") if why == "learned" else tr("with it")], 8, LedgerPage.GOLD)
 		var facts := tr("%d Ink, %s s cooldown.  ") % [int(a.get("cost", 0)), Abilities._num(a.get("cooldown", 1))]
-		y += 10
-		y += _wrap(Vector2(x, y + 8), facts + Abilities.desc_of(a), w, 7, Color(0.78, 0.76, 0.72)) + 4
-	if y < room - 30:
+		pg.para(facts + Abilities.desc_of(a), 7, LedgerPage.INK)
+	if pg.left() >= 2:
 		var names := SkillTree.learned(id).map(func(k): return str(SkillTree.node(k).get("name", k)))
-		draw_rect(Rect2(x, y + 2, w, 1), Color(0.63, 0.48, 0.31, 0.4))
-		_text(Vector2(x, y + 13), tr("Learned so far"), 8, SOFT, w)
-		y += 14
-		_wrap(Vector2(x, y + 8), ", ".join(names) if not names.is_empty() else tr("Nothing yet."), w, 7, DIM if names.is_empty() else TEXT)
+		pg.line(tr("Learned so far"), 8, LedgerPage.INK_SOFT)
+		pg.para(", ".join(names) if not names.is_empty() else tr("Nothing yet."), 7, LedgerPage.INK_SOFT if names.is_empty() else LedgerPage.INK)
 
 
 ## The ability as this hero would have it with node_id learned too (or as it is, once learned).

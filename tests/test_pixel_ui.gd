@@ -122,6 +122,41 @@ func test_panel_inner_clears_the_frame() -> void:
 	check(inn.end.x <= r.end.x + 2.0 - 9.0, "and ends before the far frame")
 
 
+## Ledger pages (Ojon, 2026-11-25): text goes on the ruled lines and between the margins, at every text
+## size, and a page that runs out of lines stops instead of writing past its bottom.
+func test_ledger_page_keeps_text_on_its_lines() -> void:
+	var c := Control.new()
+	c.size = Vector2(300, 200)
+	tree.root.add_child(c)
+	var font := ThemeDB.fallback_font
+	for ts in Access.TEXT_SIZES.size():
+		Access.text_size = ts
+		var got := {}
+		c.draw.connect(func():
+			var pg := LedgerPage.begin(c, Rect2(10, 10, 220, 150), font)
+			got["pg"] = pg
+			got["first"] = pg.first
+			pg.heading("A heading")
+			pg.line("one line", 8, LedgerPage.INK, "12")
+			pg.para("word ".repeat(400))
+			got["left"] = pg.left(), CONNECT_ONE_SHOT)
+		c.queue_redraw()
+		await frames(2)
+		var pg: LedgerPage = got.get("pg")
+		if not check(pg != null, "the page drew"):
+			continue
+		check(pg.x0 > pg.box.position.x + 20.0, "text starts past the red margin (size %d)" % ts)
+		check(pg.x1 < pg.box.end.x - 6.0, "and ends before the right edge")
+		check_eq(pg.rule_y(3) - pg.rule_y(2), pg.lh, "the lines are evenly ruled")
+		check(pg.lh >= font.get_height(Access.fs(8)) + 2.0, "with room for the text size (size %d)" % ts)
+		check(pg.rule_y(pg.lines - 1) <= pg.box.end.y - 6.0, "the last line is on the page")
+		check_eq(got["left"], 0, "a long text fills the page and stops")
+		var img: Image = LedgerPage.paper(Vector2i(pg.box.size), pg.lh, pg.first - pg.box.position.y).get_image()
+		check(img.get_pixel(int(pg.box.size.x / 2), int(pg.box.size.y / 2)).a > 0.9, "the paper is solid in the middle")
+	Access.text_size = 0
+	c.queue_free()
+
+
 func test_leader_marker_option_persists() -> void:
 	check_eq(Access.leader_marker, 0, "default: only after a swap")
 	Access.leader_marker = 1

@@ -489,108 +489,88 @@ func _draw_details(vs: Vector2) -> void:
 	var x := LIST_W + 26
 	var w := vs.x - x - 10
 	var top := 38.0
-	draw_rect(Rect2(x - 8, top, w + 16, vs.y - top - 24), Color(0.08, 0.07, 0.1))
-	UiSkin.tab(self, Rect2(x - 9, top, 6, vs.y - top - 24), _fcolor(fid))
-	var y := top + 14
+	# Written up on a ledger page (LedgerPage), on its lines.
+	var pg := LedgerPage.begin(self, Rect2(x - 8, top, w + 16, vs.y - top - 24), font)
 	if r["kind"] == "deal":
 		var k: String = r["id"]
 		var d := Empire.deal(fid, k)
-		_text(Vector2(x, y), d["name"], 12, Color("f3efe4"), w)
-		y += 4
-		y += _wrap(Vector2(x, y + 9), d["text"], w, 8, Color(0.82, 0.8, 0.76)) + 4
+		pg.heading(d["name"], 12)
+		pg.para(d["text"], 8, LedgerPage.INK)
 		var summ := Empire.deal_summary(fid, k)
-		y += _wrap(Vector2(x, y + 9), summ.substr(0, 1).to_upper() + summ.substr(1) + ".", w, 8, GOLD) + 2
+		pg.para(summ.substr(0, 1).to_upper() + summ.substr(1) + ".", 8, LedgerPage.GOLD)
 		var need: String = Empire.DEAL_TIER[k]
-		_text(Vector2(x, y + 9), (tr("Needs %s standing.") if k == "trade" else tr("Needs %s standing and an envoy posted.")) % Empire.tier_name(need) if need != "hostile" else tr("Any standing, with an envoy posted."), 8, SOFT, w)
-		y += 12
+		pg.para((tr("Needs %s standing.") if k == "trade" else tr("Needs %s standing and an envoy posted.")) % Empire.tier_name(need) if need != "hostile" else tr("Any standing, with an envoy posted."), 8, LedgerPage.INK_SOFT)
 		if k == "trade":
-			_text(Vector2(x, y + 9), tr("The pact holds while standing stays at %d or more.") % Empire.trade_breaks, 8, SOFT, w)
-			y += 12
+			pg.para(tr("The pact holds while standing stays at %d or more.") % Empire.trade_breaks, 8, LedgerPage.INK_SOFT)
 		var why := Empire.deal_blocker(fid, k)
 		if k == "trade" and fid in Empire.pacts:
-			_text(Vector2(x, y + 9), tr("Active. Paying %s every dawn (see the ledger, L).") % Empire.output_text(d["daily"]), 8, GOOD, w)
+			pg.para(tr("Active. Paying %s every dawn (see the ledger, L).") % Empire.output_text(d["daily"]), 8, LedgerPage.GREEN)
 		elif why != "":
-			y += _wrap(Vector2(x, y + 9), tr("Can't yet: %s.") % why, w, 8, BAD)
+			pg.para(tr("Can't yet: %s.") % why, 8, LedgerPage.RED)
 		else:
-			_text(Vector2(x, y + 9), tr("Ready. %s to send.") % Prompts.confirm(), 8, GOOD, w)
-		y += 22
+			pg.line(tr("Ready. %s to send.") % Prompts.confirm(), 8, LedgerPage.GREEN)
 	elif r["kind"] in ["offer", "refuse", "ask"]:
-		y = _draw_ask(r, fid, x, y, w)
+		_draw_ask(pg, r, fid)
 	else:
-		_text(Vector2(x, y), fa["name"], 12, Color("f3efe4"), w)
-		y += 4
-		y += _wrap(Vector2(x, y + 9), tr("Wants: %s") % fa["wants"], w, 8, GOLD) + 2
-		y += _wrap(Vector2(x, y + 9), fa["blurb"], w, 8, Color(0.78, 0.76, 0.74)) + 6
+		pg.heading(fa["name"], 12)
+		pg.para(tr("Wants: %s") % fa["wants"], 8, LedgerPage.GOLD)
+		pg.para(fa["blurb"], 8, LedgerPage.INK)
+	pg.skip()
 	# Standing and why it moves
 	var v := Empire.standing_of(fid)
 	var tier := Empire.tier_of(fid)
-	if not r["kind"] in ["deal", "offer", "refuse", "ask"]:
-		y += Access.px(9)  # after the faction blurb: room for the Standing line, drawn on its baseline (issue #149)
-	_text(Vector2(x, y), tr("Standing"), 8, Color(0.75, 0.72, 0.7))
-	_text_r(Vector2(x + w, y), "%s %+d" % [Empire.tier_name(tier), v], 9, TIER_COLORS[tier])
-	y += 4
-	_standing_bar(Rect2(x, y, w, 5), v)
-	y += 8
+	pg.line(tr("Standing"), 8, LedgerPage.INK, "%s %+d" % [Empire.tier_name(tier), v], LedgerPage.ink(TIER_COLORS[tier]))
+	var sb := pg.space()
+	if sb.size.x > 0.0:
+		_standing_bar(Rect2(sb.position.x, sb.end.y - 6.0, sb.size.x, 5), v)
 	var srcs := Empire.standing_sources(fid)
 	if srcs.is_empty():
-		_text(Vector2(x, y + 9), tr("Not moving. Post an envoy (they respect %s).") % Loc.t(Empire.STAT_NAMES[fa["respects"]]), 8, Color("e8a86a"), w)
-		y += 11
-	for s in srcs:
-		_text(Vector2(x, y + 9), "%+d" % int(s[1]), 8, GOOD if int(s[1]) > 0 else BAD)
-		_text(Vector2(x + 22, y + 9), s[0], 8, SOFT, w - 22)
-		y += 11
+		pg.para(tr("Not moving. Post an envoy (they respect %s).") % Loc.t(Empire.STAT_NAMES[fa["respects"]]), 8, LedgerPage.GOLD)
+	for src in srcs:
+		pg.line("%+d  %s" % [int(src[1]), src[0]], 8, LedgerPage.GREEN if int(src[1]) > 0 else LedgerPage.RED)
 	if r["kind"] == "envoy" and Empire.envoy_of(fid) != "":
 		for wy in Empire.envoy_effect(Empire.envoy_of(fid), fid)["why"]:
-			_text(Vector2(x + 22, y + 9), wy[0], 7, Color(0.55, 0.53, 0.56), w - 22)
-			y += 9
-	y += 6
-	var perk_col := GOOD if Empire.has_perk(fid) else DIM
-	y += _wrap(Vector2(x, y + 9), (tr("Friendly perk (on): %s.") if Empire.has_perk(fid) else tr("At Friendly: %s.")) % fa["perk"]["text"], w, 8, perk_col) + 6
+			pg.line("      " + wy[0], 7, LedgerPage.INK_SOFT)
+	pg.skip()
+	pg.para((tr("Friendly perk (on): %s.") if Empire.has_perk(fid) else tr("At Friendly: %s.")) % fa["perk"]["text"], 8, LedgerPage.GREEN if Empire.has_perk(fid) else LedgerPage.INK_SOFT)
 	# Lately
 	var log := Empire.diplo_log.filter(func(e): return e["faction"] == fid)
-	if not log.is_empty() and y < vs.y - 50:
-		_text(Vector2(x, y + 2), tr("Lately"), 8, Color(0.75, 0.72, 0.7))
-		y += 4
+	if not log.is_empty() and pg.left() >= 3:
+		pg.skip()
+		pg.line(tr("Lately"), 8, LedgerPage.INK)
 		for e in log.slice(0, 4):
-			if y > vs.y - 40:
-				break
 			var change := int(e.get("change", 0))
-			var line := tr("Day %d: %s%s") % [int(e["day"]), e["text"], "" if change == 0 else " (%+d)" % change]
-			y += _wrap(Vector2(x, y + 9), line, w, 7, BAD if change < 0 or e.get("trouble", false) else SOFT) + 1
+			pg.para(tr("Day %d: %s%s") % [int(e["day"]), e["text"], "" if change == 0 else " (%+d)" % change], 7, LedgerPage.RED if change < 0 or e.get("trouble", false) else LedgerPage.INK_SOFT)
 
 
-## The right panel for a request: what they ask, what it pays, what missing it costs. Returns the new y.
-func _draw_ask(r: Dictionary, fid: String, x: float, y: float, w: float) -> float:
+## The page for a request: what they ask, what it pays, what missing it costs.
+func _draw_ask(pg: LedgerPage, r: Dictionary, fid: String) -> void:
 	var offered: bool = r["kind"] != "ask"
 	var a := FactionAsks.offer_of(fid) if offered else FactionAsks.active_of(fid)
 	if a.is_empty():
-		return y
+		return
 	var short: String = Empire.faction(fid).get("short", fid)
-	_text(Vector2(x, y), a["name"], 12, Color("f3efe4"), w)
-	y += 4
-	_text(Vector2(x, y + 9), tr("%s request  ·  %s") % [short, Loc.t(FactionAsks.KIND_WORDS.get(a.get("kind", ""), ""))], 8, ASK, w)
-	y += 12
-	y += _wrap(Vector2(x, y + 9), "\"%s\"" % a.get("text", ""), w, 8, Color(0.82, 0.8, 0.76)) + 4
-	y += _wrap(Vector2(x, y + 9), FactionAsks.task_text(a), w, 8, TEXT) + 2
-	y += _wrap(Vector2(x, y + 9), tr("Pays: %s.") % FactionAsks.reward_text(a), w, 8, GOOD) + 1
-	y += _wrap(Vector2(x, y + 9), tr("Missing the deadline: %s.") % FactionAsks.fail_text(a), w, 8, BAD) + 2
+	pg.heading(a["name"], 12)
+	pg.line(tr("%s request  ·  %s") % [short, Loc.t(FactionAsks.KIND_WORDS.get(a.get("kind", ""), ""))], 8, LedgerPage.GOLD)
+	pg.para("\"%s\"" % a.get("text", ""), 8, LedgerPage.INK)
+	pg.para(FactionAsks.task_text(a), 8, LedgerPage.INK)
+	pg.para(tr("Pays: %s.") % FactionAsks.reward_text(a), 8, LedgerPage.GREEN)
+	pg.para(tr("Missing the deadline: %s.") % FactionAsks.fail_text(a), 8, LedgerPage.RED)
 	if offered:
-		y += _wrap(Vector2(x, y + 9), tr("You get %s to do it once accepted. Answer within %s; refusing, or not answering, costs %d standing.") % [FactionAsks._days(int(a.get("days", 5))), FactionAsks._days(int(a["until"]) - Empire.day), absi(int(a.get("refuse", -2)))], w, 8, SOFT) + 2
+		pg.para(tr("You get %s to do it once accepted. Answer within %s; refusing, or not answering, costs %d standing.") % [FactionAsks._days(int(a.get("days", 5))), FactionAsks._days(int(a["until"]) - Empire.day), absi(int(a.get("refuse", -2)))], 8, LedgerPage.INK_SOFT)
 		var why := FactionAsks.accept_blocker(fid)
 		if r["kind"] == "refuse":
-			_text(Vector2(x, y + 9), tr("%s to refuse.") % Prompts.confirm(), 8, BAD, w)
+			pg.line(tr("%s to refuse.") % Prompts.confirm(), 8, LedgerPage.RED)
 		elif why != "":
-			y += _wrap(Vector2(x, y + 9), tr("Can't accept: %s.") % why, w, 8, BAD)
+			pg.para(tr("Can't accept: %s.") % why, 8, LedgerPage.RED)
 		else:
 			if a.get("kind", "") == "shun" and str(a.get("rival", "")) in Empire.pacts:
-				y += _wrap(Vector2(x, y + 9), tr("Accepting tears up your trade pact with the %s.") % Empire.faction(str(a["rival"])).get("short", "?"), w, 8, BAD) + 1
-			_text(Vector2(x, y + 9), tr("%s to accept.") % Prompts.confirm(), 8, GOOD, w)
+				pg.para(tr("Accepting tears up your trade pact with the %s.") % Empire.faction(str(a["rival"])).get("short", "?"), 8, LedgerPage.RED)
+			pg.line(tr("%s to accept.") % Prompts.confirm(), 8, LedgerPage.GREEN)
 	else:
 		var left := int(a["until"]) - Empire.day
-		_text(Vector2(x, y + 9), tr("Accepted on day %d, %s left (the deadline is dawn of day %d).") % [int(a["day"]), FactionAsks._days(left), int(a["until"])], 8, BAD if left <= 1 else SOFT, w)
-		y += 12
-		y += _wrap(Vector2(x, y + 9), FactionAsks.progress_text(fid), w, 8, GOLD)
-	return y + 18
+		pg.para(tr("Accepted on day %d, %s left (the deadline is dawn of day %d).") % [int(a["day"]), FactionAsks._days(left), int(a["until"])], 8, LedgerPage.RED if left <= 1 else LedgerPage.INK_SOFT)
+		pg.para(FactionAsks.progress_text(fid), 8, LedgerPage.GOLD)
 
 
 func _draw_picker(vs: Vector2) -> void:
@@ -625,46 +605,39 @@ func _draw_picker(vs: Vector2) -> void:
 					_text(base + Vector2(165, 0), tag, 7, Color("e8a86a"))
 				_text_r(base + Vector2(LIST_W - 12, 0), "%+d/day" % int(Empire.envoy_effect(id, pick_faction)["drift"]), 9, GOOD)
 		y += ROW_H + 2
-	# Details for the highlighted person
+	# Details for the highlighted person, on a ledger page (LedgerPage).
 	var r: Dictionary = _rows[sel]
 	var x := LIST_W + 26
 	var w := vs.x - x - 10
 	var top := 44.0
-	draw_rect(Rect2(x - 8, top, w + 16, vs.y - top - 24), Color(0.08, 0.07, 0.1))
-	UiSkin.tab(self, Rect2(x - 9, top, 6, vs.y - top - 24), _fcolor(pick_faction))
-	var yy := top + 14
+	var pg := LedgerPage.begin(self, Rect2(x - 8, top, w + 16, vs.y - top - 24), font)
 	var env := "" if r["kind"] == "recall" else String(r["id"])
 	if env == "":
-		_text(Vector2(x, yy), tr("No envoy"), 12, Color("f3efe4"))
-		yy += 4
-		yy += _wrap(Vector2(x, yy + 9), tr("Nobody talks to the %s for you. Standing only moves through what you do, and you can't make deals.") % fa["short"], w, 8, SOFT) + 6
+		pg.heading(tr("No envoy"), 12)
+		pg.para(tr("Nobody talks to the %s for you. Standing only moves through what you do, and you can't make deals.") % fa["short"], 8, LedgerPage.INK_SOFT)
 	else:
 		var rec := Empire.recruit(env)
-		_text(Vector2(x, yy), rec["name"], 12, Color("f3efe4"), w)
-		yy += 12
+		pg.heading(rec["name"], 12)
 		var st: Dictionary = rec["stats"]
 		var parts := []
 		for k in ["might", "craft", "lore", "charm", "grit"]:
 			parts.append("%s %d" % [Loc.t(Empire.STAT_NAMES[k]), int(st[k])])
-		_text(Vector2(x, yy), "   ".join(parts), 8, SOFT, w)
-		yy += 6
+		pg.line("   ".join(parts), 8, LedgerPage.INK_SOFT)
 		var traits := []
 		for t in rec.get("traits", []):
 			traits.append(Empire.trait_data.get(t, {}).get("name", t))
 		if not traits.is_empty():
-			_text(Vector2(x, yy + 8), ", ".join(traits), 8, Color("d7b8f0"), w)
-			yy += 10
-		yy += 6
-		_text(Vector2(x, yy + 8), tr("As envoy:"), 8, Color(0.75, 0.72, 0.7))
-		yy += 10
+			pg.line(", ".join(traits), 8, LedgerPage.PLUM)
+		pg.skip()
+		pg.line(tr("As envoy:"), 8, LedgerPage.INK)
 		for wy in Empire.envoy_effect(env, pick_faction)["why"]:
-			yy += _wrap(Vector2(x, yy + 9), wy[0], w, 8, GOOD if wy[1] else BAD) + 1
+			pg.para(wy[0], 8, LedgerPage.GREEN if wy[1] else LedgerPage.RED)
 		var role := Empire.role_of(env)
 		if role != "idle" and Empire.envoy_of(pick_faction) != env:
-			yy += _wrap(Vector2(x, yy + 9), tr("Leaves their post: %s.") % Empire.role_label(env), w, 8, Color("e8a86a")) + 1
+			pg.para(tr("Leaves their post: %s.") % Empire.role_label(env), 8, LedgerPage.GOLD)
 		var cur := Empire.envoy_of(pick_faction)
 		if cur != "" and cur != env:
-			yy += _wrap(Vector2(x, yy + 9), tr("Replaces %s, who comes home idle.") % Empire.short_name(cur), w, 8, SOFT) + 1
-	yy += 8
+			pg.para(tr("Replaces %s, who comes home idle.") % Empire.short_name(cur), 8, LedgerPage.INK_SOFT)
+	pg.skip()
 	var rate := Empire.standing_rate(pick_faction, env)
-	_text(Vector2(x, yy + 9), tr("Standing would move %+d a day (now %+d).") % [rate, Empire.standing_rate(pick_faction)], 9, GOOD if rate > 0 else BAD)
+	pg.para(tr("Standing would move %+d a day (now %+d).") % [rate, Empire.standing_rate(pick_faction)], 8, LedgerPage.GREEN if rate > 0 else LedgerPage.RED)

@@ -187,44 +187,43 @@ func _draw_details(vs: Vector2, id: String) -> void:
 	var x := LIST_W + 24
 	var w := vs.x - x - 10
 	var top := 44.0
-	draw_rect(Rect2(x - 8, top, w + 16, vs.y - top - 18), Color(0.08, 0.07, 0.1))
-	UiSkin.tab(self, Rect2(x - 9, top, 6, vs.y - top - 18), "brass" if here else TIER_COLORS.get(r["tier"], SOFT))
-	var y := top + 14
-	_text(Vector2(x, y), r["name"], 13, Color("f3efe4"), w - 80)
-	_text(Vector2(x + w - 74, y), Loc.t(TIER_NAMES.get(r["tier"], "")), 8, TIER_COLORS.get(r["tier"], SOFT))
-	y += 11
-	_text(Vector2(x, y), r.get("title", ""), 8, Color(0.75, 0.72, 0.7), w)
-	y += 4
-	y += _wrap(Vector2(x, y + 9), r.get("blurb", ""), w, 8, TEXT) + 6
+	var hr := _hire_rect()
+	# Written up on a ledger page (LedgerPage), on its lines; the hire button sits under it.
+	var bottom := (hr.position.y - 4.0) if here else vs.y - 18.0
+	var pg := LedgerPage.begin(self, Rect2(x - 8, top, w + 16, bottom - top), font)
+	pg.heading(r["name"], 13)
+	pg.line(r.get("title", ""), 8, LedgerPage.INK_SOFT, Loc.t(TIER_NAMES.get(r["tier"], "")), LedgerPage.ink(TIER_COLORS.get(r["tier"], SOFT)))
+	pg.para(r.get("blurb", ""), 8, LedgerPage.INK)
 	# Stats on one line of little bars, traits under them.
-	var sx := x
-	for k in STAT_KEYS:
-		var v := int(r["stats"][k])
-		_text(Vector2(sx, y + 7), "%s %d" % [Loc.t(Empire.STAT_NAMES[k]), v], 8, Color(0.78, 0.76, 0.74))
-		UiSkin.bar(self, Rect2(sx, y + 10, 50, 3), v / 10.0, "bone", {"notch": 5})
-		sx += minf(62.0, w / 5.0)
-	y += 18
+	var sr := pg.space(2)
+	if sr.size.x > 0.0:
+		var cw := sr.size.x / 5.0
+		for i in STAT_KEYS.size():
+			var k: String = STAT_KEYS[i]
+			var v := int(r["stats"][k])
+			var sx := sr.position.x + i * cw
+			draw_string(font, Vector2(sx, sr.position.y + pg.lh - 2.0), Access.fit(font, "%s %d" % [Loc.t(Empire.STAT_NAMES[k]), v], Access.fs(8), cw - 4.0), HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(8), LedgerPage.INK)
+			UiSkin.bar(self, Rect2(sx, sr.end.y - 5.0, cw - 8.0, 3), v / 10.0, "bone", {"notch": 5})
 	for t in r.get("traits", []):
 		var td: Dictionary = Empire.trait_data.get(t, {})
-		y += _wrap(Vector2(x, y + 9), "%s: %s" % [td.get("name", t), td.get("desc", "")], w, 8, Color("cfe0b0")) + 1
-	y += 8
+		pg.para("%s: %s" % [td.get("name", t), td.get("desc", "")], 8, LedgerPage.GREEN)
+	pg.skip()
 	# The hook
 	if here:
-		y += _wrap(Vector2(x, y + 9), "\"%s\"" % r.get("pitch", tr("I'm looking for work.")), w, 8, GOLD) + 4
+		pg.para("\"%s\"" % r.get("pitch", tr("I'm looking for work.")), 8, LedgerPage.GOLD)
 	else:
-		y += _wrap(Vector2(x, y + 9), r.get("rumour", ""), w, 8, RUMOUR) + 4
-		y += _wrap(Vector2(x, y + 9), tr("How: %s") % Empire.hook_text(id), w, 8, Color("e8d9a8")) + 2
+		pg.para(r.get("rumour", ""), 8, LedgerPage.PLUM)
+		pg.para(tr("How: %s") % Empire.hook_text(id), 8, LedgerPage.INK)
 	var prog: Array = Empire.hook_progress(id)
 	if prog[0] != "":
-		y += _wrap(Vector2(x, y + 9), tr("Now: %s") % prog[0], w, 8, GOOD if prog[1] else SOFT) + 2
+		pg.para(tr("Now: %s") % prog[0], 8, LedgerPage.GREEN if prog[1] else LedgerPage.INK_SOFT)
 	if Empire.join_hook(id).get("type", "") != "rescue":
 		var cost := Empire.hire_cost(id)
 		var price := "free" if cost.is_empty() else Empire.cost_text(cost)
-		_text(Vector2(x, y + 11), tr("Takes: %s.  Upkeep %d Supplies a day.") % [price, Empire.UPKEEP_SUPPLIES], 8, SOFT, w)
+		pg.skip()
+		pg.para(tr("Takes: %s.  Upkeep %d Supplies a day.") % [price, Empire.UPKEEP_SUPPLIES], 8, LedgerPage.INK_SOFT)
 	if here:
-		var hr := _hire_rect()
 		var why := Empire.hire_blocker(id)
-		draw_rect(hr, Color(0.2, 0.16, 0.08) if why == "" else Color(0.12, 0.1, 0.12))
-		draw_rect(hr, GOLD if why == "" else DIM, false, 1.0)
+		UiSkin.panel(self, hr, "button", Color.WHITE if why == "" else Color(0.6, 0.6, 0.62))
 		var label := tr("Take them on (%s)") % Prompts.confirm() if why == "" else tr("Can't: %s") % why
 		_text(hr.position + Vector2(8, 12), label, 9, GOLD if why == "" else BAD, hr.size.x - 12)

@@ -374,50 +374,43 @@ func _draw_details(vs: Vector2) -> void:
 	var x := LIST_W + 22
 	var w := vs.x - x - 10
 	var top := 46.0
-	draw_rect(Rect2(x - 8, top, w + 16, vs.y - top - 26), Color(0.08, 0.07, 0.1))
-	UiSkin.tab(self, Rect2(x - 9, top, 6, vs.y - top - 26), BRANCH_COLORS.get(n["branch"], TEXT))
-	var y := top + 16
-	UiSkin.draw_icon(self, id, Rect2(x + w - 34, top + 6, 32, 32))
-	_text(Vector2(x, y), _row_name(id), 12, Color("f3efe4"), w - 40)
-	y += 12
+	# Written up on a ledger page (LedgerPage), on its lines.
+	var pg := LedgerPage.begin(self, Rect2(x - 8, top, w + 16, vs.y - top - 26), font)
+	pg.heading(_row_name(id), 12, LedgerPage.INK, id)
 	var branch_name := ""
 	for b in Empire.research_branches():
 		if b["id"] == n["branch"]:
 			branch_name = b["name"]
-	_text(Vector2(x, y), branch_name, 8, BRANCH_COLORS.get(n["branch"], TEXT))
-	y += 8
-	y += _wrap(Vector2(x, y + 8), n["effect"] + ".", w, 9, GOOD) + 4
-	y += _wrap(Vector2(x, y + 8), n["blurb"], w, 8, Color(0.78, 0.76, 0.74)) + 8
+	pg.line(branch_name, 8, LedgerPage.ink(BRANCH_COLORS.get(n["branch"], TEXT)))
+	pg.para(n["effect"] + ".", 8, LedgerPage.GREEN)
+	pg.para(n["blurb"], 8, LedgerPage.INK)
+	pg.skip()
 	var state := Empire.research_state(id)
 	if Empire.research_max_rank(id) > 1 and state != "done":
 		var rk := Empire.research_rank(id)
-		_text(Vector2(x, y + 8), tr("Rank %d of %d studied. Each rank costs more and takes longer than the last.") % [rk, Empire.research_max_rank(id)], 8, GOLD if rk > 0 else SOFT, w)
-		y += 14
+		pg.para(tr("Rank %d of %d studied. Each rank costs more and takes longer than the last.") % [rk, Empire.research_max_rank(id)], 8, LedgerPage.GOLD if rk > 0 else LedgerPage.INK_SOFT)
 	match state:
 		"done":
-			_text(Vector2(x, y + 8), tr("Known. Already working for you.") if Empire.research_max_rank(id) <= 1 else tr("Every rank studied. Already working for you."), 9, GOOD)
+			pg.line(tr("Known. Already working for you.") if Empire.research_max_rank(id) <= 1 else tr("Every rank studied. Already working for you."), 8, LedgerPage.GREEN)
 		"active", "shelved":
-			_text(Vector2(x, y + 8), tr("Studying now") if state == "active" else tr("Set aside (paid for, progress kept)"), 9, GOLD if state == "active" else SOFT)
-			y += 14
-			_bar(Rect2(x, y, w, 6), Empire.research_fraction(id), GOLD if state == "active" else SOFT)
-			y += 8
-			_text(Vector2(x, y + 8), tr("%d%% done. %s") % [int(Empire.research_fraction(id) * 100),
-				(tr("Done in %s.") % Empire.research_left_text(id)) if state == "active" else tr("%s to resume.") % Prompts.confirm()], 8, SOFT, w)
+			pg.line(tr("Studying now") if state == "active" else tr("Set aside (paid for, progress kept)"), 8, LedgerPage.GOLD if state == "active" else LedgerPage.INK_SOFT)
+			var br := pg.space()
+			if br.size.x > 0.0:
+				UiSkin.bar(self, Rect2(br.position.x, br.end.y - 6.0, br.size.x, 5.0), Empire.research_fraction(id), "brass" if state == "active" else "stone", {"notches": [0.25, 0.5, 0.75]})
+			pg.line(tr("%d%% done. %s") % [int(Empire.research_fraction(id) * 100),
+				(tr("Done in %s.") % Empire.research_left_text(id)) if state == "active" else tr("%s to resume.") % Prompts.confirm()], 8, LedgerPage.INK_SOFT)
 		_:
 			var cost := Empire.research_cost(id)
 			var days := int(ceil(Empire.research_days(id)))
-			_text(Vector2(x, y + 8), tr("Costs %s, paid when you start.") % Empire.cost_text(cost), 8, INSIGHT if Empire.can_afford(cost) else BAD, w)
-			y += 12
-			_text(Vector2(x, y + 8), Loc.n("Study: %d day at 100%% pace.", "Study: %d days at 100%% pace.", days) % days, 8, SOFT, w)
+			pg.line(tr("Costs %s, paid when you start.") % Empire.cost_text(cost), 8, LedgerPage.PLUM if Empire.can_afford(cost) else LedgerPage.RED)
+			pg.line(Loc.n("Study: %d day at 100%% pace.", "Study: %d days at 100%% pace.", days) % days, 8, LedgerPage.INK_SOFT)
 			var why := Empire.research_blocker(id)
 			if why != "":
-				y += 12
-				_text(Vector2(x, y + 8), tr("Can't yet: %s.") % why, 8, BAD, w)
-	y += 22
+				pg.line(tr("Can't yet: %s.") % why, 8, LedgerPage.RED)
+	pg.skip()
 	# Who sets the pace
-	_text(Vector2(x, y), tr("Study pace"), 8, Color(0.75, 0.72, 0.7))
 	var pace := Empire.research_pace()
-	_text_r(Vector2(x + w, y), "%d%%" % int(round(float(pace["pace"]) * 100)), 9, GOOD if float(pace["pace"]) > 0.0 else BAD)
-	y += 2
+	var good := float(pace["pace"]) > 0.0
+	pg.line(tr("Study pace"), 8, LedgerPage.INK, "%d%%" % int(round(float(pace["pace"]) * 100)), LedgerPage.GREEN if good else LedgerPage.RED)
 	for line in pace["why"]:
-		y += _wrap(Vector2(x, y + 9), line, w, 8, SOFT if float(pace["pace"]) > 0.0 else BAD) + 1
+		pg.para(line, 8, LedgerPage.INK_SOFT if good else LedgerPage.RED)
