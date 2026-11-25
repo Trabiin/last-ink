@@ -431,6 +431,9 @@ func _ai(delta: float) -> Vector2:
 	if to_leader.length() > 380.0:
 		global_position = leader.global_position - leader.facing * 18.0
 		return Vector2.ZERO
+	# Inside the building kit's walls (scripts/paths.gd): out of sight of the leader, walk the path round.
+	if Paths.active and not Paths.clear(global_position, leader.global_position):
+		return Paths.toward(self, leader.global_position)
 
 	if detour_t > 0.0:
 		detour_t -= delta
@@ -452,11 +455,20 @@ func _nearest_enemy(from: Vector2, max_dist: float) -> Enemy:
 		var enemy := e as Enemy
 		if enemy == null or enemy.dead or enemy.untargetable():
 			continue
+		if Paths.active and not Paths.clear(global_position, enemy.global_position):
+			continue  # behind a wall (scripts/paths.gd)
 		var d := enemy.global_position.distance_to(from)
 		if d < best_d:
 			best_d = d
 			best = enemy
 	return best
+
+
+## Which way to walk to reach goal: straight, or round the building kit's walls (scripts/paths.gd).
+func path_dir(goal: Vector2) -> Vector2:
+	if Paths.active:
+		return Paths.toward(self, goal)
+	return (goal - global_position).normalized()
 
 
 # ---------------------------------------------------------------- paper doll

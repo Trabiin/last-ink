@@ -11,7 +11,12 @@ extends MissionObjectives
 ##   clear  {"at": spot, "spawn": {kind: weight}, "count": n, "elite": {...}}  beat what turns up there
 ##   hold   {"at": spot, "seconds": s, "spawn": {...}, "every": s, "protect": {"name", "hp"}}  last it out
 ##   use    {"at": spot or [spots], "seconds": s, "by": "party" | "escort", "spawn", "every"}  work at it
-##   exit   {}                                   walk back to where you came in
+##   lead   {"at": spot, "group": id, "folk": n, "to": spot}  free the people waiting at a spot (walk up to them),
+##          then get them to "to" alive; each one who goes down is lost. Counts go to the results and the
+##          campaign (Missions.people_changes, Incidents). The step ends when everyone left is safe or gone.
+##   exit   {"at": spot (optional)}              walk out: back where you came in, or to that spot
+## Any step can carry "when": Story conditions (Story.meets, e.g. {"chose": ["ch1_ledger_room", 0]}); a step
+## whose conditions don't hold is skipped, so a choice in a talk sends the mission down one branch or the other.
 ## spot: the name of an @spot line in the map (first entry), "start", or [x, y] in tiles.
 ## elite: {"kind": enemy kind, "name": "Big Wendel", "hp": x max HP, "damage": x damage}: a named enemy
 ## with a bar at the top of the screen. The escort fails the mission if they stay down for DOWN_LIMIT
@@ -37,6 +42,9 @@ var escort: Escort = null
 var down_t := 0.0
 var talking := false
 var overlay: Control
+var folk: Array = []  # Folk nodes of the running lead step
+var saved := {}  # group -> how many got out (lead steps)
+var lost := {}  # group -> how many went down
 
 
 func setup(p_obj: Dictionary, p_main) -> void:
@@ -54,6 +62,8 @@ func setup(p_obj: Dictionary, p_main) -> void:
 		start_blank_x = maxf(start_blank_x, main.blank.base_x)
 		Art.set_blank_x(main.blank.base_x)
 	creep = float(restore.get("creep", 0.0))
+	saved = (restore.get("saved", {}) as Dictionary).duplicate()
+	lost = (restore.get("lost", {}) as Dictionary).duplicate()
 	pointer = MissionObjectives.Pointer.new()
 	pointer.obj = self
 	main.hud.get_parent().add_child(pointer)
@@ -106,6 +116,9 @@ func _begin(i: int) -> void:
 		end_t = 1.6 - 0.8  # a short beat, then the results
 		return
 	st = steps[step]
+	if st.has("when") and not Story.meets(st["when"]):
+		_begin(step + 1)  # the other branch of a choice
+		return
 	if st.has("creep"):
 		creep = float(st["creep"])
 	if st.has("banter"):
@@ -137,7 +150,7 @@ func _begin(i: int) -> void:
 				guarded.position = spot(st.get("at", "start"))
 				main.entities.add_child(guarded)
 		"use":
-			var ats: Array = st["at"] if st.get("at") is Array and (st["at"] as Array).size() > 0 and st["at"][0] is String else [st.get("at", "start")]
+			var ats: Array = st["at"] if st.get("at") is Array and (st["at"] as Array).size() > 0 and (st["at"][0] is String or st["at"][0] is Array) else [st.get("at", "start")]
 			for a in ats:
 				var c := Cache.new()
 				c.style = "work"
@@ -148,6 +161,24 @@ func _begin(i: int) -> void:
 				works.append(c)
 			if st.get("by", "party") == "escort" and escort != null:
 				escort.go_to(works[0].position + Vector2(0, 2))
+		"lead":
+			var at := spot(st.get("at", "start"))
+			var bodies: Array = st.get("bodies", Townsfolk.BODIES)
+			for n in int(st.get("folk", 4)):
+				var f := Folk.new()
+				f.hero_id = str(bodies[n % bodies.size()])
+				f.hero_name = str(st.get("name", tr("a villager")))
+				f.party = main
+				f.position = at + Vector2((n % 3 - 1) * 14.0, (n / 3) * 12.0 - 6.0)
+				f.dest = f.position
+				f.add_to_group("heroes")
+				main.entities.add_child(f)
+				f.max_hp = int(st.get("hp", 34))
+				f.hp = f.max_hp
+				folk.append(f)
+		"exit":
+			if st.has("at"):
+				exit_pos = spot(st["at"])
 
 
 func _cleanup() -> void:
@@ -161,6 +192,10 @@ func _cleanup() -> void:
 	guarded = null
 	if escort != null:
 		escort.follow()
+	for f in folk:
+		if is_instance_valid(f):
+			f.queue_free()
+	folk.clear()
 	talking = false
 
 
@@ -247,6 +282,8 @@ func update(delta: float) -> void:
 				(c as Cache).work(delta, who)
 				all_done = all_done and (c as Cache).done
 			done = all_done
+		"lead":
+			done = _update_lead(delta)
 		"exit":
 			done = main.leader != null and main.leader.global_position.distance_to(exit_pos) < EXIT_RANGE \
 				and (escort == null or escort.dead or escort.global_position.distance_to(exit_pos) < EXIT_RANGE * 2.5)
@@ -260,6 +297,45 @@ func update(delta: float) -> void:
 		_begin(step + 1)
 
 
+## A lead step: folk wait until the leader reaches them, then follow; whoever gets near "to" is safe and walks
+## off the map; whoever stays down for a few seconds, or is caught by the white, is lost. True when nobody is
+## left to lead.
+func _update_lead(delta: float) -> bool:
+	_pressure(delta)
+	var g := str(st.get("group", "folk"))
+	var to := spot(st.get("to", "start"))
+	for f in folk.duplicate():
+		var fk := f as Folk
+		if not is_instance_valid(fk):
+			folk.erase(f)
+			continue
+		if fk.safe:
+			continue
+		if fk.dead:
+			fk.down_t += delta
+			if fk.down_t > Folk.DOWN_LIMIT:
+				lost[g] = int(lost.get(g, 0)) + 1
+				main.hud.say(tr("One of them didn't get up."), 2.5)
+				fk.queue_free()
+				folk.erase(f)
+			continue
+		if main.blank.edge_x(fk.position.y) <= fk.position.x + 4.0:
+			lost[g] = int(lost.get(g, 0)) + 1
+			main.hud.say(tr("The white took one of them."), 2.5)
+			fk.queue_free()
+			folk.erase(f)
+			continue
+		if not fk.freed:
+			if main.leader != null and main.leader.global_position.distance_to(fk.global_position) < float(st.get("range", 44.0)):
+				fk.freed = true
+				fk.follow()
+		elif fk.global_position.distance_to(to) < EXIT_RANGE * 1.6:
+			fk.safe = true
+			saved[g] = int(saved.get(g, 0)) + 1
+			fk.leave()
+	return folk.filter(func(f): return is_instance_valid(f) and not f.safe).is_empty()
+
+
 ## Keeps enemies coming during hold and use steps (spawn + every), from around the spot or the Blank's edge.
 func _pressure(delta: float) -> void:
 	if not st.has("spawn"):
@@ -270,7 +346,7 @@ func _pressure(delta: float) -> void:
 	spawn_wait = float(st.get("every", 4.0))
 	if main.get_tree().get_nodes_in_group("enemies").size() >= MAX_ALIVE:
 		return
-	var at := spot(st.get("at", "start")) if not (st.get("at") is Array and st["at"].size() > 0 and st["at"][0] is String) else spot(st["at"][0])
+	var at := spot(st.get("at", "start")) if not (st.get("at") is Array and st["at"].size() > 0 and (st["at"][0] is String or st["at"][0] is Array)) else spot(st["at"][0])
 	var pos := _edge_point(at.y, 90.0) if st.get("from", "around") == "edge" else _around(at)
 	_spawn_at(pos)
 
@@ -314,6 +390,12 @@ func text() -> String:
 			if guarded != null:
 				s += "   %s %d/%d" % [guarded.label, guarded.hp, guarded.max_hp]
 			return s
+		"lead":
+			var g := str(st.get("group", "folk"))
+			var waiting := folk.filter(func(f): return is_instance_valid(f) and not f.freed).size()
+			if waiting > 0:
+				return tr("%s   (%d waiting)") % [label, waiting]
+			return tr("%s   (%d safe, %d lost)") % [label, int(saved.get(g, 0)), int(lost.get(g, 0))]
 		"use":
 			if works.size() > 1:
 				return "%s   (%d/%d)" % [label, works.filter(func(c): return c.done).size(), works.size()]
@@ -340,6 +422,14 @@ func target_pos():
 			for c in works:
 				if not c.done:
 					return c.global_position
+		"lead":
+			for f in folk:
+				if is_instance_valid(f) and not f.freed and not f.dead:
+					return f.global_position
+			for f in folk:
+				if is_instance_valid(f) and f.dead and not f.safe:
+					return f.global_position
+			return spot(st.get("to", "start"))
 		"exit":
 			return exit_pos
 	return null
@@ -350,11 +440,31 @@ func exit_visible() -> bool:
 
 
 func result_info() -> Dictionary:
-	return {"step": step}
+	return {"step": step, "saved": saved.duplicate(), "lost": lost.duplicate()}
 
 
 func save_state() -> Dictionary:
-	return {"step": maxi(step, 0), "blank_x": main.blank.base_x, "creep": creep}
+	return {"step": maxi(step, 0), "blank_x": main.blank.base_x, "creep": creep, "saved": saved, "lost": lost}
+
+
+## Someone the party is getting out (a lead step): an Escort with a townsfolk body. They wait to be reached,
+## follow the leader, shy from teeth, and can't be revived in time if they stay down: those are lost.
+class Folk extends Escort:
+	const DOWN_LIMIT := 6.0
+	var freed := false
+	var safe := false
+	var down_t := 0.0
+
+	func _ready() -> void:
+		super._ready()
+		move_speed = 60.0
+
+	## Made it: off the field, out of the enemies' reach, a little fade.
+	func leave() -> void:
+		remove_from_group("heroes")
+		var tw := create_tween()
+		tw.tween_property(self, "modulate:a", 0.0, 0.8)
+		tw.tween_callback(queue_free)
 
 
 ## Something on the map the party has to keep standing during a hold step (a door, a tree, a stage).

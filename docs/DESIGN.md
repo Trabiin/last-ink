@@ -377,6 +377,29 @@ the Command Table, each briefing showing type, threat (1 to 5 with a name), rewa
   exit) with its own speakers, talks and portraits. Success opens the rank-5 scene and moves faction standing;
   failure can be retried. Blocked when the character is away, injured or tied up in another role.
 
+**Meaning pass (Ojon 2026-11-25, "I don't feel anything about the choices"):**
+
+- **Stakes on every brief.** A mission's `stakes` line (and a request's asker, what is at stake, what it costs if
+  nobody goes, the days left and the rival it would leave) leads its briefing on the Command Table
+  (`Missions.stake_lines`).
+- **Requests (incidents)** (`scripts/incidents.gd`, `data/incidents.json`): someone with a name asks (a lamplighter,
+  a schoolmistress, a shepherd, Gristle, Daro). The request sits on the territory map for a few days with a deadline
+  tag; if nobody goes, what was at stake is lost for good (people, a province's Fray, supplies, a friend's bond).
+  Some come in **rival pairs** that open on the same day: answering one lets the other lapse. The ask, the thanks and
+  the consequence play as town beats. Six in Act 1, two of them pairs (the Gristle/Daro pair forces that hero into
+  the party).
+- **People** saved and lost are counted per group (`Incidents.people`) from lead steps and lapses, and story beats
+  can ask about them (Story conditions `saved`, `lost`, `incident`, `chose`, `not_chose`, `not_joined`).
+- **Set pieces with a choice.** The four Act 1 story missions (the tax office breakout, Gristle's tree, Daro's farm,
+  Millbrook) run on premade maps from `tools/make_act1_maps.py` with a choice in the middle (people or money, the
+  family or the evidence), branch steps (`"when"` on a step), a lead step (walk people to safety while the white or
+  a press gang comes) and a beat back in town that remembers what you picked. Bonus pay or cost by choice
+  (`"bonus"`). Gristle and Daro now join through their story missions (a campaign without the story keeps the
+  old rescue expeditions through the join hook's `"free"`).
+- **Premade layouts with enterable buildings** use the building kit (docs/MAP_KIT.md, `scripts/structures.gd`):
+  walls, windows, doorways and roofs that fade while the hero is inside; allies and enemies path round walls
+  (`scripts/paths.gd`).
+
 Mission maps are text maps from `tools/make_biomes.py`: every biome has 3 layouts (a/b/c) with `@spot` lines for
 the start, wardstone, Blot, rescue, caches and spawns. Each visit picks a layout, a subset of the spawns, shuffled
 caches and a Blank edge moved a few tiles, so the same province plays differently each time.

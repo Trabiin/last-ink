@@ -44,7 +44,7 @@
 			}
 		},
 		{
-			"id": "rescue_gristle", "name": "Rumour: a witch in the Gutterwoods", "kind": "Rescue", "province": "gutterwoods",
+			"id": "rescue_gristle", "name": "Rumour: a witch in the Gutterwoods", "kind": "Rescue", "province": "gutterwoods", "when": {"not_seen": ["ch1_takeover"]},
 			"blurb": "Woodcutters say a hedge-witch is selling cures out of a hollow tree, and the Coven wants her gone. Find her before they do. Bring coin; she will ask.",
 			"days": 2, "rations": 2, "stats": {"charm": 1.0, "lore": 0.5}, "target": 17, "danger": 2, "cooldown": 2,
 			"reward": {"renown": 1}, "recruit": "gristle",
@@ -65,7 +65,7 @@
 			}
 		},
 		{
-			"id": "rescue_daro", "name": "Rumour: a deserter on the Tithe Road", "kind": "Rescue", "province": "tithe",
+			"id": "rescue_daro", "name": "Rumour: a deserter on the Tithe Road", "kind": "Rescue", "province": "tithe", "when": {"not_seen": ["ch1_takeover"]},
 			"blurb": "A Concord corporal walked out on an Erasure order and is hiding somewhere along the Tithe Road toll posts. The Concord has posted a reward. Pay it to yourself.",
 			"days": 3, "rations": 2, "stats": {"might": 0.5, "charm": 1.0, "grit": 0.5}, "target": 22, "danger": 2, "cooldown": 3,
 			"reward": {"renown": 1}, "recruit": "ninefingers",
