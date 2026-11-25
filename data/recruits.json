@@ -273,7 +273,7 @@
 		{
 			"id": "saffron", "name": "Saffron Kiss", "title": "cabaret singer", "tier": "field", "start": false,
 			"stats": {"might": 3, "craft": 5, "lore": 4, "charm": 8, "grit": 6}, "traits": ["flirt", "night_owl"],
-			"blurb": "Stage name of Maud Pickering, who was born on a coal barge and says so. Top of the bill at the Gilt Lantern on the Causeway. When she sings, things exist for a few seconds: a bridge, a chorus line, a door that was not there. She has never finished a song.",
+			"blurb": "Stage name of Maud Pickering, who was born on a coal barge and says so. Top of the bill at the Gilt Lantern on the Causeway, until it fell in the lake. When she sings, things exist for a few seconds: a bridge, a chorus line, a door that was not there. She has never finished a song.",
 			"post": "tavern", "look": {"outfit": "mage", "colors": {"skin": "c89070", "cloth": "8a2a3a", "leather": "5a1a22", "boots": "241418", "trim": "f0c040"}},
 			"join": {"type": "story", "mission": "ch3_quay"}, "hire": {},
 			"rumour": "Somebody on Lantern Quay is singing a bridge across the ink every night. The bargemen say the bridge only stays up while she does.",
@@ -290,7 +290,7 @@
 			"join": {"type": "story", "mission": "ch3_shallows"}, "hire": {},
 			"rumour": "Somebody is selling netted words at Pendower Shallows, by the pound, with a written guarantee. The guarantee is signed by a shadow.",
 			"pitch": "Nan Cripps, at your service. Reasonable rates. Tally, tell them the rates are reasonable.",
-			"welcome": "Lovely town. Honest faces. I'll have most of them by Thursday. Joke! Tally, laugh.",
+			"welcome": "Lovely town. Honest faces. I'll have most of them by market day. Joke! Tally, laugh.",
 			"quips": ["Nan won the squad's supper off a toll-keeper at cards. Tally says she cheated. Nan says Tally cheated.", "Nan sold a farmer the same map twice. Tally gave him his money back the second time, and sulked all the way home."],
 			"lines": ["Every contract's got a loophole. I put 'em in myself. Saves time.", "Tally's my shadow. He talks. He's honest. It's a terrible affliction and we're seeing someone about it.", "Never trust a woman who says never trust her. That's me. Ha! Gotcha."]
 		},
@@ -301,7 +301,7 @@
 			"post": "stores", "look": {"outfit": "soldier", "colors": {"skin": "d8a888", "cloth": "5a2a3a", "metal": "8a7a5a", "boots": "2a2018"}},
 			"join": {"type": "claim", "province": "terraces"}, "hire": {"gilt": 30},
 			"rumour": "The old vintner on the Vauclair Terraces swears his grapes started tasting of paper the day the Blank came. Hold the Terraces and he may come and see whose land he is on.",
-			"pitch": "Monsieur, madame, whoever: your flag is on my vines, so I am your vintner. Thirty Gilt and you will drink better than the Marquis.",
+			"pitch": "Monsieur, madame, whoever: your flag is on my vines, so I am your vintner. Thirty Gilt and you will drink better than the Marquise.",
 			"welcome": "Show me your cellar. You have no cellar? Then show me where you will dig one.",
 			"quips": ["Anselme sniffed the squad's water skins and poured two of them away. He was right about both.", "Anselme traded a bottle of the '51 for a cart and a mule. He says the mule got the better of it."],
 			"lines": ["Wine remembers the year. This year, the wine remembers nothing. I do not like it.", "The masquerade drank my wine for forty years and paid for five of them.", "A good press is like a good marriage. Slow, heavy, and you must never leave it alone with the Concord."]

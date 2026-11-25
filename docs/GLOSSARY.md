@@ -56,6 +56,9 @@ per chapter in `build/script/`) and search it.
 | **the Gutterwood Coven** | the Coven | In the Gutterwoods (the place takes an -s, the Coven does not). |
 | **Saint Ledger's Abbey** | the Abbey | Chapter 2. |
 | **the Erasers** | | Verity's followers. Chapter 2. |
+| **the Velvet Nobility** | the Nobility | The old houses of the Velvet Causeway. Chapter 3. The Duc de Lantenay speaks for them. |
+
+The Abbey's faction card says **the Abbey of Saint Ledger**; places and speech say **Saint Ledger's** or **the Abbey**. Both are right.
 
 ## People (Act 1)
 
@@ -85,3 +88,48 @@ Planned, not in the game yet: Cass and Kit Pruett, twin chemists for the Inkwork
 
 Others: Verity Hale (the archivist in the white), Governor Thale, Clerk Pettigrew, Tithe-Captain Morrow,
 the Auditor, Ozias Crane, Hester Vane, Notary Fennick, Augustin Sallow.
+
+## Chapter 2 and 3 terms
+
+| Term | Notes |
+|---|---|
+| **keeper** | Lower case when people call Ash it ("Mind the draught, keeper"). The "Keeper's candle" on the quay is a name, so capital K. |
+| **Reader**, **First Reader** | Eraser ranks, capitalised. Askew is the First Reader; a reading is lower case. |
+| **the copying hall**, **the cloister walk**, **the Founders' Door** | Lower case for the rooms; the Founders' Door is a name. |
+| **the Bonefield**, **the Bonefield Cloister**, **the Bonefield Rising** | The hill, the cloister on it, and the revolt three hundred years ago. |
+| **eleven thousand four hundred and six** | Osyth's count, always in words. "The eleven thousand" in speech is fine. |
+| **the masquerade** | Lower case, "the masquerade, which continues". A year old when Chapter 3 starts. |
+| **the Host** | Capital H: the Chapter 3 boss. Lower case "host" for anyone throwing a party. |
+| **word-fishers**, **word-nets** | Hyphenated. They net words out of the ink lake at Pendower Shallows. |
+| **the ink lake** | Lower case. The Causeway stands on it. |
+| **the Crimson Encore** / **the Encore** | Fauvette's old cabaret on Gallows Ferry, where Ottoline kept the door. |
+| **the Gilt Lantern** | Saffron's old cabaret, "till it fell in the lake". |
+
+## People (Chapter 2)
+
+| Id | Full name | Name tag / usual name | Notes |
+|---|---|---|---|
+| osyth | Sister Osyth | Sister Osyth | Crypt-keeper, forty years. Counts out loud. |
+| cuthbert | Brother Cuthbert | Brother Cuthbert | Deaf bell-ringer, Scarth Pass. |
+| nell | Nell Tapper | Nell | Candleford chandler and accidental mayor. |
+| alcuin | Brother Alcuin | Brother Alcuin | Returned Eraser novice; he/him. |
+| odo | Brother Odo | Brother Odo | Messenger. |
+| ebba | Prioress Ebba | Prioress Ebba | Runs the Abbey; calls Ash "keeper" or "passer-by". |
+| wulfstan | Abbot Wulfstan | Abbot Wulfstan | Chapter 2 boss. Abbot for thirty years. |
+| askew | Askew | First Reader Askew | she/her. |
+
+## People (Chapter 3)
+
+| Id | Full name | Name tag / usual name | Notes |
+|---|---|---|---|
+| hortense | Hortense de Saulx | Hortense | The Velvet Marquise. Sister Bérénice is seventeen and was held six years. |
+| saffron | Saffron Kiss | Saffron | Stage name of Maud Pickering, about twenty. Sang her mother's house at nine, eleven years ago. Mother: Annie Pickering ("Mam"). Brother: Dickon. |
+| nan | Nan Cripps | Nan | Signed her conscience to Old Pratt at fifteen, eighteen years ago. |
+| tally | Tally | Tally | Nan's shadow. "He" to Nan; "it" to Pratt. Never contracts. |
+| anselme | Anselme Brugière | Anselme | Vintner on the Vauclair Terraces. |
+| margot | Margot Vasseur | Margot | Mask-maker. |
+| gaspard | Gaspard Pellerin | Gaspard | Word-fisher. |
+| lantenay | the Duc de Lantenay | Duc de Lantenay | Seventy, white-wigged. |
+| gaudin | Purser Gaudin | Purser Gaudin | Office of Corrections; Hortense's handler. |
+| proctor | Proctor Dufresne | Proctor Dufresne | Head of the Office's school on the Terraces. |
+| pratt | Old Pratt | Old Pratt | Moneylender of Lantern Quay. 512 contracts, forty per cent a month. |
