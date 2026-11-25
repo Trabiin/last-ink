@@ -670,11 +670,11 @@ func _draw_page() -> void:
 	if tex:
 		pw = 78.0
 		ph = pw * float(tex.get_height()) / float(maxi(tex.get_width(), 1))
-		var prect := Rect2(pg.x1 - pw, top + 3.0 - page_scroll, pw, ph)
+		var prect := Rect2(pg.x1 - pw - 4.0, top + 7.0 - page_scroll, pw, ph)
 		if prect.end.y > top and prect.position.y < bottom:
-			_clip_tex(Dialogue.fitted(tex, ph), prect, top, bottom, Color(0.16, 0.12, 0.1, 0.8) if shade else Color(1, 1, 1, 0.95))
-	var title_w := w - (pw + 6.0 if tex else 0.0)
-	var beside := top + 6.0 + ph  # text runs beside the portrait down to here, then under it
+			_draw_photo(Dialogue.fitted(tex, ph), prect, top, bottom, shade)
+	var title_w := w - (pw + 14.0 if tex else 0.0)
+	var beside := top + 14.0 + ph  # text runs beside the portrait card down to here, then under it
 	for blk in _blocks():
 		var kind: String = blk[0]
 		var lw := title_w if y + LINE - 10.0 + page_scroll < beside else w
@@ -741,6 +741,37 @@ func _clip_text(pos: Vector2, s: String, fsize: int, col: Color, top: float, bot
 	if pos.y - fsize * 0.7 < top or pos.y > bottom:
 		return
 	_text(pos, s, fsize, col, -1, f)
+
+
+## The portrait as a photograph pasted into the ledger: a cream card with a sepia ground, held by inked
+## photo corners, casting a shadow on the page. The card's edge is where the waist-up portrait ends.
+func _draw_photo(tex: Texture2D, r: Rect2, top: float, bottom: float, shade: bool) -> void:
+	r = Rect2(r.position.floor(), r.size.floor())
+	var card := r.grow(4.0)
+	_clip_rect(Rect2(card.position + Vector2(2, 3), card.size), Color(0.17, 0.12, 0.08, 0.35), top, bottom)  # shadow
+	_clip_rect(card, LedgerPage.EDGE, top, bottom)  # inked edge
+	_clip_rect(card.grow(-1.0), LedgerPage.PAPER_LIGHT, top, bottom)  # the card
+	_clip_rect(Rect2(card.position.x + 1.0, card.end.y - 2.0, card.size.x - 2.0, 1.0), LedgerPage.PAPER_DARK, top, bottom)  # its lower lip
+	_clip_rect(r, Color("8a7860"), top, bottom)  # the photograph's sepia ground
+	_clip_rect(Rect2(r.position.x, r.position.y, r.size.x, 1.0), Color("5a4a3c"), top, bottom)
+	_clip_tex(tex, r, top, bottom, Color(0.16, 0.12, 0.1, 0.8) if shade else Color(1, 1, 1, 0.97))
+	# Photo corners: little inked triangles tucked over each corner of the card.
+	for i in 4:
+		var right := i % 2 == 1
+		var low := i >= 2
+		var cx := card.end.x - 1.0 if right else card.position.x
+		var cy := card.end.y - 1.0 if low else card.position.y
+		for k in 7:
+			var row := Rect2(cx - (6 - k if right else 0.0), cy + (-k if low else k), 7 - k, 1.0)
+			_clip_rect(row, LedgerPage.INK, top, bottom)
+
+
+## A filled rect cut to the page's visible band.
+func _clip_rect(r: Rect2, col: Color, top: float, bottom: float) -> void:
+	var y0 := maxf(r.position.y, top)
+	var y1 := minf(r.end.y, bottom)
+	if y1 > y0:
+		draw_rect(Rect2(r.position.x, y0, r.size.x, y1 - y0), col)
 
 
 ## Draws a texture into r, cut to the page's visible band.
