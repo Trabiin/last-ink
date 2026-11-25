@@ -9,6 +9,7 @@ extends RefCounted
 ##   act1.md     prologue, Chapter 1 and Act 1: story, missions, Marches recruits, bonds, codex...
 ##   ch2.md      Chapter 2 (the Abbey, the north)
 ##   ch3.md      Chapter 3 (the Velvet Causeway)
+##   ch4.md      Chapter 4 (the Unfinished Coast)
 ##   later.md    text for chapters not written yet (other regions, the betrayal, epilogues)
 ##   anytime.md  text not tied to a chapter: items, skills, buildings, help, combat barks...
 ##   ui.md       text in scripts/ (menus, HUD, prompts, notices)
@@ -18,23 +19,24 @@ extends RefCounted
 
 const Scan := preload("res://tools/loc_scan.gd")
 
-const CHAPTER_ORDER := ["act1", "ch2", "ch3", "later"]
+const CHAPTER_ORDER := ["act1", "ch2", "ch3", "ch4", "later"]
 const TITLES := {
 	"act1": "Act 1: prologue, Chapter 1 (No Such Person) and the rest of Act 1 (The Unregistered Town)",
 	"ch2": "Chapter 2: The Copying Monks",
 	"ch3": "Chapter 3: Masquerade (the Velvet Causeway)",
+	"ch4": "Chapter 4: The Sea Stops (the Unfinished Coast)",
 	"later": "Later chapters: regions, the betrayal and epilogues not reached yet",
 	"anytime": "Any chapter: items, skills, buildings, help, combat barks and other system text",
 	"ui": "Interface text from scripts/",
 }
 ## A region's "chapter" number (data/provinces.json) -> export chapter. A province takes its region's.
-const CHAPTER_NUMBER := {1: "act1", 2: "ch2", 3: "ch3"}
+const CHAPTER_NUMBER := {1: "act1", 2: "ch2", 3: "ch3", 4: "ch4"}
 ## Story chapter keys (goals' "chapter", journal chapters) -> export chapter.
-const STORY_CHAPTER := {"prologue": "act1", "ch1": "act1", "act1": "act1", "ch2": "ch2", "ch3": "ch3"}
+const STORY_CHAPTER := {"prologue": "act1", "ch1": "act1", "act1": "act1", "ch2": "ch2", "ch3": "ch3", "ch4": "ch4"}
 ## Talk id prefixes, for talks no table points at (boss talks are keyed by boss id).
 const PREFIX_CHAPTER := {
 	"ch1_": "act1", "act1_": "act1", "meadow_": "act1", "auditor_": "act1",
-	"ch2_": "ch2", "abbot_": "ch2", "ch3_": "ch3", "host_": "ch3", "betrayal_": "later",
+	"ch2_": "ch2", "abbot_": "ch2", "ch3_": "ch3", "host_": "ch3", "ch4_": "ch4", "lowwater_": "ch4", "betrayal_": "later",
 }
 ## Whole files that belong to one chapter.
 const FILE_CHAPTER := {"epilogues.json": "later", "betrayal.json": "later"}
