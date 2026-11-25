@@ -106,6 +106,10 @@ var clock_canvas: Control  # the day, the time bar and the speed buttons
 var live_overlay: Control  # the zoom hint, the dawn's resource changes and the ledger
 var toast_canvas: Control  # the "Day N begins" toast, faded by modulate
 var paused_canvas: Control  # "TIME PAUSED", pulsed by modulate
+## A cloth over the table while the Esc menu stops time: the menu is for real life, not for planning with
+## the clock frozen. Gone with the Allow pausing assist, which gives the clock its stop button anyway.
+var menu_cover: Control
+var menu_session := false  # from opening the Esc menu until it closes (its help, options and save pages too)
 var view_serial := 0  # goes up whenever the map's pan or zoom moves (blank_watch.gd and the alert tray watch it)
 var state_serial := 0  # goes up whenever anything the table shows may have changed (the same watchers)
 var _pulses: Array = []  # [kind ("surge" or "dot"), position, countdown text or colour, pulsing] gathered with the labels
@@ -137,6 +141,7 @@ var pinch_d := 0.0
 func _ready() -> void:
 	set_anchors_preset(Control.PRESET_FULL_RECT)
 	get_tree().paused = false
+	Empire.fit_speed()  # the Assists may have changed since the clock was last set
 	font = ThemeDB.fallback_font
 	territory = Empire.territory()
 	_bake()
@@ -233,6 +238,12 @@ func _ready() -> void:
 	layer.layer = 5
 	layer.process_mode = Node.PROCESS_MODE_ALWAYS
 	add_child(layer)
+	menu_cover = Control.new()  # under every menu on this layer
+	menu_cover.set_anchors_preset(Control.PRESET_FULL_RECT)
+	menu_cover.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	menu_cover.visible = false
+	menu_cover.draw.connect(_draw_menu_cover.bind(menu_cover))
+	layer.add_child(menu_cover)
 	menu = InkMenu.new()
 	menu.visible = false
 	layer.add_child(menu)
@@ -305,6 +316,14 @@ func alerts_blocked() -> bool:
 		or frame == menu_closed_frame or roster_view.visible or buildings_view.visible or governor_view.visible \
 		or expedition_view.visible or research_view.visible or diplomacy_view.visible or bonds_view.visible \
 		or newcomers_view.visible or party_picker.visible or gear_view.visible \
+		or journal_view.visible or armory_view.visible
+
+
+## A screen or briefing is open over the table: the clock runs at most 1x (Empire.hold_1x).
+func panel_open() -> bool:
+	return brief_menu.visible or slot_menu.visible or roster_view.visible or buildings_view.visible \
+		or governor_view.visible or expedition_view.visible or research_view.visible or diplomacy_view.visible \
+		or bonds_view.visible or newcomers_view.visible or party_picker.visible or gear_view.visible \
 		or journal_view.visible or armory_view.visible
 
 
@@ -394,12 +413,16 @@ func _open_menu() -> void:
 	_menu_items()
 	menu.visible = true
 	get_tree().paused = true
+	menu_session = true
+	_cover_map()
 
 
 func _close_menu() -> void:
 	menu.visible = false
 	slot_menu.visible = false
 	get_tree().paused = false
+	menu_session = false
+	_cover_map()
 	menu_closed_frame = Engine.get_process_frames()  # the closing key must not also act on the map
 
 
@@ -420,6 +443,8 @@ func _on_menu(id: String) -> void:
 			menu.visible = false
 			OptionsView.popup(self).closed.connect(func():
 				menu.visible = true
+				Empire.fit_speed()  # the clock assists may have changed
+				_cover_map()
 				_bake())  # map markings may have changed (issue #192)
 		"save", "load":
 			slot_mode = id
@@ -833,7 +858,9 @@ func _is_border(x: int, y: int, r: int) -> bool:
 func _process(delta: float) -> void:
 	t += delta
 	_fit_map_view()
+	Empire.hold_1x = panel_open()  # reading a briefing or a screen never costs more than 1x of the day
 	Empire.tick_frame(delta)
+	Empire.hold_1x = false
 	Empire.playtime += minf(delta, Empire.MAX_TICK)  # not the hours a suspended Deck slept (issue #149)
 	toast_t = maxf(toast_t - delta, 0.0)
 	deltas_t = maxf(deltas_t - delta, 0.0)
@@ -847,7 +874,7 @@ func _process(delta: float) -> void:
 	_process_camera(delta)
 	_refresh_layers(delta)
 	var frame := Engine.get_process_frames()
-	if frame == menu_closed_frame or roster_view.visible or frame == roster_view.closed_frame \
+	if frame == menu_closed_frame or brief_menu.visible or roster_view.visible or frame == roster_view.closed_frame \
 			or buildings_view.visible or frame == buildings_view.closed_frame \
 			or governor_view.visible or frame == governor_view.closed_frame \
 			or expedition_view.visible or frame == expedition_view.closed_frame \
@@ -893,13 +920,13 @@ func _process(delta: float) -> void:
 	if Input.is_action_just_pressed("journal"):
 		journal_view.open()
 		return
-	for i in Empire.SPEEDS.size():
+	for i in Empire.SPEED_KEYS.size():
 		if Input.is_action_just_pressed("clock_speed_%d" % i):
-			Empire.set_speed(i)
+			Empire.pick_speed(Empire.SPEED_KEYS[i])
 	if Input.is_action_just_pressed("clock_slower"):
-		Empire.set_speed(Empire.speed - 1)
+		Empire.step_speed(-1)
 	elif Input.is_action_just_pressed("clock_faster"):
-		Empire.set_speed(Empire.speed + 1)
+		Empire.step_speed(1)
 	if Input.is_action_just_pressed("ledger"):
 		show_ledger = not show_ledger
 	if Input.is_action_just_pressed("map_zoom_in"):
@@ -989,7 +1016,7 @@ func _refresh_layers(delta: float) -> void:
 	if not _pulses.is_empty() or pulse_canvas.get_meta("drawn", false):
 		pulse_canvas.set_meta("drawn", not _pulses.is_empty())
 		pulse_canvas.queue_redraw()
-	var ck := [Empire.day, Empire.day_t, Empire.speed].hash()  # while time runs the day bar creeps every frame (a small layer)
+	var ck := [Empire.day, Empire.day_t, Empire.speed, Empire.speed_choices()].hash()  # while time runs the day bar creeps every frame (a small layer)
 	if ck != _clock_key:
 		_clock_key = ck
 		clock_canvas.queue_redraw()
@@ -1002,7 +1029,7 @@ func _refresh_layers(delta: float) -> void:
 	if toast + "|" + toast2 != _toast_key:
 		_toast_key = toast + "|" + toast2
 		toast_canvas.queue_redraw()
-	paused_canvas.visible = Empire.SPEEDS[Empire.speed] == 0
+	paused_canvas.visible = Empire.speed == Empire.SPEED_STOP
 	paused_canvas.modulate.a = 0.55 + 0.25 * sin(t * 3.0)
 
 
@@ -1170,9 +1197,10 @@ func _gui_input(event: InputEvent) -> void:
 	elif _menu_button_rect().has_point(tp):
 		_open_menu()
 	else:
-		for sp in Empire.SPEEDS.size():
-			if _speed_rect(sp).has_point(tp):
-				Empire.set_speed(sp)
+		var choices := Empire.speed_choices()
+		for k in choices.size():
+			if _speed_rect(k, choices.size()).has_point(tp):
+				Empire.pick_speed(choices[k])
 
 
 ## The screen buttons that sit over the map's top edge.
@@ -1281,8 +1309,7 @@ func _open_brief(m: Dictionary) -> void:
 		items.append({"id": "other:" + str(o["id"]), "label": tr("Instead: %s") % str(o["name"])})
 	items.append({"id": "back", "label": tr("Back")})
 	brief_menu.setup(m.get("name", tr("Mission")), items, "\n".join(lines))
-	brief_menu.visible = true
-	get_tree().paused = true
+	brief_menu.visible = true  # time keeps running under a briefing, held to 1x (panel_open)
 
 
 func _on_brief(id: String) -> void:
@@ -1379,8 +1406,10 @@ func _journal_button_rect() -> Rect2:
 	return Rect2(db.position - Vector2(78, 0), Vector2(74, 16))
 
 
-func _speed_rect(i: int) -> Rect2:
-	return Rect2(Vector2(452 + i * 34, 3), Vector2(31, 15))
+## The clock's k-th speed button of n (1x 2x 4x, plus 0.5x and the stop with their assists).
+func _speed_rect(k: int, n: int) -> Rect2:
+	var w := 31.0 if n <= 4 else 26.0
+	return Rect2(Vector2(452 + k * (w + 3.0), 3), Vector2(w, 15))
 
 
 func _menu_button_rect() -> Rect2:
@@ -1557,6 +1586,30 @@ func _draw_toast(c: CanvasItem) -> void:
 	_cv = self
 
 
+## Covers the map while the Esc menu has time stopped, unless the Allow pausing assist is on.
+func _cover_map() -> void:
+	menu_cover.visible = menu_session and not Assists.pause_allowed()
+	menu_cover.queue_redraw()
+
+
+## The cloth over the table: dark baize with a faint weave, and one line saying why.
+func _draw_menu_cover(c: CanvasItem) -> void:
+	var vs := c.get_viewport_rect().size
+	c.draw_rect(Rect2(Vector2.ZERO, vs), Color("17140f"))
+	var weave := Color(0.32, 0.27, 0.2, 0.18)
+	var y := 0.0
+	while y < vs.y:
+		c.draw_line(Vector2(0, y), Vector2(vs.x, y), weave, 1.0)
+		y += 4.0
+	var x := 2.0
+	while x < vs.x:
+		c.draw_line(Vector2(x, 0), Vector2(x, vs.y), Color(weave, weave.a * 0.5), 1.0)
+		x += 6.0
+	var s := tr("The table is covered while time stands still.")
+	var w := font.get_string_size(s, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(9)).x
+	c.draw_string(font, Vector2(floorf((vs.x - w) / 2.0), vs.y - 14.0), s, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(9), Color(0.62, 0.56, 0.47))
+
+
 ## "TIME PAUSED": drawn once, pulsed by the layer's modulate.
 func _draw_paused(c: CanvasItem) -> void:
 	_cv = c
@@ -1715,13 +1768,15 @@ func _draw_clock() -> void:
 	_text(Vector2(x + 9, 15), tr("Day %d") % Empire.day, 11, Color("ece6da"))
 	_text(Vector2(x + 58, 15), Empire.clock_text(), 9, Color(0.75, 0.72, 0.7))
 	UiSkin.bar(_cv, Rect2(x + 92, 8, 100, 4), Empire.day_t, "bone", {"notches": [0.25, 0.5, 0.75]})  # the day: dawn, noon, dusk
-	for i in Empire.SPEEDS.size():
-		var r := _speed_rect(i)
+	var choices := Empire.speed_choices()
+	for k in choices.size():
+		var i: int = choices[k]
+		var r := _speed_rect(k, choices.size())
 		var on := i == Empire.speed
 		UiSkin.panel(_cv, r, "button", Color(1.1, 1.0, 0.85) if on else Color(0.75, 0.72, 0.7))
 		if on:
 			UiSkin.frame(_cv, r.grow(1.0))
-		var label := "II" if i == 0 else "%dx" % Empire.SPEEDS[i]  # no-tr: pause symbol
+		var label := "II" if i == Empire.SPEED_STOP else Empire.speed_label(i)  # no-tr: pause symbol
 		_text_c(Vector2(r.get_center().x, r.position.y + 11), label, 9, GOLD if on else Color(0.75, 0.72, 0.7))
 	var mr := _menu_button_rect()
 	UiSkin.panel(_cv, mr, "button", Color(0.75, 0.72, 0.7))

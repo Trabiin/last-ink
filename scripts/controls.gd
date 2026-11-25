@@ -58,7 +58,8 @@ func _ready() -> void:
 	_add_action("attack", [KEY_J, KEY_SPACE, KEY_Z], [JOY_BUTTON_A, JOY_BUTTON_X])
 	_add_action("swap", [KEY_TAB, KEY_Q], [JOY_BUTTON_Y])
 	_add_action("pause", [KEY_ESCAPE, KEY_P], [JOY_BUTTON_START])
-	# Command clock: 1-4 pick pause/1x/2x/4x, shoulders step slower/faster.
+	# Command clock: 1-3 pick 1x/2x/4x, 4 stops it (only with the Allow pausing assist), shoulders step
+	# slower/faster. Empire.SPEED_KEYS maps clock_speed_N to the speed.
 	_add_action("clock_slower", [], [JOY_BUTTON_LEFT_SHOULDER])
 	_add_action("clock_faster", [], [JOY_BUTTON_RIGHT_SHOULDER])
 	for i in 4:

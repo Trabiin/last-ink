@@ -200,7 +200,7 @@ func test_clock_survives_a_suspend() -> void:
 	var moved: float = (Empire.day - day) + (Empire.day_t - t)
 	var most: float = Empire.MAX_TICK * Empire.SPEEDS[Empire.speed] / Empire.DAY_SECONDS
 	check(moved <= most + 0.0001, "waking from sleep moves the clock one short step, not five hours (%.3f days)" % moved)
-	Empire.set_speed(1)
+	Empire.set_speed(Empire.SPEED_1X)
 
 
 # ---------------------------------------------------------------- rumble

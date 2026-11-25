@@ -28,7 +28,7 @@ const BODY := 10
 const CONTROLS := [
 	["In town and at the table", [["Move / pick a province", "move"], ["Talk, use, confirm", ["attack", "ui_accept"]],
 		["Back / close", ["ui_cancel"]], ["Menu", ["pause"]], ["Go to the newest alert", ["alert_go"]],
-		["Clock slower / faster", ["clock_slower", "clock_faster"]], ["Clock: stop, 1x, 2x, 4x", ["clock_speed_0", "clock_speed_1", "clock_speed_2", "clock_speed_3"]],
+		["Clock slower / faster", ["clock_slower", "clock_faster"]], ["Clock: 1x, 2x, 4x", ["clock_speed_0", "clock_speed_1", "clock_speed_2"]],
 		["Ledger", ["ledger"]], ["Zoom the map", ["map_zoom_in", "map_zoom_out", "map_zoom_toggle"]]]],
 	["Screens", [["Roster", ["roster"]], ["Buildings", ["buildings"]], ["Governor", ["govern"]], ["Expeditions", ["expeditions"]],
 		["Research", ["research"]], ["Diplomacy", ["diplomacy"]], ["Bonds", ["bonds"]], ["Newcomers", ["newcomers"]],

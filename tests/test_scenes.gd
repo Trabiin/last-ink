@@ -108,7 +108,7 @@ func test_hub_loads_and_every_screen_opens() -> void:
 	await frames(3)
 	check(cmd.menu.visible, "pause menu opens")
 	cmd._close_menu()
-	Empire.set_speed(3)
+	Empire.set_speed(Empire.SPEEDS.size() - 1)
 	await frames(30)  # let the clock run at 4x for a moment
 	check(Empire.day_t > 0.0, "clock running")
 

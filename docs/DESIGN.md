@@ -59,7 +59,7 @@ The game alternates between two layers that share one save, one roster and one c
 | | **Command** (empire) | **Missions** (action RPG) |
 |---|---|---|
 | Where | Hollowmark (a small walkable hub town) and the **territory map** | Hand-built mission maps in the provinces |
-| Clock | Runs in real time (adjustable speed, pausable) | **Frozen.** No timers move while you are on a mission |
+| Clock | Runs in real time (1x/2x/4x, no pause button; the Esc menu covers the map) | **Frozen.** No timers move while you are on a mission |
 | You do | Build, assign recruits, research, send expeditions, negotiate, answer Blank surges, talk to people | Fight with a party of 3, reclaim land, rescue recruits, story chapters and bosses |
 | Menus | List menus and panels from the Command Table, hotkeys for common actions | Pause menu, quick menu, hotkeyed abilities |
 
@@ -77,7 +77,11 @@ never required.
 ### 5.1 The clock
 
 - While in Command, the **day clock** runs in real time: 1 in-game day is about 4 real minutes at normal speed.
-- Speed controls: **pause, 1x, 2x, 4x**, on hotkeys and on screen. Pausing is free and unlimited.
+- Speed controls: **1x, 2x, 4x**, on hotkeys and on screen. There is no pause button (Ojon, 2026-11-25: so the
+  player feels the pressure instead of playing it optimally). The Esc menu still stops time for real life, but it
+  covers the map, so nobody plans with the clock frozen. Any screen or briefing open on the table holds the clock
+  at 1x. Two assists, off by default and never judged: **Allow pausing the clock** (the stop button and key come
+  back, and the menu leaves the map in view) and **Slower clock** (adds 0.5x).
 - Construction, research, expeditions, envoy trips and the Blank all advance on this clock.
 - **On a mission the clock is frozen.** Leaving for a mission and coming back costs no time.
 - Mission availability can still expire on the clock (a Blank surge you ignore for two days resolves without you).
@@ -440,7 +444,7 @@ Ink colors (magic): **Red** (fire), **Blue** (frost), **Gold** (light, healing),
 
 - **Save anywhere** (pause menu, three slots) plus **autosave** every minute when safe, on returning from a
   mission, and on quitting.
-- **Clock speed** (pause, 1x, 2x, 4x) in Command; the clock never runs during missions.
+- **Clock speed** (1x, 2x, 4x; pause and 0.5x as assists) in Command; the clock never runs during missions.
 - **Adjustable battle speed** (0.75x to 1.25x) and **difficulty** (Story, Normal, Hard), changeable at any time.
   Difficulty also scales the Blank's spread.
 - **Objectives and alerts:** the current story goal is pinned; Blank surges, finished buildings and returning

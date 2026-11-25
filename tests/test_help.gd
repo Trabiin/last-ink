@@ -417,7 +417,7 @@ func test_a_new_player_reaches_day_five_with_everything_open() -> void:
 		if not Help.seen("command") or not Help.due().is_empty():
 			check(await _wait_card(600), "a due card shows up (%s)" % str(Help.due().get("id", "command")))
 			continue  # a player hears it before the next day comes round
-		Empire.set_speed(3)
+		Empire.set_speed(Empire.SPEEDS.size() - 1)
 		Empire.tick(8.0)  # about a day every 8 frames at 4x
 	check(Empire.day >= 5, "reached day 5 (day %d)" % Empire.day)
 	for h in ["The Command Table", "Who to post first", "Bonds open", "Expeditions open", "Research opens", "Diplomacy opens"]:

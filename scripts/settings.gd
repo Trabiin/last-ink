@@ -37,7 +37,7 @@ const REMAPPABLE := [
 	["research", "Research"], ["diplomacy", "Diplomacy"], ["bonds", "Bonds"], ["newcomers", "Newcomers"],
 	["gear", "Party gear"], ["ledger", "Daily ledger"],
 	["clock_slower", "Clock slower"], ["clock_faster", "Clock faster"],
-	["clock_speed_0", "Clock: pause"], ["clock_speed_1", "Clock: 1x"], ["clock_speed_2", "Clock: 2x"], ["clock_speed_3", "Clock: 4x"],
+	["clock_speed_0", "Clock: 1x"], ["clock_speed_1", "Clock: 2x"], ["clock_speed_2", "Clock: 4x"], ["clock_speed_3", "Clock: stop (assist)"],
 	["map_zoom_in", "Map zoom in"], ["map_zoom_out", "Map zoom out"], ["map_zoom_toggle", "Map: whole / regions"],
 	["map_pan_up", "Map pan up"], ["map_pan_down", "Map pan down"], ["map_pan_left", "Map pan left"], ["map_pan_right", "Map pan right"],
 	["ui_up", "Menu up"], ["ui_down", "Menu down"], ["ui_left", "Menu left"], ["ui_right", "Menu right"],
