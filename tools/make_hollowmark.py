@@ -58,6 +58,8 @@ HEADER = """# Last Ink map: Hollowmark, the hub town (46 x 32 tiles of 16px). Ge
 @markw gate
 @markm market
 @markx table_side
+@marky well
+@marki bench
 @markA site_barracks
 @markB site_infirmary
 @markD site_inkworks
@@ -67,9 +69,9 @@ HEADER = """# Last Ink map: Hollowmark, the hub town (46 x 32 tiles of 16px). Ge
 @marku site_market
 @markL lamp
 @markY visitors
-@dirt CFMPNVhvqwmx12LOQZlXU
+@dirt CFMPNVhvqwmx12LOQZlXUi
 @sign1 THE INKLANDS  (south)|Missions leave from the Command Table
-@sign2 HOLLOWMARK|pop. 212   pop. 40   pop. you
+@sign2 HOLLOWMARK|~~pop. 212~~   ~~pop. 40~~   pop. you
 ---
 """
 
@@ -127,6 +129,7 @@ HOUSES = {  # free-standing art, written at the bottom-centre tile
 MARKS = {
     (21, 13): 'C', (24, 12): 'h', (31, 11): 'v', (38, 9): 'q', (6, 25): 'g', (24, 30): 'w',
     (27, 17): 'm', (22, 19): '@', (19, 15): 'x', (26, 15): 'L', (23, 27): 'Y',
+    (32, 16): 'y', (17, 18): 'i',  # posts by the well and the plaza bench (issue #27: room for more recruits)
 }
 PROPS = {
     (23, 16): 'F', (29, 15): 'M', (27, 14): 'P', (20, 12): 'V', (25, 12): 'V',

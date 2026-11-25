@@ -737,6 +737,16 @@ they exist, a cabaret bouncer, a choir of three orphans who share one voice, a d
 who only moves cargo at night, a dog that might be a person. Each brings a trait and a stat spread, a few lines,
 and a recruitment hook (a rescue, a bribe, a building, a faction, a choice).
 
+### Recruit pool as built (issue #27)
+
+Light recruits so far: 12 from Act 1 to Chapter 3 before 2026-11-25, plus nine more on stand-in art
+(data/placeholders.json): Chapter 2 Sister Mildred (illuminator), Joan Tull (barge pilot, rescue), Rafe Thwaite
+(whitewasher), Sib Varley (relic-seller, they/them); Chapter 3 Ida Lumley (pawnbroker), Clément de Cressy (dancing
+master), Josette Roux (copyist, rescue), Firmin Gosse (the Host's under-cook), Rémy Morel (duel second, they/them).
+Two regional traits came with them: **Vowed** (Abbey and Erasers envoys +2, Escort jobs +5%) and **Salon-bred**
+(Nobility envoys +2, Guild -1, Salvage -5%). A recruit from a later chapter is not rumoured until their region is
+on the map (`Empire.lead_region`), and Hollowmark has posts by the well and the plaza bench, five people a post.
+
 ### Banter
 
 Short, skippable party banter triggers while walking (two or three lines, top of screen, no pause), and in

@@ -84,6 +84,30 @@ these the same everywhere.
 | ottoline | Big Ottoline | Ottoline | |
 | velvette | Fauvette | Fauvette | Stage name of Colombe Brissot. The id stays `velvette`. |
 
+## Light recruits (Chapters 2 and 3)
+
+Abbey people have no surnames (monks give them up on taking vows); Causeway people keep the French spelling and
+accents (Clément, Rémy). Issue #27.
+
+| Id | Full name | Name tag / usual name | Notes |
+|---|---|---|---|
+| osyth | Sister Osyth | Sister Osyth | Crypt-keeper. Story recruit (The Crypts). |
+| cuthbert | Brother Cuthbert | Brother Cuthbert | Deaf bell-ringer. |
+| nell | Nell Tapper | Nell | Candleford chandler. |
+| alcuin | Brother Alcuin | Brother Alcuin | Returned Eraser novice. |
+| mildred | Sister Mildred | Sister Mildred | Illuminator; paints the margins (snails in armour, the dog-headed bishop). |
+| joan | Joan Tull | Joan | Candleford wax-barge pilot. Measures in "poles". |
+| rafe | Rafe Thwaite | Rafe | Whitewasher the Erasers paid "a shilling a wall". |
+| sib | Sib Varley | Sib | they/them. Relic-seller on the Scarth Pass road. Says "friend". |
+| anselme | Anselme Brugière | Anselme | Vintner, Vauclair Terraces. |
+| margot | Margot Vasseur | Margot | Mask-maker. |
+| gaspard | Gaspard Pellerin | Gaspard | Word-fisher, Pendower Shallows. |
+| ida | Ida Lumley | Ida | Lantern Quay pawnbroker. |
+| clement | Clément de Cressy | Clément | Was the Vicomte de Cressy; lost the title at cards. Dancing master. |
+| josette | Josette Roux | Josette | Runaway copyist from the Proctor's school, Bérénice's classmate. Forger. |
+| firmin | Firmin Gosse | Firmin | The Host's under-cook. "I never went up the stairs." |
+| remy | Rémy Morel | Rémy | they/them. Professional duel second. |
+
 Planned, not in the game yet: Cass and Kit Pruett, twin chemists for the Inkworks (issue #27). Until they join, write "the inkmakers".
 
 Others: Verity Hale (the archivist in the white), Governor Thale, Clerk Pettigrew, Tithe-Captain Morrow,
