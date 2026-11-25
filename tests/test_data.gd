@@ -347,7 +347,7 @@ func test_mission_types() -> void:
 		var brief := str(fc.get("brief", ""))
 		check(brief.count("%d") == 1 and brief.count("%s") == 1 and brief.find("%d") < brief.find("%s"),
 			"%s: brief needs %%d (need) then %%s (the counted caches, issue #183)" % w)
-		check(str(fc.get("noun", "")) in ["box", "crate", "cache", "chest", "pile"], "%s: noun must be one MissionTypes.counted() knows" % w)
+		check(str(fc.get("noun", "")) in ["box", "crate", "cache", "chest", "pile", "rack"], "%s: noun must be one MissionTypes.counted() knows" % w)
 	_res_keys("mission_types.json raid rewards", mt["raid"].get("rewards", {}))
 	_res_keys("mission_types.json salvage pile", mt["salvage"].get("pile", {}), true)
 	_res_keys("mission_types.json salvage rewards", mt["salvage"].get("rewards", {}))

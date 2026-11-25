@@ -294,7 +294,7 @@ static func raid(p: Dictionary) -> Dictionary:
 	var caches: Array = at["caches"].slice(0, n)
 	clear_blank(m, caches)
 	m["objective"] = {"kind": "raid", "caches": caches, "need": mini(need, caches.size()), "seconds": float(cfg.get("seconds", 170)),
-		"alarm_cap": float(cfg.get("alarm_cap", 45)), "open_time": float(cfg.get("open_time", 1.6)), "contents": fc.get("cache", {}),
+		"alarm_cap": float(cfg.get("alarm_cap", 45)), "open_time": float(cfg.get("open_time", 1.6)), "contents": with_region(fc.get("cache", {}), p, cfg.get("region_cache", {}), true),
 		"per_cache": int(fc.get("per_cache", 2)), "alarm_seen": float(cfg.get("alarm_seen", 9.0)), "alarm_open": float(cfg.get("alarm_open", 14.0)),
 		"alarm_fall": float(cfg.get("alarm_fall", 3.0)), "reinforce_every": float(cfg.get("reinforce_every", 6.5))}
 	m["respawn"] = false  # the Blank does not pour out on a raid: the garrison is the danger
@@ -327,9 +327,30 @@ static func salvage(p: Dictionary) -> Dictionary:
 			east = maxi(east, int(c[0]))
 		layout["blank"] = east + 4  # the white is right behind the best pile
 	m["objective"] = {"kind": "salvage", "caches": caches, "need": mini(need, caches.size()),
-		"open_time": float(cfg.get("open_time", 2.0)), "contents": cfg.get("pile", {}), "near_bonus": float(cfg.get("near_bonus", 1.0)),
+		"open_time": float(cfg.get("open_time", 2.0)), "contents": with_region(cfg.get("pile", {}), p, cfg.get("region_pile", {})), "near_bonus": float(cfg.get("near_bonus", 1.0)),
 		"creep": float(cfg.get("creep", 4.0)) + float(cfg.get("creep_per_fray", 0.6)) * fray / 10.0, "push": float(cfg.get("push", 4.0)), "grace": float(cfg.get("grace", 6.0))}
 	return m
+
+
+## A cache's or pile's contents plus the extras for the province's region (region_cache / region_pile,
+## issue #138), so a raid or a salvage in the Abbey or on the Causeway turns up that chapter's Forge
+## materials. only_if_missing: skip the extras when the contents already hold one of that region's
+## materials (the Abbey's own undercroft is full of its silver already).
+static func with_region(contents: Dictionary, p: Dictionary, extras: Dictionary, only_if_missing := false) -> Dictionary:
+	var region := str(p.get("region", ""))
+	var more: Dictionary = extras.get(region, {})
+	if more.is_empty():
+		return contents
+	if only_if_missing:
+		var mats: Dictionary = Armory.mats_data().get("materials", {})
+		for k in contents:
+			if str(mats.get(k, {}).get("region", "")) == region:
+				return contents
+	var out := contents.duplicate()
+	for k in more:
+		if not out.has(k):
+			out[k] = more[k]
+	return out
 
 
 ## {"gilt": [14, 22], "supplies": [2, 5]} -> "14-22 Gilt, 2-5 Supplies".
@@ -344,6 +365,8 @@ static func counted(noun: String, amount: int) -> String:
 			return Loc.count("%d chest", "%d chests", amount)
 		"pile":
 			return Loc.count("%d pile", "%d piles", amount)
+		"rack":
+			return Loc.count("%d rack", "%d racks", amount)
 	return Loc.count("%d cache", "%d caches", amount)
 
 
@@ -407,6 +430,7 @@ static func apply(m: Dictionary, outcome: String, dry := false) -> Array:
 			if won and rid != "" and not Empire.recruits.has(rid):
 				if not dry:
 					Empire.recruits[rid] = {"role": "idle", "target": "", "injured": 0}
+					Empire._seasoned(rid)
 				lines.append(Loc.t("%s joins your roster. Find them in Hollowmark or give them a job%s.") % [Empire.recruit(rid).get("name", rid), Prompts.tag("roster")])
 				var j := Empire.job(jid)
 				for fid in j.get("standing", {}):

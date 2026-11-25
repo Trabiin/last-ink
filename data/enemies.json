@@ -1,5 +1,5 @@
 {
-	"_comment": "Enemy roster (issue #16; Chapter 2 adds the Abbey kinds, issue #28). kinds: stats per enemy type, read by scripts/enemy_kinds.gd (hp, damage, speed, xp; the Nibbler's bite stays in scripts/enemy.gd; pack = how many spawn together (one fewer, sometimes); blank = born of the Blank, so it also crawls out of surges and Blots in Defense and Reclaim missions (the others only roam the land); tip = one-line hint shown the first time one notices the party; faction = whose side it fights for (a Reader's reading spurs on the others of its faction, issue #206); names = (reader) the names it reads aloud; inflict = a status its hits can cause: {status, chance, time}, see scripts/status.gd, issue #112). rosters: spawn weights per province (the Act 1 areas); a mission can override with its own \"enemies\" dict; anything not listed uses default.",
+	"_comment": "Enemy roster (issue #16; Chapter 2 adds the Abbey kinds, issue #28). kinds: stats per enemy type, read by scripts/enemy_kinds.gd (hp, damage, speed, xp; the Nibbler's bite stays in scripts/enemy.gd; pack = how many spawn together (one fewer, sometimes); blank = born of the Blank, so it also crawls out of surges and Blots in Defense and Reclaim missions (the others only roam the land); tip = one-line hint shown the first time one notices the party; faction = whose side it fights for (a Reader's reading spurs on the others of its faction, issue #206); names = (reader) the names it reads aloud; inflict = a status its hits can cause: {status, chance, time}, see scripts/status.gd, issue #112). region_scale (issue #138): every enemy spawned on a mission in a province of that region (data/provinces.json) gets hp x hp and its hits x damage (Enemy.hit_mult), Act 1 kinds that turn up there too, so a chapter's fights stay as long and as dangerous for a party that is higher level and better armed (docs/BALANCE.md, Chapters 2 and 3). Coast and Spire are first drafts for their chapters to tune. Bosses keep their own numbers in their scripts. rosters: spawn weights per province (the Act 1 areas); a mission can override with its own \"enemies\" dict; anything not listed uses default.",
 	"kinds": {
 		"nibbler": {"name": "Nibbler", "plural": "Nibblers", "blank": true, "hp": 28, "speed": 40, "xp": 3, "pack": 1,
 			"tip": ""},
@@ -31,6 +31,12 @@
 			"tip": "Ink Eels: they swim under the ground where you can't hit them. Get out of the dark ring before it comes up, then hit it while it is on the surface."},
 		"lamplighter": {"name": "Lamplighter", "plural": "Lamplighters", "sprite": "lamplighter", "hp": 34, "damage": 8, "speed": 32, "xp": 6, "pack": 1, "inflict": {"status": "burn", "chance": 0.5, "time": 4},
 			"tip": "Lamplighter: it lobs oil lanterns that burst into a ring of fire where the circle is. Step out of the circle, then close in between throws."}
+	},
+	"region_scale": {
+		"abbey": {"hp": 1.25, "damage": 1.3},
+		"causeway": {"hp": 1.45, "damage": 1.4},
+		"coast": {"hp": 1.65, "damage": 1.5},
+		"spire": {"hp": 1.85, "damage": 1.6}
 	},
 	"rosters": {
 		"default": {"nibbler": 3, "spitter": 1},
