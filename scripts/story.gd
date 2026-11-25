@@ -29,6 +29,8 @@ static func data() -> Dictionary:
 		var parsed = Loc.load_json(PATH)
 		if typeof(parsed) == TYPE_DICTIONARY:
 			_data = parsed
+			# The gestures' later payoffs (data/gestures.json "beats", Morrow's letters...) play after the story's own.
+			_data["beats"] = _data.get("beats", []) + Stance.data().get("beats", [])
 	return _data
 
 
@@ -57,6 +59,8 @@ static func command_on() -> bool:
 ##   standing: {faction id: tier}   at least that standing tier with each faction (issue #28)
 ##   not_seen: [talk ids]           conversations not played yet
 ##   betrayal / betrayer / betrayal_top   the climax betrayal's stage (issue #186, Betrayal.blocker)
+##   flag / not_flag: name or [names]   a gesture Ash made set (or did not set) it (data/gestures.json, Stance.blocker)
+##   lean: "mercy" | "hard" | "spite" | "none" | "any"   Ash's lean from the gestures so far
 static func meets(c: Dictionary) -> bool:
 	return blocker(c) == ""
 
@@ -107,6 +111,10 @@ static func blocker(c: Dictionary) -> String:
 			return Loc.t("needs %s standing with the %s") % [Empire.tier_name(str(want[fid])), Empire.faction(fid).get("short", fid)]
 	if Empire.day < int(c.get("day", 0)):
 		return Loc.t("not before day %d") % int(c["day"])
+	if c.has("flag") or c.has("not_flag") or c.has("lean"):  # Ash's gestures (data/gestures.json, Stance.blocker)
+		var why := Stance.blocker(c)
+		if why != "":
+			return why
 	if c.has("betrayal") or c.has("betrayer") or c.has("betrayal_top"):
 		return Betrayal.blocker(c)
 	return ""

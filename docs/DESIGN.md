@@ -500,6 +500,15 @@ oddly: they can walk short distances into it, and the **Inkblade** they wake up 
 the Blank has taken. Other characters project wildly different personalities onto the silent hero, which is a
 running joke. Default name: **Ash** (player can rename).
 
+**Gestures, not words.** At choice points Ash *does* something instead of speaking: "[Shrug]", "[Hand Morrow the
+empty strongbox]", "[Nail it back up, upside down]". Everyone present reads the gesture in their own voice. Each
+gesture leans **mercy**, **hard-nosed** or **spite**; once one leads clearly it becomes Ash's lean, and the world
+answers it: Bran's name for Ash ("smudge" until then; "saint", "boss" or "sparks"), what the townsfolk say as Ash
+walks past, Verity's Act 1 letter, and the epilogues (including a card for Hollowmark itself). Some gestures also pay
+off later on their own: sparing Tithe-Captain Morrow makes him a Concord informant in Chapters 2 and 3, and the other
+two ways of dealing with him have their own Chapter 2 scenes. Gestures can also move bonds, faction standing and
+resources. Data: `data/gestures.json`; code: `scripts/stance.gd`, `scripts/town_chatter.gd`.
+
 ### The villains: a duo
 
 **1. Saint Verity Hale, "the Eraser"** (the sympathetic antagonist with a point)

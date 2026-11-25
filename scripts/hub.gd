@@ -140,6 +140,7 @@ func _ready() -> void:
 	banter = BanterScript.new()
 	banter.top = 26.0
 	layer.add_child(banter)
+	add_child(TownChatter.new(self))  # townsfolk talking about Ash's gestures, Bran's name for Ash (data/gestures.json)
 
 	var roster_layer := CanvasLayer.new()
 	roster_layer.layer = 4

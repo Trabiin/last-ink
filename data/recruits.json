@@ -28,7 +28,7 @@
 			"blurb": "His contract is tattooed on his arm and tightens if he breaks it. Will sell you out if outbid, and tells you so.",
 			"post": "gate", "look": {"outfit": "warrior", "colors": {"skin": "c98e6a", "metal": "8c7f72", "accent": "b0442f", "boots": "3a2c22"}},
 			"quips": ["Bran has submitted an invoice for \"hazard, emotional\".", "Bran asks that it be noted he was \"the competent one\"."],
-			"lines": ["Contract says I guard you. Doesn't say I have to like the town.", "Point me at something and pay me. That's the whole relationship.", "If someone offers me more, you'll hear it from me first. Professional courtesy."]
+			"lines": ["Contract says I guard you, {nick}. Doesn't say I have to like the town.", "Point me at something and pay me. That's the whole relationship.", "If someone offers me more, you'll hear it from me first. Professional courtesy."]
 		},
 		{
 			"id": "quill", "name": "Edwin \"Quill\" Pask", "short": "Quill", "title": "quartermaster", "tier": "core", "start": true,

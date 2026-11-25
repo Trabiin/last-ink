@@ -30,7 +30,7 @@ const TEXT_KEYS := [
 	"likes_text", "dislikes_text", "locked", "card", "tip", "notice", "mood", "habits", "weakness",
 	"work_label", "shop_name", "shop_blurb", "intro_text", "prompt", "options", "labels",
 	"welcome_title", "ai_short", "heading", "more", "outro", "body", "caption", "subtitle",
-	"question", "answer", "note", "message", "say", "text_insight",
+	"question", "answer", "note", "message", "say", "text_insight", "nick",
 ]
 ## Keys holding spoken lines: [speaker, text] / [speaker, text, expression] (only the text is
 ## translated), lists of those, or plain strings (help topics speak in plain strings).
@@ -50,7 +50,7 @@ const KEYED_TEXT := {
 	"expeditions.json": ["kind"],
 }
 ## Keys that are never text, whatever the value looks like (ids, refs, art, conditions).
-const NEVER_TEXT := ["id", "ids", "_comment", "color", "colors", "map", "maps", "path", "sprite", "portrait"]
+const NEVER_TEXT := ["id", "ids", "_comment", "color", "colors", "map", "maps", "path", "sprite", "portrait", "anchor"]
 
 static var _ready := false
 static var _lang := SOURCE

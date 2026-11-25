@@ -150,7 +150,7 @@
 	"events": {
 		"first_kill": {"once": true, "lines": [["bran", "It popped. Like a thought you weren't supposed to have."]]},
 		"tenth_kill": {"once": false, "lines": [["bran", "Ten. I'm charging by the 'ead, by the way. You owe me... a number.", "smug"]]},
-		"low_power": {"once": true, "urgent": true, "lines": [["bran", "Swinging at half power? Bold. Wait for the gauge, smudge."]]},
+		"low_power": {"once": true, "urgent": true, "lines": [["bran", "Swinging at half power? Bold. Wait for the gauge, {nick}."]]},
 		"mission_start": {"once": false, "lines": [["bran", "Back in the grass. Try to come home with the same number of limbs."]]},
 		"mission_won": {"once": false, "lines": [["bran", "That's the lot. Hollowmark's this way. Probably. Roads keep forgettin' themselves.", "smug"]]}
 	},
