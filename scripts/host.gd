@@ -22,7 +22,7 @@ signal phase_changed(phase: int)
 
 enum Act { DORMANT, WALK, BITE, SPEECH, INHALE, CALL, GULP_UP, GULP_DOWN, STUCK, TRANSITION }
 
-const MAX_HP := 900
+const MAX_HP := 1100  # issue #138: about 20% more swings than the Auditor at the party's Chapter 3 level and gear
 const PHASE2_AT := 0.5
 const WALK_SPEED := 24.0
 const BITE_RANGE := 58.0
@@ -50,10 +50,10 @@ const GOLD := Color("e0c070")
 const CREAM := Color("f3ead2")
 const WordScript := preload("res://scripts/host_word.gd")
 
-var damage := 15  # the bite
+var damage := 17  # the bite
 var word_damage := 6
-var gulp_damage := 12
-var land_damage := 18
+var gulp_damage := 14
+var land_damage := 21
 var act: int = Act.DORMANT
 var act_t := 0.0
 var act_total := 1.0

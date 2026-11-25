@@ -113,7 +113,12 @@ func test_beats_play_in_order() -> void:
 	_seen(["ch2_candleford_after"])
 	check_eq(Story.next_beat().get("talk", ""), "", "the invitation waits for a governor")
 	var hall := Missions.list_for_province("abbey").filter(func(m): return m["id"] == "ch2_hall")
+	Empire.res["renown"] = 25
 	if check(hall.size() == 1, "the Copying Hall is on the map"):
+		check(str(hall[0].get("blocker", "")).contains("26 Renown"), "locked until 26 Renown (issue #138: %s)" % hall[0].get("blocker", ""))
+	Empire.res["renown"] = 26
+	hall = Missions.list_for_province("abbey").filter(func(m): return m["id"] == "ch2_hall")
+	if check(hall.size() == 1, "the Copying Hall is still on the map"):
 		check(str(hall[0].get("blocker", "")).contains("governor"), "but locked until Candleford has a governor (%s)" % hall[0].get("blocker", ""))
 	Empire.assign("gristle", "governor", "candlemere")
 	check_eq(Empire.governor_of("candlemere"), "gristle", "Gristle governs Candleford")
@@ -128,11 +133,19 @@ func test_beats_play_in_order() -> void:
 	Empire.recruits["abeyance"] = {"role": "idle", "target": "", "injured": 0}
 	check_eq(Story.next_beat().get("talk", ""), "ch2_hild", "Hild remembers the Abbey")
 	_seen(["ch2_hild"])
+	var crypt := Missions.list_for_province("ossuary").filter(func(m): return m["id"] == "ch2_crypt")
+	if check(crypt.size() == 1, "the Crypts are on the map"):
+		check(str(crypt[0].get("blocker", "")).contains("31 Renown"), "locked until 31 Renown (%s)" % crypt[0].get("blocker", ""))
 	_clear(["ch2_crypt"])
 	check_eq(Story.next_beat().get("talk", ""), "ch2_verity_after", "after the crypts")
 	_seen(["ch2_verity_after"])
+	Empire.res["renown"] = 36
 	var abbot := Missions.list_for_province("abbey").filter(func(m): return m["id"] == "ch2_abbot")
 	if check(abbot.size() == 1, "the Abbot is on the map"):
+		check(str(abbot[0].get("blocker", "")).to_lower().contains("forge"), "locked until the Forge reaches level 2 (%s)" % abbot[0].get("blocker", ""))
+	Empire.buildings["forge"] = 2
+	abbot = Missions.list_for_province("abbey").filter(func(m): return m["id"] == "ch2_abbot")
+	if check(abbot.size() == 1, "the Abbot is still on the map"):
 		check(str(abbot[0].get("blocker", "")).contains("Neutral"), "locked until the Abbey is Neutral (%s)" % abbot[0].get("blocker", ""))
 	Empire.change_standing("abbey", 20, "test", true)
 	abbot = Missions.list_for_province("abbey").filter(func(m): return m["id"] == "ch2_abbot")

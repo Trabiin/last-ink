@@ -150,6 +150,42 @@
 		"anselme": [
 			{"text": "Anselme Brugière kept the old presses running on the Vauclair Terraces, and the year after the Blank was driven back the wine tasted of grapes again. He named the vintage after Hollowmark. It is terrible. He is very proud of it."}
 		],
+		"mildred": [
+			{"when": {"lost": true}, "text": "Sister Mildred never came back from the road. The Scriptorium kept her desk as she left it. Every so often a new snail turns up in the margin of a Hollowmark ledger, in armour, heading east."},
+			{"text": "Sister Mildred went back to Saint Ledger's when the Abbey reopened and painted the margins of the new books. In every one, somewhere near the bottom of a page, there is a small figure with no face, holding a door open."}
+		],
+		"joan": [
+			{"when": {"lost": true}, "text": "Joan Tull went out on a job and did not come back. The Candleford bargemen still leave a light burning on the lake for her, out past the last buoy, and nobody stops their barge near it."},
+			{"text": "Joan Tull went back to the Wax Barges and poled them for thirty more years without stopping once. She charged Hollowmark freight at cost, and fined anyone who blocked the channel."}
+		],
+		"rafe": [
+			{"when": {"lost": true}, "text": "Rafe Thwaite went out with a squad and never came home. Somewhere on the road there's a toll-house so white the Blank walked straight past it. Folk say he's still inside, scraping."},
+			{"text": "Rafe Thwaite spent the peace scraping the Erasers' lime off every wall in the north, at a fair day rate. He got all forty of his own walls back. He looked at every one this time."}
+		],
+		"sib": [
+			{"when": {"lost": true}, "text": "Sib Varley went out on the road and was not seen again. Within a month pilgrims at Scarth Pass were paying good money for Sib's teeth. By the end of the year there were sixty of them."},
+			{"text": "Sib Varley sold relics of the war with the Blank for years afterwards: a thread from Ash's coat, a splinter of the Command Table, a phial of Hollowmark mud. All of it was fake except the mud."}
+		],
+		"ida": [
+			{"when": {"lost": true}, "text": "Ida Lumley never came back from an expedition. Her pawnshop on Lantern Quay stayed shut. Nobody dared open it, because everybody knew she kept a list."},
+			{"text": "Ida Lumley reopened under the third bridge on Lantern Quay. The masquerade's jewels still pass through on a Monday. She kept one ticket back for herself, unredeemed: a name, pawned years ago, that its owner never came back for."}
+		],
+		"clement": [
+			{"when": {"lost": true}, "text": "Clément de Cressy did not come back from the road. The Causeway salons held a small, elegant supper in his memory, and the gentleman who won his title wore black to it."},
+			{"text": "Clément de Cressy won his title back at cards, from the same gentleman, with the same pair of queens. He had the hand framed and never played again. He still teaches dancing, mostly to Hollowmark people, mostly on tables."}
+		],
+		"josette": [
+			{"when": {"lost": true}, "text": "Josette Roux went out on a job and never came back. Months later the Proctor's school received a release order for every girl in it, signed in the Proctor's own hand. Nobody could prove he hadn't written it."},
+			{"text": "Josette Roux bought out every girl at the Proctor's school with deeds of release so good the Office of Corrections filed them without question. Then she opened a school of her own, for handwriting. Bérénice teaches the codes."}
+		],
+		"firmin": [
+			{"when": {"lost": true}, "text": "Firmin Gosse never came home from the road. The Hollowmark tavern still serves his nettle soup on the first of the month. Before anyone asks, it is nettles."},
+			{"text": "Firmin Gosse opened a cookshop on the Causeway in the room where the Host's kitchen used to be. He serves vegetables, bread and soup, and nothing else, ever. It is always full. Nobody asks what's in the stew."}
+		],
+		"remy": [
+			{"when": {"lost": true}, "text": "Rémy Morel went out with a squad and did not return. It was the fifth time Rémy had died, and the first under their own name. Three widows came to collect."},
+			{"text": "Rémy Morel went on fighting the Causeway's duels by proxy, at higher rates, with Hollowmark on the reference. On paper they died twice more. In person they retired to a house on the Terraces with a view of the bridges."}
+		],
 		"margot": [
 			{"text": "Margot Vasseur stopped making masks and started making faces: portraits of everyone who came home from the war with the Blank, so there would be a record nobody could strike out. She made one of Ash. It is the only picture of the person who does not exist."}
 		],

@@ -1,5 +1,5 @@
 {
-	"_comment": "The Inklands: regions, biomes and provinces (issue #53). Coordinates: pos and label are 0-1 on the world map (x east, y south); the Blank's wall runs down the east edge. regions: open (open at the start), chapter (the story chapter that opens it; locked regions show under fog with their hint), opens_when (optional Story conditions, see Story.meets; story beats can also open one with then: open_region:<id>), pressure (optional extra Fray a day on every open province in the region, listed in its panel), label (where the region name sits). biomes: maps = the mission map pool (maps/<id>.txt, three layouts per biome made by tools/make_biomes.py; each map lists its objective spots in @spot lines and MissionTypes.vary picks among them, issue #113); an empty pool falls back to frayed_meadow and each chapter adds its region's maps. provinces: region, biome, weight > 1 grows a province. owner: you, free, erased or a faction id from data/factions.json. Output is per day. favors: the stat a governor here needs (7+ = good fit, 3 or less = poor fit); favors_why says why. claim: cost to plant your flag on an unclaimed province next to your land (it needs a governor to go with it).",
+	"_comment": "The Inklands: regions, biomes and provinces (issue #53). Coordinates: pos and label are 0-1 on the world map (x east, y south); the Blank's wall runs down the east edge. regions: open (open at the start), chapter (the story chapter that opens it; locked regions show under fog with their hint), opens_when (optional Story conditions, see Story.meets; story beats can also open one with then: open_region:<id>), pressure (optional extra Fray a day on every open province in the region, listed in its panel), label (where the region name sits). biomes: maps = the mission map pool (maps/<id>.txt, three layouts per biome made by tools/make_biomes.py; each map lists its objective spots in @spot lines and MissionTypes.vary picks among them, issue #113); an empty pool falls back to frayed_meadow and each chapter adds its region's maps. provinces: region, biome, weight > 1 grows a province. owner: you, free, erased or a faction id from data/factions.json. Output is per day. favors: the stat a governor here needs (7+ = good fit, 3 or less = poor fit); favors_why says why. claim: cost to plant your flag on an unclaimed province next to your land (it needs a governor to go with it). landing: true lets you claim it without owning a neighbour, once its region is open: the way into a region whose borders are all faction land (the Vauclair Terraces, which the masquerade gate asks for, issue #138).",
 	"regions": [
 		{
 			"id": "marches", "name": "The Brack Marches", "chapter": 1, "open": true, "label": [0.56, 0.625],
@@ -9,7 +9,7 @@
 		{
 			"id": "abbey", "name": "Saint Ledger's Abbey", "chapter": 2, "label": [0.69, 0.235],
 			"mood": "Gothic, candlelit",
-			"hint": "Bells in the north. Monks copying the Ledger by hand, in blood, and running out of ink."
+			"hint": "Bells in the north. Monks copying the Ledger by hand, in ink mixed with their own blood, and running out of both."
 		},
 		{
 			"id": "causeway", "name": "The Velvet Causeway", "chapter": 3, "label": [0.27, 0.8],
@@ -109,7 +109,7 @@
 			"id": "abbey", "name": "Saint Ledger's Abbey", "region": "abbey", "biome": "abbey", "pos": [0.677, 0.127], "weight": 1.05,
 			"owner": "abbey", "fray": 18, "output": {"ink": 2, "gilt": 3}, "sites": ["Copying hall", "Bell tower"],
 			"favors": "lore", "favors_why": "The monks only answer someone who can quote the Ledger back at them.",
-			"blurb": "Monks copy the Ledger by hand, forever, in blood. Lately the pages come out blank."
+			"blurb": "Monks copy the Ledger by hand, forever, in ink mixed with their own blood. Lately the pages come out blank."
 		},
 		{
 			"id": "ossuary", "name": "Bonefield Cloister", "region": "abbey", "biome": "abbey", "pos": [0.765, 0.161], "weight": 1.05,
@@ -167,7 +167,7 @@
 		},
 		{
 			"id": "terraces", "name": "Vauclair Terraces", "region": "causeway", "biome": "farmland", "pos": [0.352, 0.84], "weight": 1.0,
-			"owner": "free", "fray": 12, "output": {"supplies": 5, "gilt": 4}, "sites": ["Wine presses"],
+			"landing": true, "owner": "free", "fray": 12, "output": {"supplies": 5, "gilt": 4}, "sites": ["Wine presses"],
 			"favors": "craft", "favors_why": "The presses are old and the vines are fussy. Someone has to mend both.", "claim": {"gilt": 95, "supplies": 18},
 			"blurb": "Terraced vineyards that supply the masquerades. The grapes have started to taste of paper."
 		},

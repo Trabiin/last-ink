@@ -1,5 +1,5 @@
 {
-	"_comment": "Tuning for the runtime mission types (scripts/mission_types.gd, issue #113). window: how Raid and Salvage chances come and go on the Command Table: every 'period' days a province offers one for 'open' days (each province on its own phase), then waits 'cooldown' days after you go, win or lose. threat_names: the briefing's word for threat 1-5. raid: grab caches from a faction's land before its garrison closes in. Offered on a faction-held province that borders your land, unless that faction is Friendly or better. factions.<id>: guards (spawn weights of data/enemies.json kinds standing watch over each cache and coming as reinforcements), per_cache (guards at each cache), cache (what one cache holds: [min, max]; resources or Forge materials from data/materials.json), quiet / loud (standing change when you get away unseen / once the alarm went up), rival (factions glad to see it: standing change on success). caches: how many sit on the map, need: how many you must carry out, seconds: time before the garrison arrives, alarm_cap: seconds left once the alarm is raised, open_time: seconds to pry one open. salvage: pull what the Blank has not finished eating out of its edge. Offered on your land or unclaimed land with Fray at or above min_fray, or next to erased land. pile: what one pile holds; near_bonus: up to this much more for a pile right at the white's edge; creep: px/s the white advances (plus creep_per_fray x Fray/10) once it starts; it holds still for as long as the walk to the nearest pile takes plus grace seconds; push: px a kill pushes it back. Rewards on top of what the caches hold are paid on success.",
+	"_comment": "Tuning for the runtime mission types (scripts/mission_types.gd, issue #113). window: how Raid and Salvage chances come and go on the Command Table: every 'period' days a province offers one for 'open' days (each province on its own phase), then waits 'cooldown' days after you go, win or lose. threat_names: the briefing's word for threat 1-5. raid: grab caches from a faction's land before its garrison closes in. Offered on a faction-held province that borders your land, unless that faction is Friendly or better. factions.<id>: guards (spawn weights of data/enemies.json kinds standing watch over each cache and coming as reinforcements), per_cache (guards at each cache), cache (what one cache holds: [min, max]; resources or Forge materials from data/materials.json), quiet / loud (standing change when you get away unseen / once the alarm went up), rival (factions glad to see it: standing change on success). caches: how many sit on the map, need: how many you must carry out, seconds: time before the garrison arrives, alarm_cap: seconds left once the alarm is raised, open_time: seconds to pry one open. salvage: pull what the Blank has not finished eating out of its edge. Offered on your land or unclaimed land with Fray at or above min_fray, or next to erased land. pile: what one pile holds; near_bonus: up to this much more for a pile right at the white's edge; creep: px/s the white advances (plus creep_per_fray x Fray/10) once it starts; it holds still for as long as the walk to the nearest pile takes plus grace seconds; push: px a kill pushes it back. Rewards on top of what the caches hold are paid on success. region_cache / region_pile (issue #138): extra contents per cache or pile in a province of that region (data/provinces.json), so raids and salvage in a chapter's region turn up its Forge materials; a raid only adds them when the faction's own cache holds none of that region's materials.",
 	"window": {"period": 5, "open": 3, "cooldown": 4},
 	"threat_names": ["", "Light", "Steady", "Stiff", "Grim", "Deadly"],
 	"raid": {
@@ -41,13 +41,33 @@
 				"cache": {"gilt": [8, 14], "insight": [2, 3], "ink": [0, 2], "relic_silver": [1, 2], "tithe_wax": [0, 1]},
 				"quiet": -3, "loud": -8, "rival": {"abbey": 3, "concord": 1},
 				"brief": "The Erasers stack what they have looted from the Abbey's outhouses on pyres, to burn at their next reading. Pull at least %d of the %s out before the Readers come back with their tapers.", "noun": "pile"
+			},
+			"velvet": {
+				"name": "Velvet wine cellars",
+				"guards": {"duellist": 2, "reveller": 2}, "per_cache": 2,
+				"cache": {"gilt": [12, 20], "supplies": [2, 4], "velvet_cord": [1, 2], "ink_pearl": [0, 1]},
+				"quiet": -4, "loud": -9, "rival": {"guild": 1},
+				"brief": "Under the Causeway the Nobility keep their cellars: wine for the masquerade, rope for the curtains, and pearls nobody admits to owning. Carry up at least %d of the %s before the duellists notice the music has changed key.",
+				"noun": "rack"
 			}
+		},
+		"region_cache": {
+			"abbey": {"relic_silver": [0, 1], "bell_bronze": [0, 1]},
+			"causeway": {"ink_pearl": [0, 1], "velvet_cord": [0, 1]},
+			"coast": {"saltglass": [0, 1], "wreck_oak": [0, 1]},
+			"spire": {"spire_leaf": [0, 1], "ledger_steel": [0, 1]}
 		}
 	},
 	"salvage": {
 		"caches": 5, "need": 3, "open_time": 2.0, "min_fray": 35,
 		"creep": 3.0, "creep_per_fray": 0.4, "push": 6.0, "grace": 6.0,
 		"pile": {"supplies": [3, 6], "ink": [0, 1], "insight": [0, 1], "gilt": [2, 6], "blank_pith": [1, 3], "scrap_iron": [0, 1]},
+		"region_pile": {
+			"abbey": {"relic_silver": [0, 2], "bell_bronze": [0, 1]},
+			"causeway": {"ink_pearl": [0, 1], "velvet_cord": [0, 2]},
+			"coast": {"saltglass": [0, 1], "wreck_oak": [0, 2]},
+			"spire": {"spire_leaf": [0, 1], "ledger_steel": [0, 1]}
+		},
 		"near_bonus": 1.0,
 		"rewards": {"supplies": 4},
 		"brief": "The white is eating %s from the east, and what it has not finished is still lying at its edge: carts, cellars, a chapel's plate. Pull at least %d of the %s out before it swallows them. The closer to the white, the better the pickings.", "noun": "pile"

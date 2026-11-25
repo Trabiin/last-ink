@@ -204,7 +204,7 @@
 				"aid": {"name": "Ring the bells for the line", "standing": -15,
 					"text": "The Abbey rings its great bells against the coming surge. The Blank hates the sound: it lands at half strength."},
 				"cede": {"name": "Ask for the Abbey grounds", "standing": -35,
-					"text": "The Prioress signs the Abbey's lands into your keeping, on the understanding that the brothers keep their cells, their bells and their thumb."}
+					"text": "The Prioress signs the Abbey's lands into your keeping, on the understanding that the brothers keep their cells, their bells and their beer."}
 			},
 			"asks": [
 				{"id": "abbey_candles", "name": "Keep the copying hall in candles", "tier": "hostile", "below": "friendly", "kind": "deliver",

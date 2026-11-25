@@ -52,6 +52,8 @@ func _run() -> void:
 	var table := ["| Policy | Seed | Day reached | Held (max) | Erased | Gilt end | Gilt peak | Supplies end | Ink end | Insight end | Hungry days | Party Lv | Buildings | Research | Missions | Act 1 boss day | Boss Lv |",
 		"|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|"]
 	var timelines := []
+	var chapters := ["| Policy | Seed | " + " | ".join(MILESTONES.map(func(x): return x[1])) + " |", "|---|---|" + "---|".repeat(MILESTONES.size())]
+	var loot := []
 	for pol in policies:
 		for s in seeds:
 			var bot = Bot.new(pol)
@@ -82,6 +84,12 @@ func _run() -> void:
 				last["gilt"], gilt_peak, last["supplies"], last["ink"], last["insight"], hungry, last["level"], last["buildings"], last["research"],
 				bot.missions_run, str(boss_day) if boss_day > 0 else "-", str(boss_lv) if boss_day > 0 else "-"])
 			flags.append_array(_flags(pol, s, bot, hungry, lost_day))
+			var cells := []
+			for ms in MILESTONES:
+				var sd: Array = bot.story_days.get(ms[0], [])
+				cells.append("d%d Lv%d" % [sd[0], sd[1]] if not sd.is_empty() else "-")
+			chapters.append("| %s | %d | %s |" % [pol, s, " | ".join(cells)])
+			loot.append_array(_loot_lines(pol, s, bot))
 			if s == 0:
 				timelines.append([pol, bot])
 	lines.append("## Flags")
@@ -94,6 +102,19 @@ func _run() -> void:
 	lines.append("## Runs")
 	lines.append("")
 	lines.append_array(table)
+	lines.append("")
+	lines.append("## Story: day cleared and party level")
+	lines.append("")
+	lines.append_array(chapters)
+	lines.append("")
+	lines.append("## Regional materials and Forge upgrades (issue #138)")
+	lines.append("")
+	lines.append("Per mission fought in the region: how many of its tier 4-6 materials came home. Upgrades: weapon")
+	lines.append("upgrades started at that tier, and the day of the first and last.")
+	lines.append("")
+	lines.append("| Policy | Seed | Region | Missions | Materials per mission | Upgrades (first, last day) |")
+	lines.append("|---|---|---|---|---|---|")
+	lines.append_array(loot)
 	for tl in timelines:
 		lines.append("")
 		lines.append("## %s (seed 0): every 5 days" % tl[0])
@@ -114,6 +135,30 @@ func _run() -> void:
 	f.store_string(text)
 	f.close()
 	print(text)
+
+
+const MILESTONES := [["auditor_duel", "Auditor"], ["ch2_candleford", "Wax Barges"], ["ch2_hall", "Copying Hall"],
+	["ch2_crypt", "Crypts"], ["ch2_abbot", "Abbot"], ["ch3_quay", "Quay"], ["ch3_masquerade", "Masquerade"],
+	["ch3_wharf", "Wharf"], ["ch3_host", "Host"]]
+const REGION_TIER := {"abbey": 4, "causeway": 5, "coast": 6, "spire": 6}
+
+
+static func _loot_lines(pol: String, s: int, bot) -> Array:
+	var out := []
+	var mats: Dictionary = Armory.mats_data().get("materials", {})
+	for region in REGION_TIER:
+		var n := int(bot.missions_by_region.get(region, 0))
+		if n == 0:
+			continue
+		var got: Dictionary = bot.mats_by_region.get(region, {})
+		var per := []
+		for k in got:
+			if str(mats.get(k, {}).get("region", "")) == region:
+				per.append("%s %.1f" % [mats[k].get("name", k), float(got[k]) / n])
+		var ups: Array = bot.upgrades.filter(func(u): return int(u[2]) == int(REGION_TIER[region]))
+		var when := "%d (d%d, d%d)" % [ups.size(), ups[0][0], ups[-1][0]] if not ups.is_empty() else "0"
+		out.append("| %s | %d | %s | %d | %s | %s |" % [pol, s, region, n, ", ".join(per), when])
+	return out
 
 
 ## The guard rails, in words a designer can act on. Shared with tests/test_balance.gd.

@@ -322,6 +322,21 @@ func post_of(id: String) -> String:
 	return Empire.recruit(id).get("post", "tavern")
 
 
+## How many people stand side by side at one post before the rest spill elsewhere.
+const POST_ROOM := 5
+## The posts anyone can stand at (not the Command Table, which is for staff on duty there).
+const OPEN_POSTS := ["hall", "tavern", "stores", "graveyard", "gate", "market", "well", "bench"]
+
+
+## The open-air post with the most room left ("" when every one is full).
+func _roomiest_post(used: Dictionary) -> String:
+	var best := ""
+	for p in OPEN_POSTS:
+		if area.markers.has(p) and int(used.get(p, 0)) < POST_ROOM and (best == "" or int(used.get(p, 0)) < int(used.get(best, 0))):
+			best = p
+	return best
+
+
 ## Puts every recruit at their post. Called on start and whenever the roster closes.
 func _place_people() -> void:
 	var used := {}
@@ -339,6 +354,13 @@ func _place_people() -> void:
 				npcs[id].queue_free()
 				npcs.erase(id)
 			continue
+		# Five stand side by side at a post; anyone past that goes to the emptiest open-air post instead
+		# of standing on someone's head (issue #27: the roster heads for about 50).
+		if not post.begins_with("bld:") and int(used.get(post, 0)) >= POST_ROOM:
+			var spill := _roomiest_post(used)
+			if spill != "":
+				post = spill
+				spots = area.markers[spill]
 		seen[id] = true
 		var n: int = used.get(post, 0)
 		used[post] = n + 1

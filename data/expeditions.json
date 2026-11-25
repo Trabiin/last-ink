@@ -1,5 +1,5 @@
 {
-	"_comment": "Expeditions: off-screen squad jobs sent from the Guildhall (key E). stats: the stats that count and how much (squad strength = sum of stat x weight over the squad). target: the strength that gives a 50% chance; every point above or below moves it by Empire.EXPEDITION_PER_POINT. danger 1-3 drives injuries (and, at 3, a rare loss). rations: Supplies per person sent. reward: [min, max] per resource, or a flat number; fray: change to the job's province on success; recruit: who joins on success (the job disappears once they have joined). needs: guildhall level, erased (the province must be erased) and tags used by traits (blank, concord). standing: faction standing change on success (standing_fail: on failure). text: {a} {b} = two squad members, {lead} = the first one picked, {squad} = everyone.",
+	"_comment": "Expeditions: off-screen squad jobs sent from the Guildhall (key E). stats: the stats that count and how much (squad strength = sum of stat x weight over the squad). target: the strength that gives a 50% chance; every point above or below moves it by Empire.EXPEDITION_PER_POINT. danger 1-3 drives injuries (and, at 3, a rare loss). rations: Supplies per person sent. reward: [min, max] per resource, or a flat number; fray: change to the job's province on success; recruit: who joins on success (the job disappears once they have joined). when: a story gate (scripts/story.gd conditions); the job is off the board until it holds (issue #27, chapter rescues). needs: guildhall level, erased (the province must be erased) and tags used by traits (blank, concord). standing: faction standing change on success (standing_fail: on failure). text: {a} {b} = two squad members, {lead} = the first one picked, {squad} = everyone.",
 	"jobs": [
 		{
 			"id": "forage_meadow", "name": "Forage the Frayed Meadow", "kind": "Supply run", "province": "meadow",
@@ -74,6 +74,30 @@
 			"text": {
 				"success": ["{a} waved forged papers at the toll post while {b} walked out the back with Corporal Daro, who complained about the paperwork the entire way home.", "{lead} found Daro in a ditch, sharpening a sword and insulting a crow. Daro says yes, mainly to annoy the Concord."],
 				"fail": ["The Concord asked {a} to fill in a form explaining the visit. Then another form explaining the first form. {b} gave up on day two.", "{lead} found the ditch, the sword and the crow. No Daro. The crow was very rude about it."]
+			}
+		},
+		{
+			"id": "rescue_joan", "name": "Rumour: a barge stuck in the wax", "kind": "Rescue", "province": "candlemere",
+			"when": {"cleared": ["ch2_candleford"]},
+			"blurb": "One of the Wax Barges never came in the night the Abbey rang every bell at once, and the Candleford lake set round it like a candle in a dish. There's still a light aboard. Somebody has to walk out over the wax and dig the pilot loose.",
+			"days": 2, "rations": 2, "stats": {"craft": 1.0, "grit": 1.0}, "target": 26, "danger": 2, "cooldown": 2,
+			"reward": {"supplies": [3, 5]}, "recruit": "joan",
+			"text": {
+				"success": ["{a} cut steps into the wax with a spade while {b} hauled the barge free on a rope. Joan Tull poled the rest of the way home herself and did not stop once.", "{lead} reached the barge on the third night and found Joan Tull on deck, eating a candle, in a very bad temper. She asked for the date and then for bread."],
+				"fail": ["{a} went through the crust up to the knees and set fast until morning. {b} had to chip them out. The light on the barge went on burning, out of reach.", "{lead} walked a full day over the wax and the barge never got any nearer. The bargemen say the lake does that when it is sulking."]
+			}
+		},
+		{
+			"id": "rescue_josette", "name": "Rumour: a copyist over the school wall", "kind": "Rescue", "province": "causeway",
+			"when": {"cleared": ["ch3_masquerade"]},
+			"blurb": "The Proctor's copyists' school on the Causeway still holds girls sold for their families' debts. One of them forges her own release papers every week. Get her over the wall before the Office of Corrections notices the papers are better than theirs.",
+			"days": 3, "rations": 2, "stats": {"charm": 1.0, "lore": 0.5, "craft": 0.5}, "target": 30, "danger": 2, "cooldown": 3,
+			"reward": {"insight": [2, 3]}, "recruit": "josette",
+			"standing": {"concord": -5},
+			"needs": {"concord": true},
+			"text": {
+				"success": ["{a} kept the porter talking about his knees while {b} held a ladder under the dormitory window. Josette Roux came down it with a satchel of pens and her release papers, signed.", "{lead} walked in through the front door with a letter from the Proctor ordering Josette Roux's transfer. Josette had written it the week before and posted it to herself."],
+				"fail": ["The porter set the dogs on {a}. {b} got a look at the dormitory window and a girl in it, waving a forged pass, before they had to run.", "{lead} presented papers at the gate. The Proctor read them, admired the hand, and tore them up. He said they were the best yet."]
 			}
 		},
 		{

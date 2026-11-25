@@ -416,7 +416,7 @@ examples written to this sheet.
 - **Speech:** Nan is Hollowmark-born (over the cobbler's) and puts on whatever accent the mark wants; at rest she
   has Bran's docks speech, softer: "'em", "ain't", "proper". Tally speaks correct, plain English with no accent at
   all, like a ledger reading itself.
-- **Owns:** Nan: "mark", "clause", "the trade", "terms". Tally: corrections of fact, "I do not have hands", "the
+- **Owns:** Nan: "mark", "clause", "the trade", "terms", "sunshine" (her patronising pet name; "love" is Saffron's). Tally: corrections of fact, "I do not have hands", "the
   collateral" (meaning itself).
 - **Never:** Nan admits a lie unless Tally makes her. Tally lies, jokes on purpose, or uses Bran's either/or verdict.
   Tally's line is one fact, not a judgement.
@@ -490,11 +490,15 @@ readers: educated, sincere, unhurried.
 | Brother Odo (`odo`) | The Abbey's walking messenger. Plain, patient, quietly funny about disaster ("sent me back with a receipt"). No Latin; he is a lay brother. |
 | Prioress Ebba (`ebba`) | Dry, exact, very tired. No contractions in authority, short orders, then one plain human line. Calls Ash "keeper" or "passer-by". |
 | Abbot Wulfstan (`wulfstan`) | Liturgical and certain. "Fidelity", "the Rule", "the Office". Royal "we" when he copies himself. Never raises his voice until the Second Copy. |
-| First Reader Askew (`askew`) | Warm, unhurried, sincere. Reads a name before every fire and means it. Calls people "sweet". Never sneers. |
+| First Reader Askew (`askew`) | Warm, unhurried, sincere. Reads a name before every fire and means it. Polite to a fault ("How kind"). Never sneers, and never "sweet" (Hortense's). |
 | Sister Osyth (`osyth`) | Crypt-keeper. Counts out loud ("Eleven thousand four hundred and five"). Blunt, contracted, no Latin. Cares about the count more than about you, and says so. |
 | Nell Tapper (`nell`) | Candleford chandler. Brisk town speech, short sentences, money and draughts. Lists her jobs and the wages she isn't paid. |
 | Brother Cuthbert (`cuthbert`) | Deaf bell-ringer: capitals when he mishears ("WHAT? Oh. A job."). Big, gentle, literal. |
 | Brother Alcuin (`alcuin`) | Returned Eraser novice. Earnest, guilty, bookish; quotes the drafts and then argues with them. |
+| Sister Mildred (`mildred`) | Illuminator. Brisk, dry, practical; talks about her margin animals like unruly livestock that need dealing with. A little church Latin only when it's in a manuscript ("Deus"). |
+| Joan Tull (`joan`) | Candleford barge pilot. Flat, short statements; measures everything in poles and hands. Thanks you once, briefly, and moves on. |
+| Rafe Thwaite (`rafe`) | Whitewasher. Slow Midlands working speech ("'em", "she'd a look on her"); prices every job in walls and shillings. Sorry for the forty walls, never says so: he scrapes them. |
+| Sib Varley (`sib`, they/them) | Relic-seller. A pedlar's patter, smooth and cheerful, a price in every other line. Owns "friend". Never admits a relic is fake. |
 
 ### Chapter 3 people (the Velvet Causeway)
 Causeway nobles share Hortense's court English (4.2); quay people share Saffron's. The Host has no dialect.
@@ -508,6 +512,11 @@ Causeway nobles share Hortense's court English (4.2); quay people share Saffron'
 | Proctor Dufresne (`proctor`) | Head of the copyists' school. Precise, cold, a bursar's English; talks about pupils as fees. |
 | Annie Pickering, "Mam" (`mam`) | Saffron's mother. North-of-the-quay plain speech, short and dry, waiting eleven years for a last verse. Brings up Saffron's father in every scene. |
 | Old Pratt (`pratt`) | Moneylender. Soft-spoken, exact about percentages, calls Nan "my dear". Contracts read like prayers. |
+| Ida Lumley (`ida`) | Lantern Quay pawnbroker. Quay plain speech ("thirty year", "folk"), dry, discreet; knows everyone's secrets by what they pawn and tells none of them. No "love" (Saffron's). |
+| Clément de Cressy (`clement`) | Ruined viscount, dancing master. Court English without contractions, vain and cheerfully cowardly; makes his losses into anecdotes. No "sweet" (Hortense's). |
+| Josette Roux (`josette`) | Runaway copyist. Quick, flat, unimpressed, like Bérénice; short sentences about hands, signatures and forms. |
+| Firmin Gosse (`firmin`) | The Host's under-cook. Gruff kitchen talk; won't discuss the main course, will discuss sauces at length. Every joke about food has a floor under it. |
+| Rémy Morel (`remy`, they/them) | Duel second. Light, flirty, businesslike; quotes rates for first blood and for the death. Talks about their four paper deaths like bad jobs. |
 
 ### Not built yet
 Seeds for chapters #28 to #32; flesh these out into full sheets when the character is written.

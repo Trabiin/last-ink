@@ -123,6 +123,55 @@ Still open: the idle policy loses Hollowmark on day 19 or 20, one day under its 
 Chapters 3 to 5 have no story yet, so level 5 and the chapter research can only be reached by opening their
 regions (tests do); their numbers are first drafts for those chapters to tune.
 
+### Chapters 2 and 3, 2026-11-25 (issue #138)
+
+Until now the bot never got past Act 1: Chapter 2 waits for six provinces and the bot stopped claiming at
+five. It now reads what the story is waiting for (`_wants()` in `tools/balance_bot.gd`: the gates of story
+missions on the map and the conditions of the next story beats), claims the land and sends the envoys
+those ask for, takes someone off a building to govern new land, won't raid a faction the story needs on
+side, puts a surge that is still days away behind the story, and prefers the newest region's patrols once
+past Act 1. The report has two new tables: the day and party level each story mission was cleared, and the
+regional materials per mission with the Forge upgrades they paid for.
+
+What playing through both chapters turned up, and what changed:
+
+| Found | Fixed |
+|---|---|
+| The Blank erased faction seats and story provinces (the Abbey, Lantern Quay, the Causeway). A story mission on erased land vanishes from the map, so the story stalled for good | A province whose story mission is waiting holds at 99 Fray and says so in its panel (`Empire.story_holds`). Faction seats now tend their own land, -2 Fray a day, like yours (`FRAY_FACTION_KEPT`) |
+| The Masquerade needs the Vauclair Terraces, but nothing next to them could ever be yours (Lantern Quay is Guild land the Guild never cedes; the rest is Nobility, the Shallows or the closed Coast) | The Terraces are the Causeway's landing (`"landing": true` in `data/provinces.json`): claimable once the region is open, no neighbour needed |
+| Chapter 2 took a steady player 5 to 7 days: four story missions back to back | Act 1-style gates (shown on the map, in the story cards and as goals): the Copying Hall 26 Renown, the Crypts 31, the Abbot 36 and a level 2 Forge (the one that works tier 4 and 5), the Masquerade 48, the Night Wharf 54, the Host 60 |
+| Hortense, Saffron and Nan joined at level 1 with a tier 1 weapon, against a level 12-14 party | A field hero who joins late arrives one level under the average of the best three field heroes, and from Chapter 2 on with the weapon one tier under what the open map's Forge works (tier 3 in Chapter 2, tier 4 in Chapter 3), so one Forge upgrade brings them level (`Progress.seasoned_join`). Act 1 joiners close to the party are untouched |
+| The Causeway had no patrols, so its materials only came from four story missions | Patrols on Lantern Quay, Pendower Shallows, the Terraces and (after the Masquerade) the Causeway |
+| Raids and salvage only ever paid Marches materials; the Nobility could not be raided | A Velvet wine-cellar raid; `region_pile` / `region_cache` in `data/mission_types.json` add the region's materials to salvage piles, and to raid caches that hold none of them (a Guild barge on Lantern Quay) |
+| Bell Bronze came in at about half the rate of Reliquary Silver | Penitents drop bronze too |
+| Ch2 and Ch3 enemies were softer than Act 1's against the party they meet: about 1.2-1.3 hits to kill and 21-22 hits to down a hero, against 1.5 and 14 in Act 1 (party at mid-chapter level and gear, averaged over each region's rosters) | `region_scale` in `data/enemies.json`: Abbey x1.25 HP and x1.3 damage, Causeway x1.45 and x1.4, for every enemy spawned there, Act 1 kinds included. Hits to kill now about 1.6 and 1.7, hits to down about 17 and 15; the kinds' own tricks (grabs, rallies, fire rings) add the rest. Coast and Spire have first drafts (x1.65/x1.5, x1.85/x1.6) for their chapters to tune |
+| The Abbot (820 HP) and the Host (900) took fewer swings than the Auditor at the level the party meets them | Abbot 960 HP, crozier 15, illumination 18; Host 1,100 HP, bite 17, gulp 14, landing 21 |
+
+Sim after the change (`-- 120 steady,casual,idle,rush 3`), day each boss falls and party level then:
+
+| Policy | Auditor | Abbot | Host | Chapter 2 | Chapter 3 |
+|---|---|---|---|---|---|
+| steady | d12-13, Lv8-9 | d32-35, Lv12-13 | d43-47, Lv14 | 19-23 days | 11-12 days |
+| casual | d20-30, Lv8-9 | d50-52, Lv11 | d72-84, Lv13 (one seed still on the Quay at day 120: it holds 7 of the 8 provinces Chapter 3 asks for) | 22-30 days | 20-32 days |
+| rush | d13-15, Lv8-9 | d32-34, Lv12-13 | d45-48, Lv14 | 17-21 days | 13-16 days |
+
+Forge materials: about 2.5 Reliquary Silver and 2.5 Bell Bronze per Abbey mission, about 3 Ink Pearls and 3
+Velvet Cord per Causeway mission. A tier 4 weapon costs 4 silver, 3 bronze, 3 pith and 140 Gilt, tier 5 4
+pearls, 3 cord, 4 pith and 220 Gilt, so the 10 to 15 regional missions a chapter holds pay for the party's
+three weapons and a piece of armour or a trinket each: the issue's target of about one upgrade per hero
+per region. Gilt, not materials, sets the pace, as in Act 1: the steady bot forges its first tier 4
+weapon around the Abbot and the third about two weeks later. The Market's `open_tier`
+(`Armory.TIER_REGIONS`: 4 Abbey, 5 Causeway, 6 Coast and Spire) matches the order the chapters open.
+
+`tests/test_chapter_balance.gd` keeps all of this: the story hold, faction seats, the Terraces, Causeway
+patrols, seasoned joiners, region scale, regional loot, and a steady run that must take 10 to 24 days over
+Chapter 2 and 8 to 24 over Chapter 3, meeting the Abbot at level 11-14 and the Host at 13-16. `tests/test_balance.gd` now reads Act 1's Supplies growth on the day the Auditor falls (a steady player is
+claiming Chapter 2's six provinces by day 20, at about +17 Supplies a day, which feasts and the Market absorb) and
+expects six building levels by day 25 instead of 20, since those claims take Gilt first.
+
+Not changed: the idle policy still loses Hollowmark on day 19 or 20, as before. The bot only forges weapons for
+the party, so the sim says nothing yet about armour and trinket demand.
+
 ## Performance probe
 
 ```sh

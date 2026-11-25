@@ -51,6 +51,7 @@ var charm_mult := 1.0
 var weak_until := 0
 var weak_mult := 1.0
 var slow_by := 1.0
+var region_mult := 1.0  # the region's damage scale (EnemyKinds.region_scale, issue #138)
 
 ## Art pass sprite set (scripts/sprite_set.gd) by id; subclasses with their own drawing set "" before super._ready().
 var art_id := "nibbler"
@@ -219,7 +220,7 @@ func rally(t: float) -> void:
 
 ## What its hits deal on top of their base damage (a Reader's rally, Nan's Small Print).
 func hit_mult() -> float:
-	return (RALLY_MULT if rallied() else 1.0) * (weak_mult if weakened() else 1.0)
+	return (RALLY_MULT if rallied() else 1.0) * (weak_mult if weakened() else 1.0) * region_mult
 
 
 ## Beguiled for t seconds by a hero (Hortense): it stops fighting, and by's hits on it land mult times as hard.

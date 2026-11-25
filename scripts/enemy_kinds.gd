@@ -100,8 +100,10 @@ static func spawn(parent: Node, pos: Vector2, mission: Dictionary, id := "", bla
 			e.set_meta("art", info["sprite"])
 		e.position = pos + (Vector2.RIGHT.rotated(TAU * i / n) * 10.0 if n > 1 else Vector2.ZERO)
 		parent.add_child(e)  # _ready runs here; the data overrides the script's defaults after it
-		e.max_hp = int(info.get("hp", e.max_hp))
+		var sc := region_scale(mission)
+		e.max_hp = maxi(1, int(round(int(info.get("hp", e.max_hp)) * float(sc.get("hp", 1.0)))))
 		e.hp = e.max_hp
+		e.region_mult = float(sc.get("damage", 1.0))
 		e.move_speed = float(info.get("speed", e.move_speed))
 		e.xp = int(info.get("xp", e.xp))
 		if e.get("damage") != null:
@@ -109,6 +111,17 @@ static func spawn(parent: Node, pos: Vector2, mission: Dictionary, id := "", bla
 		e.set_meta("kind", id)
 		out.append(e)
 	return out
+
+
+## How much tougher everything is in the mission's region (data/enemies.json "region_scale", issue #138):
+## {"hp": mult, "damage": mult}, or {} in the Marches. It keeps each chapter's fights as long and as
+## dangerous, against a party that is higher level and better armed, as the Act 1 fights were.
+static func region_scale(mission: Dictionary) -> Dictionary:
+	var pid := str(mission.get("province", ""))
+	if pid == "":
+		return {}
+	var region := str(Empire.territory().find(pid).get("region", ""))
+	return data().get("region_scale", {}).get(region, {})
 
 
 ## The first time a kind notices the party, the HUD says how to deal with it.

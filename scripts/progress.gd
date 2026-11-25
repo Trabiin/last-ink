@@ -134,6 +134,46 @@ static func max_level() -> int:
 	return int(data().get("levels", {}).get("max", 20))
 
 
+## A field hero who joins late arrives seasoned (issue #138): at one level under the average of the
+## three best field heroes already on the roster, and, once Chapter 2 has opened the Abbey, with the
+## weapon one tier under what the open map's Forge works (tier 3 in Chapter 2, tier 4 in Chapter 3),
+## so a single Forge upgrade brings them level with everyone else. Never lowers anything. Returns a
+## line for the notice, or "" when nothing changed (Act 1 joiners close to the party, light recruits).
+static func seasoned_join(id: String) -> String:
+	if Empire.recruit(id).get("tier", "") != "field" or id == "ash":
+		return ""
+	var lv := []
+	for rid in Empire.recruits:
+		if rid != id and Empire.recruit(rid).get("tier", "") == "field":
+			lv.append(level(rid))
+	lv.sort()
+	lv.reverse()
+	var top := lv.slice(0, 3)
+	var h := hero(id)
+	var said := []
+	if not top.is_empty():
+		var sum := 0
+		for v in top:
+			sum += int(v)
+		var want := mini(max_level(), int(floor(float(sum) / top.size())) - 1)
+		if want > int(h["level"]):
+			h["level"] = want
+			h["xp"] = 0
+			said.append(Loc.t("level %d") % want)
+	var open := Armory.open_tier()
+	if open >= 4:
+		var line := Armory.weapon_line(id)
+		var now := str(h["gear"].get("weapon", ""))
+		var now_tier := int(item(now).get("tier", 1)) if now != "" else 0
+		for w in line:
+			if int(item(w).get("tier", 1)) == open - 1 and open - 1 > now_tier:
+				h["gear"]["weapon"] = w
+				said.append(item(w).get("name", w))
+	if said.is_empty():
+		return ""
+	return Loc.t("%s has kept up on the road: %s.") % [Empire.short_name(id), Loc.list(said)]
+
+
 static func level(id: String) -> int:
 	return int(hero(id)["level"])
 
