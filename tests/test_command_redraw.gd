@@ -21,7 +21,7 @@ func before_each() -> void:
 
 func after_each() -> void:
 	tree.paused = false
-	Empire.set_speed(1)
+	Empire.set_speed(Empire.SPEED_1X)
 
 
 func _watch(layers: Dictionary) -> void:
@@ -86,7 +86,7 @@ func test_idle_table_does_not_redraw() -> void:
 	await frames(30)
 	_zero()
 	Empire.day_t = 0.9999
-	Empire.set_speed(3)
+	Empire.set_speed(Empire.SPEEDS.size() - 1)
 	await frames(3)
 	Empire.set_speed(0)
 	await frames(2)

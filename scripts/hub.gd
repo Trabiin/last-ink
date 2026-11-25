@@ -85,6 +85,7 @@ var leaving := false
 
 func _ready() -> void:
 	get_tree().paused = false
+	Empire.fit_speed()  # the Assists may have changed since the clock was last set
 	entities = Node2D.new()
 	entities.y_sort_enabled = true
 	area = Area.new()
@@ -833,7 +834,12 @@ func _on_slot(id: String) -> void:
 func _process(delta: float) -> void:
 	# The clock only runs once Ash runs the town (end of Chapter 1), and stops for story scenes.
 	if Story.command_on() and not dialogue_box.visible and not chapter_card.visible:
+		# A screen open in town (roster, buildings...) holds the clock at 1x, as on the Command Table.
+		Empire.hold_1x = roster_view.visible or buildings_view.visible or expedition_view.visible or research_view.visible \
+				or diplomacy_view.visible or bonds_view.visible or scene_view.visible or newcomers_view.visible \
+				or gear_view.visible or journal_view.visible or armory_view.visible
 		Empire.tick_frame(delta)
+		Empire.hold_1x = false
 	Empire.playtime += minf(delta, Empire.MAX_TICK)  # not the hours a suspended Deck slept (issue #149)
 	autosave_t -= delta
 	if autosave_t <= 0.0:
@@ -900,13 +906,13 @@ func _process(delta: float) -> void:
 	if Input.is_action_just_pressed("journal"):
 		journal_view.open()
 		return
-	for i in Empire.SPEEDS.size():
+	for i in Empire.SPEED_KEYS.size():
 		if Input.is_action_just_pressed("clock_speed_%d" % i):
-			Empire.set_speed(i)
+			Empire.pick_speed(Empire.SPEED_KEYS[i])
 	if Input.is_action_just_pressed("clock_slower"):
-		Empire.set_speed(Empire.speed - 1)
+		Empire.step_speed(-1)
 	elif Input.is_action_just_pressed("clock_faster"):
-		Empire.set_speed(Empire.speed + 1)
+		Empire.step_speed(1)
 	if Input.is_action_just_pressed("attack") or Input.is_action_just_pressed("ui_accept"):
 		_use(target)
 	hud.sign_text = ""

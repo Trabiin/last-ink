@@ -1,0 +1,200 @@
+{
+	"_comment": "Results screen lines (scripts/payoff.gd): when a mission writes no line of its own in result['changed'], someone who went says one of these about what changed. Keys per hero: people (folk walked into town), person (someone joined), place (a province inked back in), lost (retreat or driven out), plain (a job with no big change). A line may be {who, text} when someone else answers for them (Tally). Ash is silent and has none. Voices: docs/VOICES.md.",
+	"heroes": {
+		"bran": {
+			"people": [
+				"Count 'em in, smudge. Nine, ten... nobody's payin' for this lot. Goin' on the bill anyway.",
+				"Look at 'em. Walkin' in like they owe us. They don't. Yet."
+			],
+			"place": [
+				"White's backed off. Don't mean it's sorry. Means it's 'ungry somewhere else."
+			],
+			"person": [
+				"Another mouth, another bunk. Goin' on the bill, smudge."
+			],
+			"lost": [
+				"Clause two: we walk away breathin'. Says nothin' about walkin' away proud."
+			],
+			"plain": [
+				"Job done. Hazard pay's on the bill. You can read it if you like. I can't."
+			]
+		},
+		"gristle": {
+			"people": [
+				"Thin, they are. Feed them first, dearie, then I'll see to the coughs. The coughs pay better."
+			],
+			"place": [
+				"Colour's coming back to it, look. Like a cheek after a slap. Lovely, that is."
+			],
+			"person": [
+				"New face, is it. I'll open an account. First visit's free. The second one isn't."
+			],
+			"lost": [
+				"We'll not talk about it now. Sit down. The bruises go on your account, no interest. Once."
+			],
+			"plain": [
+				"Nobody dead and only a little bleeding. I'll call that a good day, I will."
+			]
+		},
+		"ninefingers": {
+			"people": [
+				"Counted them through. All present. First list I ever carried that came back longer."
+			],
+			"place": [
+				"Line held. Mark it on the map before some sir in a hat takes the credit."
+			],
+			"person": [
+				"New recruit. Kit's thin, boots are worse. They'll do."
+			],
+			"lost": [
+				"Fell back. Orderly. Not on record as a rout. Not on any record, if anyone asks."
+			],
+			"plain": [
+				"Objective taken. Nobody saluted. Good."
+			]
+		},
+		"jessamy": {
+			"people": [
+				"Look at 'em, trailin' into town after you like ducks. Somebody'll want a speech, cully. Not from you, obviously."
+			],
+			"place": [
+				"It's got its colour back. Prettier than before, if the sun's not foolin' me again."
+			],
+			"person": [
+				"Another face for Hollowmark. I'll show 'em the good roof for sittin' on. Not my roof."
+			],
+			"lost": [
+				"We'll go back after dark. Everythin' goes better after dark."
+			],
+			"plain": [
+				"Clean job. Nobody peached, nobody bled much. I'm nearly bored."
+			]
+		},
+		"odile": {
+			"people": [
+				"I have entered them by name. Every one. The Concord never bothered with the names."
+			],
+			"place": [
+				"The province returns to the ledger. In black ink, I should think. For once."
+			],
+			"person": [
+				"A new account opened. I shall need their particulars, and they will need a coat."
+			],
+			"lost": [
+				"Enter it as a loss. In red. One does not tidy the record because it is unpleasant."
+			],
+			"plain": [
+				"The sums balance. I shall pretend that does not please me."
+			]
+		},
+		"ottoline": {
+			"people": [
+				"Counted 'em out of there. Counted 'em in here. Same number. That's the job."
+			],
+			"place": [
+				"Aye. Looks like a place again. Give it a week, it'll look like somewhere."
+			],
+			"person": [
+				"New one. Name's on the list. Not the short list."
+			],
+			"lost": [
+				"Door's shut on that one today. We go back when it opens."
+			],
+			"plain": [
+				"Job done. Nowt broken. Us included."
+			]
+		},
+		"velvette": {
+			"people": [
+				"Look at them, chérie. An audience, walking home. Nobody walks home from my shows."
+			],
+			"place": [
+				"Voilà. The colour comes back like a blush. The Blank, it hates an encore."
+			],
+			"person": [
+				"A new face for the company. I shall teach them where to stand. And where not to."
+			],
+			"lost": [
+				"Enfin. Sometimes the curtain comes down early, darling. We bow anyway."
+			],
+			"plain": [
+				"A clean performance. No blood on the costume. Almost a disappointment."
+			]
+		},
+		"hortense": {
+			"people": [
+				"Shall I send them invitations, sweet? No. They have walked far enough. Bread will do."
+			],
+			"place": [
+				"There. The colour is back where it belongs. One could almost give a party in it."
+			],
+			"person": [
+				"Someone new. I shall know everything about them by Thursday. Politely."
+			],
+			"lost": [
+				"We stepped out for air. It happens in the best families."
+			],
+			"plain": [
+				"Done, and nobody wore the wrong thing. A rare afternoon."
+			]
+		},
+		"saffron": {
+			"people": [
+				"That's a verse, love. Folk walkin' home with somewhere to walk to. I'll find the tune later."
+			],
+			"place": [
+				"Colour's back. Sounds different an' all. Higher, like."
+			],
+			"person": [
+				"Somebody new. Another song with no last verse yet."
+			],
+			"lost": [
+				"Tomorrow, love. We'll start this one again from the top."
+			],
+			"plain": [
+				"Done an' dusted. Gin's on me. Well. Gin's on you."
+			]
+		},
+		"nan": {
+			"people": [
+				"Saved the lot of 'em, sunshine. Single-'anded. Tell 'em it was me.",
+				{
+					"who": "tally",
+					"text": "She stood at the back. The people walked in by themselves."
+				}
+			],
+			"place": [
+				"Look at that, colour's back. I'll tell the Guild it cost twice as much."
+			],
+			"person": [
+				"New mark. Recruit, I mean. I said recruit."
+			],
+			"lost": [
+				{
+					"who": "tally",
+					"text": "We ran. She will tell you we regrouped."
+				}
+			],
+			"plain": [
+				"Easy as a church collection, that."
+			]
+		},
+		"ilse": {
+			"people": [
+				"They walk in the right way round. Ilse counted. Nobody came back reversed."
+			],
+			"place": [
+				"The colour is back on the right side. Ilse approves."
+			],
+			"person": [
+				"Someone new. Ilse will learn their face. She is good at faces."
+			],
+			"lost": [
+				"Ilse has checked the mirror. Her face is fine. The day was not."
+			],
+			"plain": [
+				"Done, and neatly. Nearly as neatly as she would have done it."
+			]
+		}
+	}
+}

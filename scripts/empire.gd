@@ -60,12 +60,22 @@ const HOLD_FREE := 9
 const HOLD_UPKEEP := {"gilt": 1, "supplies": 1}
 
 const DAY_SECONDS := 240.0  # real seconds per in-game day at 1x
-const SPEEDS := [0, 1, 2, 4]  # index 0 = paused
+## The clock's speeds (issue: no pause on the Command Table). The player picks from 1x, 2x and 4x; the
+## Assists add 0.5x ("Slower clock") and the stop ("Allow pausing the clock"). Tests and tools may still
+## set any index directly with set_speed(); the player's keys and buttons go through pick_speed / step_speed.
+const SPEEDS := [0.0, 0.5, 1.0, 2.0, 4.0]
+const SPEED_STOP := 0
+const SPEED_HALF := 1
+const SPEED_1X := 2
+const LEGACY_SPEEDS := [0.0, 1.0, 2.0, 4.0]  # saves from before 2026-11-25 kept an index into this
 const MAP_CELLS := Vector2i(450, 300)  # resolution the territory is rasterised at (the whole Inklands, issue #53)
 
 var day := 1
 var day_t := 0.0  # 0..1 through the current day
-var speed := 1  # index into SPEEDS
+var speed := SPEED_1X  # index into SPEEDS
+## Set every frame by the scene: true while a Command Table screen (roster, briefing, buildings...) is open,
+## so reading a panel at 4x does not cost four times the day. The clock runs at most 1x then.
+var hold_1x := false
 var playtime := 0.0  # real seconds played, across Command and missions
 var res := START.duplicate()
 var hungry := false  # supplies ran out at the last dawn
@@ -165,7 +175,8 @@ func reset() -> void:
 	ai_techs = {}
 	day = 1
 	day_t = 0.3  # start mid-morning
-	speed = 1
+	speed = SPEED_1X
+	hold_1x = false
 	playtime = 0.0
 	res = START.duplicate()
 	hungry = false
@@ -243,9 +254,10 @@ func tick_frame(delta: float) -> void:
 func tick(delta: float) -> void:
 	_check_leads()
 	FactionAsks.check()
-	if SPEEDS[speed] == 0:
+	var x := speed_x()
+	if x <= 0.0:
 		return
-	var days: float = delta * SPEEDS[speed] / DAY_SECONDS
+	var days: float = delta * x / DAY_SECONDS
 	day_t += days
 	_advance_research(days)
 	while day_t >= 1.0:
@@ -2331,6 +2343,64 @@ func set_speed(i: int) -> void:
 		speed_changed.emit(speed)
 
 
+## How fast the day runs right now: the chosen speed, held to 1x while a screen is open.
+func speed_x() -> float:
+	var x: float = SPEEDS[speed]
+	return minf(x, 1.0) if hold_1x else x
+
+
+## Can the player pick this speed? 1x, 2x and 4x always; 0.5x and the stop only with their assists.
+func speed_allowed(i: int) -> bool:
+	if i == SPEED_STOP:
+		return Assists.pause_allowed()
+	if i == SPEED_HALF:
+		return Assists.half_clock_on()
+	return i > 0 and i < SPEEDS.size()
+
+
+## The speeds the player can pick, slowest first (the clock's buttons).
+func speed_choices() -> Array:
+	var out := []
+	for i in SPEEDS.size():
+		if speed_allowed(i):
+			out.append(i)
+	return out
+
+
+## The player's key or button: picks a speed if it is allowed.
+func pick_speed(i: int) -> void:
+	if speed_allowed(i):
+		set_speed(i)
+
+
+## The slower / faster keys: the next allowed speed that way (stays put at either end).
+func step_speed(dir: int) -> void:
+	var i := speed + dir
+	while i >= 0 and i < SPEEDS.size():
+		if speed_allowed(i):
+			set_speed(i)
+			return
+		i += dir
+
+
+## "0.5x", "1x", "4x": a speed's label ("" for the stop, which the clock draws as II).
+func speed_label(i: int) -> String:
+	var x: float = SPEEDS[i]
+	if x <= 0.0:
+		return ""
+	return ("%dx" % int(x)) if x >= 1.0 else ("%sx" % str(x))  # no-tr: speed numbers
+
+
+## After loading or changing the Assists: a speed the player can no longer pick drops to 1x.
+func fit_speed() -> void:
+	if not speed_allowed(speed):
+		set_speed(SPEED_1X)
+
+
+## The clock key actions in order (Controls): clock_speed_0..3 pick these speed indices.
+const SPEED_KEYS := [SPEED_1X, 3, 4, SPEED_STOP]
+
+
 ## "07:40"-style time of day.
 func clock_text() -> String:
 	var mins := int(day_t * 24.0 * 60.0)
@@ -2341,7 +2411,7 @@ func to_dict() -> Dictionary:
 	var ps := []
 	for p in territory().provinces:
 		ps.append({"id": p["id"], "owner": p["owner"], "fray": p["fray"], "scar": p.get("scar", 0)})
-	return {"day": day, "day_t": day_t, "speed": speed, "playtime": playtime, "provinces": ps, "regions": regions_open,
+	return {"day": day, "day_t": day_t, "clock_x": SPEEDS[speed], "playtime": playtime, "provinces": ps, "regions": regions_open,
 		"res": res, "hungry": hungry, "recruits": recruits, "surge": surge, "next_surge_day": next_surge_day,
 		"blank_plans": blank_plans,
 		"buildings": buildings, "construction": construction, "lamps": lamps, "lamp_jobs": lamp_jobs,
@@ -2372,7 +2442,10 @@ func from_dict(d: Dictionary) -> void:
 		return
 	day = int(d.get("day", 1))
 	day_t = float(d.get("day_t", 0.3))
-	speed = clampi(int(d.get("speed", 1)), 0, SPEEDS.size() - 1)
+	var cx := float(d["clock_x"]) if d.has("clock_x") else float(LEGACY_SPEEDS[clampi(int(d.get("speed", 1)), 0, LEGACY_SPEEDS.size() - 1)])
+	speed = maxi(SPEEDS.find(cx), 0)
+	hold_1x = false
+	fit_speed()  # a save paused before the clock lost its pause, or made with an assist since switched off
 	playtime = float(d.get("playtime", 0.0))
 	var saved_res: Dictionary = d.get("res", {})
 	for k in START:

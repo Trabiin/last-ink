@@ -78,6 +78,9 @@ var _music: Array[AudioStreamPlayer] = []
 var _front := 0  # index into _music of the player fading in / playing
 var _fade_t := 1.0
 var _voices: Array[AudioStreamPlayer] = []
+## Its own dice for pitch spread. Using the global randf() here let a sound (which plays or not depending on the
+## wall clock, see the "gap") shift every later global roll: loot, enemy picks, so the balance bot drifted run to run.
+var _pitch_rng := RandomNumberGenerator.new()
 var _next_voice := 0
 var _streams := {}
 var _last_play := {}
@@ -280,7 +283,7 @@ func sfx(id: String, pitch := 1.0, db := 0.0, cap := "") -> void:
 	var spread := float(cfg.get("spread", 0.0))
 	v.stream = stream
 	v.bus = BUS_OF.get(id, "SFX")  # no-tr: audio bus
-	v.pitch_scale = maxf(0.1, pitch * (1.0 + randf_range(-spread, spread)))
+	v.pitch_scale = maxf(0.1, pitch * (1.0 + _pitch_rng.randf_range(-spread, spread)))
 	v.volume_db = SFX_DB + float(cfg.get("db", 0.0)) + db
 	v.play()
 

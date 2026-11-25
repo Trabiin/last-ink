@@ -128,8 +128,8 @@ func _draw() -> void:
 	# Top-left: where, when, how fast.
 	UiSkin.panel(self, Rect2(6, 6, 226, 38), "ledger")
 	_text(Vector2(13, 21), tr("Hollowmark"), 10, Color("f3efe4"), false)
-	var spd: int = Empire.SPEEDS[Empire.speed]
-	var clock := tr("Day %d   %s   %s") % [Empire.day, Empire.clock_text(), Loc.t("paused") if spd == 0 else "%dx" % spd]
+	var spd: float = Empire.SPEEDS[Empire.speed]
+	var clock := tr("Day %d   %s   %s") % [Empire.day, Empire.clock_text(), Loc.t("paused") if spd == 0.0 else Empire.speed_label(Empire.speed)]
 	_text(Vector2(80, 21), clock, 9, Color(0.78, 0.75, 0.7) if spd > 0 else Color("ffb36b"), false)
 	var x := 13.0
 	for k in Empire.RESOURCES:
@@ -177,7 +177,7 @@ func _draw() -> void:
 			_text(Vector2(vs.x - Access.px(236.0), 36 + Access.px(33.0)), tr("Roster %s  Buildings %s  Expeditions %s") % [Prompts.key("roster"), Prompts.key("buildings"), Prompts.key("expeditions")], 8, Color(1, 1, 1, a4))
 			_text(Vector2(vs.x - Access.px(236.0), 36 + Access.px(44.0)), tr("Everything else: the Menu"), 8, Color(1, 1, 1, a4))
 		else:  # read from the InputMap, so remapped keys show (issue #115)
-			_text(Vector2(vs.x - Access.px(236.0), 36 + Access.px(22.0)), tr("Clock: %s-%s   Menu: %s   Journal: %s") % [Prompts.key("clock_speed_0"), Prompts.key("clock_speed_3"),
+			_text(Vector2(vs.x - Access.px(236.0), 36 + Access.px(22.0)), tr("Clock: %s-%s   Menu: %s   Journal: %s") % [Prompts.key("clock_speed_0"), Prompts.key("clock_speed_2"),
 				Prompts.key("pause"), Prompts.key("journal")], 8, Color(1, 1, 1, a4))
 			var keys := PackedStringArray()
 			for a in [["roster", tr("Roster")], ["buildings", tr("Buildings")], ["research", tr("Research")], ["diplomacy", tr("Factions")], ["bonds", tr("Bonds")], ["newcomers", tr("Newcomers")]]:

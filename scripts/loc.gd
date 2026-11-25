@@ -43,6 +43,7 @@ const NOT_TEXT := {}
 const FILE_TEXT_KEYS := {
 	"relationships.json": ["talk"],  # romance small talk (a talk id in story.json and personal.json)
 	"survey.json": ["intro"],  # playtest survey page intro (a talk id in missions.json)
+	"payoffs.json": ["people", "place", "person", "lost", "plain"],  # results screen lines (scripts/payoff.gd)
 }
 ## Text that code also matches on (so the loader keeps it English): extracted for translators and
 ## translated where it is shown, e.g. tr(job["kind"]).

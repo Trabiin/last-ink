@@ -10,6 +10,8 @@ extends RefCounted
 ##   Assists.recover               refill the party's health when no enemy is near (main.gd)
 ##   Assists.skip_fights           "Skip this fight" in the pause menu of story missions (main.gd)
 ##   Assists.gentle_blank()        the Blank presses less on the Command Table (Empire.fray_sources, surge_fray)
+##   Assists.allow_pause           the clock gets its stop button back, and the Esc menu leaves the map in view
+##   Assists.half_clock            the clock gets a 0.5x speed (Empire.speed_allowed)
 
 const SECTION := "assists"
 
@@ -30,6 +32,8 @@ static var pace_i := 0
 static var recover := false
 static var skip_fights := false
 static var blank_i := 0
+static var allow_pause := false
+static var half_clock := false
 
 static var _loaded := false
 
@@ -46,6 +50,8 @@ static func load_settings() -> void:
 	recover = bool(cfg.get_value(SECTION, "recover", recover))
 	skip_fights = bool(cfg.get_value(SECTION, "skip_fights", skip_fights))
 	blank_i = clampi(int(cfg.get_value(SECTION, "blank", blank_i)), 0, BLANK.size() - 1)
+	allow_pause = bool(cfg.get_value(SECTION, "allow_pause", allow_pause))
+	half_clock = bool(cfg.get_value(SECTION, "half_clock", half_clock))
 
 
 static func save() -> void:
@@ -57,6 +63,8 @@ static func save() -> void:
 	cfg.set_value(SECTION, "recover", recover)
 	cfg.set_value(SECTION, "skip_fights", skip_fights)
 	cfg.set_value(SECTION, "blank", blank_i)
+	cfg.set_value(SECTION, "allow_pause", allow_pause)
+	cfg.set_value(SECTION, "half_clock", half_clock)
 	cfg.save(Settings.PATH)
 
 
@@ -68,13 +76,26 @@ static func reset() -> void:
 	recover = false
 	skip_fights = false
 	blank_i = 0
+	allow_pause = false
+	half_clock = false
 	save()
 
 
 ## Any assist switched on? (the Options row says so; nothing else looks)
 static func any_on() -> bool:
 	load_settings()
-	return damage_i != 0 or pace_i != 0 or recover or skip_fights or blank_i == 1
+	return damage_i != 0 or pace_i != 0 or recover or skip_fights or blank_i == 1 or allow_pause or half_clock
+
+
+## May the player stop the clock? (Empire.speed_allowed, and the Esc menu's view of the map)
+static func pause_allowed() -> bool:
+	load_settings()
+	return allow_pause
+
+
+static func half_clock_on() -> bool:
+	load_settings()
+	return half_clock
 
 
 static func hero_damage(amount: int) -> int:

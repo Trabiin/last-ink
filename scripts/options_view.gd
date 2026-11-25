@@ -174,6 +174,10 @@ func _assist_rows() -> void:
 		"detail": tr("Story missions get Skip this fight in the pause menu. Their conversations still play and the rewards are the same.")})
 	_rows.append({"id": "as:blank", "kind": "cycle", "label": tr("Blank pressure"), "value": Loc.t(S.BLANK[S.blank_i]),
 		"detail": Loc.t(S.BLANK_INFO[S.blank_i]) + " " + tr("On the Command Table.")})
+	_rows.append({"id": "as:pause", "kind": "cycle", "label": tr("Allow pausing the clock"), "value": tr("On") if S.allow_pause else tr("Off"),
+		"detail": tr("The Command Table clock gets a stop button (and key), and the menu no longer hides the map.")})
+	_rows.append({"id": "as:half", "kind": "cycle", "label": tr("Slower clock"), "value": tr("On") if S.half_clock else tr("Off"),
+		"detail": tr("The Command Table clock gets a 0.5x speed, for days that run at half pace.")})
 	_rows.append({"id": "as:reset", "kind": "button", "label": tr("Reset assists"), "value": "",
 		"detail": tr("Assists never lock anything: every ending, reward and scene stays open.")})
 	_rows.append({"id": "assists_back", "kind": "button", "label": tr("Back"), "value": "",
@@ -377,7 +381,12 @@ func _step_assist(what: String, step: int) -> void:
 			S.skip_fights = step > 0
 		"blank":
 			S.blank_i = clampi(S.blank_i + step, 0, S.BLANK.size() - 1)
+		"pause":
+			S.allow_pause = step > 0
+		"half":
+			S.half_clock = step > 0
 	S.save()
+	Empire.fit_speed()  # a stop or 0.5x the player just switched off drops back to 1x
 
 
 ## Text speed stays where Dialogue has always kept it (user://settings.cfg, [dialogue]).
@@ -427,6 +436,7 @@ func _activate(i: int) -> void:
 					_back()
 				"as:reset":
 					Assists.reset()
+					Empire.fit_speed()
 					_say(tr("Assists are back to the defaults."))
 					_rebuild()
 				"start":
@@ -480,6 +490,8 @@ func _value_index(id: String) -> int:
 		"as:recover": return 1 if Assists.recover else 0
 		"as:skip": return 1 if Assists.skip_fights else 0
 		"as:blank": return Assists.blank_i
+		"as:pause": return 1 if Assists.allow_pause else 0
+		"as:half": return 1 if Assists.half_clock else 0
 		"layout": return Settings.layout
 	return -1
 

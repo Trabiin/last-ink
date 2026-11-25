@@ -44,7 +44,7 @@ func start() -> void:
 	for id in ["meadow_prologue", "ch1_breakout"]:
 		_fight(Missions.find(id))
 	_story()
-	Empire.set_speed(1)
+	Empire.set_speed(Empire.SPEED_1X)
 
 
 ## Plays one day: the morning's decisions, a mission, then the clock runs to the next dawn.
@@ -76,7 +76,7 @@ func play_day() -> void:
 				_fight(m)
 	_story()
 	var before := Empire.day
-	Empire.set_speed(1)
+	Empire.set_speed(Empire.SPEED_1X)
 	while Empire.day == before:
 		Empire.tick(Empire.DAY_SECONDS * (1.0 - Empire.day_t) + 0.01)
 	_note_changes()

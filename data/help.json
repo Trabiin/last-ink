@@ -14,7 +14,7 @@
 			"lines": [
 				"This is the governor's old table. He used it to decide who to tax. We'll use it to decide who to keep.",
 				"Every patch of colour is a province. The paler it goes, the more Fray: the Blank wearing it thin. At a hundred it's gone, and everyone in it.",
-				"The clock only runs while we're at this table or walking the town. {dev:Keys 1 to 4 set the pace, from stopped to fast|{key:clock_slower} and {key:clock_faster} step it slower and faster|The speed buttons up top set the pace}. Stop it whenever you need to think. I do, constantly.",
+				"The clock only runs while we're at this table or walking the town. {dev:Keys 1 to 3 set the pace|{key:clock_slower} and {key:clock_faster} step it slower and faster|The speed buttons up top set the pace}. It doesn't stop. The Blank doesn't, so neither do we. Open a report and the day slows to a walk while you read. Throw the cloth over the table{tag:pause} if the house is on fire, but you won't see the map under it.",
 				"Pick a province and post a governor{tag:govern}. Ungoverned land frays faster and pays a quarter less. Free land next to ours can be claimed for Gilt and Supplies, once somebody's there to run it.",
 				"The bar along the top is what we have. The ledger{tag:ledger} is where it goes every dawn. People eat. Mostly I mind that they eat on credit.",
 				"Anything on fire turns up in the corner, and {dev:Tab|{key:alert_go}|a tap on it} takes you straight to it. The journal{tag:journal} keeps the long list of things trying to kill us.",
