@@ -72,5 +72,4 @@ func _draw_overlay() -> void:
 	for i in 10:
 		var p := Vector2(rng.randf_range(-22, 22), rng.randf_range(-40, 2))
 		overlay.draw_rect(Rect2(p, Vector2(1, 1)), Color(1, 1, 1, 0.9) if i % 2 else Color(0, 0, 0, 0.8))
-	overlay.draw_rect(Rect2(-18, -42, 36, 3), Color(0, 0, 0, 0.6))
-	overlay.draw_rect(Rect2(-18, -42, 36.0 * hp / max_hp, 3), Color("ff6b6b"))
+	UiSkin.field_bar(overlay, -43, 36, float(hp) / max_hp, "enemy", Access.danger_patterns and hp * 4 <= max_hp)

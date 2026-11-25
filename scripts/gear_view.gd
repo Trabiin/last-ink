@@ -18,9 +18,11 @@ const BAD := Color("ff9b8a")
 const TEXT := Color("ece6da")
 const DIM := Color(0.42, 0.41, 0.44)
 const SOFT := Color(0.62, 0.6, 0.62)
-const XP_COL := Color("b9a0e8")
+const XP_COL := Color("b49bcc")  # the XP ramp's highlight (UiSkin.RAMP["xp"])
 const PAPER := Color("f3efe4")
-const SLOT_COLORS := {"weapon": Color("e89a8a"), "armor": Color("8fa7e8"), "trinket": Color("e8c66a")}
+## Each slot kind's ramp (its bookmark ribbon) and label colour, from the style palette: rust, slate, brass.
+const SLOT_RAMPS := {"weapon": "rust", "armor": "slate", "trinket": "brass"}
+const SLOT_COLORS := {"weapon": Color("d98a5a"), "armor": Color("8f9cb6"), "trinket": Color("e8c65a")}
 
 var party  # main.gd on a mission: live heroes get the new stats right away
 var where := "town"  # "town" (shop open) or "mission"
@@ -396,14 +398,14 @@ func _wrap(pos: Vector2, s: String, width: float, fsize: int, col: Color) -> flo
 
 
 func _bar(r: Rect2, f: float, col: Color) -> void:
-	draw_rect(r, Color(0.14, 0.12, 0.16))
-	draw_rect(Rect2(r.position, Vector2(r.size.x * clampf(f, 0.0, 1.0), r.size.y)), col)
+	if col == XP_COL:  # XP: the plum ramp, notched in quarters
+		UiSkin.bar(self, r, f, "xp", {"notches": [0.25, 0.5, 0.75]})
+	else:
+		UiSkin.bar(self, r, f, Color(col, 1.0), {"dim": col.a < 0.5})  # pixel bar: ink frame, shaded ramp
 
 
 func _box(r: Rect2, on: bool) -> void:
-	draw_rect(r, Color(0.16, 0.13, 0.09) if on else Color(0.09, 0.08, 0.11))
-	if on:
-		draw_rect(r, GOLD, false, 1.0)
+	UiSkin.row(self, r, on)
 
 
 func _draw() -> void:
@@ -474,9 +476,9 @@ func _draw_chips(vs: Vector2) -> void:
 		_box(r, i == hero_i)
 		_text(r.position + Vector2(5, 10), PartyPicker.short_of(id), 9, GOLD if i == hero_i else TEXT, cw - 30)
 		_text_r(r.position + Vector2(cw - 4, 10), tr("Lv%d") % Progress.level(id), 8, SOFT)
-		_bar(Rect2(r.position + Vector2(5, 15), Vector2(cw - 10, 3)), Progress.xp_fraction(id), XP_COL)
+		_bar(Rect2(r.position + Vector2(5, 15), Vector2(cw - 12, 4)), Progress.xp_fraction(id), XP_COL)
 		if Empire.role_of(id) == "party":
-			draw_circle(r.position + Vector2(cw - 5, 19), 1.5, GOOD)
+			UiSkin.swatch(self, Rect2(r.position + Vector2(cw - 6, 18), Vector2(2, 2)), "moss")  # in the party
 		x += cw + 4
 
 
@@ -497,7 +499,7 @@ func _draw_equip_body(vs: Vector2) -> void:
 		where_line += tr(": Barracks drill, +%d XP a day") % Progress.barracks_xp()
 	_text_r(Vector2(left.end.x - 8, y), where_line, 8, SOFT)
 	y += 4
-	_bar(Rect2(16, y, left.size.x - 16, 3), Progress.xp_fraction(id), XP_COL)
+	_bar(Rect2(17, y, left.size.x - 18, 5), Progress.xp_fraction(id), XP_COL)
 	y += 14
 
 	# Stats, with a preview of the highlighted pick
@@ -534,7 +536,7 @@ func _draw_equip_body(vs: Vector2) -> void:
 		var r := Rect2(16, y, left.size.x - 16, 26)
 		_slot_rects.append(r)
 		_box(r, i == slot_i)
-		draw_rect(Rect2(r.position, Vector2(3, r.size.y)), SLOT_COLORS[s])
+		UiSkin.tab(self, r, SLOT_RAMPS[s])
 		var iid := str(g.get(s, ""))
 		var ix := 8.0  # text starts after the item's icon, when it has one
 		if iid != "" and UiSkin.draw_icon(self, iid, Rect2(r.position + Vector2(7, 3), Vector2(20, 20))):
@@ -576,32 +578,27 @@ func _draw_equip_body(vs: Vector2) -> void:
 		if pick_i < ch.size() and ch[pick_i] != "":
 			_wrap(Vector2(rx + 8, ry + 10), Progress.item(ch[pick_i]).get("blurb", ""), rw - 16, 8, Color(0.78, 0.76, 0.74))
 	else:
+		# About the worn piece: written up on a ledger page, on its lines (LedgerPage).
 		var iid := str(g.get(_slot(), ""))
-		_text(Vector2(rx + 8, ry), Loc.t(Progress.SLOT_NAMES[_slot()]), 10, SLOT_COLORS[_slot()])
-		ry += 14
-		if iid == "":
-			_text(Vector2(rx + 8, ry), tr("Nothing worn."), 9, DIM)
-		else:
-			UiSkin.draw_icon(self, iid, Rect2(rx + rw - 42, ry - 26, 32, 32))
-			_text(Vector2(rx + 8, ry), Progress.item(iid)["name"], 11, PAPER)
-			ry += 12
-			_text(Vector2(rx + 8, ry), Progress.item_text(iid), 8, GOOD, rw - 16)
-			ry += 4
-			ry += _wrap(Vector2(rx + 8, ry + 8), Progress.item(iid).get("blurb", ""), rw - 16, 8, Color(0.78, 0.76, 0.74))
-		ry += 18
+		var pg := LedgerPage.begin(self, right.grow(-9.0), font)
+		pg.heading(Progress.item(iid)["name"] if iid != "" else Loc.t(Progress.SLOT_NAMES[_slot()]), 12, LedgerPage.INK, iid)
+		pg.line(Loc.t(Progress.SLOT_NAMES[_slot()]).to_upper() if iid != "" else tr("Nothing worn."), 7, LedgerPage.ink(SLOT_COLORS[_slot()]))
+		if iid != "":
+			pg.line(Progress.item_text(iid), 8, LedgerPage.GREEN)
+			pg.para(Progress.item(iid).get("blurb", ""), 8, LedgerPage.INK)
+		pg.skip()
 		var spare := Progress.options(id, _slot()).size()
-		_text(Vector2(rx + 8, ry), (tr("%s to swap: %d spare that fit.") % [Prompts.confirm(), spare]) if spare > 0 else
-			(tr("%s to take it off.") % Prompts.confirm() if iid != "" else tr("No spare gear for this slot.")), 8, GOLD if spare > 0 else SOFT, rw - 16)
-		ry += 18
-		_text(Vector2(rx + 8, ry), tr("Levels"), 8, Color(0.75, 0.72, 0.7))
-		ry += 2
+		pg.line((tr("%s to swap: %d spare that fit.") % [Prompts.confirm(), spare]) if spare > 0 else
+			(tr("%s to take it off.") % Prompts.confirm() if iid != "" else tr("No spare gear for this slot.")), 8, LedgerPage.GOLD if spare > 0 else LedgerPage.INK_SOFT)
+		pg.skip()
+		pg.line(tr("Levels"), 8, LedgerPage.INK)
 		var gr := Progress.growth(id)
 		var parts := []
 		for k in Progress.STAT_ORDER:
 			if gr.has(k) and float(gr[k]) > 0.0:
 				var v := float(gr[k])
 				parts.append(("+%d %s" % [int(v), Loc.t(Progress.STAT_NAMES[k])]) if v >= 1.0 else (Loc.n("+1 %s every %d level", "+1 %s every %d levels", int(round(1.0 / v))) % [Loc.t(Progress.STAT_NAMES[k]), int(round(1.0 / v))]))
-		ry += _wrap(Vector2(rx + 8, ry + 9), tr("Each level: %s. XP comes from every enemy the party drops, shared by all three, plus a bonus for finishing the job. On missions the Barracks and research add their bonuses on top of these numbers.") % ", ".join(parts), rw - 16, 8, SOFT)
+		pg.para(tr("Each level: %s. XP comes from every enemy the party drops, shared by all three, plus a bonus for finishing the job. On missions the Barracks and research add their bonuses on top of these numbers.") % ", ".join(parts), 8, LedgerPage.INK_SOFT)
 
 
 func _stat_shown(k: String, v) -> String:
@@ -718,7 +715,7 @@ func _draw_skills(vs: Vector2) -> void:
 		drill = (tr("Barracks drill +%d a day") % Skills.barracks_points()) if wl < Skills.barracks_cap() else tr("Drilled as far as the Barracks can")
 	_text_r(Vector2(left.end.x - 8, y), drill, 8, SOFT)
 	y += 4
-	_bar(Rect2(16, y, left.size.x - 16, 3), Skills.weapon_fraction(id), XP_COL)
+	_bar(Rect2(17, y, left.size.x - 18, 5), Skills.weapon_fraction(id), XP_COL)
 	y += 8
 	var sk: Dictionary = Progress.data().get("skills", {})
 	y += _wrap(Vector2(16, y + 8), tr("Landed full-power swings +%d, techs that land +%d. Each level teaches a tech; hold Attack longer on a full gauge to reach the later ones.") % [int(sk.get("swing", 2)), int(sk.get("tech", 4))], left.size.x - 20, 7, DIM) + 4
@@ -731,7 +728,7 @@ func _draw_skills(vs: Vector2) -> void:
 		_tech_rects.append(r)
 		_box(r, i == tech_i)
 		var col := Color(str(t.get("color", "ffffff")))
-		draw_rect(Rect2(r.position, Vector2(3, r.size.y)), col if known else DIM)
+		UiSkin.tab(self, r, col, not known)
 		_text(r.position + Vector2(8, 9), str(t.get("name", "?")), 9, (GOLD if i == tech_i else TEXT) if known else DIM, 150)
 		_text(r.position + Vector2(8, 19), (tr("Ready after %s s") % Loc.dec(Techs.charge_time(t))) if known else tr("Learned at level %d") % lvl, 7, SOFT if known else DIM)
 		var tag := tr("ALWAYS") if picked == t["id"] else (tr("LV %d") % lvl)
@@ -739,40 +736,39 @@ func _draw_skills(vs: Vector2) -> void:
 		y += 25
 	_text(Vector2(16, y + 6), tr("Charging: %s") % (tr("always %s") % Techs.find(picked).get("name", "?") if picked != "" else tr("by hold length")), 8, GOLD)
 
-	# Right: the highlighted tech, then the Ink colours.
+	# Right: the highlighted tech, then the Ink colours, on a ledger page (LedgerPage).
 	var rx := 320.0
 	var rw := vs.x - rx - 8
 	var right := Rect2(rx, 62, rw, vs.y - 62 - 18)
 	UiSkin.panel(self, right, "ledger")
-	var ry := right.position.y + 16
+	var pg := LedgerPage.begin(self, right.grow(-9.0), font)
 	if not techs.is_empty():
 		var t2: Dictionary = techs[tech_i]
 		var known2 := int(t2.get("level", 1)) <= wl
 		var col2 := Color(str(t2.get("color", "ffffff")))
-		_text(Vector2(rx + 8, ry), str(t2.get("name", "?")), 11, col2.lightened(0.3) if known2 else SOFT)
-		_text_r(Vector2(right.end.x - 8, ry), (tr("Known") if known2 else tr("Level %d") % int(t2.get("level", 1))), 8, GOOD if known2 else SOFT)
-		ry += 11
-		_text(Vector2(rx + 8, ry), tech_facts(t2), 7, GOLD, rw - 16)
-		ry += _wrap(Vector2(rx + 8, ry + 9), str(t2.get("desc", "")), rw - 16, 8, Color(0.82, 0.8, 0.76) if known2 else SOFT) + 10
-	draw_rect(Rect2(rx + 8, ry, rw - 16, 1), Color(0.63, 0.48, 0.31, 0.6))
-	ry += 12
-	_text(Vector2(rx + 8, ry), tr("Ink colours"), 10, PAPER)
-	_text_r(Vector2(right.end.x - 8, ry), tr("spend Ink on a colour to train it"), 7, DIM)
-	ry += 6
+		pg.heading(str(t2.get("name", "?")), 12, LedgerPage.ink(col2) if known2 else LedgerPage.INK_SOFT)
+		pg.line(tech_facts(t2), 7, LedgerPage.GOLD, tr("Known") if known2 else tr("Level %d") % int(t2.get("level", 1)), LedgerPage.GREEN if known2 else LedgerPage.INK_SOFT)
+		pg.para(str(t2.get("desc", "")), 8, LedgerPage.INK if known2 else LedgerPage.INK_SOFT)
+		pg.skip()
+	pg.line(tr("Ink colours"), 9, LedgerPage.INK)
 	var used := Skills.colors_of(id)
 	var abil := Abilities.for_ids(PartyPicker.hero_data(id).get("abilities", []), id)
 	for c in Skills.INKS:
 		var lv := Skills.ink_level(id, c)
 		var on: bool = c in used
 		var cc := Skills.ink_color(c)
-		draw_rect(Rect2(rx + 8, ry + 3, 6, 6), cc if on else Color(cc, 0.35))
-		_text(Vector2(rx + 18, ry + 9), Skills.ink_name(c), 8, TEXT if on else DIM)
-		_text(Vector2(rx + 52, ry + 9), tr("Lv %d") % lv, 8, GOLD if on else DIM)
-		_bar(Rect2(rx + 76, ry + 5, 46, 2), Skills.ink_fraction(id, c), cc if on else Color(cc, 0.3))
+		var lr := pg.space()
+		if lr.size.x <= 0.0:
+			break
+		var base := lr.end.y - 1.0
+		var ink_c := LedgerPage.INK if on else LedgerPage.INK_SOFT
+		UiSkin.swatch(self, Rect2(lr.position.x, base - 6, 6, 6), cc, not on)
+		draw_string(font, Vector2(lr.position.x + 10, base), Skills.ink_name(c), HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(8), ink_c)
+		draw_string(font, Vector2(lr.position.x + 44, base), tr("Lv %d") % lv, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(8), LedgerPage.GOLD if on else LedgerPage.INK_SOFT)
+		UiSkin.bar(self, Rect2(lr.position.x + 68, base - 4, 40, 3), Skills.ink_fraction(id, c), cc, {"frame": true, "dim": not on})
 		var mine := abil.filter(func(a): return str(a.get("ink", "")) == c)
 		var line := ", ".join(mine.map(func(a): return tr("%s (tier %d)") % [a.get("name", "?"), int(a.get("tier", 1))])) if on else str(Skills.ink_info(c).get("desc", ""))
-		_text(Vector2(rx + 128, ry + 9), line, 7, TEXT if on else DIM, rw - 136)
-		ry += 12
+		draw_string(font, Vector2(lr.position.x + 114, base), Access.fit(font, line, Access.fs(7), lr.size.x - 114), HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(7), ink_c)
 		if on:
 			for a in mine:
 				var nxt := Abilities.next_tier_text(a)
@@ -783,10 +779,11 @@ func _draw_skills(vs: Vector2) -> void:
 				if nxt != "":
 					bits.append(tr("next %s") % nxt)
 				if not bits.is_empty():
-					_text(Vector2(rx + 128, ry + 6), "%s: %s" % [a.get("name", "?"), "; ".join(bits)], 7, SOFT, rw - 136)
-					ry += 9
-	ry += 4
-	_wrap(Vector2(rx + 8, ry + 8), tr("Every colour: tier 2 abilities at level 2, tier 3 at level 4; shorter cooldowns at 3 and 5."), rw - 16, 7, DIM)
+					var nr := pg.space()
+					if nr.size.x > 0.0:
+						draw_string(font, Vector2(nr.position.x + 114, nr.end.y - 1.0), Access.fit(font, "%s: %s" % [a.get("name", "?"), "; ".join(bits)], Access.fs(7), nr.size.x - 114), HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(7), LedgerPage.INK_SOFT)
+	pg.skip()
+	pg.para(tr("Spend Ink on a colour to train it.") + " " + tr("Every colour: tier 2 abilities at level 2, tier 3 at level 4; shorter cooldowns at 3 and 5."), 7, LedgerPage.INK_SOFT)
 
 
 ## One line of hard numbers for a tech: "x2.4 damage, all round, 3 hits, stuns 1 s".

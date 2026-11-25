@@ -114,29 +114,31 @@ func _process(_delta: float) -> void:
 	if body_sprite != null:
 		body_sprite.modulate = Color(1.35, 1.15, 0.6, 0.85)
 		outfit_sprite.modulate = Color(1.35, 1.15, 0.6, 0.85)
-	queue_redraw()
+	if ground:
+		ground.queue_redraw()
 	if overlay:
 		overlay.queue_redraw()
 
 
-func _draw() -> void:
+## Under her (Hero's ground layer, so it stays off the pixel FX layer the hero itself is on).
+func _draw_ground() -> void:
 	if bowed:
 		return
-	draw_shadow(5.5)
+	var g := ground
+	g.draw_set_transform(Vector2.ZERO, 0.0, Vector2(1.0, 0.4))
+	g.draw_circle(Vector2.ZERO, 5.5, Color(0, 0, 0, 0.3))
 	# A spotlight pool under her, and the edge of her pull, faint.
 	var k := clampf(life, 0.0, 1.0)
-	draw_set_transform(Vector2.ZERO, 0.0, Vector2(1.0, 0.6))
-	draw_circle(Vector2.ZERO, 12.0, Color(GILT, 0.18 * k))
-	draw_arc(Vector2.ZERO, float(ability.get("radius", 90)), 0, TAU, 40, Color(GILT, 0.12 * k), 1.0)
-	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
+	g.draw_set_transform(Vector2.ZERO, 0.0, Vector2(1.0, 0.6))
+	g.draw_circle(Vector2.ZERO, 12.0, Color(GILT, 0.18 * k))
+	g.draw_arc(Vector2.ZERO, float(ability.get("radius", 90)), 0, TAU, 40, Color(GILT, 0.12 * k), 1.0)
+	g.draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 
 
 func _draw_overlay() -> void:
 	if bowed:
 		return
 	var total := maxf(float(ability.get("time", 5.0)), 0.1)
-	overlay.draw_rect(Rect2(-8, -26, 16, 2), Color(0, 0, 0, 0.6))
-	overlay.draw_rect(Rect2(-8, -26, 16.0 * clampf(life / total, 0.0, 1.0), 2), GILT)
+	UiSkin.field_bar(overlay, -28, 16, clampf(life / total, 0.0, 1.0), "brass")  # how long the song has left
 	if hp < max_hp:
-		overlay.draw_rect(Rect2(-8, -23, 16, 1.5), Color(0, 0, 0, 0.6))
-		overlay.draw_rect(Rect2(-8, -23, 16.0 * float(hp) / max_hp, 1.5), Color("ff8a7a"))
+		UiSkin.field_bar(overlay, -24, 16, float(hp) / max_hp, "enemy", Access.danger_patterns and hp * 4 <= max_hp)

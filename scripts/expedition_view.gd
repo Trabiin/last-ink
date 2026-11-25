@@ -269,9 +269,7 @@ func _wrap(pos: Vector2, s: String, width: float, fsize: int, col: Color) -> flo
 
 func _row_box(i: int, rr: Rect2) -> bool:
 	var on := i == sel
-	draw_rect(rr, Color(0.16, 0.13, 0.09) if on else Color(0.09, 0.08, 0.11))
-	if on:
-		draw_rect(rr, GOLD, false, 1.0)
+	UiSkin.row(self, rr, on)
 	return on
 
 
@@ -282,8 +280,7 @@ func _danger_pips(pos: Vector2, n: int) -> void:
 
 
 func _bar(r: Rect2, f: float, col: Color) -> void:
-	draw_rect(r, Color(0.14, 0.12, 0.16))
-	draw_rect(Rect2(r.position, Vector2(r.size.x * clampf(f, 0.0, 1.0), r.size.y)), col)
+	UiSkin.bar(self, r, f, Color(col, 1.0), {"dim": col.a < 0.5})  # pixel bar: ink frame, shaded ramp
 
 
 func _draw() -> void:
@@ -363,30 +360,27 @@ func _draw_board(vs: Vector2) -> void:
 				if not row["enabled"]:
 					_text(base + Vector2(cols[1] - 8, 0), tr("nothing yet: squads write home when they get back"), 8, DIM)
 		y += ROW_H
-	# Details for the highlighted row
-	y += 6
-	draw_line(Vector2(8, y), Vector2(vs.x - 8, y), Color(0.25, 0.22, 0.28))
-	y += 12
+	# Details for the highlighted row: a ledger page across the bottom (LedgerPage), on its lines.
+	y += 8
 	if _rows.is_empty():
 		return
 	var row: Dictionary = _rows[sel]
+	var pg := LedgerPage.begin(self, Rect2(8, y, vs.x - 16, vs.y - y - 16), font)
 	if row["kind"] in ["job", "out"]:
 		var j := Empire.job(row["id"])
 		var p := Empire.territory().find(j["province"])
-		_text(Vector2(14, y), "%s  (%s)" % [j["name"], p.get("name", "?")], 9, GOLD)
-		y += 4
-		y += _wrap(Vector2(14, y + 8), j["blurb"], vs.x - 28, 8, Color(0.78, 0.76, 0.74))
+		pg.heading("%s  (%s)" % [j["name"], p.get("name", "?")], 11)
+		pg.para(j["blurb"], 8, LedgerPage.INK)
 		var wants := []
 		for k in j["stats"]:
 			wants.append(Loc.t(Empire.STAT_NAMES[k]) + ("" if float(j["stats"][k]) >= 1.0 else tr(" (counts half)")))
-		var line := tr("Wants: %s.   Takes %s%s.   Rations: %d Supplies a person.   Danger: %s.") % [", ".join(wants), Empire.job_days_text(row["id"]),
-			tr(" (Waystations)") if Empire.has_research("log_waystations") else "", int(j["rations"]), Loc.t(Empire.DANGER_NAMES[int(j["danger"])])]
-		_text(Vector2(14, y + 14), line, 8, Color("cfe0b0"))
-		_text(Vector2(14, y + 26), tr("Pays: %s.%s") % [Empire.reward_text(row["id"]), "" if row["note"] == "" else tr("   Can't yet: %s.") % row["note"]], 8,
-			Color("e8d9a8") if row["note"] == "" else BAD)
+		pg.para(tr("Wants: %s.   Takes %s%s.   Rations: %d Supplies a person.   Danger: %s.") % [", ".join(wants), Empire.job_days_text(row["id"]),
+			tr(" (Waystations)") if Empire.has_research("log_waystations") else "", int(j["rations"]), Loc.t(Empire.DANGER_NAMES[int(j["danger"])])], 8, LedgerPage.GREEN)
+		pg.para(tr("Pays: %s.%s") % [Empire.reward_text(row["id"]), "" if row["note"] == "" else tr("   Can't yet: %s.") % row["note"]], 8,
+			LedgerPage.GOLD if row["note"] == "" else LedgerPage.RED)
 	elif row["kind"] == "reports" and not Empire.reports.is_empty():
 		var r: Dictionary = Empire.reports[0]
-		_text(Vector2(14, y), tr("Latest: Day %d, %s") % [int(r["day"]), r["title"]], 9, GOLD)
+		pg.heading(tr("Latest: Day %d, %s") % [int(r["day"]), r["title"]], 11)
 	_text(Vector2(8, vs.y - 10), Prompts.help([["updown", "choose"], ["ui_accept", "pick"], [["ui_cancel", "expeditions"], "close"]], tr("Tap a row to pick")), 7, Color(0.5, 0.48, 0.52))
 
 
@@ -431,35 +425,36 @@ func _draw_squad(vs: Vector2) -> void:
 			_text(base + Vector2(152, 0), doing, 8, SOFT, lw - 156)
 		y += ROW_H
 
-	# Right side: chance and why
+	# Right side: chance and why, on a ledger page (LedgerPage).
 	var x := lw + 20
 	var w := vs.x - x - 10
-	_text(Vector2(x, 60), tr("Success chance"), 9, Color(0.75, 0.72, 0.7))
+	var pg := LedgerPage.begin(self, Rect2(x - 8, 44, w + 16, vs.y - 44 - 18), font)
+	pg.heading(tr("Success chance"), 11)
 	if squad.is_empty():
-		_wrap(Vector2(x, 78), tr("Tick people on the left (%s). The chance and every reason behind it show up here as you pick.") % Prompts.confirm(), w, 8, SOFT)
+		pg.para(tr("Tick people on the left (%s). The chance and every reason behind it show up here as you pick.") % Prompts.confirm(), 8, LedgerPage.INK_SOFT)
 	else:
 		var odds := Empire.expedition_odds(job_id, squad)
 		var c := int(odds["chance"])
-		var ccol := GOOD if c >= 70 else (GOLD if c >= 40 else BAD)
-		_text(Vector2(x, 86), "%d%%" % c, 22, ccol)
-		_bar(Rect2(x + 64, 76, w - 64, 7), c / 100.0, ccol)
-		var yy := 104.0
+		var ccol := LedgerPage.GREEN if c >= 70 else (LedgerPage.GOLD if c >= 40 else LedgerPage.RED)
+		var cr := pg.space(2)
+		if cr.size.x > 0.0:
+			draw_string(UiSkin.TITLE_FONT, Vector2(cr.position.x, cr.end.y - 1.0), "%d%%" % c, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(20), ccol)
+			UiSkin.bar(self, Rect2(cr.position.x + 56, cr.end.y - 7.0, cr.size.x - 56, 6), c / 100.0, UiSkin.RAMP["hp"] if c >= 70 else (UiSkin.RAMP["brass"] if c >= 40 else UiSkin.RAMP["hp_low"]), {"notches": [0.4, 0.7]})
 		for why in odds["why"]:
-			yy += _wrap(Vector2(x, yy), ("+ " if why[1] else "- ") + why[0], w, 8, Color("cfe0b0") if why[1] else BAD) + 1
+			pg.para(("+ " if why[1] else "- ") + why[0], 8, LedgerPage.GREEN if why[1] else LedgerPage.RED)
 		if squad.size() < Empire.SQUAD_MIN:
-			yy += _wrap(Vector2(x, yy), Loc.n("Needs at least %d person to go.", "Needs at least %d people to go.", Empire.SQUAD_MIN) % Empire.SQUAD_MIN, w, 8, BAD)
-		yy += 6
+			pg.para(Loc.n("Needs at least %d person to go.", "Needs at least %d people to go.", Empire.SQUAD_MIN) % Empire.SQUAD_MIN, 8, LedgerPage.RED)
+		pg.skip()
 		var cost := Empire.expedition_cost(job_id, squad.size())
-		_text(Vector2(x, yy + 6), tr("Rations: %d Supplies (you have %d)") % [int(cost["supplies"]), int(Empire.res["supplies"])], 8,
-			Color("e8d9a8") if Empire.can_afford(cost) else BAD)
-		_text(Vector2(x, yy + 18), tr("On success: %s") % Empire.reward_text(job_id), 8, Color("e8d9a8"), w)
-		_text(Vector2(x, yy + 30), tr("Failing pays a quarter and hurts people. Danger: %s.") % Loc.t(Empire.DANGER_NAMES[int(j["danger"])]), 8, SOFT, w)
+		pg.line(tr("Rations: %d Supplies (you have %d)") % [int(cost["supplies"]), int(Empire.res["supplies"])], 8, LedgerPage.INK if Empire.can_afford(cost) else LedgerPage.RED)
+		pg.para(tr("On success: %s") % Empire.reward_text(job_id), 8, LedgerPage.GOLD)
+		pg.para(tr("Failing pays a quarter and hurts people. Danger: %s.") % Loc.t(Empire.DANGER_NAMES[int(j["danger"])]), 8, LedgerPage.INK_SOFT)
 		var leaving := []
 		for id in squad:
 			if Empire.role_of(id) != "idle":
 				leaving.append("%s (%s)" % [Empire.short_name(id), Empire.role_label(id)])
 		if not leaving.is_empty():
-			_wrap(Vector2(x, yy + 38), tr("Leaves their job while away: %s") % ", ".join(leaving), w, 8, Color(0.85, 0.7, 0.55))
+			pg.para(tr("Leaves their job while away: %s") % ", ".join(leaving), 8, LedgerPage.RED)
 	_text(Vector2(8, vs.y - 10), Prompts.help([["updown", "choose"], ["ui_accept", tr("tick / send")], ["ui_cancel", "back"]], tr("Tap people to tick them, then tap Send   Close: back")), 7, Color(0.5, 0.48, 0.52))
 
 
@@ -482,20 +477,19 @@ func _draw_reports(vs: Vector2) -> void:
 	var r: Dictionary = Empire.reports[sel]
 	var x := lw + 22
 	var w := vs.x - x - 12
-	draw_rect(Rect2(x - 8, 34, w + 16, vs.y - 52), Color(0.93, 0.91, 0.85))  # the report is a sheet of paper
-	var ink := Color(0.16, 0.13, 0.12)
-	var yy := 50.0
-	yy += _wrap(Vector2(x, yy), r["title"], w, 11, ink) + 2
+	# The report is a ledger page (LedgerPage), written on its lines.
+	var pg := LedgerPage.begin(self, Rect2(x - 8, 34, w + 16, vs.y - 52), font)
+	pg.heading(r["title"], 11)
 	var squad_names := ", ".join(r.get("squad", []).map(func(id): return Empire.recruit(id).get("name", id)))
-	_text(Vector2(x, yy + 2), tr("Day %d.  Squad: %s.  Odds were %d%%.") % [int(r["day"]), squad_names, int(r.get("chance", 0))], 8, Color(0.4, 0.36, 0.34), w)
-	yy += 14
+	pg.para(tr("Day %d.  Squad: %s.  Odds were %d%%.") % [int(r["day"]), squad_names, int(r.get("chance", 0))], 8, LedgerPage.INK_SOFT)
+	pg.skip()
 	for line in r["lines"]:
-		var lc := ink
+		var lc := LedgerPage.INK
 		if line.begins_with("Brought back"):
-			lc = Color(0.45, 0.33, 0.05)
+			lc = LedgerPage.GOLD
 		elif line.find("hurt") >= 0 or line.find("did not come back") >= 0 or line.find("dragged back") >= 0:
-			lc = Color(0.6, 0.15, 0.12)
+			lc = LedgerPage.RED
 		elif line.find("joins your roster") >= 0:
-			lc = Color(0.15, 0.4, 0.15)
-		yy += _wrap(Vector2(x, yy + 4), line, w, 9, lc) + 5
+			lc = LedgerPage.GREEN
+		pg.para(line, 8, lc)
 	_text(Vector2(8, vs.y - 10), Prompts.help([["updown", tr("choose report")], ["ui_cancel", "back"]], tr("Tap a report to read it   Close: back")), 7, Color(0.5, 0.48, 0.52))

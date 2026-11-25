@@ -431,5 +431,4 @@ func _draw_overlay() -> void:
 	if state == State.WINDUP:
 		Telegraph.alert(overlay, Vector2(-2, -12), 10)
 	if hp < max_hp:
-		overlay.draw_rect(Rect2(-6, -14, 12, 2), Color(0, 0, 0, 0.6))
-		overlay.draw_rect(Rect2(-6, -14, 12.0 * hp / max_hp, 2), Color("ff6b6b"))
+		UiSkin.field_bar(overlay, -14, 12, float(hp) / max_hp, "enemy", Access.danger_patterns and hp * 4 <= max_hp)

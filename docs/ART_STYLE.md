@@ -130,6 +130,68 @@ character with every direction given (`direction_images`, almost free), then ani
   "A..H, one per image" returns 8 options for each ($0.08 for 8 icons, picked by eye).
 - **Less text on screen.** Control hints show only until two missions are cleared.
 
+## UI bars and rows (from 2026-11-24)
+
+Flat single-colour bars and strips read as placeholder next to the art, so every bar, list row and colour
+strip is drawn as pixel art by `scripts/ui_skin.gd`, in whole pixels only:
+
+- **`UiSkin.bar(canvas, rect, fill, ramp, opts)`**: a 1 px ink `#12141f` frame, a recessed `#1f2233` trough with a
+  lit lower lip, and the fill shaded from a 4-step ramp: lit top row, base, shaded bottom row, a short gleam on
+  tall bars and a lighter leading edge. Options: `notch` (a notch every n px; HP bars use one per 10 HP via
+  `UiSkin.notch_every`), `notches` (fractions: tech stages, quarters, a boss's phase line), `ghost` (HP just
+  lost, draining in plaster shadow), `hatch` (stripes for danger, with `Access.danger_patterns`), `dim`.
+- **`UiSkin.field_bar`**: the small bar over a fighter's head in world pixels: ink frame, two rows (light over
+  base), only shown once hurt. Enemies crimson, elites brass, the wardstone and objectives ink-blue.
+- **`UiSkin.row`** for list rows (recessed ink panel, the chosen row warm with a brass pixel `frame` and corner
+  studs; muted brass when its list is not the one being steered), **`UiSkin.tab`** for the kind/colour marker
+  down a row's left edge (a shaded bookmark ribbon with a notched tail, instead of a 3 px flat strip),
+  **`UiSkin.swatch`** for colour chips and **`UiSkin.scrollbar`**.
+- **Ramps** (`UiSkin.RAMP`, all from the style palette plus the FX accent tints below): HP moss (healthy),
+  brass (under half), crimson (under a quarter); Ink ink-blue; gauge wood to brass, lamplight when full; XP
+  plum; gear slots rust (weapon), slate (armour), brass (trinket). `UiSkin.ramp(colour)` builds a muted ramp
+  from any data colour (a tech's or an Ink colour's), pulled toward night slate so it sits in the art.
+
+**Panels (2026-11-25)**: the ledger frame's dark inner band is a single shadow line now, so text and rows sit on
+the panel's face, never on a band (`UiSkin.inner(rect)` gives the face). The ledger panels carry no grain; there is a fixed
+pixel grain (`UiSkin.grain`) on full-screen menu backgrounds only: sparse specks and short fibres.
+
+**Ledger pages (2026-11-25)**: every menu pane you *read* (item, skill, person, building, deal, report details)
+is a page torn out of a ledger (`scripts/ledger_page.gd`), like the dialogue box; lists you pick from stay dark.
+The paper is pixel art made per size: soft paper tones, foxing, a tea ring, a crease, a folded corner, browned
+edges, torn edges, an ink blot, each size worn differently. Text is written with `LedgerPage` calls only
+(`heading`, `line`, `pair`, `para`, `icon_line`, `space` for bars and pips), so it always sits on a ruled line
+and between the red margin and the right edge, at every text size; a page that runs out of lines stops. On
+paper use the page inks (`LedgerPage.INK`, `INK_SOFT`, `GOLD`, `GREEN`, `RED`, `BLUE`, `PLUM`, or
+`LedgerPage.ink(colour)`), never the light colours made for the dark panels.
+
+## Effects (from 2026-11-24)
+
+Skills, techs, weapon swings, guards, the swap marker and every burst are drawn in code, and drawn straight
+onto the 4x screen they came out as smooth, bright vector shapes. They now draw on the **pixel FX layer**
+(`scripts/fx_layer.gd`, `shaders/pixel_fx.gdshader`):
+
+- Effect nodes join with `FxLayer.adopt(node)` (`Fx`, `TechFx` and `Hero.fx_overlay` already do). The main view
+  skips that visibility layer; a SubViewport sharing the world draws only it, at one pixel per world pixel on
+  the camera's whole-pixel grid, and the shader turns it into pixel art: every colour snaps to the FX palette,
+  see-through comes in flat steps (a sixth, a third, two thirds, solid; big faint areas are one even wash, never a dotted mesh), and the night tint is
+  mostly taken back out (effects are light).
+- **FX palette** = the 38 style colours + accent tints for light: bone light `#e6dfcd`, plum `#3b2a4a #6a4a7e
+  #8f6fae #b49bcc`, rose `#7a3a52 #b05a78 #d98aa0`, pale ink `#b8cff2`, pale lamplight `#f7e3a6`, pale poison
+  `#b5e88a`, crimson light `#c4504a`, rust light `#d98a5a`, ink mid `#5b84c4`, brass mid `#c9a24a`. Paper white
+  stays the Blank's alone.
+- **Held frames**: bursts, sweeps, rings and tech blasts move at 15 frames a second (`Fx.STEP`), like the
+  sprites, instead of gliding every screen frame.
+- **Shapes**: weapon swings and sweeps are crescent smears (thick at the leading edge, thinning to the tail, a
+  lit rim, a glint at the head, speed lines behind), thrusts tapered streaks, sparks short streaks or 1-2 px
+  chips. These replace the swooshes that were taken out of the sprite animations.
+- **Two pictures**: the air (`FxLayer.BIT`: blasts, swings, guards, sparks) over the whole world, and the
+  ground (`FxLayer.adopt(node, true)`: hero shadows, where a charging tech will land, the marks of blasts still to
+  come) drawn inside the world just before the actors, so it lands on the ground under everyone.
+- Anything that must stay crisp text or a readability marker (damage numbers, status marks, enemy tells)
+  stays on the normal world layer.
+- Check them all at once: `xvfb-run -a godot --fixed-fps 60 --resolution 1280x720 --path . -s tools/fx_gallery.gd --
+  out=/tmp/fx.png age=8` (`nofx=1` for the old look).
+
 ## Proportions (Phase 8)
 
 One body plan for every person: the heroes' (Ash is the reference). Measured on the south-facing figure, in

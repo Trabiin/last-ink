@@ -137,6 +137,7 @@ func _ready() -> void:
 	add_child(camera)
 	camera.global_position = leader.global_position
 	camera.reset_smoothing()
+	add_child(FxLayer.new())  # skill, tech and weapon effects drawn as pixel art (scripts/fx_layer.gd)
 	var ambience := Ambience.new()  # art pass: light by the empire clock, lantern, motes
 	ambience.party = self
 	add_child(ambience)
@@ -277,6 +278,8 @@ func take_control(h: Hero) -> void:
 
 
 func _set_leader(h: Hero) -> void:
+	if leader != null and leader != h:
+		h.leader_cue_t = Hero.LEADER_CUE  # a swap: the new hero gets a brief brass marker (no arrow otherwise)
 	leader = h
 	for other in heroes:
 		(other as Hero).controlled = other == h

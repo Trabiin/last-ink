@@ -52,12 +52,55 @@ static func panel(ci: CanvasItem, r: Rect2, kind := "ledger", tint := Color.WHIT
 	ci.draw_style_box(sb, r.grow(2.0))
 
 
+## Where text and rows go inside a panel: past the frame and its inner shadow, with a pixel of air.
+static func inner(r: Rect2, kind := "ledger") -> Rect2:
+	return r.grow(-8.0 if kind == "ledger" else -2.0)
+
+
+## Hand-made surfaces are never one flat colour: a sparse speckle of lighter and darker pixels (with the odd
+## short fibre), like the dithered shading on the sprites. Used on full-screen menu backgrounds (screen()). One fixed pattern, so it never
+## crawls; anchored to the screen, so rows side by side share it.
+static var _grain: ImageTexture = null
+
+
+static func grain(ci: CanvasItem, r: Rect2, alpha := 1.0) -> void:
+	r = _snap(r)
+	if r.size.x < 2.0 or r.size.y < 2.0 or alpha <= 0.02:
+		return
+	if _grain == null:
+		_grain = _make_grain()
+	var src := Rect2(Vector2(fposmod(r.position.x, 256.0), fposmod(r.position.y, 128.0)), r.size)
+	src.size = src.size.min(Vector2(_grain.get_size()) - src.position)
+	ci.draw_texture_rect_region(_grain, Rect2(r.position, src.size), src, Color(1, 1, 1, alpha))
+
+
+static func _make_grain() -> ImageTexture:
+	var w := 1024
+	var h := 640
+	var img := Image.create(w, h, false, Image.FORMAT_RGBA8)
+	var lite := Color(0.36, 0.38, 0.5, 0.22)
+	var dark := Color(0.03, 0.03, 0.06, 0.32)
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 7041
+	for y in h:
+		for x in w:
+			var v := rng.randf()
+			if v < 0.035:
+				img.set_pixel(x, y, dark)
+				if v < 0.006 and x + 1 < w:  # a short fibre
+					img.set_pixel(x + 1, y, dark)
+			elif v > 0.972:
+				img.set_pixel(x, y, lite)
+	return ImageTexture.create_from_image(img)
+
+
 ## Full-screen views (Roster, Buildings, Research...): the game dimmed behind, one big ledger frame round the
 ## whole screen and a brass rule under the header row, instead of a flat dark box.
 static func screen(ci: CanvasItem, vs: Vector2, header_h := 25.0) -> void:
 	ci.draw_rect(Rect2(Vector2.ZERO, vs), Color(0.04, 0.035, 0.06, 0.9))
 	# Pushed past the screen edge so the brass corners only peek in and never sit under the header text.
 	panel(ci, Rect2(Vector2(-7, -7), vs + Vector2(14, 14)), "ledger")
+	grain(ci, Rect2(Vector2(2, 2), vs - Vector2(4, 4)))  # texture in the background only (Ojon, 2026-11-25)
 	var y := floorf(header_h)
 	ci.draw_rect(Rect2(10, y, vs.x - 20, 1), Color("a07a4e"))
 	ci.draw_rect(Rect2(10, y + 1, vs.x - 20, 1), Color(0.07, 0.06, 0.1, 0.8))
@@ -205,3 +248,219 @@ static func sign(ci: CanvasItem, vs: Vector2, y: float, text: String) -> void:
 			else:
 				ci.draw_string(font, at, parts[i], HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(10), PAPER_INK)
 			at.x += pw
+
+
+# ---------------------------------------------------------------- pixel bars, rows and tabs
+## Bars, list rows and slot tabs drawn as pixel art (issue: flat single-colour bars clashed with the art):
+## whole pixels only, an ink outline, a recessed trough, and every fill shaded from a 3-4 step ramp
+## (shadow, base, light, highlight) out of the style palette, with notches that count the value.
+## docs/ART_STYLE.md "UI bars and rows" lists the ramps.
+
+const BAR_INK := Color("12141f")  # outline
+const BAR_TROUGH := Color("1f2233")  # empty part
+const BAR_TROUGH_LIT := Color("2e3247")  # the trough's lower lip
+const BRASS := [Color("5a3e28"), Color("a07a4e"), Color("c9a97a"), Color("e8c65a")]
+## Fill ramps: [shadow, base, light, highlight]. Muted on purpose; the light/highlight rows carry the shine.
+const RAMP := {
+	"hp": [Color("3d5130"), Color("566b3a"), Color("7d8c4c"), Color("a3a865")],  # moss: healthy
+	"hp_mid": [Color("5a3e28"), Color("a07a4e"), Color("c9a97a"), Color("e8c65a")],  # brass: hurt
+	"hp_low": [Color("5c2a26"), Color("a3243b"), Color("c4504a"), Color("d98a6e")],  # crimson: in danger
+	"enemy": [Color("5c2a26"), Color("a3243b"), Color("c4504a"), Color("d98a6e")],
+	"ink": [Color("2b3448"), Color("3a5f9e"), Color("5b84c4"), Color("7fa8ec")],
+	"power": [Color("3a2a1c"), Color("7d5836"), Color("a07a4e"), Color("c9a97a")],
+	"power_full": [Color("7d5836"), Color("c9a24a"), Color("e8c65a"), Color("f7e3a6")],
+	"xp": [Color("3b2a4a"), Color("6a4a7e"), Color("8f6fae"), Color("b49bcc")],  # plum
+	"brass": [Color("5a3e28"), Color("a07a4e"), Color("c9a97a"), Color("e8c65a")],
+	"bone": [Color("8f8270"), Color("b5a68a"), Color("d6cdba"), Color("e6dfcd")],
+	"rust": [Color("5c2a26"), Color("85402f"), Color("c2622d"), Color("d98a5a")],
+	"slate": [Color("2b3448"), Color("3f4c66"), Color("5b6b85"), Color("7f8ca3")],
+	"moss": [Color("2a3a22"), Color("3d5130"), Color("566b3a"), Color("7d8c4c")],
+	"poison": [Color("2a3a22"), Color("4d8a2c"), Color("6fd13a"), Color("a8e07a")],
+	"stone": [Color("2e3247"), Color("575b6b"), Color("7a7d88"), Color("a3a3a6")],
+}
+
+
+## The ramp for any colour: a named one, or four steps built from the colour itself, pulled toward the
+## palette's muted night slate so a bright data colour (a tech's "ffd166") still sits in the art.
+static func ramp(c: Variant) -> Array:
+	if c is String and RAMP.has(c):
+		return RAMP[c]
+	if c is Array:
+		return c
+	var col: Color = c if c is Color else Color(str(c))
+	var base := col.lerp(Color("2e3247"), 0.28)
+	base.s = minf(base.s, 0.62)
+	return [base.darkened(0.45), base, base.lightened(0.22), base.lightened(0.42)]
+
+
+## The HP ramp for a fill fraction: moss, brass under half, crimson under a quarter.
+static func hp_ramp(f: float) -> Array:
+	return RAMP["hp"] if f > 0.5 else (RAMP["hp_mid"] if f > 0.25 else RAMP["hp_low"])
+
+
+static func _snap(r: Rect2) -> Rect2:
+	var p := r.position.round()
+	return Rect2(p, (r.position + r.size).round() - p)
+
+
+## A framed pixel bar filling rect r (the inside: the ink frame sits one pixel outside it).
+##   f       fill 0..1
+##   ramp    a RAMP name, a colour (a ramp is built from it) or a [shadow, base, light, highlight] array
+##   opts    notch: a notch every this many pixels (0 = none); notches: fractions to notch at instead
+##           (techs reached on the charge gauge); hatch: diagonal stripes over the fill (low HP, with
+##           Access.danger_patterns, so it never rests on colour alone); dim: drawn faded (an unused colour);
+##           ghost: a second fraction drawn behind the fill in pale bone (HP just lost, a preview);
+##           frame: false to leave out the ink frame (a bar sitting inside its own panel edge).
+static func bar(ci: CanvasItem, r: Rect2, f: float, rmp: Variant = "brass", opts := {}) -> void:
+	r = _snap(r)
+	if r.size.x < 1.0 or r.size.y < 1.0:
+		return
+	var rp := ramp(rmp)
+	var a := 0.45 if opts.get("dim", false) else 1.0
+	if opts.get("frame", true):
+		ci.draw_rect(r.grow(1.0), Color(BAR_INK, a))
+	ci.draw_rect(r, Color(BAR_TROUGH, a))
+	if r.size.y >= 3.0:
+		ci.draw_rect(Rect2(r.position.x, r.end.y - 1.0, r.size.x, 1.0), Color(BAR_TROUGH_LIT, a))
+	var ghost := clampf(float(opts.get("ghost", 0.0)), 0.0, 1.0)
+	if ghost > f:
+		var gw := roundf(r.size.x * ghost)
+		ci.draw_rect(Rect2(r.position, Vector2(gw, r.size.y)), Color(Color("8f8270"), a))
+	f = clampf(f, 0.0, 1.0)
+	var w := roundf(r.size.x * f)
+	if f > 0.0 and w < 1.0:
+		w = 1.0
+	if w >= 1.0:
+		var fr := Rect2(r.position, Vector2(w, r.size.y))
+		ci.draw_rect(fr, Color(rp[1], a))
+		var h := r.size.y
+		if h >= 2.0:
+			ci.draw_rect(Rect2(fr.position, Vector2(w, 1.0)), Color(rp[2], a))  # lit top row
+		if h >= 3.0:
+			ci.draw_rect(Rect2(fr.position.x, fr.end.y - 1.0, w, 1.0), Color(rp[0], a))  # shaded bottom row
+		if h >= 5.0:  # a short gleam on the second row near the start, like light on glass
+			ci.draw_rect(Rect2(fr.position.x + 1.0, fr.position.y + 1.0, minf(w - 2.0, clampf(roundf(r.size.x * 0.12), 2.0, 10.0)), 1.0), Color(rp[3], a))
+		if opts.get("hatch", false) and h >= 2.0:
+			for x in range(0, int(w), 3):  # 1 px stripes leaning right, in the ramp's shadow
+				for y in int(h):
+					var px := x + y
+					if px < int(w):
+						ci.draw_rect(Rect2(fr.position.x + px, fr.position.y + y, 1.0, 1.0), Color(rp[0], a))
+		if w < r.size.x and w >= 2.0:  # the leading edge, one step lighter
+			ci.draw_rect(Rect2(fr.end.x - 1.0, fr.position.y, 1.0, h - (1.0 if h >= 3.0 else 0.0)), Color(rp[2], a))
+	var marks: Array = []
+	var notch := float(opts.get("notch", 0.0))
+	if notch >= 3.0:
+		var x2 := notch
+		while x2 < r.size.x - 1.0:
+			marks.append(roundf(x2))
+			x2 += notch
+	for nf in opts.get("notches", []):
+		var nx := roundf(r.size.x * float(nf))
+		if nx > 0.0 and nx < r.size.x:
+			marks.append(nx)
+	for m in marks:
+		var lit: bool = m < w
+		ci.draw_rect(Rect2(r.position.x + m, r.position.y, 1.0, r.size.y), Color(rp[0] if lit else BAR_INK, a * (1.0 if lit else 0.8)))
+
+
+## A notch spacing in pixels so a bar of width w shows one notch per `per` of a value whose top is `of`
+## (10 HP a notch); 0 when the notches would crowd closer than 4 px.
+static func notch_every(w: float, of: float, per := 10.0) -> float:
+	if of <= per:
+		return 0.0
+	var px := w * per / of
+	return px if px >= 4.0 else 0.0
+
+
+## The small bar over a fighter's head in the field (world pixels at the camera's zoom): one ink-framed
+## row of fill shaded light over base, centred on x = 0 at the given top. Hidden at full health by callers.
+static func field_bar(ci: CanvasItem, top: float, w: float, f: float, rmp: Variant = "enemy", hatch := false) -> void:
+	var rp := ramp(rmp)
+	var r := _snap(Rect2(-roundf(w / 2.0), top, roundf(w), 2.0))
+	ci.draw_rect(r.grow(1.0), BAR_INK)
+	ci.draw_rect(r, BAR_TROUGH)
+	f = clampf(f, 0.0, 1.0)
+	var fw := maxf(1.0 if f > 0.0 else 0.0, roundf(r.size.x * f))
+	if fw >= 1.0:
+		ci.draw_rect(Rect2(r.position, Vector2(fw, 1.0)), rp[2])
+		ci.draw_rect(Rect2(r.position + Vector2(0, 1), Vector2(fw, 1.0)), rp[1])
+		if hatch:
+			for x in range(1, int(fw), 3):
+				ci.draw_rect(Rect2(r.position.x + x, r.position.y, 1.0, 2.0), rp[0])
+
+
+## A list row (a hero, a building, a research): a recessed ink panel with a lit lower lip and a dark top
+## edge, in place of a flat rectangle; the chosen row gets a warm fill and a brass frame with corner studs.
+## focused = false: the chosen row of a list that is not the one being steered (a muted frame).
+static func row(ci: CanvasItem, r: Rect2, on := false, focused := true) -> void:
+	r = _snap(r)
+	if r.size.x < 3.0 or r.size.y < 3.0:
+		return
+	ci.draw_rect(r, Color("2a2019") if on else Color("191a26"))
+	ci.draw_rect(Rect2(r.position, Vector2(r.size.x, 1.0)), BAR_INK)  # dark top edge: the row sits recessed
+	ci.draw_rect(Rect2(r.position.x, r.end.y - 1.0, r.size.x, 1.0), Color("3a2a1c") if on else Color("262838"))  # lit lower lip
+	if on:
+		frame(ci, r, BRASS if focused else [Color("2a2019"), Color("5a3e28"), Color("7d5836"), Color("8f8270")])
+
+
+## A brass pixel frame round r: a 1 px rule, darker on the lower and right sides (light from the top
+## left), with a lighter stud at each corner.
+static func frame(ci: CanvasItem, r: Rect2, col: Array = BRASS) -> void:
+	r = _snap(r)
+	ci.draw_rect(Rect2(r.position, Vector2(r.size.x, 1.0)), col[2])
+	ci.draw_rect(Rect2(r.position, Vector2(1.0, r.size.y)), col[2])
+	ci.draw_rect(Rect2(r.position.x, r.end.y - 1.0, r.size.x, 1.0), col[1])
+	ci.draw_rect(Rect2(r.end.x - 1.0, r.position.y, 1.0, r.size.y), col[1])
+	for c in [r.position, Vector2(r.end.x - 2.0, r.position.y), Vector2(r.position.x, r.end.y - 2.0), r.end - Vector2(2, 2)]:
+		ci.draw_rect(Rect2(c, Vector2(2, 2)), col[3])
+		ci.draw_rect(Rect2(c + Vector2(1, 1), Vector2(1, 1)), col[0])
+
+
+## A bookmark ribbon down the left edge of a row (a gear slot's kind, a tech's colour, a bond's mood):
+## 4 px wide, shaded from its ramp, with a notched tail at the bottom, instead of a flat colour strip.
+static func tab(ci: CanvasItem, r: Rect2, rmp: Variant, dim := false) -> void:
+	r = _snap(r)
+	var rp := ramp(rmp)
+	var a := 0.4 if dim else 1.0
+	var x := r.position.x + 1.0
+	var top := r.position.y + 1.0
+	var h := r.size.y - 3.0
+	if h < 4.0:
+		return
+	ci.draw_rect(Rect2(x - 1.0, top, 6.0, h + 1.0), Color(BAR_INK, a))  # outline
+	ci.draw_rect(Rect2(x, top, 4.0, h - 2.0), Color(rp[1], a))
+	ci.draw_rect(Rect2(x, top, 1.0, h - 2.0), Color(rp[2], a))  # lit left edge
+	ci.draw_rect(Rect2(x + 3.0, top, 1.0, h - 2.0), Color(rp[0], a))  # shaded right edge
+	ci.draw_rect(Rect2(x, top, 4.0, 1.0), Color(rp[3], a))  # a stitch of light where it folds over the top
+	# The swallow tail: two points with a notch between them.
+	ci.draw_rect(Rect2(x, top + h - 2.0, 1.0, 2.0), Color(rp[1], a))
+	ci.draw_rect(Rect2(x + 3.0, top + h - 2.0, 1.0, 2.0), Color(rp[0], a))
+	ci.draw_rect(Rect2(x + 1.0, top + h - 2.0, 2.0, 1.0), Color(rp[0], a))
+
+
+## A small square swatch (an Ink colour's chip): framed and shaded like a gem.
+static func swatch(ci: CanvasItem, r: Rect2, rmp: Variant, dim := false) -> void:
+	r = _snap(r)
+	var rp := ramp(rmp)
+	var a := 0.4 if dim else 1.0
+	ci.draw_rect(r.grow(1.0), Color(BAR_INK, a))
+	ci.draw_rect(r, Color(rp[1], a))
+	ci.draw_rect(Rect2(r.position, Vector2(r.size.x, 1.0)), Color(rp[2], a))
+	ci.draw_rect(Rect2(r.position.x, r.end.y - 1.0, r.size.x, 1.0), Color(rp[0], a))
+	ci.draw_rect(Rect2(r.position + Vector2(1, 1), Vector2(1, 1)), Color(rp[3], a))
+
+
+## A scroll bar: an ink-framed trough with a brass thumb (shaded, lit on its left) at `at` pixels down,
+## `len` long.
+static func scrollbar(ci: CanvasItem, track: Rect2, at: float, len: float) -> void:
+	track = _snap(track)
+	ci.draw_rect(track.grow(1.0), BAR_INK)
+	ci.draw_rect(track, BAR_TROUGH)
+	var th := _snap(Rect2(track.position.x, track.position.y + at, track.size.x, len)).intersection(track)
+	if th.size.y < 1.0:
+		return
+	ci.draw_rect(th, BRASS[1])
+	ci.draw_rect(Rect2(th.position, Vector2(1.0, th.size.y)), BRASS[2])
+	ci.draw_rect(Rect2(th.position, Vector2(th.size.x, 1.0)), BRASS[3])
+	ci.draw_rect(Rect2(th.position.x, th.end.y - 1.0, th.size.x, 1.0), BRASS[0])

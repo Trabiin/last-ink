@@ -177,13 +177,11 @@ func _draw() -> void:
 		var row := Rect2(LIST_X, 32 + i * row_h, LIST_W, row_h - 3)
 		_row_rects.append(row)
 		var on := i == sel
-		draw_rect(row, Color(0.16, 0.13, 0.09) if on else Color(0.09, 0.08, 0.11))
-		if on:
-			draw_rect(row, GOLD if focus == 0 else Color(0.55, 0.48, 0.3), false, 1.0)
+		UiSkin.row(self, row, on, focus == 0)
 		var injured := int(Empire.recruits[id]["injured"]) > 0
 		var role_col := Color("ff9b8a") if injured else Color(0.62, 0.6, 0.62)
 		if row_h >= 26.0:
-			draw_rect(Rect2(row.position + Vector2(5, 7), Vector2(5, 13)), TIER_COLORS[r["tier"]])
+			UiSkin.swatch(self, Rect2(row.position + Vector2(5, 7), Vector2(5, 13)), TIER_COLORS[r["tier"]])
 			_text(row.position + Vector2(16, 12), r["name"], 10, GOLD if on else Color("ece6da"))
 			var rx := 16.0
 			if UiSkin.draw_icon(self, "role_" + Empire.role_of(id), Rect2(row.position + Vector2(15, 15), Vector2(10, 10))):
@@ -191,45 +189,41 @@ func _draw() -> void:
 			_text(row.position + Vector2(rx, 23), Empire.role_label(id), 8, role_col)
 		else:  # compact: name and role on one line
 			var mid := row.size.y / 2.0
-			draw_rect(Rect2(row.position + Vector2(5, mid - 5), Vector2(5, 10)), TIER_COLORS[r["tier"]])
+			UiSkin.swatch(self, Rect2(row.position + Vector2(5, mid - 5), Vector2(5, 10)), TIER_COLORS[r["tier"]])
 			draw_string(font, row.position + Vector2(16, mid + 3.5), r["name"], HORIZONTAL_ALIGNMENT_LEFT, 92, Access.fs(9), GOLD if on else Color("ece6da"))
 			draw_string(font, row.position + Vector2(110, mid + 3), Empire.role_label(id), HORIZONTAL_ALIGNMENT_LEFT, LIST_W - 114, Access.fs(7), role_col)
 	if n == 0:
 		return
 
-	# Detail: who they are
+	# Detail: who they are, written up on a ledger page (LedgerPage), on its lines.
 	var id: String = ids[sel]
 	var r := Empire.recruit(id)
-	var x := 236.0
-	_text(Vector2(x, 46), r["name"], 15, Color("f3efe4"))
-	_text(Vector2(x, 59), r["title"], 9, Color(0.75, 0.72, 0.7))
-	_text(Vector2(x + 120, 59), Loc.t(TIER_NAMES[r["tier"]]), 9, TIER_COLORS[r["tier"]])
-	var y := 76.0
+	var pg := LedgerPage.begin(self, Rect2(LIST_X + LIST_W + 6, 30, OPT_X - LIST_X - LIST_W - 14, vs.y - 30 - 16), font)
+	pg.heading(r["name"], 15)
+	pg.line(r["title"], 8, LedgerPage.INK_SOFT, Loc.t(TIER_NAMES[r["tier"]]), LedgerPage.ink(TIER_COLORS[r["tier"]]))
+	pg.skip()
 	for k in STAT_KEYS:
 		var v := int(r["stats"][k])
-		_text(Vector2(x, y + 7), Loc.t(STAT_NAMES[k]), 9, Color(0.72, 0.7, 0.72))
-		for seg in 10:
-			var c := Color(0.85, 0.78, 0.6) if seg < v else Color(0.18, 0.16, 0.2)
-			draw_rect(Rect2(x + 44 + seg * 11, y, 9, 7), c)
-		_text(Vector2(x + 158, y + 7), str(v), 9, Color(0.85, 0.83, 0.78))
-		y += 13
-	y += 8
+		var sr := pg.space()
+		if sr.size.x <= 0.0:
+			break
+		var base := sr.end.y - 1.0
+		draw_string(font, Vector2(sr.position.x, base), Loc.t(STAT_NAMES[k]), HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(8), LedgerPage.INK_SOFT)
+		draw_string(font, Vector2(sr.end.x - font.get_string_size(str(v), HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(8)).x, base), str(v), HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(8), LedgerPage.INK)
+		var cell := clampf((sr.size.x - 60.0) / 10.0, 5.0, 11.0)
+		pg.pips(Rect2(sr.position.x + 44, sr.position.y, cell * 10.0, sr.size.y), v, 10, cell)
+	pg.skip()
 	for t in r.get("traits", []):
 		var td: Dictionary = Empire.trait_data.get(t, {"name": t, "desc": ""})
-		var tx := x
-		if UiSkin.draw_icon(self, "trait_" + str(t), Rect2(x, y - 10, 12, 12)):
-			tx = x + 15
-		_text(Vector2(tx, y), td["name"], 9, Color("e8c66a"))
-		y += 3
-		y += _wrap(Vector2(x, y + 9), td["desc"], 190, 8, Color(0.68, 0.66, 0.68)) + 10
-	y += 4
-	y += _wrap(Vector2(x, y + 9), r["blurb"], 190, 8, Color(0.55, 0.53, 0.56))
+		pg.icon_line("trait_" + str(t), td["name"], 8, LedgerPage.GOLD)
+		pg.para(td["desc"], 8, LedgerPage.INK_SOFT)
+	pg.skip()
+	pg.para(r["blurb"], 8, LedgerPage.INK)
 	if Empire.has_bond(id):
 		var br := Empire.bond_rank(id)
-		y += 6
-		_text(Vector2(x, y + 9), tr("Bond rank %d, %s%s") % [br, Empire.bond_rank_name(br), tr("  (something on their mind)") if Betrayal.marked(id) else (tr("  (wants a word: H)") if Empire.bond_next_scene(id) > 0 else "")], 8, Color("ff8fa3") if not Betrayal.marked(id) else Color(0.6, 0.58, 0.63))
-		y += 12
-		_wrap(Vector2(x, y + 9), tr("Likes %s. Pink heart: a role they like. Grey: one they dislike.") % Empire.bond_info(id).get("likes_text", "?"), 190, 7, Color(0.6, 0.58, 0.6))
+		pg.skip()
+		pg.para(tr("Bond rank %d, %s%s") % [br, Empire.bond_rank_name(br), tr("  (something on their mind)") if Betrayal.marked(id) else (tr("  (wants a word: H)") if Empire.bond_next_scene(id) > 0 else "")], 8, LedgerPage.RED if not Betrayal.marked(id) else LedgerPage.INK_SOFT)
+		pg.para(tr("Likes %s. Pink heart: a role they like. Grey: one they dislike.") % Empire.bond_info(id).get("likes_text", "?"), 7, LedgerPage.INK_SOFT)
 
 	# Detail: what they could do
 	_text(Vector2(OPT_X, 46), tr("Assign"), 11, Color("f3efe4"))
@@ -243,9 +237,7 @@ func _draw() -> void:
 		var rr := Rect2(OPT_X, oy, size.x - OPT_X - 8, 17)
 		_opt_rects.append(rr)
 		var hl := focus == 1 and i == opt
-		draw_rect(rr, Color(0.16, 0.13, 0.09) if hl else Color(0.09, 0.08, 0.11))
-		if hl:
-			draw_rect(rr, GOLD, false, 1.0)
+		UiSkin.row(self, rr, hl)
 		var col := Color("ece6da") if o["enabled"] else Color(0.42, 0.41, 0.44)
 		if i == current:
 			draw_circle(rr.position + Vector2(7, 8.5), 2.5, GOLD)

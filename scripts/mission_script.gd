@@ -382,8 +382,7 @@ class Guarded extends StaticBody2D:
 	func _draw() -> void:
 		var ratio := float(hp) / max_hp
 		draw_arc(Vector2(0, -4), 14.0, 0, TAU, 32, Color(0.55, 0.82, 1.0, 0.25 + 0.4 * ratio) if flash_t <= 0.0 else Access.flash(Color(0.55, 0.82, 1.0)), 1.5)
-		draw_rect(Rect2(-14, -40, 28, 3), Color(0, 0, 0, 0.6))
-		draw_rect(Rect2(-14, -40, 28.0 * ratio, 3), Color("8ad1ff"))
+		UiSkin.field_bar(self, -41, 28, ratio, "ink", Access.danger_patterns and ratio <= 0.25)
 
 
 ## The named enemy's bar at the top of the screen, and the escort's health under the goal line.
@@ -404,8 +403,8 @@ class Overlay extends Control:
 		if e != null and is_instance_valid(e) and not e.dead:
 			var w := minf(vs.x * 0.5, 320.0)
 			var r := Rect2((vs.x - w) / 2.0, 30.0, w, 6.0)
-			draw_rect(r.grow(1.0), Color(0, 0, 0, 0.7))
-			draw_rect(Rect2(r.position, Vector2(w * float(e.hp) / e.max_hp, r.size.y)), Color("d9534f"))
+			var ef := float(e.hp) / e.max_hp
+			UiSkin.bar(self, r, ef, "enemy", {"notch": roundf(w / 10.0), "hatch": Access.danger_patterns and ef <= 0.25})
 			var nw := f.get_string_size(run.elite_name, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(9)).x
 			draw_string_outline(f, Vector2((vs.x - nw) / 2.0, 26.0), run.elite_name, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(9), 3, Color(0, 0, 0, 0.85))
 			draw_string(f, Vector2((vs.x - nw) / 2.0, 26.0), run.elite_name, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(9), Color("ffe7a3"))
@@ -416,8 +415,8 @@ class Overlay extends Control:
 			var txt := "%s%s" % [es.hero_name, tr("  DOWN: get to them") if es.dead else ""]
 			draw_string_outline(f, Vector2(x, y), txt, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(8), 3, Color(0, 0, 0, 0.85))
 			draw_string(f, Vector2(x, y), txt, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(8), Color("ff9b8a") if es.dead else Color("f3efe4"))
-			draw_rect(Rect2(x, y + 3, 80, 4), Color(0, 0, 0, 0.6))
-			draw_rect(Rect2(x, y + 3, 80.0 * float(es.hp) / maxf(es.max_hp, 1), 4), Color("9fe07a"))
+			var hf := float(es.hp) / maxf(es.max_hp, 1)
+			UiSkin.bar(self, Rect2(x, y + 4, 80, 4), hf, UiSkin.hp_ramp(hf), {"notch": UiSkin.notch_every(80, es.max_hp), "hatch": Access.danger_patterns and hf <= 0.25})
 			if es.dead:
 				var left := maxf(DOWN_LIMIT - run.down_t, 0.0)
-				draw_rect(Rect2(x, y + 9, 80.0 * left / DOWN_LIMIT, 2), Color("ff9b8a"))
+				UiSkin.bar(self, Rect2(x, y + 11, 80, 2), left / DOWN_LIMIT, "hp_low", {"hatch": Access.danger_patterns})

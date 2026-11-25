@@ -106,6 +106,7 @@ func _ready() -> void:
 	heroes = [leader]
 	_place_people()
 	_spawn_townsfolk()
+	add_child(FxLayer.new())  # effects drawn as pixel art (scripts/fx_layer.gd)
 	var ambience := Ambience.new()  # day/night light, lantern after dark, pollen and fireflies
 	ambience.party = self
 	ambience.live = true

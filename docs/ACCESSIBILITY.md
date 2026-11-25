@@ -20,6 +20,7 @@ the most important ones, shown before the title menu and the prologue):
 | Dialogue log | Everything said this session: Backspace / gamepad Back / mouse wheel up / "Log" in any conversation, or from this page. |
 | Font | Pixel (Jersey 10, headings Jacquard 12) or Readable: Atkinson Hyperlegible everywhere, headings included (the title logo stays, it is art). Applies at once. |
 | Map markings | Shapes and numbers (default): on the Command Table every owner has a shape (yours a flag, unclaimed a ring, the Concord a square, the Coven a triangle, the Guild a diamond, erased land a cross) on the map, the legend and the panel; every province shows its Fray in a box after its name (plain when Safe, a double top rule when Fraying, hatched when Unravelling) and Unravelling land is hatched on the map. Colour only: the old washes. |
+| Leader marker | After a swap (default): a small brass marker drops in over the hero you now control and fades after a second. Always: it stays over that hero. (No marker otherwise: the camera follows your hero and its HUD plate is framed in brass.) |
 | Captions | Important sounds as text near the bottom of the screen: warning and alarm bells (saying what they are about, e.g. a Blank surge coming), a hero falling, fanfares, level-ups, the Blank's hum (with an arrow towards it). |
 | Camera motion | Full or Reduced: the camera sticks to the hero instead of gliding after them, the Command Table's map jumps instead of sweeping, the fog stops drifting. |
 
@@ -55,6 +56,9 @@ section `[access]`.
   that has no room at big sizes.
 - **Enemy tells** use `Telegraph`: `circle` / `rect` for where an attack lands, `aim` for aim lines,
   `alert` for the wind-up mark. Never a red-only shape.
+- **Bars** use `UiSkin.bar` / `UiSkin.field_bar`. Anything that warns (low HP, high Fray, a boss's second
+  phase) passes `hatch` when `Access.danger_patterns` is on, so the warning is stripes as well as a colour,
+  and HP bars carry a notch every 10 HP so their length reads without colour.
 - **Flashes**: `Access.flash(col)` for a hit flash colour, `Access.strobe(t, hz)` for blinking,
   `Access.calm(a)` for bright glows, `Access.pulse(t, speed)` for pulsing. `Fx.burst` already calms itself.
 - **Anything that shows spoken lines** calls `DialogueLog.track(self, line, kind)` every frame while the

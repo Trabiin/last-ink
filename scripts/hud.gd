@@ -7,6 +7,7 @@ var banter_t := 0.0
 var center_text := ""
 var sign_text := ""
 var help_t := 14.0
+var _ghost := {}  # hero instance id -> the HP fraction the bar's draining "just lost" part still shows
 
 
 func _ready() -> void:
@@ -35,6 +36,12 @@ func _process(delta: float) -> void:
 	# timers only run in play, so the control hints wait until the opening talk is over.
 	if not get_tree().paused:
 		banter_t = maxf(banter_t - delta, 0.0)
+		if party:
+			for h in party.heroes:  # the lost-HP ghost waits a moment, then drains
+				var hid := str(h.get_instance_id())
+				var r := clampf(float(h.hp) / maxf(h.max_hp, 1), 0.0, 1.0)
+				if _ghost.has(hid) and _ghost[hid] > r:
+					_ghost[hid] = maxf(r, float(_ghost[hid]) - delta * 0.35)
 		help_t = maxf(help_t - delta, 0.0)
 	queue_redraw()
 
@@ -55,7 +62,7 @@ func size_px() -> Vector2:
 	return get_viewport_rect().size
 
 
-const INK_COL := Color("6aa8ff")
+const INK_COL := Color("7fa8ec")
 
 
 ## The leader's abilities, bottom-right: key, name, Ink cost, cooldown sweep.
@@ -75,24 +82,26 @@ func _draw_ability_bar(hero: Hero, vs: Vector2) -> void:
 		UiSkin.panel(self, r, "button", Color.WHITE if why == "" else Color(0.6, 0.6, 0.65))
 		var col := Abilities.color_of(a)
 		var cd: float = hero.cooldowns[i]
-		if cd > 0.0:
-			draw_rect(Rect2(x, y, w * cd / float(a.get("cooldown", 1.0)), 32), Color(1, 1, 1, 0.08))
-		draw_rect(Rect2(x + 2, y + 3, 2, 26), col if why == "" else Color(col, 0.35))  # the ability's colour, as a ribbon
+		if cd > 0.0:  # cooling down: the slot is shaded from the right, with a brass edge where it stands
+			var cw := roundf((w - 4.0) * cd / float(a.get("cooldown", 1.0)))
+			draw_rect(Rect2(x + w - 2.0 - cw, y + 2, cw, 28), Color(UiSkin.BAR_INK, 0.5))
+			draw_rect(Rect2(x + w - 2.0 - cw, y + 2, 1, 28), Color(UiSkin.BRASS[1], 0.8))
+		UiSkin.tab(self, Rect2(x + 1, y + 2, 6, 28), col, why != "")  # the ability's colour, as a ribbon
 		var txt_col := Color.WHITE if why == "" else Color(0.6, 0.6, 0.6)
 		var ox := 0.0  # text starts after the ability's icon
-		if UiSkin.draw_icon(self, str(a.get("id", "")), Rect2(x + 7, y + 6, 20, 20), Color.WHITE if why == "" else Color(0.5, 0.5, 0.55)):
-			ox = 24.0
+		if UiSkin.draw_icon(self, str(a.get("id", "")), Rect2(x + 8, y + 6, 20, 20), Color.WHITE if why == "" else Color(0.5, 0.5, 0.55)):
+			ox = 21.0
 		var k := Prompts.key("ability_%d" % (i + 1))  # 1-4, or LB / RB / LT / RT on a pad
 		if k == "":
 			k = str(i + 1)
-		_text(Vector2(x + 4 + ox, y + 10), k, 9, col, false)
+		_text(Vector2(x + 9 + ox, y + 10), k, 9, UiSkin.ramp(col)[3], false)
 		var kw := ThemeDB.fallback_font.get_string_size(k, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(9)).x
-		var nx := x + 8 + ox + kw  # long names at large text sizes end in "..." inside the slot
+		var nx := x + 13 + ox + kw  # long names at large text sizes end in "..." inside the slot
 		_text(Vector2(nx, y + 10), Access.fit(ThemeDB.fallback_font, str(a.get("name", "")), Access.fs(8), r.end.x - 5.0 - nx), 8, txt_col, false)
-		var cost_col := INK_COL if why != "ink" else Color("ff6b6b")
-		_text(Vector2(x + 4 + ox, y + 22), tr("%d Ink") % int(a.get("cost", 0)), 8, cost_col, false)
+		var cost_col := INK_COL if why != "ink" else Color("c4504a")
+		_text(Vector2(x + 9 + ox, y + 22), tr("%d Ink") % int(a.get("cost", 0)), 8, cost_col, false)
 		if cd > 0.0:
-			_text(Vector2(x + 44 + ox, y + 22), Loc.dec(cd) + "s", 8, Color(0.8, 0.8, 0.85), false)
+			_text(Vector2(x + 46 + ox, y + 22), Loc.dec(cd) + "s", 8, Color(0.8, 0.8, 0.85), false)
 		x += w + 4.0
 
 
@@ -122,7 +131,7 @@ func _draw() -> void:
 			x += fw
 		var name_col := Color(0.6, 0.6, 0.6) if hero.dead else Color.WHITE
 		var pct := int(round(hero.power * 100.0))
-		var pcol := Color("ffd166") if pct >= 100 else Color(0.8, 0.8, 0.85)
+		var pcol := Color("f2c25c") if pct >= 100 else Color(0.8, 0.8, 0.85)
 		# The gauge sits against the plate's right edge, the level just left of it, and the name gets
 		# what is left (trimmed with "..."), so nothing runs into the frame at large text sizes.
 		var hf := ThemeDB.fallback_font
@@ -134,31 +143,34 @@ func _draw() -> void:
 		if not hero.charge_ready:  # a ready charged tech shows TECH here instead
 			_text(Vector2(px, y + 10), pct_s, 9, pcol, false)
 		_text(Vector2(lx, y + 10), lv_s, 8, Color(0.75, 0.72, 0.6), false)
-		# XP sliver along the top edge of the panel
-		draw_rect(Rect2(x, y, 112.0 * Progress.xp_fraction(hero.hero_id), 1), Color("b9a0e8"))
-		# HP bar
-		draw_rect(Rect2(x + 5, y + 14, 102, 5), Color(0, 0, 0, 0.6))
-		var ratio := float(hero.hp) / hero.max_hp
-		var hcol := Color("6bd88b") if ratio > 0.5 else (Color("f2c14e") if ratio > 0.25 else Color("ff6b6b"))
-		draw_rect(Rect2(x + 5, y + 14, 102.0 * ratio, 5), hcol)
-		# power gauge
-		draw_rect(Rect2(x + 5, y + 21, 102, 2), Color(0, 0, 0, 0.6))
-		draw_rect(Rect2(x + 5, y + 21, 102.0 * hero.power, 2), pcol)
-		if hero.charging and hero.charge_t >= Techs.TAP:  # charged tech filling (issues #8, #24)
+		# XP: a thin plum line along the top edge of the panel
+		UiSkin.bar(self, Rect2(x + 5, y + 2, 102, 1), Progress.xp_fraction(hero.hero_id), "xp", {"frame": false})
+		# HP: shaded pixel bar, a notch every 10 HP, the part just lost draining away in bone,
+		# and stripes once it is low (with danger patterns on) so the warning never rests on colour.
+		var ratio := clampf(float(hero.hp) / hero.max_hp, 0.0, 1.0)
+		var hid := str(hero.get_instance_id())
+		var ghost: float = maxf(float(_ghost.get(hid, ratio)), ratio)
+		_ghost[hid] = ghost
+		UiSkin.bar(self, Rect2(x + 5, y + 14, 102, 4), ratio, UiSkin.hp_ramp(ratio),
+			{"notch": UiSkin.notch_every(102, hero.max_hp), "ghost": ghost, "hatch": Access.danger_patterns and ratio <= 0.25 and not hero.dead})
+		# Power gauge: brass, lamplight once full; while a charged tech fills, the tech's own colour with a
+		# notch for every tech this hold can reach.
+		var charging: bool = hero.charging and hero.charge_t >= Techs.TAP  # charged tech filling (issues #8, #24)
+		if charging:
 			var tcol := Techs.color_of(hero)
-			draw_rect(Rect2(x + 5, y + 20, 102.0 * Techs.fill(hero), 4), tcol.lightened(0.6) if hero.charge_ready else Color(tcol, 0.8))
-			for st in Techs.stages(hero):  # a notch for every tech this hold can reach, lit once reached
-				var sx := x + 5 + 102.0 * float(st[0])
-				var lit: bool = hero.charge_t >= Techs.charge_time(st[1])
-				draw_rect(Rect2(sx - 1, y + 19, 2, 6), Color(str(st[1].get("color", "ffffff"))).lightened(0.4) if lit else Color(0, 0, 0, 0.7))
+			var marks := []
+			for st in Techs.stages(hero):
+				marks.append(float(st[0]))
+			UiSkin.bar(self, Rect2(x + 5, y + 21, 102, 2), Techs.fill(hero), UiSkin.RAMP["power_full"] if hero.charge_ready else UiSkin.ramp(tcol), {"notches": marks})
 			if hero.charge_ready:
 				UiSkin.draw_icon(self, "tech_" + hero.hero_id, Rect2(x + 99, y + 2, 10, 10))
 				var tw := ThemeDB.fallback_font.get_string_size(tr("TECH"), HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(9)).x
-				_text(Vector2(minf(x + 80, x + 97 - tw), y + 10), tr("TECH"), 9, tcol.lightened(0.3), false)
+				_text(Vector2(minf(x + 80, x + 97 - tw), y + 10), tr("TECH"), 9, UiSkin.RAMP["power_full"][3], false)
+		else:
+			UiSkin.bar(self, Rect2(x + 5, y + 21, 102, 2), hero.power, "power_full" if pct >= 100 else "power", {"notches": [0.25, 0.5, 0.75]})
 		# Ink (abilities, issue #7)
 		if hero.max_ink > 0.0:
-			draw_rect(Rect2(x + 5, y + 25, 102, 3), Color(0, 0, 0, 0.6))
-			draw_rect(Rect2(x + 5, y + 25, 102.0 * hero.ink / hero.max_ink, 3), INK_COL)
+			UiSkin.bar(self, Rect2(x + 5, y + 25, 102, 2), hero.ink / hero.max_ink, "ink")
 		x += 118.0
 	if party.leader and not party.touch_active():
 		_draw_ability_bar(party.leader, vs)

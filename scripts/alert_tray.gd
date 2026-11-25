@@ -214,7 +214,7 @@ func _draw() -> void:
 		var hw := font.get_string_size(("  " + hint if hint != "" else "") + key, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(7)).x
 		goal_rect = Rect2(x, y, minf(gw + hw + 12, width + 60), 13)
 		draw_rect(goal_rect, Color(0.06, 0.05, 0.08, 0.78))
-		draw_rect(Rect2(x, y, 2, 13), GOLD)
+		UiSkin.tab(self, Rect2(x - 1, y, 6, 13), "brass")
 		_text(Vector2(x + 6, y + 10), gs, 8, GOLD)
 		if hint != "":
 			_text(Vector2(x + 6 + gw + 6, y + 10), hint, 7, Color(0.75, 0.72, 0.66))
@@ -235,7 +235,7 @@ func _draw() -> void:
 		if Engine.get_process_frames() - int(a["frame"]) < 240:
 			pulse = 0.5 + 0.5 * sin(t * 8.0)  # new: blink for a few seconds
 		draw_rect(r, Color(0.06, 0.05, 0.08, 0.8))
-		draw_rect(Rect2(x, y, 2, ROW_H), (WARN if a["warning"] else GOLD).lerp(Color.WHITE, pulse * 0.6))
+		UiSkin.tab(self, Rect2(x - 1, y, 6, ROW_H), ("hp_low" if a["warning"] else "brass") if pulse < 0.5 or Access.reduce_flashing else UiSkin.RAMP["bone"])  # new: flicks to bone for a few seconds (held still with reduced flashing)
 		var go := (tr("%s: go") % tab_hint) if shown == 0 else Loc.t("go")
 		var gw2 := font.get_string_size(go, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(7)).x
 		_text(Vector2(x + 6, y + 9), _fit(str(a["text"]), width - gw2 - 30, 8), 8, col)

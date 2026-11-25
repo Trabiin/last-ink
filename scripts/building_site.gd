@@ -219,8 +219,7 @@ func _draw_over() -> void:
 		_over.draw_string(font, Vector2(r.position.x + 4.0, y), label, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(6), Color("f3e3c3"))
 	if not job.is_empty():
 		var by := y - 12.0
-		_over.draw_rect(Rect2(-24, by, 48, 4), Color(0.1, 0.08, 0.12, 0.85))
-		_over.draw_rect(Rect2(-24, by, 48 * Empire.job_progress(job), 4), Color("ffd166"))
+		UiSkin.bar(_over, Rect2(-24, by, 48, 3), Empire.job_progress(job), "brass", {"notches": [0.25, 0.5, 0.75]})
 		var t := Empire.job_left_text(job)
 		var tw := font.get_string_size(t, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(6)).x
 		_over.draw_string_outline(font, Vector2(-tw / 2.0, by - 2), t, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(6), 2, Color(0, 0, 0, 0.8))

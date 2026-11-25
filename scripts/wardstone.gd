@@ -47,5 +47,4 @@ func _draw() -> void:
 	draw_line(Vector2(0, -19), Vector2(0, -5), rune, 1.5)
 	draw_line(Vector2(-3, -15), Vector2(3, -9), rune, 1.0)
 	draw_line(Vector2(3, -15), Vector2(-3, -9), rune, 1.0)
-	draw_rect(Rect2(-12, -32, 24, 3), Color(0, 0, 0, 0.6))
-	draw_rect(Rect2(-12, -32, 24.0 * ratio, 3), Color("8ad1ff"))
+	UiSkin.field_bar(self, -33, 24, ratio, "ink", Access.danger_patterns and ratio <= 0.25)

@@ -51,7 +51,7 @@ func _draw() -> void:
 	modulate.a = fade
 	draw_rect(r, PANEL)
 	draw_rect(r, EDGE, false, 1.0)
-	draw_rect(Rect2(r.position, Vector2(3, h)), GOLD)
+	UiSkin.tab(self, r, "brass")
 	var tx := r.position.x + 10.0
 	draw_string(_font, Vector2(tx, r.position.y + 4.0 + hs), heading, HORIZONTAL_ALIGNMENT_LEFT, w - 14.0, Access.fs(8), GOLD)
 	draw_string(_font, Vector2(tx, r.position.y + 8.0 + hs + ts), title, HORIZONTAL_ALIGNMENT_LEFT, w - 14.0, Access.fs(11), TEXT)

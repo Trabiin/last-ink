@@ -215,6 +215,10 @@ func _access_rows(first: bool) -> void:
 		_rows.append({"id": "a:map", "kind": "cycle", "label": tr("Map markings"), "value": tr("Shapes and numbers") if A.map_symbols else tr("Colour only"),
 			"detail": tr("On the Command Table every owner has a shape, each province shows its Fray as a number and Unravelling land is hatched.") if A.map_symbols
 				else tr("Owners and Fray show as colours on the map only.")})
+	if not first:
+		_rows.append({"id": "a:leader", "kind": "cycle", "label": tr("Leader marker"), "value": Loc.t(A.LEADER_MARKERS[A.leader_marker]),
+			"detail": tr("A small brass marker stays over the hero you control.") if A.leader_marker == 1
+				else tr("A small brass marker shows over the hero you control for a moment after you swap heroes.")})
 	_rows.append({"id": "a:captions", "kind": "cycle", "label": tr("Captions"), "value": tr("On") if A.captions else tr("Off"),
 		"detail": tr("Important sounds show as text: warning bells, a hero falling, the Blank's hum (with an arrow to where it comes from).")})
 	_rows.append({"id": "a:tech", "kind": "cycle", "label": tr("Charged techs"), "value": Loc.t(A.TECH_MODES[A.tech_mode]),
@@ -355,6 +359,8 @@ func _step_access(what: String, step: int) -> void:
 			A.reduce_motion = step > 0
 		"captions":
 			A.captions = step > 0
+		"leader":
+			A.leader_marker = clampi(A.leader_marker + step, 0, A.LEADER_MARKERS.size() - 1)
 	A.save()
 
 
@@ -468,6 +474,7 @@ func _value_index(id: String) -> int:
 		"a:map": return 0 if Access.map_symbols else 1
 		"a:motion": return 1 if Access.reduce_motion else 0
 		"a:captions": return 1 if Access.captions else 0
+		"a:leader": return Access.leader_marker
 		"as:damage": return Assists.damage_i
 		"as:pace": return Assists.pace_i
 		"as:recover": return 1 if Assists.recover else 0
@@ -707,8 +714,7 @@ func _draw() -> void:
 				_str(font, Vector2(x1 - 8, y + ty), ">", 11, col)
 				if r["kind"] == "slider":
 					var bar := Rect2(vx + 14, y + ty - 7, 92, 6)
-					draw_rect(bar, Color(1, 1, 1, 0.12))
-					draw_rect(Rect2(bar.position, Vector2(bar.size.x * float(r["level"]) / 100.0, bar.size.y)), col)
+					UiSkin.bar(self, bar, float(r["level"]) / 100.0, "brass", {"notches": [0.25, 0.5, 0.75], "dim": col.v < 0.6})
 					_str(font, Vector2(vx + 110, y + ty), str(r["value"]), 9, col)
 				else:
 					var vs_text := str(r["value"])

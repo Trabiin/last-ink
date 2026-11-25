@@ -18,7 +18,6 @@ const SOFT := Color(0.62, 0.6, 0.62)
 const HEART := Color("ff8fa3")
 const ROW_H := 34.0
 const LIST_W := 220.0
-const SCENE_ROW_H := 14.0
 
 var sel := 0
 var focus := 0  # 0 = people, 1 = scenes
@@ -243,8 +242,7 @@ func _wrap(pos: Vector2, s: String, width: float, fsize: int, col: Color) -> flo
 
 
 func _bar(r: Rect2, f: float, col: Color) -> void:
-	draw_rect(r, Color(0.14, 0.12, 0.16))
-	draw_rect(Rect2(r.position, Vector2(r.size.x * clampf(f, 0.0, 1.0), r.size.y)), col)
+	UiSkin.bar(self, r, f, Color(col, 1.0), {"dim": col.a < 0.5})  # pixel bar: ink frame, shaded ramp
 
 
 ## Five little hearts: filled up to the rank.
@@ -300,11 +298,9 @@ func _draw() -> void:
 		_row_rects.append(rr)
 		_row_index.append(i)
 		var on := i == sel
-		draw_rect(rr, Color(0.16, 0.13, 0.09) if on else Color(0.09, 0.08, 0.11))
-		if on:
-			draw_rect(rr, GOLD if focus == 0 else Color(0.5, 0.45, 0.35), false, 1.0)
+		UiSkin.row(self, rr, on, focus == 0)
 		var accent := Color(Empire.bond_info(id).get("color", "c9c3b6"))
-		draw_rect(Rect2(rr.position, Vector2(3, rr.size.y)), accent)
+		UiSkin.tab(self, rr, accent)
 		var rank := Empire.bond_rank(id)
 		_text(rr.position + Vector2(10, 12), Empire.recruit(id)["name"], 9, GOLD if on else TEXT, 110)
 		_pips(rr.position + Vector2(130, 9), rank, HEART if not Betrayal.marked(id) else Color(0.55, 0.53, 0.58))
@@ -342,23 +338,19 @@ func _draw_details(vs: Vector2, id: String) -> void:
 	var x := LIST_W + 24
 	var w := vs.x - x - 10
 	var top := 44.0
-	draw_rect(Rect2(x - 8, top, w + 16, vs.y - top - 18), Color(0.08, 0.07, 0.1))
-	draw_rect(Rect2(x - 8, top, 3, vs.y - top - 18), Color(info.get("color", "c9c3b6")))
 	var r := Empire.recruit(id)
 	var rank := Empire.bond_rank(id)
-	var y := top + 14
-	_text(Vector2(x, y), "%s, %s" % [r["name"], r.get("title", "")], 11, Color("f3efe4"), w)
-	y += 12
+	# Written up on a ledger page (LedgerPage), on its lines; the scenes are rows on it.
+	var pg := LedgerPage.begin(self, Rect2(x - 8, top, w + 16, vs.y - top - 18), font)
+	pg.heading("%s, %s" % [r["name"], r.get("title", "")], 11)
 	var pts := Loc.count("%d bond point", "%d bond points", Empire.bond_points(id))
 	if rank < Empire.BOND_MAX:
 		pts += tr(" (rank %d at %d)") % [rank + 1, Empire.bond_threshold(rank + 1)]
-	_text(Vector2(x, y), tr("Rank %d, %s.  %s") % [rank, Empire.bond_rank_name(rank), pts], 8, HEART, w)
-	y += 4
-	var nxt := Empire.bond_next_text(id)
-	y += _wrap(Vector2(x, y + 9), nxt, w, 8, HEART if Empire.bond_next_scene(id) > 0 else Color("e8d9a8")) + 4
+	pg.line(tr("Rank %d, %s.  %s") % [rank, Empire.bond_rank_name(rank), pts], 8, LedgerPage.RED)
+	pg.para(Empire.bond_next_text(id), 8, LedgerPage.RED if Empire.bond_next_scene(id) > 0 else LedgerPage.INK)
 	# Likes and what they are doing now
-	y += _wrap(Vector2(x, y + 9), tr("Likes: %s.") % info.get("likes_text", "?"), w, 8, Color("cfe0b0")) + 1
-	y += _wrap(Vector2(x, y + 9), tr("Dislikes: %s.") % info.get("dislikes_text", "?"), w, 8, Color(0.85, 0.65, 0.6)) + 1
+	pg.para(tr("Likes: %s.") % info.get("likes_text", "?"), 8, LedgerPage.GREEN)
+	pg.para(tr("Dislikes: %s.") % info.get("dislikes_text", "?"), 8, LedgerPage.RED)
 	var mood := Empire.role_mood(id)
 	var pts_cfg: Dictionary = Empire.bond_data["points"]
 	var now := tr("Now: %s") % Empire.role_label(id)
@@ -368,38 +360,38 @@ func _draw_details(vs: Vector2, id: String) -> void:
 		now += tr(", which they dislike (%d a day).") % int(pts_cfg["disliked_role"])
 	else:
 		now += "."
-	y += _wrap(Vector2(x, y + 9), now, w, 8, GOOD if mood == "likes" else (BAD if mood == "dislikes" else SOFT)) + 6
+	pg.para(now, 8, LedgerPage.GREEN if mood == "likes" else (LedgerPage.RED if mood == "dislikes" else LedgerPage.INK_SOFT))
+	pg.skip()
 	# Perks
-	_text(Vector2(x, y + 8), tr("Perks"), 9, Color(0.75, 0.72, 0.7))
-	y += 11
+	pg.line(tr("Perks"), 9, LedgerPage.INK)
 	var perks: Dictionary = info.get("perks", {})
 	for k in perks:
 		var pk: Dictionary = perks[k]
 		var got := rank >= int(k)
-		y += _wrap(Vector2(x, y + 9), tr("%s Rank %s, %s: %s") % ["+" if got else "-", k, pk["name"], pk["desc"]], w, 8, GOOD if got else DIM) + 1
+		pg.para(tr("%s Rank %s, %s: %s") % ["+" if got else "-", k, pk["name"], pk["desc"]], 8, LedgerPage.GREEN if got else LedgerPage.INK_SOFT)
 	var pj := Empire.personal_job(id)
 	if pj != "":
 		var state := tr("unlocks at rank 4")
-		var col := DIM
+		var col := LedgerPage.INK_SOFT
 		if Empire.personal_done(id):
 			state = "done"
-			col = GOOD
+			col = LedgerPage.GREEN
 		elif Empire.personal_lost(id) != "":
 			state = tr("lost with %s, which the Blank erased. Reclaim it to bring the mission back") % Empire.personal_lost(id)
-			col = BAD
+			col = LedgerPage.RED
 		elif rank >= 4:
 			var pd := PersonalMissions.def_for(id)
 			state = tr("waiting at %s on the Command Table") % Empire.territory().find(pd.get("province", "")).get("name", "?")
 			var why := PersonalMissions.blocker(id)
 			if why != "":
 				state += " (%s)" % why
-			col = GOLD
-		y += _wrap(Vector2(x, y + 9), tr("Personal mission, %s: %s.") % [PersonalMissions.def_for(id).get("name", "?"), state], w, 8, col) + 1
+			col = LedgerPage.GOLD
+		pg.para(tr("Personal mission, %s: %s.") % [PersonalMissions.def_for(id).get("name", "?"), state], 8, col)
 	# Romance, friends and rivals (issue #116)
 	var rs := Relationships.status_text(id)
 	if rs != "":
-		var rcol := HEART if Relationships.romance_of(id) == "partner" or Relationships.moment_ready(id) else (BAD if Relationships.romance_of(id) == "ex" else SOFT)
-		y += _wrap(Vector2(x, y + 9), rs, w, 8, rcol) + 1
+		var rcol := LedgerPage.RED if Relationships.romance_of(id) == "partner" or Relationships.moment_ready(id) or Relationships.romance_of(id) == "ex" else LedgerPage.INK_SOFT
+		pg.para(rs, 8, rcol)
 	var kin := {"friends": [], "rivals": [], "truce": []}
 	for pr in Relationships.pairs_of(id):
 		if Empire.recruits.has(pr[1]):
@@ -409,30 +401,29 @@ func _draw_details(vs: Vector2, id: String) -> void:
 		if not kin[k].is_empty():
 			bits.append("%s: %s" % [{"friends": tr("Gets on with"), "truce": tr("Made peace with"), "rivals": tr("Can't stand")}[k], ", ".join(kin[k])])
 	if not bits.is_empty():
-		y += _wrap(Vector2(x, y + 9), tr("%s.  (Posting them together matters: see Roster, Buildings, Expeditions, party.)") % ".  ".join(bits), w, 8, Color("b9c4d8")) + 1
-	y += 8
-	# Scenes
-	_text(Vector2(x, y + 8), tr("Scenes"), 9, Color(0.75, 0.72, 0.7))
-	y += 12
+		pg.para(tr("%s.  (Posting them together matters: see Roster, Buildings, Expeditions, party.)") % ".  ".join(bits), 8, LedgerPage.BLUE)
+	pg.skip()
+	# Scenes: one row per line, the focused one framed in brass.
+	pg.line(tr("Scenes"), 9, LedgerPage.INK)
 	var rows := _scene_rows()
 	for i in rows.size():
 		var row: Dictionary = rows[i]
-		var rr := Rect2(x - 2, y, w, SCENE_ROW_H - 2)
+		var rr := pg.space()
+		if rr.size.x <= 0.0:
+			break
 		_scene_rects.append(rr)
 		var on := focus == 1 and i == scene_sel
 		if on:
-			draw_rect(rr, Color(0.17, 0.14, 0.09))
-			draw_rect(rr, GOLD, false, 1.0)
+			UiSkin.frame(self, rr.grow_individual(3, 0, 3, 1))
 		var label := ""
-		var col := DIM
+		var col := LedgerPage.INK_SOFT
 		match row["state"]:
 			"seen":
 				label = "%s. %s" % [row.get("num", str(row["rank"])), row["title"]]
-				col = TEXT
+				col = LedgerPage.INK
 			"ready":
 				label = tr("%s. %s  (new: %s to play)") % [row.get("num", str(row["rank"])), row["title"], Prompts.confirm()]
-				col = HEART
+				col = LedgerPage.RED
 			_:
 				label = "%s. ???" % row.get("num", str(row["rank"]))
-		_text(rr.position + Vector2(4, 9), label, 8, GOLD if on and row["state"] != "locked" else col, w - 8)
-		y += SCENE_ROW_H
+		draw_string(font, Vector2(rr.position.x, rr.end.y - 1.0), Access.fit(font, label, Access.fs(8), rr.size.x), HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(8), LedgerPage.GOLD if on and row["state"] != "locked" else col)

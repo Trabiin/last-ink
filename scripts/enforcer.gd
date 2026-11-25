@@ -224,5 +224,4 @@ func _draw_overlay() -> void:
 	if state == State.WINDUP:
 		Telegraph.alert(overlay, Vector2(-2, -22 - top), 10)
 	if hp < max_hp:
-		overlay.draw_rect(Rect2(-8, -24 - top, 16, 2), Color(0, 0, 0, 0.6))
-		overlay.draw_rect(Rect2(-8, -24 - top, 16.0 * hp / max_hp, 2), Color("ffd166"))
+		UiSkin.field_bar(overlay, roundf(-25 - top), 16, float(hp) / max_hp, "brass", Access.danger_patterns and hp * 4 <= max_hp)  # an elite: brass

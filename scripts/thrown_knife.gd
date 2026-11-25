@@ -20,6 +20,7 @@ var t := 0.0
 
 func _ready() -> void:
 	z_index = 2
+	FxLayer.adopt(self)  # a hero's thrown blade: drawn as pixel art with the other effects
 
 
 func _physics_process(delta: float) -> void:
