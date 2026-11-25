@@ -327,7 +327,7 @@
 			["", "The gallery is a long room of tall mirrors, and in every one of them stands Ilse Kernick: in a riding coat, in a ball gown, in armour, at twelve, at forty. None of them is moving."],
 			["ilse", "Look at them. Forty of her. All facing the wrong way. All waiting for somebody to stand in front of them who is not coming back."],
 			["", "At the end of the gallery a suit of armour steps down off its stand. There is nobody in it. Salt runs out of the joints."],
-			["ilse", "Her armour. Of course it is. It is still trying to do her job. Ash, it is not her. It is only her habits."]
+			["ilse", "Her armour. Of course it is. It is still trying to do her job. Ash, she left her habits in it, and they kept going without her."]
 		]},
 		"personal_ilse_outro": {"title": "The Last Mirror", "lines": [
 			["", "The last mirror in the gallery is small and old, in a black frame. Ilse stands in front of it, and in the glass, a long way back, in the white, stands Ilse Kernick."],

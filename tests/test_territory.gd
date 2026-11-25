@@ -146,7 +146,7 @@ func test_mission_maps_come_from_the_biome_pool() -> void:
 	check(MissionTypes.map_for("gutterwoods") in woods, "woods: %s" % MissionTypes.map_for("gutterwoods"))
 	var meadow := ["res://maps/frayed_meadow.txt", "res://maps/meadow_b.txt", "res://maps/meadow_c.txt"]
 	check(MissionTypes.map_for("whitewater") in meadow, "meadow: %s" % MissionTypes.map_for("whitewater"))
-	check_eq(MissionTypes.map_for("lighthouse"), MissionTypes.MAP, "an empty pool falls back to the meadow")
+	check_eq(MissionTypes.map_for("ledgerside"), MissionTypes.MAP, "an empty pool falls back to the meadow")
 	check(MissionTypes.map_for("abbey") in ["res://maps/abbey.txt", "res://maps/abbey_b.txt", "res://maps/abbey_c.txt"], "the Abbey has its own layouts (issue #28)")
 
 
