@@ -416,7 +416,7 @@ examples written to this sheet.
 - **Speech:** Nan is Hollowmark-born (over the cobbler's) and puts on whatever accent the mark wants; at rest she
   has Bran's docks speech, softer: "'em", "ain't", "proper". Tally speaks correct, plain English with no accent at
   all, like a ledger reading itself.
-- **Owns:** Nan: "mark", "clause", "the trade", "terms". Tally: corrections of fact, "I do not have hands", "the
+- **Owns:** Nan: "mark", "clause", "the trade", "terms", "sunshine" (her patronising pet name; "love" is Saffron's). Tally: corrections of fact, "I do not have hands", "the
   collateral" (meaning itself).
 - **Never:** Nan admits a lie unless Tally makes her. Tally lies, jokes on purpose, or uses Bran's either/or verdict.
   Tally's line is one fact, not a judgement.
@@ -490,7 +490,7 @@ readers: educated, sincere, unhurried.
 | Brother Odo (`odo`) | The Abbey's walking messenger. Plain, patient, quietly funny about disaster ("sent me back with a receipt"). No Latin; he is a lay brother. |
 | Prioress Ebba (`ebba`) | Dry, exact, very tired. No contractions in authority, short orders, then one plain human line. Calls Ash "keeper" or "passer-by". |
 | Abbot Wulfstan (`wulfstan`) | Liturgical and certain. "Fidelity", "the Rule", "the Office". Royal "we" when he copies himself. Never raises his voice until the Second Copy. |
-| First Reader Askew (`askew`) | Warm, unhurried, sincere. Reads a name before every fire and means it. Calls people "sweet". Never sneers. |
+| First Reader Askew (`askew`) | Warm, unhurried, sincere. Reads a name before every fire and means it. Polite to a fault ("How kind"). Never sneers, and never "sweet" (Hortense's). |
 | Sister Osyth (`osyth`) | Crypt-keeper. Counts out loud ("Eleven thousand four hundred and five"). Blunt, contracted, no Latin. Cares about the count more than about you, and says so. |
 | Nell Tapper (`nell`) | Candleford chandler. Brisk town speech, short sentences, money and draughts. Lists her jobs and the wages she isn't paid. |
 | Brother Cuthbert (`cuthbert`) | Deaf bell-ringer: capitals when he mishears ("WHAT? Oh. A job."). Big, gentle, literal. |

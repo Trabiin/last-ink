@@ -262,7 +262,7 @@
 					]}
 				]},
 				"rank5": {"rank": 5, "title": "One True Thing", "lines": [
-					["", "The Terraces are quiet. Bérénice de Saulx is asleep in the town hall with six other girls, under every blanket Hollowmark owns."],
+					["", "Hollowmark is quiet. Bérénice de Saulx is asleep in the town hall with six other girls, under every blanket Hollowmark owns."],
 					["hortense", "She asked me who you were. I said you were the person who does not exist. She said that was silly, because she could see you, and because I keep looking at you."],
 					["hortense", "I have lied to everyone I have ever met, beautifully, for a living. You made it impossible. I have stopped minding."],
 					["hortense", "So. One true thing. I love you, and I would like to stay. There. It has no French in it. I checked twice."]
@@ -451,18 +451,18 @@
 				"banter": [
 					[["bran", "Chair's holding up."], ["ottoline", "Course it is. Built it to hold me."]]
 				]}},
-		{"ids": ["hortense", "velvette"], "kind": "rivals", "name": "Two rapiers", "text": "A marquise and a showgirl, both with swords and both used to being the only one in the room. Fauvette calls Hortense 'the amateur'. Hortense calls Fauvette nothing at all, which is worse.",
+		{"ids": ["hortense", "velvette"], "kind": "rivals", "name": "Two rapiers", "text": "A marquise and a showgirl, both with swords and both used to being the only one in the room. Fauvette calls Hortense 'the amateur'. Hortense calls Fauvette 'the cabaret girl', which is worse.",
 			"effects": {"expedition": -5, "party": {"damage": 2, "guard": -0.05}, "bond": -1},
 			"banter": [
-				[["velvette", "The marquise holds her sword like a fan, chérie. Very pretty. Very slow."], ["hortense", "And Fauvette holds hers like a microphone. Everyone has their gifts."]],
+				[["velvette", "The marquise holds her sword like a fan, chérie. Very pretty. Very slow."], ["hortense", "And Fauvette holds hers like a bouquet she expects to be thrown. Everyone has their gifts."]],
 				[["hortense", "Shall we count, sweet? First to five."], ["velvette", "Darling, I stopped counting at eleven."]]
 			],
-			"truce": {"days": 10, "name": "A shared bow", "text": "Hortense and Fauvette fought a practice bout in the square that went on for an hour and ended in a draw neither will admit to. They now take the same corner of the tavern and criticise everyone else's footwork.",
+			"truce": {"days": 10, "name": "A shared bow", "text": "Hortense and Fauvette fought a practice bout in the practice yard that went on for an hour and ended in a draw neither will admit to. They now take the same corner of the tavern and criticise everyone else's footwork.",
 				"effects": {"expedition": 5, "party": {"damage": 1, "guard": 0.05}},
 				"banter": [
 					[["velvette", "You left your guard open on the third pass, marquise."], ["hortense", "I know. I wanted to see if you would notice. You did. How irritating."]]
 				]}},
-		{"ids": ["saffron", "ottoline"], "kind": "friends", "name": "Cabaret hours", "text": "Saffron sang at the Gilt Lantern and Ottoline kept the Encore's door, two streets apart, for years. They have a hundred stories about the same drunks.",
+		{"ids": ["saffron", "ottoline"], "kind": "friends", "name": "Cabaret hours", "text": "For years Saffron sang at the Gilt Lantern on Lantern Quay and Ottoline kept the Encore's door at Gallows Ferry. The same drunks did the rounds of both, and the two of them have a hundred stories about them.",
 			"effects": {"expedition": 5, "building": 1, "party": {"hp": 5}, "bond": 1},
 			"banter": [
 				[["saffron", "Ottoline, remember the magistrate at the Lantern? The one who sang along?"], ["ottoline", "I remember. I threw him out by the second chorus. You thanked me."]],
@@ -472,13 +472,13 @@
 			"effects": {"expedition": 5, "party": {"damage": 1}, "bond": 1},
 			"banter": [
 				[["nan", "Bran, what's the small print on your arm say again?"], ["bran", "Says mind your own arm."]],
-				[["bran", "Your shadow talks."], ["nan", "So does your arm, love. Yours just uses clauses."]]
+				[["bran", "Your shadow talks."], ["nan", "So does your arm, sunshine. Yours just uses clauses."]]
 			]},
 		{"ids": ["nan", "quill"], "kind": "rivals", "name": "Creative accounting", "text": "Quill cooks the books for Hollowmark and Nan cooks them for herself. Each is sure the other is skimming. Both are right.",
 			"effects": {"expedition": -5, "building": -1, "bond": -1},
 			"banter": [
 				[["quill", "Nan, the supply ledger is six Gilt short."], ["nan", "Is it? Funny. My purse is six Gilt heavy. Must be a draught."]],
-				[["nan", "Quill, love, you've carried a two there that wants to be a seven."], ["quill", "I've carried it exactly where I wanted it, thank you."]]
+				[["nan", "Quill, sunshine, you've carried a two there that wants to be a seven."], ["quill", "I've carried it exactly where I wanted it, thank you."]]
 			],
 			"truce": {"days": 10, "name": "Two sets of books", "text": "Quill and Nan agreed to audit each other weekly. Hollowmark's books have never been cleaner, and the two of them have never been happier about it.",
 				"effects": {"expedition": 5, "building": 1},

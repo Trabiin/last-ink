@@ -106,7 +106,7 @@
 			["odo", "So I came to the person the Concord is most annoyed with. Brother Cellarer said that was practical. Brother Cellarer is blank now. Or dead. We are not sure which."],
 			["quill", "Saint Ledger's keeps the second copy of the Ledger. Every name, every deed, every debt. If the capital's copy burned, the monks would write the world back."],
 			["odo", "We would. We are trying. The Abbot has us copying day and night. He has every hour rung at once, so that no brother sleeps through his turn."],
-			["odo", "And the pages come out blank. We write, and the ink sinks into the paper and does not come back up. Some brothers have started copying the blank pages. Very carefully."],
+			["odo", "And the pages come out blank. The Rule puts a drop of the copyist's own blood in every inkwell, and still the ink sinks into the paper and does not come back up. Some brothers have started copying the blank pages. Very carefully."],
 			["bran", "So the monks have gone mad and the bells won't shut up. What's that to us?"],
 			["odo", "Candleford makes our candles. Without candles we copy in the dark. And the Erasers are burning the wax barges on the lake."],
 			["ninefingers", "Erasers. White coats, tapers. Read the names out before they light a fire. Verity's lot. Saw one burn a tithe barn once. Read every name off the door first. Very polite."],
@@ -173,12 +173,12 @@
 		"ch2_hild": {"title": "Sister Hild", "lines": [
 			["abeyance", "Oh. You've been to the Abbey. You smell of it. Beeswax and wet stone and the Abbot's ink, which is made with something I never asked about."],
 			["abeyance", "I left because the page started writing back. The Abbot used to say a scribe's hand belongs to the Rule. Mine kept wandering off."],
-			["abeyance", "The voices have been louder since you said the word Bonefield. Hundreds of them. Very polite. They keep asking who is counting them."],
+			["abeyance", "The voices have been louder since somebody here said the word Bonefield. Hundreds of them. Very polite. They keep asking who is counting them."],
 			["abeyance", "Sister Osyth counted them, I think. She still is, probably. Do bring her back. She was horrible to me for six years, God keep her, and I miss her."]
 		]},
 		"ch2_crypt_intro": {"title": "The Bonefield", "lines": [
 			["", "The Bonefield Cloister sits on a bald hill. The Erasers have pitched white tents in the ruined garth, and a book-pyre burns in front of the chapel without any smoke."],
-			["askew", "Visitors. Welcome. I am Askew, First Reader. You are the one the Blank gave back, and you have come to stop us burning things. That's sweet."],
+			["askew", "Visitors. Welcome. I am Askew, First Reader. You are the one the Blank gave back, and you have come to stop us burning things. How kind."],
 			["askew", "Before you start, will you hear a name? We read them before every fire. Hollin Marsh, aged six, struck out for her father's debts. There. Now somebody has said it."],
 			["ninefingers", "Heard that list before. Doesn't make your fire any less of a fire."],
 			["askew", "No. But it makes it an honest one. Readers! The Unwritten wants to argue."]
@@ -193,7 +193,7 @@
 		]},
 		"ch2_verity": {"title": "The Unedited Page", "lines": [
 			["", "Behind the Founders' Door is a small chamber with one stone shelf. On it sits a single skull, smaller than the others. A woman in a pale archivist's coat sits on the floor beside it, reading."],
-			["verity", "Hello again. Please don't hit anything. The ceiling is very old and I am very tired."],
+			["verity", "Hello again. Please do not hit anything. The ceiling is very old and I am very tired."],
 			["osyth", "Eleven thousand four hundred and six. That's all of them."],
 			["verity", "Thank you, Sister. You are the only person who has ever got the number right. The Concord's own drafts say eleven thousand. They rounded."],
 			["verity", "I brought you something. I thought you should see it before you decide whose side the Abbey is on."],
@@ -228,7 +228,7 @@
 			["ebba", "Watch his hands. The real one's hands are always inky. He never in his life wrote clean."]
 		]},
 		"abbot_phase2": {"title": "The Second Copy", "lines": [
-			["", "The Abbot staggers. Ink runs out of his sleeves onto the grass. Around the garth every copy stops, turns, and looks at him at once."],
+			["", "The Abbot staggers. Ink and blood run out of his sleeves onto the grass. Around the garth every copy stops, turns, and looks at him at once."],
 			["wulfstan", "Half. You have struck out half of me. Then the other half shall be copied twice as carefully."],
 			["ebba", "He is calling the penitents in from the walk. And mind the gold leaf: when he illuminates, get well back."]
 		]},
@@ -296,10 +296,10 @@
 		]},
 		"ch3_verity_mask": {"title": "A White Mask", "lines": [
 			["", "On the balcony above the hall, away from the candles, a woman in a cream robe and a plain white mask is watching the dancers with her hands folded."],
-			["verity", "Hello again. Don't stop dancing on my account. I came to see whether the rumour was true."],
-			["verity", "Something here eats guests. People assume it's mine. Everything hungry is assumed to be mine these days."],
-			["verity", "It isn't. I have never sent anything to a party. I don't approve of parties. All that noise, and nobody writes anything down."],
-			["verity", "Be careful who you dance with, Ash. This city has a great many masks, and some of them have been on so long there's nothing underneath."],
+			["verity", "Hello again. Do not stop dancing on my account. I came to see whether the rumour was true."],
+			["verity", "Something here eats guests. People assume it is mine. Everything hungry is assumed to be mine these days."],
+			["verity", "It is not. I have never sent anything to a party. I do not approve of parties. All that noise, and nobody writes anything down."],
+			["verity", "Be careful who you dance with, Ash. This city has a great many masks, and some of them have been on so long there is nothing underneath."],
 			["", "When Ash looks up again, the balcony is empty, and the candle on its rail has burned straight down in a single moment."]
 		]},
 		"ch3_course": {"title": "The Next Course", "lines": [
@@ -310,22 +310,22 @@
 		"ch3_masquerade_outro": {"title": "A Room in Hollowmark", "lines": [
 			["", "The hall is quiet. The orchestra has hidden under its music stands. The Duc de Lantenay has withdrawn, very slowly, upstairs."],
 			["hortense", "Well. That is the most fun anyone has had at this party in a year, and I include the people who were eaten."],
-			["hortense", "I'm coming with you to Hollowmark. Do not look so pleased. I need somewhere that is not here, and you need someone who knows which fork the Nobility stab each other with."],
+			["hortense", "I am coming with you to Hollowmark. Do not look so pleased. I need somewhere that is not here, and you need someone who knows which fork the Nobility stab each other with."],
 			["saffron", "She's a liar, love. Everyone on the Causeway knows the Marquise is a liar."],
-			["hortense", "Of course I am. Everyone here is. I'm only the best at it.", "smug"]
+			["hortense", "Of course I am. Everyone here is. I am only the best at it.", "smug"]
 		]},
 		"ch3_masquerade_after": {"title": "A Barge at Night", "lines": [
 			["saffron", "Ash, love. The posh lot that went up to see the host, the ones who never came down. I've seen where the rest of them go."],
 			["saffron", "There's a barge that ties up at Lantern Quay after midnight. No lights. Concord colours under the tarpaulin. It takes on crates of people in masks, and it sails for the Causeway's back stairs."],
 			["hortense", "Gossip, sweet. The quay is full of it. I know a quicker way onto that wharf, if you insist on going. I insist on coming."],
 			["bran", "She insists. She insists a lot. I don't like a woman who knows the quick way into a trap."],
-			["hortense", "Bran, sweet. A trap is just a party you weren't told about."]
+			["hortense", "Bran, sweet. A trap is just a party you were not told about."]
 		]},
 		"ch3_wharf_intro": {"title": "The Night Wharf", "lines": [
 			["", "Lantern Quay after midnight, every lamp out. A long black barge rides low at the end of the smugglers' wharf, and men in Concord grey are lifting crates aboard."],
 			["hortense", "This way. Along the warehouses, keep to the dark side. Nobody looks at the dark side of anything here."],
 			["saffron", "Hortense, how do you know the way to a Concord barge in the dark?"],
-			["hortense", "I know the way to everything in the dark, sweet. It's how I was raised."]
+			["hortense", "I know the way to everything in the dark, sweet. It is how I was raised."]
 		]},
 		"ch3_gaudin": {"title": "Delivery", "lines": [
 			["", "On the barge's deck, under a single hooded lantern, stands a steel table with straps on it. A neat card on the table reads: SUBJECT (UNREGISTERED). FOR THE ANATOMISTS OF THE OFFICE OF CORRECTIONS."],
@@ -358,9 +358,9 @@
 		]},
 		"ch3_wharf_after": {"title": "The Host", "lines": [
 			["hortense", "Here is the rest of it. The thing upstairs at the masquerade came to the first night after the Blank arrived. Nobody invited it. It sat down at the head of the table and never left."],
-			["hortense", "It is mostly mouth. It eats guests, and while it's eating, the ink stays off the bridges. The Nobility worked that out in a week. The Concord worked out who to send."],
+			["hortense", "It is mostly mouth. It eats guests, and while it is eating, the ink stays off the bridges. The Nobility worked that out in a week. The Concord worked out who to send."],
 			["saffron", "So everyone dances, and every night a few go upstairs, and the city stays dry. That's the party. That's the whole party."],
-			["hortense", "Lantenay holds the stairs. He won't open the hall to people the Nobility despise. Make them merely dislike you, and I can get us up."]
+			["hortense", "Lantenay holds the stairs. He will not open the hall to people the Nobility despise. Make them merely dislike you, and I can get us up."]
 		]},
 		"ch3_two_rapiers": {"title": "Two Rapiers", "lines": [
 			["", "The practice yard behind the barracks, early. Fauvette is already there, rapier out, when Hortense arrives in a borrowed fencing jacket that fits her suspiciously well."],
@@ -384,7 +384,7 @@
 		"ch3_shallows_outro": {"title": "Nan Cripps and Tally", "lines": [
 			["nan", "Well! That was a lovely bit of teamwork. I distracted them, you hit them, Tally ruined my livelihood. Shall we do it again tomorrow?"],
 			["tally", "She signed me over to a moneylender when she was fifteen. Her conscience, as collateral. It came out like this. Talking."],
-			["nan", "Tally's very honest. It's a terrible burden. I'm Nan, by the way. Nan Cripps. You'll be the one with no name. That's a lovely trick, that is. I'd pay to learn it."],
+			["nan", "Tally's very honest. It's a terrible burden. I'm Nan, by the way. Nan Cripps. You'll be the famous nobody. That's a lovely trick, that is. I'd pay to learn it."],
 			["nan", "I hear Hollowmark's got a market and nobody who knows how to fleece it. Take me on. I'll work cheap, and Tally will make sure I'm telling the truth about the cheap part."],
 			["tally", "She will not work cheap."]
 		]},
@@ -392,7 +392,7 @@
 			["", "Above the great hall, behind doors of black lacquer, is the banqueting room. The table runs the length of the room. Every chair is empty except the one at the far end."],
 			["", "The guest at the head of the table is enormous, and wears a mask on every part of it that could be called a face. Most of it is mouth."],
 			["host", "AH. THE LATE ARRIVALS. SIT, SIT. THERE IS ALWAYS ROOM AT THE TABLE. THERE IS ALWAYS ROOM INSIDE."],
-			["hortense", "Good evening, monsieur. I'm afraid we're here to end the party."],
+			["hortense", "Good evening, monsieur. I am afraid we are here to end the party."],
 			["host", "NOBODY ENDS THE PARTY. THE PARTY ENDS WHEN THE GUESTS RUN OUT. AND THE GUESTS NEVER RUN OUT."]
 		]},
 		"host_phase2": {"title": "Second Helpings", "lines": [
@@ -410,7 +410,7 @@
 		]},
 		"ch3_end": {"title": "The Party's Over", "lines": [
 			["", "The masquerade is over. On the Causeway the candles are out and the masks are off, and people are standing on the bridges looking at each other's faces as if they had never seen them before."],
-			["lantenay", "The Nobility will remember this, Keeper. Some of us with gratitude. Most of us with a great deal of paperwork. Our wine still goes to whoever holds the presses."],
+			["lantenay", "The Nobility will remember this, keeper. Some of us with gratitude. Most of us with a great deal of paperwork. Our wine still goes to whoever holds the presses."],
 			["hortense", "He means thank you. The Nobility have no word for it, so they send wine."],
 			["saffron", "I'm writing a song about tonight. I'm going to finish it. You see if I don't."],
 			["", "That night a letter lies on the Command Table, weighed down with a white mask. It says only: 'That one was not mine. Someone else is setting places at the table. Fondly, V.'"],

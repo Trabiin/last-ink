@@ -297,7 +297,7 @@
 			["tally", "Five hundred and twelve. I counted them the night she signed. I had nothing else to do. I had only just been made."],
 			["nan", "Pratt's collectors walk the wharf in pairs. Lamplighters on the barges, swords on the boards. We go in loud, I talk, you hit, Tally holds the door."],
 			["tally", "I cannot hold a door. I am a shadow."],
-			["nan", "Then you'll lean on it meaningfully, love. Off we go."]
+			["nan", "Then you'll lean on it meaningfully, sunshine. Off we go."]
 		]},
 		"personal_nan_pratt": {"title": "Old Pratt", "lines": [
 			["", "Upstairs, a little old man in green sits at a desk under a single candle, totting up figures with a pen that squeaks."],
@@ -313,7 +313,7 @@
 			["tally", "You take the other five hundred and eleven as well."],
 			["nan", "Tally, I am a thief, not a charity."],
 			["tally", "You take them as well."],
-			["nan", "...Fine. Fine! Bundle them up, Ash, love. We'll drop them off at every door on the Quay, and none of them will ever know who to thank. That's how you know it's a proper con.", "happy"],
+			["nan", "...Fine. Fine! Bundle them up, Ash. We'll drop them off at every door on the Quay, and none of them will ever know who to thank. That's how you know it's a proper con.", "happy"],
 			["pratt", "You'll pay for this, Nan Cripps."],
 			["nan", "Put it on my account, Mr. Pratt."]
 		]}

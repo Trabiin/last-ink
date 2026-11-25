@@ -301,7 +301,7 @@
 			"id": "ch3_quay", "name": "Chapter 3: The Singer on the Quay", "province": "lanternquay", "story": true,
 			"needs": {"seen": ["ch3_invitation"]},
 			"map": "res://maps/ch3_quay.txt",
-			"brief": "The Blank has bitten Lantern Quay in two. On the far side, forty dockfolk are trapped against the ink, and a cabaret singer is holding a bridge of light across the gap by singing it. Keep the eels and the revellers off her until the last of them is across.",
+			"brief": "The Blank has bitten Lantern Quay in two. On the far side, forty-odd dockfolk are trapped against the ink, and a cabaret singer is holding a bridge of light across the gap by singing it. Keep the eels and the revellers off her until the last of them is across.",
 			"objective": {"kind": "script", "label": "Find the singer", "steps": [
 				{"do": "talk", "talk": "ch3_quay_intro"},
 				{"do": "goto", "at": "quay", "label": "Get down onto the quay",
@@ -414,7 +414,7 @@
 			"id": "ch3_host", "name": "Boss: The Host", "province": "causeway", "story": true,
 			"after": "ch3_wharf", "gate": {"standing": {"velvet": "neutral"}},
 			"map": "res://maps/causeway_banquet.txt",
-			"brief": "At the head of the masquerade's table sits the guest nobody invited: the Host, mostly mouth. It bites, it talks in volleys of words that hurt, and when it breathes in, everything near it slides toward the mouth. Keep out of the inhale, and kill the guests it calls before it swallows them to heal.",
+			"brief": "At the head of the masquerade's table sits the guest nobody invited: the Host, mostly mouth. It bites, it talks in volleys of words that hurt, and when it breathes in, everything near it slides towards the mouth. Keep out of the inhale, and kill the guests it calls before it swallows them to heal.",
 			"objective": {"kind": "boss", "boss": "host", "label": "Go up to the banqueting room"},
 			"enemies": {"reveller": 1},
 			"rewards": {"gilt": 240, "supplies": 40, "ink": 8, "renown": 6, "insight": 6},

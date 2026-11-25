@@ -9,7 +9,7 @@
 		{
 			"id": "abbey", "name": "Saint Ledger's Abbey", "chapter": 2, "label": [0.69, 0.235],
 			"mood": "Gothic, candlelit",
-			"hint": "Bells in the north. Monks copying the Ledger by hand, in blood, and running out of ink."
+			"hint": "Bells in the north. Monks copying the Ledger by hand, in ink mixed with their own blood, and running out of both."
 		},
 		{
 			"id": "causeway", "name": "The Velvet Causeway", "chapter": 3, "label": [0.27, 0.8],
@@ -109,7 +109,7 @@
 			"id": "abbey", "name": "Saint Ledger's Abbey", "region": "abbey", "biome": "abbey", "pos": [0.677, 0.127], "weight": 1.05,
 			"owner": "abbey", "fray": 18, "output": {"ink": 2, "gilt": 3}, "sites": ["Copying hall", "Bell tower"],
 			"favors": "lore", "favors_why": "The monks only answer someone who can quote the Ledger back at them.",
-			"blurb": "Monks copy the Ledger by hand, forever, in blood. Lately the pages come out blank."
+			"blurb": "Monks copy the Ledger by hand, forever, in ink mixed with their own blood. Lately the pages come out blank."
 		},
 		{
 			"id": "ossuary", "name": "Bonefield Cloister", "region": "abbey", "biome": "abbey", "pos": [0.765, 0.161], "weight": 1.05,
