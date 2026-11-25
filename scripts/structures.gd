@@ -221,8 +221,10 @@ static func _build_roofs(area: Node2D, rows: PackedStringArray, size: Vector2i, 
 		roof.position = Vector2(roof.cells.position * 16)
 		roof.material = Art.art_world_material()
 		# Over the actors in the scene; an area built on its own (tools, tests) keeps its roofs itself.
-		var host: Node = area.get_parent() if area.get_parent() != null else area
-		host.add_child.call_deferred(roof)
+		if area.get_parent() != null:
+			area.get_parent().add_child.call_deferred(roof)
+		else:
+			area.add_child(roof)  # freed with the area
 		out.append(roof)
 	return out
 
