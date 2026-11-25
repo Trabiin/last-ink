@@ -303,10 +303,14 @@ func test_town_names_and_chatter() -> void:
 		return
 	folk.set_process(false)
 	hub.leader.global_position = folk.global_position + Vector2(10, 0)
+	await frames(2)
+	# Recruits standing nearby may call out on their own; clear the banter so the townsperson gets a turn.
+	hub.banter.queue = []
+	hub.banter._cur = []
 	chatter._wait = 0.0
-	await frames(3)
+	chatter._process(0.016)
 	var said: Array = hub.banter.to_save()
-	check(said.size() == 1 and said[0][0] == "", "a townsperson is overheard: %s" % str(said))
+	check(said.any(func(l): return l[0] == ""), "a townsperson is overheard: %s" % str(said))
 	var heard := Dialogue.seen.keys().filter(func(k): return str(k).begins_with("chatter:"))
 	check_eq(heard.size(), 1, "and marked heard")
 	var fits := ["chatter:agnes", "chatter:coat", "chatter:mercy_1", "chatter:mercy_2", "chatter:mercy_3"]
