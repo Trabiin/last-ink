@@ -99,11 +99,27 @@ func test_bars_draw() -> void:
 		UiSkin.tab(c, Rect2(90, 70, 60, 3), "slate", true)
 		UiSkin.swatch(c, Rect2(160, 40, 6, 6), Color("e89a8a"), true)
 		UiSkin.scrollbar(c, Rect2(190, 0, 3, 100), 30.0, 20.0)
-		UiSkin.scrollbar(c, Rect2(190, 0, 3, 100), 120.0, 20.0))
+		UiSkin.scrollbar(c, Rect2(190, 0, 3, 100), 120.0, 20.0)
+		UiSkin.panel(c, Rect2(-7, -7, 900, 600), "ledger")  # bigger than the grain: clipped, never stretched
+		UiSkin.panel(c, Rect2(4, 4, 3, 3), "ledger", Color(1, 1, 1, 0.5))
+		UiSkin.grain(c, Rect2(250.6, 130.2, 40, 1)))
 	c.queue_redraw()
 	await frames(2)
 	c.queue_free()
 	check(true, "drawn")
+
+
+## Text and rows go on the panel's face, inside the frame and its inner shadow (Ojon, 2026-11-25).
+func test_panel_inner_clears_the_frame() -> void:
+	var img: Image = UiSkin.TEX["ledger"].get_image()
+	var r := Rect2(100, 100, 200, 120)
+	var inn := UiSkin.inner(r)
+	# In the 9-slice's own pixels: the face starts 9 px into the texture, drawn 2 px outside r.
+	var face := img.get_pixel(31, 31)
+	for d in range(9, 14):
+		check_eq(img.get_pixel(d, 31), face, "the panel face starts right after the frame (%d px in)" % d)
+	check(inn.position.x >= r.position.x - 2.0 + 9.0, "inner() starts on the face")
+	check(inn.end.x <= r.end.x + 2.0 - 9.0, "and ends before the far frame")
 
 
 func test_leader_marker_option_persists() -> void:

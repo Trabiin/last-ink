@@ -151,6 +151,10 @@ strip is drawn as pixel art by `scripts/ui_skin.gd`, in whole pixels only:
   plum; gear slots rust (weapon), slate (armour), brass (trinket). `UiSkin.ramp(colour)` builds a muted ramp
   from any data colour (a tech's or an Ink colour's), pulled toward night slate so it sits in the art.
 
+**Panels (2026-11-25)**: the ledger frame's dark inner band is a single shadow line now, so text and rows sit on
+the panel's face, never on a band (`UiSkin.inner(rect)` gives the face). Ledger panels and rows carry a fixed
+pixel grain (`UiSkin.grain`): sparse lighter and darker specks and short fibres, so no surface is one flat colour.
+
 ## Effects (from 2026-11-24)
 
 Skills, techs, weapon swings, guards, the swap marker and every burst are drawn in code, and drawn straight

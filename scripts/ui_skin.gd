@@ -50,6 +50,50 @@ static func panel(ci: CanvasItem, r: Rect2, kind := "ledger", tint := Color.WHIT
 	var sb := box(kind)
 	sb.modulate_color = tint
 	ci.draw_style_box(sb, r.grow(2.0))
+	if kind == "ledger":
+		grain(ci, r.grow(-7.0), tint.a)
+
+
+## Where text and rows go inside a panel: past the frame and its inner shadow, with a pixel of air.
+static func inner(r: Rect2, kind := "ledger") -> Rect2:
+	return r.grow(-8.0 if kind == "ledger" else -2.0)
+
+
+## Hand-made surfaces are never one flat colour: a sparse speckle of lighter and darker pixels (with the odd
+## short fibre) over a panel or row, like the dithered shading on the sprites. One fixed pattern, so it never
+## crawls; anchored to the screen, so rows side by side share it.
+static var _grain: ImageTexture = null
+
+
+static func grain(ci: CanvasItem, r: Rect2, alpha := 1.0) -> void:
+	r = _snap(r)
+	if r.size.x < 2.0 or r.size.y < 2.0 or alpha <= 0.02:
+		return
+	if _grain == null:
+		_grain = _make_grain()
+	var src := Rect2(Vector2(fposmod(r.position.x, 256.0), fposmod(r.position.y, 128.0)), r.size)
+	src.size = src.size.min(Vector2(_grain.get_size()) - src.position)
+	ci.draw_texture_rect_region(_grain, Rect2(r.position, src.size), src, Color(1, 1, 1, alpha))
+
+
+static func _make_grain() -> ImageTexture:
+	var w := 1024
+	var h := 640
+	var img := Image.create(w, h, false, Image.FORMAT_RGBA8)
+	var lite := Color(0.36, 0.38, 0.5, 0.22)
+	var dark := Color(0.03, 0.03, 0.06, 0.32)
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 7041
+	for y in h:
+		for x in w:
+			var v := rng.randf()
+			if v < 0.035:
+				img.set_pixel(x, y, dark)
+				if v < 0.006 and x + 1 < w:  # a short fibre
+					img.set_pixel(x + 1, y, dark)
+			elif v > 0.972:
+				img.set_pixel(x, y, lite)
+	return ImageTexture.create_from_image(img)
 
 
 ## Full-screen views (Roster, Buildings, Research...): the game dimmed behind, one big ledger frame round the
@@ -355,6 +399,7 @@ static func row(ci: CanvasItem, r: Rect2, on := false, focused := true) -> void:
 	if r.size.x < 3.0 or r.size.y < 3.0:
 		return
 	ci.draw_rect(r, Color("2a2019") if on else Color("191a26"))
+	grain(ci, r.grow(-1.0))
 	ci.draw_rect(Rect2(r.position, Vector2(r.size.x, 1.0)), BAR_INK)  # dark top edge: the row sits recessed
 	ci.draw_rect(Rect2(r.position.x, r.end.y - 1.0, r.size.x, 1.0), Color("3a2a1c") if on else Color("262838"))  # lit lower lip
 	if on:

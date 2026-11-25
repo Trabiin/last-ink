@@ -7,7 +7,8 @@ extends Node2D
 ##   slash   bright crescent cuts crossing the area                   (Comma Splice, Cut and Run, ...)
 ##   sweep   a wedge with a leading edge that sweeps across it         (Breach of Contract, Severance, ...)
 ##   line    a narrow thrust with a glint at the tip                   (Skewer, Twin Prongs, Flourish, ...)
-##   beam    a thick bar with a white core, struck along a line        (Redaction, Concord Breaker, Balestra)
+##   beam    an ink stroke struck along a line: it shoots out to a spear point, wavers at the edges, crackles
+##           down a broken core and crumbles into flecks                (Redaction, Concord Breaker, Balestra)
 ##   seal    a square stamp that drops and lands with cross-hatching    (Final Demand, Repossession, Writ)
 ##   shock   rings of force rolling outward on the ground              (Through the Door, Bar Brawl, ...)
 ##   spiral  arms curling inward: a pull                               (Fine Print, Hook and Haul, ...)
@@ -19,7 +20,7 @@ extends Node2D
 ##   petals  petals whirling out and drifting down                     (Curtain Call)
 
 const MOTIFS := ["burst", "slash", "sweep", "line", "beam", "seal", "shock", "spiral", "pillar", "shards", "splash", "stars", "coins", "petals"]
-const LIFE := {"pillar": 0.6, "seal": 0.5, "coins": 0.7, "petals": 0.8, "stars": 0.7, "splash": 0.6, "shock": 0.5}
+const LIFE := {"beam": 0.55, "pillar": 0.6, "seal": 0.5, "coins": 0.7, "petals": 0.8, "stars": 0.7, "splash": 0.6, "shock": 0.5}
 const FLAT := 0.55  # ground ellipses: how squashed a circle on the floor looks from this angle
 
 var motif := "burst"
@@ -85,6 +86,14 @@ func _seed() -> void:
 		"slash":
 			for i in 3:
 				bits.append([Vector2.ZERO, Vector2.ZERO, rng.randf_range(0.7, 1.0), rng.randf_range(-0.6, 0.6)])
+		"beam":
+			# One entry per stroke segment: [edge wobble left, edge wobble right, when it crumbles, unused],
+			# then flecks after them: [along the line (0-1), side (-1/1), speed, size].
+			var n := clampi(int(reach / 5.0), 6, 24)
+			for i in n:
+				bits.append([rng.randf_range(-1.0, 1.0), rng.randf_range(-1.0, 1.0), rng.randf(), 0.0])
+			for i in 14:
+				bits.append([rng.randf_range(0.1, 1.0), -1.0 if rng.randf() < 0.5 else 1.0, rng.randf_range(14.0, 34.0), rng.randf_range(1.0, 2.0)])
 
 
 func _enter_tree() -> void:
@@ -154,6 +163,78 @@ func _wedge(r: float, col: Color, a0: float, a1: float) -> void:
 	draw_colored_polygon(pts, col)
 
 
+## The beam as an ink stroke (Redaction's bar, the long thrusts): it shoots out to a spear point in the
+## first fifth of its life, is widest a little way out and wavers at the edges, crackles down a broken
+## bright core, sends chevrons racing to the tip, and in its second half crumbles segment by segment into
+## flecks that drift off to the sides.
+func _draw_beam(t: float, a: float, hi: Color) -> void:
+	var n := clampi(int(reach / 5.0), 6, 24)
+	if bits.size() < n:
+		return
+	var head := reach * (1.0 - pow(1.0 - minf(t * 5.0, 1.0), 2.0))
+	var wmax := clampf(tan(minf(half, 0.6)) * reach, 4.0, 9.0) * (1.0 if t < 0.35 else clampf(1.0 - (t - 0.35) / 0.65, 0.0, 1.0) * 0.7 + 0.3)
+	var side := dir.orthogonal()
+	var dark := color.darkened(0.45)
+	var crackle := 0 if Access.reduce_flashing else int(shown * 30.0)  # the core's dashes march along
+	var seg := head / n
+	for i in n:
+		var x0 := seg * i
+		var x1 := seg * (i + 1)
+		if x1 <= 0.5:
+			continue
+		var b: Array = bits[i]
+		if t > 0.5 and float(b[2]) < (t - 0.5) * 2.2:
+			continue  # crumbled away
+		var w0 := _beam_w(x0 / maxf(head, 1.0), wmax)
+		var w1 := _beam_w(x1 / maxf(head, 1.0), wmax)
+		var l0 := w0 * (1.0 + 0.22 * float(b[0]))
+		var r0 := w0 * (1.0 + 0.22 * float(b[1]))
+		var nb: Array = bits[mini(i + 1, n - 1)]
+		var l1 := w1 * (1.0 + 0.22 * float(nb[0]))
+		var r1 := w1 * (1.0 + 0.22 * float(nb[1]))
+		var p0 := dir * x0
+		var p1 := dir * x1
+		draw_colored_polygon(PackedVector2Array([p0 + side * l0, p1 + side * l1, p1 - side * r1, p0 - side * r0]), Color(dark, 0.95 * a))
+		draw_colored_polygon(PackedVector2Array([p0 + side * l0 * 0.55, p1 + side * l1 * 0.55, p1 - side * r1 * 0.45, p0 - side * r0 * 0.45]), Color(color, 0.9 * a))
+		draw_line(p0 + side * l0, p1 + side * l1, Color(hi, 0.7 * a), 1.0)  # the lit upper edge
+		if (i + crackle) % 4 != 0:
+			draw_line(p0 + side * l0 * 0.12, p1 + side * l1 * 0.12, Color(Color.WHITE.lerp(hi, 0.4), a), 1.0)
+	# Chevrons racing out to the tip while it is fresh.
+	if t < 0.55:
+		for k in 3:
+			var cx := fmod(t * 3.2 + k / 3.0, 1.0) * head
+			var cw := _beam_w(cx / maxf(head, 1.0), wmax) * 0.8
+			var c := dir * cx
+			draw_line(c - dir * 3.0 + side * cw, c, Color(hi, a * 0.9), 1.0)
+			draw_line(c - dir * 3.0 - side * cw, c, Color(hi, a * 0.9), 1.0)
+	# The spear point flares as it lands, and a puff where it left.
+	if t < 0.4:
+		var f := (1.0 - t / 0.4) * (3.0 + wmax * 0.6)
+		var tip := dir * head
+		draw_line(tip - dir * f, tip + dir * f * 1.4, Color(Color.WHITE, a), 1.0)
+		draw_line(tip - side * f, tip + side * f, Color(hi, a), 1.0)
+		TechFx.inked_ring(self, Vector2.ZERO, 3.0 + t * 20.0, FLAT, Color(hi, a * (1.0 - t / 0.4)), 1.0)
+	# Flecks peel off the edges once the stroke has passed them, and drift outward.
+	for j in range(n, bits.size()):
+		var fb: Array = bits[j]
+		var along := float(fb[0]) * reach
+		if along > head:
+			continue
+		var age := maxf(t - float(fb[0]) * 0.2, 0.0)
+		var w := _beam_w(float(fb[0]), wmax)
+		var p := dir * along + side * float(fb[1]) * (w + float(fb[2]) * age) + dir * age * 10.0
+		var sz := float(fb[3])
+		draw_rect(Rect2(p.round(), Vector2(sz, sz)), Color(hi if j % 2 == 0 else color, a))
+
+
+## The stroke's half-width along it (u 0 at the hero, 1 at the point): narrow where it leaves, widest a
+## third of the way out, tapering to a point.
+func _beam_w(u: float, wmax: float) -> float:
+	if u < 0.3:
+		return wmax * lerpf(0.3, 1.0, u / 0.3)
+	return wmax * lerpf(1.0, 0.12, clampf((u - 0.3) / 0.7, 0.0, 1.0))
+
+
 func _draw() -> void:
 	var t := shown / max_life
 	var a := 1.0 - t
@@ -194,14 +275,7 @@ func _draw() -> void:
 			draw_line(tip - side * 4.0 * a, tip + side * 4.0 * a, Color(Color.WHITE, a), 1.0)
 			draw_line(tip - dir * 4.0 * a, tip + dir * 4.0 * a, Color(Color.WHITE, a), 1.0)
 		"beam":
-			var len2 := reach * minf(t * 6.0, 1.0)
-			var w2 := clampf(tan(minf(half, 0.6)) * reach, 4.0, 9.0) * (1.0 + (0.0 if Access.reduce_flashing else 0.3 * sin(shown * 60.0)))  # the beam's crackle is a 10 Hz flicker
-			var side2 := dir.orthogonal()
-			var quad := PackedVector2Array([side2 * w2, side2 * w2 + dir * len2, -side2 * w2 + dir * len2, -side2 * w2])
-			draw_colored_polygon(quad, Color(color.darkened(0.35), 0.9 * a))
-			draw_line(Vector2.ZERO, dir * len2, Color(hi, a), 1.0)
-			draw_line(side2 * w2, side2 * w2 + dir * len2, Color(hi, a * 0.8), 1.0)
-			draw_line(-side2 * w2, -side2 * w2 + dir * len2, Color(hi, a * 0.8), 1.0)
+			_draw_beam(t, a, hi)
 		"seal":
 			var drop := maxf(0.0, 1.0 - t * 5.0)  # falls in, then lands
 			var s := reach * 0.75 * (1.0 + drop * 0.6)

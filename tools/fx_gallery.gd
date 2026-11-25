@@ -62,7 +62,13 @@ func _process(_delta: float) -> bool:
 			main.heroes[i].global_position = base + Vector2(-60 - 20 * i, 160)
 		main.camera.global_position = base + CELL * Vector2(COLS, ROWS.size()) / 2.0 - CELL / 2.0
 		main.camera.reset_smoothing()
-	if frame == SPAWN:
+	var shot_at := SPAWN + int(args.get("age", "6"))
+	if args.has("beam") and frame >= shot_at - 30 and frame <= shot_at and (shot_at - frame) % 6 == 0:
+		# beam=1 age=30: the long-line motif alone at full size, one row per age (0, 6 ... 30 frames old, top down)
+		var k := (shot_at - frame) / 6
+		var col := Color(["5a6ea8", "fff0a0", "ff4060", "8fb0ff", "5a6ea8", "fff0a0"][k])
+		load("res://scripts/tech_fx.gd").spawn(main.entities, "beam", _base() + Vector2(-20, k * 28 - 10), Vector2.RIGHT.rotated(-0.12), 92.0, deg_to_rad(7), col)
+	if frame == SPAWN and not args.has("beam"):
 		_spawn_all()
 	if frame == SPAWN + int(args.get("age", "6")):
 		var img := root.get_texture().get_image()
