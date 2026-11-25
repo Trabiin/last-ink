@@ -10,6 +10,12 @@ extends Node
 ##   browser console's errors and warnings are copied into session.log instead.
 ## - Next launch: if the last session crashed (desktop: it never reached a clean exit) or logged
 ##   errors, `previous` says so and the title screen offers to send a report (FeedbackView).
+## - Web: the browser gives no clean-exit signal we can wait for, so WEB_HOOK keeps a flag in
+##   localStorage that only the page's own pagehide event clears. A page that froze, crashed or lost its
+##   graphics never runs pagehide, so the next launch knows the last session ended badly. A lost WebGL
+##   context is logged as an error too.
+## - Frame times: one "perf" line a minute (average fps, the worst frame) and a "hitch" line for any frame
+##   that stalls for half a second or more, so a report says how the game ran before it went wrong.
 ## - F12 (action "screenshot") saves a screenshot to user://screenshots/ (the web build downloads it).
 ##
 ## Nothing here is ever sent anywhere. Reports leave the device only from FeedbackView, when the player
@@ -45,8 +51,27 @@ const WEB_HOOK := """
 	});
 	window.addEventListener('error', function (e) { keep('error', [e.message + ' (' + e.filename + ':' + e.lineno + ')']); });
 	window.addEventListener('unhandledrejection', function (e) { keep('error', ['Unhandled promise rejection: ' + e.reason]); });
+	// The GPU dropped the canvas (driver reset, GPU process crash, too little video memory): the picture
+	// tears or goes black and Godot does not get it back. Not bubbling, so listened for while capturing.
+	document.addEventListener('webglcontextlost', function () { keep('error', ['WebGL context lost: the browser took the graphics away']); }, true);
+	document.addEventListener('webglcontextrestored', function () { keep('warn', ['WebGL context restored']); }, true);
+	// Clean-close flag: "open" while the page runs, "closed" once the page is closed or reloaded normally.
+	// A page that hung or crashed never gets to pagehide, so the next launch still finds "open".
+	try {
+		window.__lastInkPrevSession = localStorage.getItem('lastInk.session') || '';
+		localStorage.setItem('lastInk.session', 'open');
+		window.addEventListener('pagehide', function () {
+			try { localStorage.setItem('lastInk.session', 'closed'); } catch (e) {}
+		});
+	} catch (e) { window.__lastInkPrevSession = ''; }
 })();
 """
+
+## Frame-time logging: a "perf" line this often (seconds), a "hitch" line for a frame this slow (ms),
+## at most one hitch line per HITCH_GAP seconds.
+const PERF_EVERY := 60.0
+const HITCH_MS := 500.0
+const HITCH_GAP := 10.0
 
 ## Where the logs live. Test runs (`godot -s ...`) use their own folder and never show the notice.
 var dir := LOG_DIR
@@ -66,6 +91,10 @@ var _poll := 0.0
 var _full := false
 var _toast: Label
 var _toast_t := 0.0
+var _frame_us := 0  # when the last frame started (Time.get_ticks_usec)
+var _perf_frames: Array = []  # frame times in ms since the last perf line
+var _perf_t := 0.0
+var _hitch_t := -HITCH_GAP
 
 
 func _ready() -> void:
@@ -76,9 +105,9 @@ func _ready() -> void:
 	started = Time.get_unix_time_from_system()
 	_add_screenshot_action()
 	add_child(preload("res://scripts/perf_overlay.gd").new())  # F3: fps and memory on real hardware (issue #35)
-	start_session()
 	if OS.has_feature("web"):
-		JavaScriptBridge.eval(WEB_HOOK, true)
+		JavaScriptBridge.eval(WEB_HOOK, true)  # first: start_session reads the clean-close flag it keeps
+	start_session()
 
 
 ## Clean exit (window closed, Quit): the session did not crash.
@@ -100,13 +129,21 @@ func _is_scripted() -> bool:
 ## Rotates the session logs, reads what the last session left behind and starts this one.
 func start_session() -> void:
 	DirAccess.make_dir_recursive_absolute(dir)
-	var crashed := FileAccess.file_exists(dir.path_join("session.lock")) and not OS.has_feature("web")
+	var crashed := web_froze() if OS.has_feature("web") else FileAccess.file_exists(dir.path_join("session.lock"))
 	_rotate()
 	previous = read_previous(crashed)
 	_write_file(dir.path_join("session.lock"), Time.get_datetime_string_from_system(true) + "Z\n")
 	_full = false
 	_append(["Last Ink session log", ""] + header_lines() + [""])  # no-tr: developer log
 	_print("session " + game_version() + " " + OS.get_name())
+
+
+## Web: the last session's page never closed normally (it froze, crashed or lost its graphics and was
+## reloaded or killed). WEB_HOOK read the flag before setting it for this session.
+func web_froze() -> bool:
+	if scripted or not OS.has_feature("web"):
+		return false
+	return str(JavaScriptBridge.eval("window.__lastInkPrevSession || ''", true)) == "open"
 
 
 ## Session logs move up one (session.log -> session.1.log ...); the oldest is dropped.
@@ -234,6 +271,11 @@ func system_info() -> Dictionary:
 		var typing = JavaScriptBridge.eval("(function(){var t=window.__lastInkTyping;if(!t)return '';var o=[];for(var k in t.seen)o.push(k+' '+t.seen[k]);if(t.synced)o.push('synced '+t.synced);return o.join(', ');})()", true)
 		if typing is String and typing != "":
 			info["web_typing"] = typing
+		# Browsers report the GPU as "WebKit WebGL"; Chrome tells the real one through this extension.
+		var gpu = JavaScriptBridge.eval("(function(){try{var gl=document.createElement('canvas').getContext('webgl2');var e=gl&&gl.getExtension('WEBGL_debug_renderer_info');return e?gl.getParameter(e.UNMASKED_RENDERER_WEBGL):'';}catch(x){return '';}})()", true)
+		if gpu is String and gpu != "":
+			info["gpu_web"] = gpu
+		info["pixel_ratio"] = str(JavaScriptBridge.eval("window.devicePixelRatio", true))
 	return info
 
 
@@ -250,7 +292,23 @@ func game_context() -> Dictionary:
 		"session_min": snappedf((Time.get_unix_time_from_system() - started) / 60.0, 0.1),
 		"difficulty": Settings.DIFFICULTIES[Settings.difficulty] if Settings.difficulty < Settings.DIFFICULTIES.size() else "",
 		"battle_speed": Settings.battle_speed_name(),
+		"visual_fx": fx_summary(),
+		"display": display_summary(),
 	}
+
+
+## The Visual effects sliders, e.g. "shadows 100, clouds 0, ...": what the GPU was asked to draw.
+static func fx_summary() -> String:
+	var parts := []
+	for f in Settings.FX:
+		parts.append("%s %d" % [f[0], int(Settings.fx.get(f[0], f[2]))])
+	return ", ".join(parts)
+
+
+## Vsync and the frame cap, e.g. "vsync on, cap 60" (the browser ignores both and runs at its own pace).
+static func display_summary() -> String:
+	var cap: int = DisplaySettings.FPS_CAPS[DisplaySettings.fps_i] if DisplaySettings.fps_i < DisplaySettings.FPS_CAPS.size() else 0
+	return "vsync %s, cap %s" % ["on" if DisplaySettings.vsync else "off", str(cap) if cap > 0 else "none"]  # no-tr: developer log
 
 
 func header_lines() -> Array:
@@ -265,6 +323,7 @@ func header_lines() -> Array:
 # ---------------------------------------------------------------- breadcrumbs
 
 func _process(delta: float) -> void:
+	_track_frame()
 	_poll += delta
 	if _poll >= 0.5:
 		_poll = 0.0
@@ -290,6 +349,47 @@ func _check_context() -> void:
 	if c["save_slot"] != _slot:
 		_slot = c["save_slot"]
 		breadcrumb("save slot " + _slot)
+
+
+## Frame times: real time between frames (delta is clamped and scaled by battle speed).
+func _track_frame() -> void:
+	var now := Time.get_ticks_usec()
+	if _frame_us == 0:
+		_frame_us = now
+		return
+	var ms := (now - _frame_us) / 1000.0
+	_frame_us = now
+	if ms >= 10000.0:  # a hidden tab or minimised window draws nothing: not a frame, but say so
+		if not scripted:
+			breadcrumb("no frames for %d s (window hidden, or a long stall)" % int(ms / 1000.0))  # no-tr: developer log
+		return
+	_perf_frames.append(ms)
+	_perf_t += ms / 1000.0
+	var secs := Time.get_unix_time_from_system() - started
+	if ms >= HITCH_MS and secs - _hitch_t >= HITCH_GAP and not scripted:
+		_hitch_t = secs
+		breadcrumb("hitch: one frame took %d ms" % int(ms))  # no-tr: developer log
+	if _perf_t >= PERF_EVERY:
+		if not scripted:
+			breadcrumb(perf_line(_perf_frames))
+		_perf_frames.clear()
+		_perf_t = 0.0
+
+
+## "perf 58 fps, worst frame 41 ms, 3 frames over 50 ms" from frame times in ms.
+static func perf_line(times: Array) -> String:
+	if times.is_empty():
+		return "perf (no frames)"  # no-tr: developer log
+	var total := 0.0
+	var worst := 0.0
+	var slow := 0
+	for t in times:
+		total += float(t)
+		worst = maxf(worst, float(t))
+		if float(t) > 50.0:
+			slow += 1
+	var fps := times.size() / maxf(total / 1000.0, 0.001)
+	return "perf %d fps, worst frame %d ms, %d frames over 50 ms" % [roundi(fps), int(worst), slow]  # no-tr: developer log
 
 
 ## One line in the session log (and in godot.log on desktop), stamped with the time and the day.
