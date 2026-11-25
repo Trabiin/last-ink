@@ -295,9 +295,10 @@ static func people_changes(m: Dictionary, outcome: String, info: Dictionary) -> 
 	var out := []
 	if outcome != "success":
 		return out
-	var saved: Dictionary = info.get("saved", {})
-	var lost_d: Dictionary = info.get("lost", {})
-	var groups: Dictionary = m.get("people", {})
+	# Only the dictionary forms: a Rescue mission's "people" (and its objective's "saved") are plain counts.
+	var saved: Dictionary = info["saved"] if typeof(info.get("saved")) == TYPE_DICTIONARY else {}
+	var lost_d: Dictionary = info["lost"] if typeof(info.get("lost")) == TYPE_DICTIONARY else {}
+	var groups: Dictionary = m["people"] if typeof(m.get("people")) == TYPE_DICTIONARY else {}
 	for g in groups:
 		var pg: Dictionary = groups[g]
 		var n := int(saved.get(g, 0))
