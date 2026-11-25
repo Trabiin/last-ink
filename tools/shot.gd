@@ -105,6 +105,8 @@ func _process(_delta: float) -> bool:
 		current_scene.camera.reset_smoothing()
 	if args.has("spread") and frame >= total - 40 and frame <= total - 10:
 		_spread()
+	if frame == 2 and args.has("portraits"):
+		_swap_portraits(str(args["portraits"]))
 	if frame == total - int(args.get("lead", "30")) and args.has("act"):
 		_act(str(args["act"]))
 		for pair in str(args.get("set", "")).split(",", false):  # set=gear_view.tab:skills: a property on the opened screen
@@ -116,17 +118,9 @@ func _process(_delta: float) -> bool:
 			var v = kv[1]
 			obj.set(path[path.size() - 1], (v == "true") if v in ["true", "false"] else (int(v) if v.is_valid_int() else v))
 	if frame == total - 25 and args.has("talk") and current_scene != null and "dialogue_box" in current_scene:
-		# talk=quill_first opens that conversation in town; portraits=DIR swaps in <id>.png from DIR (a
-		# style trial from tools/portrait_style.py) without touching assets/portraits.
+		# talk=quill_first opens that conversation in town (portraits=DIR works here too, see _swap_portraits).
 		var dlg = load("res://scripts/dialogue.gd")
 		dlg._speed = 3  # instant text
-		if args.has("portraits"):
-			var dir := DirAccess.open(str(args["portraits"]))
-			for f in dir.get_files():
-				if f.ends_with(".png"):
-					var tex := ImageTexture.create_from_image(Image.load_from_file(str(args["portraits"]).path_join(f)))
-					for ex in ["", "happy", "angry", "sad", "surprised", "smug"]:  # stands in for every expression
-						dlg._portraits["%s|%s" % [f.get_basename(), ex]] = tex
 		current_scene.dialogue_box.play(str(args["talk"]))
 		for i in int(args.get("skip", "0")):  # skip=1: start on the next line
 			current_scene.dialogue_box._shown = 99999.0
@@ -140,6 +134,21 @@ func _process(_delta: float) -> bool:
 		print("saved ", args.get("out", "/tmp/shot.png"))
 		quit()
 	return false
+
+
+## portraits=DIR: every <id>.png in DIR stands in for that character's portrait on every screen (dialogue,
+## help card, bond scenes, epilogues, the journal sketch), for style trials, without touching assets/portraits.
+func _swap_portraits(dir_path: String) -> void:
+	var dlg = load("res://scripts/dialogue.gd")
+	var scn = load("res://scripts/scene_view.gd")
+	for f in DirAccess.open(dir_path).get_files():
+		if not f.ends_with(".png"):
+			continue
+		var id := f.get_basename()
+		var tex := ImageTexture.create_from_image(Image.load_from_file(dir_path.path_join(f)))
+		for ex in ["", "happy", "angry", "sad", "surprised", "smug", "hurt", "worried", "laugh"]:  # every expression
+			dlg._portraits["%s|%s" % [id, ex]] = tex
+			scn._portraits["res://assets/portraits/%s.png" % (id if ex == "" else id + "_" + ex)] = tex
 
 
 ## Small staged moments for screenshots: "swing" makes every hero swing, "spread" fans them out.
@@ -164,6 +173,28 @@ func _act(what: String) -> void:
 			for l in load("res://scripts/dialogue.gd").talk(t):
 				load("res://scripts/dialogue_log.gd").add(str(l[0]), str(l[1]))
 		load("res://scripts/dialogue_log.gd").popup(cur)
+		return
+	if what.begins_with("help:"):  # act=help:gear: that help talk on its card (the voice's portrait at the left)
+		load("res://scripts/help_card.gd").ensure(cur)
+		load("res://scripts/help.gd").play(what.substr(5), cur)
+		return
+	if what.begins_with("bond:") and cur != null and "bonds_view" in cur:  # act=bond:bran:1: that rank scene
+		var b := what.substr(5).split(":")
+		cur.bonds_view.open(b[0])
+		cur.bonds_view.scene_view.play(b[0], int(b[1]) if b.size() > 1 else 1, true)
+		return
+	if what.begins_with("epilogue:"):  # act=epilogue:bran,gristle: those epilogue cards over the scene
+		var cards := []
+		var emp := root.get_node("Empire")  # autoloads are not known to a -s script at compile time
+		for id in what.substr(9).split(","):
+			cards.append({"id": id, "name": emp.recruit(id).get("name", id), "text": load("res://scripts/epilogues.gd").text_for(id),
+				"lost": false, "color": emp.bond_info(id).get("color", "c9c3b6")})
+		var ev = load("res://scripts/epilogue_view.gd").new()
+		var layer := CanvasLayer.new()
+		layer.layer = 50
+		cur.add_child(layer)
+		layer.add_child(ev)
+		ev.play(cards)
 		return
 	if what == "picker" and cur != null and "party_picker" in cur:  # act=picker on scene=command: the party picker
 		cur.party_picker.open(load("res://scripts/missions.gd").find(str(args.get("mission", "meadow_patrol"))))
