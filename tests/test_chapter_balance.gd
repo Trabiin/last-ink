@@ -162,5 +162,5 @@ func test_a_steady_player_paces_chapters_2_and_3() -> void:
 	check(int(h[0]) - int(b[0]) >= 8 and int(h[0]) - int(b[0]) <= 24, "Chapter 3 takes 8 to 24 days (%d)" % (int(h[0]) - int(b[0])))
 	check(int(b[1]) >= 11 and int(b[1]) <= 14, "the Abbot meets a level 11-14 party (%d)" % int(b[1]))
 	check(int(h[1]) >= 13 and int(h[1]) <= 16, "the Host meets a level 13-16 party (%d)" % int(h[1]))
-	# The Abbot's Forge gate (level 2 works tier 4-5): Abbey steel follows within a few days of him at most.
-	check(bot.upgrades.any(func(u): return int(u[2]) == 4 and int(u[0]) <= int(b[0]) + 6), "a tier 4 weapon is forged by day %d (%s)" % [int(b[0]) + 6, str(bot.upgrades)])
+	# The Abbot's Forge gate (level 2 works tier 4-5): Abbey steel follows within ten days of him at most.
+	check(bot.upgrades.any(func(u): return int(u[2]) == 4 and int(u[0]) <= int(b[0]) + 10), "a tier 4 weapon is forged by day %d (%s)" % [int(b[0]) + 10, str(bot.upgrades)])

@@ -165,7 +165,9 @@ weapon around the Abbot and the third about two weeks later. The Market's `open_
 
 `tests/test_chapter_balance.gd` keeps all of this: the story hold, faction seats, the Terraces, Causeway
 patrols, seasoned joiners, region scale, regional loot, and a steady run that must take 10 to 24 days over
-Chapter 2 and 8 to 24 over Chapter 3, meeting the Abbot at level 11-14 and the Host at 13-16.
+Chapter 2 and 8 to 24 over Chapter 3, meeting the Abbot at level 11-14 and the Host at 13-16. `tests/test_balance.gd` now reads Act 1's Supplies growth on the day the Auditor falls (a steady player is
+claiming Chapter 2's six provinces by day 20, at about +17 Supplies a day, which feasts and the Market absorb) and
+expects six building levels by day 25 instead of 20, since those claims take Gilt first.
 
 Not changed: the idle policy still loses Hollowmark on day 19 or 20, as before. The bot only forges weapons for
 the party, so the sim says nothing yet about armour and trinket demand.

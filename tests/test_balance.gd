@@ -36,10 +36,14 @@ func test_a_steady_player_holds_on_without_piling_up_supplies() -> void:
 	check(_hungry_days(bot) <= 3, "almost never hungry (%d days)" % _hungry_days(bot))
 	var d20 := _at(bot, 20)
 	check(d20["supplies"] < 300, "Supplies do not pile up by day 20 (%d)" % d20["supplies"])
-	check(d20["net_supplies"] <= 10, "Supplies grow gently by day 20 (%+d a day)" % d20["net_supplies"])
+	# Act 1's economy, measured where Act 1 ends: since the bot plays on into Chapter 2 (issue #138), a
+	# steady player is claiming the six provinces the north asks for by day 20, and more land feeds more.
+	var end1 := _at(bot, mini(20, int(bot.story_days.get("auditor_duel", [20])[0])))
+	check(end1["net_supplies"] <= 10, "Supplies grow gently through Act 1 (%+d a day on day %d)" % [end1["net_supplies"], end1["day"]])
+	check(d20["net_supplies"] <= 25, "and no more than +25 a day with Chapter 2's land by day 20 (%+d)" % d20["net_supplies"])
 	check(d20["gilt"] < 600, "Gilt is still worth spending by day 20 (%d)" % d20["gilt"])
 	check(Missions.cleared("auditor_duel"), "Act 1 can be finished")
-	check(d20["buildings"] >= 6, "something gets built (%d levels by day 20)" % d20["buildings"])
+	check(_at(bot, 25)["buildings"] >= 6, "something gets built (%d levels by day 25; claims for Chapter 2 take Gilt first)" % _at(bot, 25)["buildings"])
 
 
 func test_party_levels_follow_the_curve() -> void:
