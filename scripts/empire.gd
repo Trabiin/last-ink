@@ -24,6 +24,8 @@ const FRAY_UNHELD := 1
 const FRAY_UNGOVERNED := 3  # nobody in charge: the Blank finds the gaps
 const FRAY_MOMENTUM := 1  # above 50, unravelling feeds itself
 const FRAY_TENDED := -2  # your people patch up what they can
+const FRAY_FACTION_KEPT := -2  # a faction tends its own seat the way your people tend yours (issue #138)
+const STORY_HOLD_FRAY := 99  # a province whose story mission is still waiting stops here instead of falling
 const SCAR_FRAY := 2  # per day while a surge scar lasts
 const SURGE_FRAY := 12
 const VELVET_PATRONAGE := 4  # Gilt a day from a Friendly Velvet Nobility (issue #29)
@@ -396,6 +398,10 @@ func fray_sources(p: Dictionary, gov := "-") -> Array:
 				out.append([tr("Coven hedge-wards (Friendly)"), -1])
 	elif owner == "free":
 		out.append([tr("Nobody holds it"), FRAY_UNHELD])
+	elif owner in faction_ids():
+		out.append([tr("Kept by the %s") % faction(owner).get("short", owner), FRAY_FACTION_KEPT])
+	if int(p["fray"]) >= 75 and story_holds(p):
+		out.append([tr("The story is not done here: it holds at %d") % STORY_HOLD_FRAY, 0])
 	out.append_array(FactionAsks.fray_sources(p))
 	out.append_array(BlankPlans.sources(p, gov if owner == "you" else "-"))
 	var total := 0
@@ -424,12 +430,17 @@ func _advance_blank() -> void:
 		if p["owner"] == "erased" or not province_open(p):
 			continue
 		p["fray"] = clampi(int(p["fray"]) + int(rates[p["index"]]), 0, 100)
+		if int(p["fray"]) > STORY_HOLD_FRAY and story_holds(p):
+			p["fray"] = STORY_HOLD_FRAY
 		if int(p.get("scar", 0)) > 0:
 			p["scar"] = int(p["scar"]) - 1
 	_update_surge()
 	for p in t.provinces:
 		if p["owner"] != "erased" and int(p["fray"]) >= 100 and province_open(p):
-			_erase(p)
+			if story_holds(p):
+				p["fray"] = STORY_HOLD_FRAY  # a surge can't take it either
+			else:
+				_erase(p)
 	BlankPlans.dawn()
 	check_regions()
 
@@ -438,6 +449,19 @@ func _advance_blank() -> void:
 ## its panel under `label`. counter: "governor" (halved while governed), "lamp" (a Wardlamp cancels it) or "".
 func add_pressure(province_id: String, label: String, per_day: int, days: int, counter := "") -> void:
 	BlankPlans.add(province_id, label, per_day, days, counter)
+
+
+## Whether a story mission is still waiting in this province (cleared or not yet reachable ones don't
+## count). Such a province can't be erased: its mission would vanish from the map and strand the
+## story (issue #138). The Blank still wears it down to STORY_HOLD_FRAY, with all that costs.
+func story_holds(p: Dictionary) -> bool:
+	for m in Missions.all():
+		if not m.get("story", false) or str(m.get("province", "")) != str(p.get("id", "")) or m.get("in_blank", false):
+			continue
+		if Missions.cleared(str(m["id"])) or (m.has("needs") and not Story.meets(m["needs"])):
+			continue
+		return true
+	return false
 
 
 func _erase(p: Dictionary) -> void:
@@ -668,6 +692,8 @@ func claim_cost(pid: String) -> Dictionary:
 func borders_yours(pid: String) -> bool:
 	var t := territory()
 	var p := t.find(pid)
+	if p.get("landing", false) and province_open(p):
+		return true  # a region's way in: claimable from afar (issue #138)
 	for n in t.neighbors[p["index"]]:
 		if t.provinces[n]["owner"] == "you":
 			return true
@@ -1170,6 +1196,7 @@ func _resolve_expedition(e: Dictionary) -> void:
 		var rid: String = j.get("recruit", "")
 		if rid != "" and not recruits.has(rid) and recruit_data.has(rid):
 			recruits[rid] = {"role": "idle", "target": "", "injured": 0}
+			_seasoned(rid)
 			lines.append(tr("%s joins your roster. Find them in Hollowmark or give them a job%s.") % [recruit(rid)["name"], Prompts.tag("roster")])
 	lines.append_array(FactionAsks.on_expedition(jid, outcome != "fail"))  # a faction's request (issue #131)
 	var road := Relationships.banter_quote(squad)  # friends and rivals on the road (issue #116)
@@ -3013,7 +3040,15 @@ func hire(id: String) -> bool:
 	visitors.erase(id)
 	recruits[id] = {"role": "idle", "target": "", "injured": 0}
 	notice.emit(tr("%s joins your roster. Give them a job%s.") % [recruit(id)["name"], Prompts.tag("roster")], false)
+	_seasoned(id)
 	return true
+
+
+## A late field hero arrives at the party's level (Progress.seasoned_join, issue #138) and says so.
+func _seasoned(id: String) -> void:
+	var line := Progress.seasoned_join(id)
+	if line != "":
+		notice.emit(line, false)
 
 
 ## Someone the story brings in (join type "story", issue #28): on the roster at once, no gate, no fee.
@@ -3023,6 +3058,7 @@ func join_now(id: String) -> void:
 	visitors.erase(id)
 	recruits[id] = {"role": "idle", "target": "", "injured": 0}
 	notice.emit(tr("%s joins your roster. Give them a job%s.") % [recruit(id)["name"], Prompts.tag("roster")], false)
+	_seasoned(id)
 
 
 ## Checked every frame (cheap): anyone whose hook was just met turns up at the gate.

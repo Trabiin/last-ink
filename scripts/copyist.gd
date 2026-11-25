@@ -103,7 +103,7 @@ func _copy_out() -> void:
 	l.rect = _strip()
 	l.warn = LINE_WARN
 	l.last = LINE_LAST
-	l.damage = damage
+	l.damage = roundi(damage * hit_mult())  # the region's scale too (issue #138)
 	var scene := get_tree().current_scene
 	var floor_node: Node = scene.get("area") if scene != null and scene.get("area") != null else get_parent()
 	floor_node.add_child(l)

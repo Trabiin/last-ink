@@ -147,16 +147,24 @@ func test_beats_play_in_order() -> void:
 	check(_offered("inkmere", "ch3_shallows").size() == 1, "the Shallows (optional) are open")
 	Empire.territory().find("terraces")["owner"] = "you"
 	masq = _offered("causeway", "ch3_masquerade")
-	check(masq.size() == 1 and str(masq[0].get("blocker", "")) == "", "the Terraces open the door")
+	if check(masq.size() == 1, "the Masquerade is still on the map"):
+		check(str(masq[0].get("blocker", "")).contains("48 Renown"), "and waits for 48 Renown (issue #138: %s)" % masq[0].get("blocker", ""))
+	Empire.res["renown"] = 48
+	masq = _offered("causeway", "ch3_masquerade")
+	check(masq.size() == 1 and str(masq[0].get("blocker", "")) == "", "the Terraces and a name open the door")
 	_clear(["ch3_masquerade"])
 	Empire.recruits["hortense"] = {"role": "idle", "target": "", "injured": 0}
 	check_eq(Story.next_beat().get("talk", ""), "ch3_masquerade_after", "after the masquerade")
 	_seen(["ch3_masquerade_after"])
 	check_eq(Story.next_beat().get("talk", ""), "ch3_two_rapiers", "Fauvette and Hortense have their scene")
 	_seen(["ch3_two_rapiers"])
+	var wharf := _offered("lanternquay", "ch3_wharf")
+	if check(wharf.size() == 1, "the Night Wharf is on the map"):
+		check(str(wharf[0].get("blocker", "")).contains("54 Renown"), "locked until 54 Renown (%s)" % wharf[0].get("blocker", ""))
 	_clear(["ch3_wharf"])
 	check_eq(Story.next_beat().get("talk", ""), "ch3_wharf_after", "after the wharf")
 	_seen(["ch3_wharf_after"])
+	Empire.res["renown"] = 60
 	var host := _offered("causeway", "ch3_host")
 	if check(host.size() == 1, "the Host is on the map"):
 		check(str(host[0].get("blocker", "")).contains("Neutral"), "locked until the Nobility are Neutral (%s)" % host[0].get("blocker", ""))

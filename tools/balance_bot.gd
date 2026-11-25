@@ -25,6 +25,10 @@ var hurries := 0
 const FEAST_SUPPLIES := 120  # a feast only when the larder holds at least this much
 const SELL_ABOVE := 300  # Supplies past this go to the Market
 var missions_by_type := {}
+var missions_by_region := {}  # region id -> missions fought there (issue #138)
+var mats_by_region := {}  # region id -> {material: count} found on missions there
+var upgrades := []  # [day, hero, tier] for every Forge weapon upgrade started
+var story_days := {}  # story mission id -> [day cleared, party level]
 var _seen_built := {}
 
 
@@ -62,6 +66,8 @@ func play_day() -> void:
 			_lamps()
 			_expeditions()
 			_diplomacy()
+		elif policy == "casual":
+			_diplomacy(true)
 		_story()
 		var cadence := 2 if policy == "casual" else 1
 		if Empire.day % cadence == 0:
@@ -138,6 +144,10 @@ func _free(id: String) -> bool:
 	return st["role"] == "idle" and int(st["injured"]) <= 0 and not Empire.recruit(id).get("locked_party", false)
 
 
+func _staffers() -> Array:
+	return Empire.roster_ids().filter(func(id): return Empire.role_of(id) == "staff" and int(Empire.recruits[id]["injured"]) <= 0)
+
+
 func _idle() -> Array:
 	return Empire.roster_ids().filter(func(id): return _free(id))
 
@@ -206,24 +216,33 @@ func _staff() -> void:
 
 
 func _claims() -> void:
-	var limit := 99 if policy == "rush" else Empire.HOLD_FREE
-	for p in Empire.territory().provinces:
-		if p["owner"] != "free" or not Empire.province_open(p) or Story.held() >= limit:
+	var wants := _wants()
+	var limit := 99 if policy == "rush" else maxi(Empire.HOLD_FREE, int(wants["held"]))
+	var provinces: Array = Empire.territory().provinces.duplicate()
+	provinces.sort_custom(func(a, b): return (a["id"] in wants["owns"]) and not (b["id"] in wants["owns"]))  # land the story asks for first
+	for p in provinces:
+		var asked: bool = p["id"] in wants["owns"]
+		if p["owner"] != "free" or not Empire.province_open(p) or (Story.held() >= limit and not asked):
 			continue
 		if Empire.claim_blocker(p["id"]) != "":
 			continue
 		var cost := Empire.claim_cost(p["id"])
 		if not _affordable_with_reserve(cost):
 			continue
-		if policy != "rush" and int(p["fray"]) >= 60 and Story.held() >= _gate_held():
+		if policy != "rush" and int(p["fray"]) >= 60 and Story.held() >= int(wants["held"]) and not asked:
 			continue  # a careful player does not buy land that is about to go, unless the story asks for land
+		var pool := _idle()
+		if pool.is_empty():
+			pool = _staffers()  # a player takes someone off a building to govern new land
 		var best := ""
 		var score := -999
-		for id in _idle():
+		for id in pool:
 			var s := Empire.governor_score(id, p["id"])
 			if s > score:
 				best = id
 				score = s
+		if best != "" and Empire.role_of(best) == "staff":
+			Empire.assign(best, "idle")
 		if best != "" and Empire.claim(p["id"], best):
 			events.append([Empire.day, "claimed " + str(p["id"])])
 
@@ -273,11 +292,35 @@ func _build() -> void:
 
 ## Provinces a story mission on the map wants held before it opens (0 for none, issue #190).
 func _gate_held() -> int:
-	var n := 0
+	return int(_wants().get("held", 0))
+
+
+## What the story is waiting for right now, read the way a player reads the briefing and the goal
+## line: the gates of story missions on the map, and the conditions of the next story beats whose
+## story conditions are already met (Chapter 2 waits for six provinces, Chapter 3 for eight; the
+## Masquerade for the Terraces; the two bosses for Neutral standing). {held, owns: [], standing: {fid: tier}}
+func _wants() -> Dictionary:
+	var out := {"held": 0, "owns": [], "standing": {}}
+	var conds := []
 	for m in Missions.all():
-		if m.get("story", false) and m.has("gate") and Missions.offered(m):
-			n = maxi(n, int(m["gate"].get("held", 0)))
-	return n
+		if m.get("story", false) and m.has("gate") and Missions.offered(m) and not Missions.cleared(str(m.get("id", ""))):
+			conds.append(m["gate"])
+	for b in Story.data().get("beats", []):
+		var talk := str(b.get("talk", ""))
+		if talk == "" or Dialogue.is_seen("talk:" + talk):
+			continue
+		var w: Dictionary = b.get("when", {})
+		if Story.meets({"seen": w.get("seen", []), "cleared": w.get("cleared", [])}):
+			conds.append(w)
+	for c in conds:
+		out["held"] = maxi(int(out["held"]), int(c.get("held", 0)))
+		for pid in c.get("owns", []) + c.get("governs", []):
+			if not pid in out["owns"]:
+				out["owns"].append(pid)
+		var st: Dictionary = c.get("standing", {})
+		for fid in st:
+			out["standing"][fid] = st[fid]
+	return out
 
 
 ## Buildings a story mission on the map is still waiting for (its "gate", issue #190).
@@ -319,6 +362,7 @@ func _forge() -> void:
 			continue
 		if Armory.start(r):
 			events.append([Empire.day, "forge " + str(r["result"])])
+			upgrades.append([Empire.day, id, int(r["tier"])])
 			forge_gilt += int(r["gilt"])
 
 
@@ -367,19 +411,32 @@ func _expeditions() -> void:
 			events.append([Empire.day, "expedition " + jid])
 
 
-func _diplomacy() -> void:
+## story_only: a casual player still sends the envoy a story gate asks for (the two chapter bosses
+## wait for Neutral standing), and nothing else.
+func _diplomacy(story_only := false) -> void:
 	if not Help.is_open("diplomacy"):
 		return
+	var asked: Dictionary = _wants()["standing"]
 	for fid in Empire.faction_ids():
-		if Empire.envoy_of(fid) == "" and Empire.standing_rate(fid) <= 0:
+		if story_only and not asked.has(fid):
+			continue
+		if Empire.envoy_of(fid) == "" and (Empire.standing_rate(fid) <= 0 or (asked.has(fid) and not Empire.at_least(fid, str(asked[fid])))):
 			var idle := _idle()
-			if idle.size() <= 1:  # keep one spare for a claim
-				break
+			if idle.size() <= 1 and asked.has(fid):
+				idle = _staffers()  # the story waits on this envoy: take someone off a building
+			elif idle.size() <= 1:  # keep one spare for a claim
+				continue
+			if idle.is_empty():
+				continue
 			var best: String = idle[0]
 			for id in idle:
 				if int(Empire.envoy_effect(id, fid)["drift"]) > int(Empire.envoy_effect(best, fid)["drift"]):
 					best = id
+			if Empire.role_of(best) == "staff":
+				Empire.assign(best, "idle")
 			Empire.assign(best, "envoy", fid)
+		if story_only:
+			continue
 		for kind in ["trade", "aid"]:
 			var d := Empire.deal(fid, kind)
 			if not d.is_empty() and Empire.deal_blocker(fid, kind) == "" and _affordable_with_reserve(d.get("cost", {})):
@@ -400,6 +457,7 @@ func pick_mission() -> Dictionary:
 			if str(m.get("blocker", "")) != "":
 				continue
 			offers.append([_priority(m, p), m])
+	offers = offers.filter(func(o): return o[0] >= 0.0)
 	if offers.is_empty():
 		return {}
 	offers.sort_custom(func(a, b): return a[0] > b[0])
@@ -409,8 +467,10 @@ func pick_mission() -> Dictionary:
 func _priority(m: Dictionary, p: Dictionary) -> float:
 	var kind := str(m.get("type", m.get("objective", {}).get("kind", "")))
 	var mine: bool = p["owner"] == "you"
-	if kind == "defense":
-		return 100.0 if mine else 20.0
+	if kind == "defense":  # a surge gathering against your land first; a standing Defense job can wait for the story
+		if mine and str(Empire.surge.get("id", "")) == str(p["id"]):
+			return 100.0 if Empire.surge_days_left() <= 2 else 85.0  # the story first while the surge is still days off
+		return 30.0 if mine else 20.0
 	if m.get("story", false):
 		return 90.0
 	if kind == "reclaim":
@@ -419,9 +479,13 @@ func _priority(m: Dictionary, p: Dictionary) -> float:
 		return 60.0
 	if m.has("personal") or kind == "personal":
 		return 55.0
+	if kind == "raid" and _wants()["standing"].has(str(m.get("faction", ""))):
+		return -1.0  # nobody raids the people the story needs on side
 	if kind in ["raid", "salvage"]:
 		return 40.0
-	return float(p["fray"]) / 3.0 + (10.0 if mine else 0.0)
+	# A player goes where the new chapter's materials and enemies are: the newest open region first.
+	var newest := str(Empire.regions_open[-1]) if Empire.regions_open.size() > 1 else ""  # not in Act 1
+	return float(p["fray"]) / 3.0 + (10.0 if mine else 0.0) + (32.0 if str(p.get("region", "")) == newest else 0.0)
 
 
 ## Fights a mission on paper and pays it out the way main.gd and the results screen do.
@@ -449,11 +513,31 @@ func _fight(m: Dictionary) -> void:
 		Empire.bond_fought(i + 1, party)
 	if str(obj.get("kind", "")) == "boss":
 		xp += 60
+	if str(obj.get("kind", "")) in ["raid", "salvage"]:  # the caches carried out, as MissionObjectives._open_cache pays them
+		var contents: Dictionary = obj.get("contents", {})
+		for c in int(obj.get("need", 3)):
+			for k4 in contents:
+				var v = contents[k4]
+				var n := randi_range(int(v[0]), int(v[1])) if v is Array else int(v)
+				if n > 0:
+					found[k4] = int(found.get(k4, 0)) + n
 	Progress.award(party, xp)
 	var r := Missions.settle(m, "success", found, {"kills": kills, "time": 300.0, "info": {}})
 	Progress.award(party, Progress.mission_xp(m))
 	Missions.apply(r)
 	missions_run += 1
+	var region := str(Empire.territory().find(str(m.get("province", ""))).get("region", "?"))
+	missions_by_region[region] = int(missions_by_region.get(region, 0)) + 1
+	var bucket: Dictionary = mats_by_region.get(region, {})
+	for k3 in found:
+		if Armory.mats_data().get("materials", {}).has(k3):
+			bucket[k3] = int(bucket.get(k3, 0)) + int(found[k3])
+	mats_by_region[region] = bucket
+	if m.get("story", false):
+		var lv := []
+		for pid in party:
+			lv.append(Progress.level(pid))
+		story_days[str(m.get("id", ""))] = [Empire.day, lv.max() if not lv.is_empty() else 0]
 	var tk := str(m.get("type", obj.get("kind", "?")))
 	missions_by_type[tk] = int(missions_by_type.get(tk, 0)) + 1
 

@@ -23,7 +23,7 @@ signal phase_changed(phase: int)
 
 enum Act { DORMANT, WALK, SWING, LINES, RECOPY, ILLUMINATE, TRANSITION }
 
-const MAX_HP := 820
+const MAX_HP := 960  # issue #138: about 10% more swings than the Auditor at the party's Chapter 2 level and gear
 const PHASE2_AT := 0.5
 const WALK_SPEED := 30.0
 const SWING_RANGE := 56.0
@@ -44,9 +44,9 @@ const INK := Color("15101a")
 const PAPER := Color("ebe7dc")
 const GILT := Color("e0b04a")
 
-var damage := 13  # the crozier
+var damage := 15  # the crozier
 var line_damage := 4
-var illum_damage := 16
+var illum_damage := 18
 var act: int = Act.DORMANT
 var act_t := 0.0
 var act_total := 1.0
