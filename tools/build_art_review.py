@@ -213,6 +213,23 @@ def build(out):
                           "kind": "painting" if painted else "picture", "title": f.rsplit(".", 1)[0],
                           "src": "ui/" + f, "hash": digest(Image.open(os.path.join(A, "ui", f)).convert("RGBA"))})
 
+    # Stand-ins (data/placeholders.json) stay off the page: the final art batch replaces every one, so judging
+    # them is wasted effort. Each shows up for review once its entry is deleted, i.e. when its final art lands.
+    ph = {}
+    for e in json.load(open(os.path.join(ROOT, "data", "placeholders.json")))["placeholders"]:
+        kind, name = e["id"].split(":", 1)
+        ph.setdefault(kind, set()).add(name)
+    unit_kind = {"identity": "sprite", "anim": "sprite", "portrait": "portrait", "prop": "prop", "icon": "icon",
+                 "tiles": "tiles"}
+
+    def stand_in(u):
+        k = unit_kind.get(u["kind"])
+        name = u["sprite"] if k == "sprite" else u["id"].split("/", 1)[1]
+        return k is not None and name in ph.get(k, ())
+
+    hidden = [u for u in units if stand_in(u)]
+    units = [u for u in units if not stand_in(u)]
+
     try:
         commit = subprocess.check_output(["git", "-C", ROOT, "rev-parse", "--short", "HEAD"], text=True).strip()
     except Exception:
@@ -223,7 +240,7 @@ def build(out):
     by = {}
     for u in units:
         by[u["cat"]] = by.get(u["cat"], 0) + 1
-    print("%d units: %s" % (len(units), by))
+    print("%d units: %s (%d stand-ins hidden)" % (len(units), by, len(hidden)))
 
 
 if __name__ == "__main__":
