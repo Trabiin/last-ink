@@ -311,6 +311,9 @@ func test_town_explains_screens_and_plays_unlocks_after_story_beats() -> void:
 	check(hub.dialogue_box.visible, "the day-2 story beat plays")
 	check(not Help.busy(), "no card over a story beat")
 	hub.dialogue_box._close()
+	await frames(3)
+	if hub.chapter_card.visible:  # the rumours beat names the new story missions on a card
+		hub.chapter_card._close()
 	var got := {}
 	for n in 4:  # unlocks due now: bonds and expeditions (the rumours were heard)
 		if not await _wait_card(200):

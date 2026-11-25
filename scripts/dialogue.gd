@@ -44,6 +44,7 @@ static func data() -> Dictionary:
 			if not _data.has(k):
 				_data[k] = {}
 			_data[k].merge(Story.data().get(k, {}))
+			_data[k].merge(Incidents.data().get(k, {}))  # requests with a deadline (data/incidents.json)
 			_data[k].merge(PersonalMissions.data().get(k, {}))
 			_data[k].merge(Betrayal.data().get(k, {}))
 			_data[k].merge(Stance.data().get(k, {}))  # Ash's gestures and their later payoffs (data/gestures.json)

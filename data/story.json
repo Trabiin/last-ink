@@ -1,6 +1,8 @@
 {
 	"_comment": "The main story (issue #18, scripts/story.gd). speakers and talks use the same format as data/dialogue.json and are merged into it by Dialogue.data(), so Dialogue.talk(\"ch1_arrest\") works anywhere. beats: what plays in Hollowmark, checked in order every time Ash is in town; the first beat whose conditions hold and whose talk has not been seen plays. A beat: talk (id), when (conditions, see Story.meets: active (a campaign started with the story on), cleared, not_cleared, seen, joined, renown, held, day), pick instead of talk (issue #186: the climax betrayal picks the talk, letter or scene, see Betrayal.beat_talk), then (what happens after the talk: launch:<mission id>, command_on, act1_end, open_region:<region id> to lift the fog over a region of the territory map; several can be joined with commas), card ([title, subtitle] shown after the talk). goals: the story checklist, shown in the journal's Quests tab (I, issue #114) under the chapter they belong to: text, chapter (a chapter id from data/journal.json), hint, done (conditions), show (conditions; hidden until they hold).",
 	"speakers": {
+		"pruett": {"name": "Bet Pruett", "color": "a08a6a", "colors": {"skin": "d8b494", "cloth": "6a5a48", "trim": "b8a888", "hair": "8a5a3a"}},
+		"hobb": {"name": "Farmer Hobb", "color": "7a6a3a", "colors": {"skin": "c89878", "cloth": "5a5a3a", "trim": "a08a5a", "hair": "4a3a2a"}},
 		"clerk": {"name": "Clerk Pettigrew", "color": "b8a888", "colors": {"skin": "e0c0a0", "cloth": "4a4a58", "trim": "c9a54a", "hair": "6a6a6a"}},
 		"governor": {"name": "Governor Thale", "color": "c9a54a", "colors": {"skin": "e8c8b0", "cloth": "6a2a2a", "trim": "e0c060", "hair": "c8c0b0"}},
 		"warden": {"name": "Concord Warden", "color": "7a8aa0", "colors": {"skin": "d0a888", "cloth": "3a4658", "trim": "a0a8b8", "hair": "2a2a2a"}},
@@ -17,6 +19,122 @@
 		"keeper": {"name": "Keeper Hocking", "color": "5a7a8a", "colors": {"skin": "c8a888", "cloth": "c8a040", "trim": "3a4a5a", "hair": "d8d4cc"}}
 	},
 	"talks": {
+		"ch1_ledger_room": {"title": "Chapter 1  ·  No Such Person", "lines": [
+			["", "The records room. Ledgers to the ceiling, a strongbox chained to the clerk's desk, and through a door at the back, a holding pen."],
+			["", "There are people in the pen. A woman, two children, an old man with his hat in his hands. A slate on the bars reads PRUETT. 3 COINS SHORT. STRIKE OUT AT DAWN."],
+			["pruett", "You're not a warden. Are you? Please. The key's on the clerk's hook."],
+			["bran", "That box is the whole quarter's tithe. Every coin this town ever 'ad taken off it, sittin' right there."],
+			["bran", "White's comin' down the corridor. We got time for the box or the pen, not both. Your call. You're the one nobody wrote down."]
+		], "choice": [
+			{"text": "[Take the key off the hook]", "reply": [
+				["bran", "Course you would. Right. Out the back, you lot, and stay behind the big one."],
+				["pruett", "Bless you. Whoever you are. Come on, Tam, hold your sister's hand."]
+			]},
+			{"text": "[Put your shoulder to the strongbox]", "reply": [
+				["bran", "Now that's a business decision.", "smug"],
+				["pruett", "No. No, please, don't leave us in here."],
+				["bran", "Lift with your knees. Don't look back. It don't 'elp."]
+			]}
+		]},
+		"ch1_pruetts": {"title": "The Pruetts", "lines": [
+			["", "Bet Pruett is at the Command Table at first light, with a loaf in a cloth and the children behind her skirts."],
+			["pruett", "It's not much. It's bread. We haven't got a Ledger entry any more either, so I suppose we're your people now."],
+			["tobble", "Pruetts can bake. Grand. A town needs bread more than it ever needed a tax office."],
+			["quill", "I'll put them down as residents, on a list I'm keeping. The Ledger can ask to borrow it."]
+		]},
+		"ch1_pruetts_gone": {"title": "The Pruetts", "lines": [
+			["tobble", "Pruetts' door got painted white in the night. Concord does that, after. So nobody knocks."],
+			["tobble", "Three coins short, they were. You had the whole box."],
+			["bran", "And the box is why there's still a town for you to say that in. Somebody 'as to do the cold sums."]
+		]},
+		"act1_gristle_intro": {"title": "The Witch in the Hollow Tree", "lines": [
+			["", "The Gutterwoods smell of wet bark and of something burning that isn't wood."],
+			["bran", "Coven don't like hedge-witches. Bad for business, some old dear curin' folk for a turnip when the Coven charges a goat."],
+			["bran", "So they've 'ired Guild knives to smoke 'er out. Coven never does its own dirty work. Keeps the robes clean."]
+		]},
+		"act1_gristle_tree": {"title": "The Witch in the Hollow Tree", "lines": [
+			["", "The hollow tree has a door in it, and a chimney, and a sign that says CURES. PAY FIRST. Smoke is pouring out of every knothole."],
+			["gristle", "Finished, are they? Took their time. Nine jars of mine they've cracked, and my lungs are kippered."],
+			["gristle", "You'll be the nobody. Heard about you. Needs a healer, does your town? Healing I do. Cheap I don't."],
+			["gristle", "Forty gilt, up front, for the coming. Then we talk about the staying."],
+			["gristle", "Mind you, there's a lodge up the ridge where the Coven keeps a purse to pay those knives. Bounty on my head, it is. Seems only fair it pays for me, dearie."]
+		], "choice": [
+			{"text": "[Count out forty gilt]", "reply": [
+				["gristle", "Proper manners. Rare, that. Hold the tree while I pack, there's a good nobody.", "happy"]
+			]},
+			{"text": "[Point up the ridge, at the lodge]", "reply": [
+				["gristle", "Oh, I like you. Hold the tree while I pack, then we go and rob the Coven. Best day I've had all year.", "happy"],
+				["bran", "Coven'll 'ear about this."],
+				["gristle", "Counting on it, dearie."]
+			]}
+		]},
+		"act1_gristle_after": {"title": "The Witch in the Hollow Tree", "lines": [
+			["gristle", "Right. Jars, kettle, the good knife. Lead on. And mind, every scratch you lot get from today goes on a bill."],
+			["bran", "She's goin' to be expensive."],
+			["gristle", "Worth it, I am."]
+		]},
+		"act1_daro_intro": {"title": "The Deserter", "lines": [
+			["", "The Tithe Road runs straight as a ruler through flat fields. Halfway down it, a farmhouse has its shutters nailed shut from the inside."],
+			["bran", "Press gang's flags, past the farm. They're waitin' on somethin'. More men, I'd bet."]
+		]},
+		"act1_daro_farm": {"title": "The Deserter", "lines": [
+			["ninefingers", "Stop there. Hands where I see them. Ah. Not Concord. Too badly dressed."],
+			["ninefingers", "Corporal Daro. Was. Sent to strike this farm out. Hobb, his wife, three kids. Unpaid tithe. By morning the Ledger says they never lived."],
+			["ninefingers", "Didn't do it. Took a bolt in the leg for not doing it. Been sat here two days with a crossbow and their cheese."],
+			["hobb", "He's been very polite about the cheese."],
+			["ninefingers", "The order's in their wagon. Signed and sealed. Get it to the right ears and the Concord has to explain itself."],
+			["ninefingers", "Other job is the Hobbs, out the back lane before the gang comes in force. Can't do both. Choose."]
+		], "choice": [
+			{"text": "[Nod at the family, then at the back door]", "reply": [
+				["ninefingers", "Right answer. Hold the door with me, then walk them out. I'll limp along behind."]
+			]},
+			{"text": "[Point down the road, at the wagon]", "reply": [
+				["ninefingers", "Hard answer. Might be the right one. Hobbs, cellar. Quiet till it's over."],
+				["hobb", "And if it isn't over?"],
+				["ninefingers", "Quieter."]
+			]}
+		]},
+		"act1_daro_after": {"title": "The Deserter", "lines": [
+			["ninefingers", "Owe you. Hate owing. Means I come along till it's paid."],
+			["bran", "Welcome to the outfit. Pay's terrible."],
+			["ninefingers", "Had worse. Had none."]
+		]},
+		"act1_hobbs": {"title": "The Hobbs", "lines": [
+			["", "The Hobbs come up the Hollowmark road with a cart, a goat, and their front door, which has a crossbow bolt in it and which they will not leave behind."],
+			["hobb", "Farm's gone white behind us. We'll work. Fields or forge, don't mind which."],
+			["ninefingers", "Good people. Bad at hiding. Keep them clear of tithe-men."]
+		]},
+		"act1_hobbs_taken": {"title": "The Hobbs", "lines": [
+			["ninefingers", "Went back to the farm after. Cellar door was open. Gang took the eldest boy for the column."],
+			["ninefingers", "Order's with Quill now. Hope it's worth a boy."],
+			["quill", "It is a very good order. Every stamp in the right place. I will make somebody important read it out loud."]
+		]},
+		"act1_concord_hobb": {"title": "The Concord Answers", "lines": [
+			["ninefingers", "There. In the pen, third from the end. That's Hobb's eldest."]
+		]},
+		"act1_concord_hamlet": {"title": "The Concord Answers", "lines": [
+			["", "Millbrook's people stand in a pen of hurdles on the green, each with a chalk number on their coat. Down by the crossing, clerks are loading a strongbox onto a wagon."],
+			["captain", "Assessment's done. Six head of tithe, and the box. Wagon, roll out. Pen, march east."],
+			["ninefingers", "Wagon gets over the crossing, we never see that coin again. Pen goes east, we never see them again either."],
+			["bran", "Box pays for walls. Walls keep the white off. Just sayin' it out loud so nobody else 'as to."]
+		], "choice": [
+			{"text": "[Kick open the pen]", "reply": [
+				["ninefingers", "Thought so. Get them into the mill. Thick walls."]
+			]},
+			{"text": "[Run for the wagon]", "reply": [
+				["bran", "Now we're talkin'."],
+				["ninefingers", "Moving."]
+			]}
+		]},
+		"act1_millbrook": {"title": "Millbrook", "lines": [
+			["", "Millbrook comes up the Hollowmark road the next morning: carts, a miller covered in flour, and a dog that has decided it is in charge."],
+			["quill", "Some new names for my list. I have stopped trying to count the dog."],
+			["tobble", "Miller says the Concord can have his mill when it learns to grind its own lies. I've offered him a drink for life."]
+		]},
+		"act1_millbrook_marched": {"title": "Millbrook", "lines": [
+			["tobble", "Word from Old Mill. Morrow's clerks marched the Millbrook folk east with chalk still on their coats. Nobody's sure where east ends."],
+			["bran", "Box bought us a month of wages and a wall. I'll stand by it. Quietly."]
+		]},
 		"ch1_arrest": {"title": "Chapter 1  ·  No Such Person", "lines": [
 			["", "Hollowmark: a wall, a well, a few hundred people pretending the horizon is not getting closer. Bran walks you in through the south gate like a man delivering a parcel he has not been paid for yet."],
 			["bran", "Right. Tax office first. Everyone who comes through 'ere gets written down. Then we find out what you're worth."],
@@ -32,10 +150,10 @@
 			["", "Then the humming gets closer."]
 		]},
 		"ch1_breakout_intro": {"title": "Chapter 1  ·  No Such Person", "lines": [
-			["", "A key scrapes in the lock. The east wall of the tax office is... not there anymore. Just white, eating its way along the stone like frost."],
+			["", "A key scrapes in the lock. Past the cell block, the east end of the tax office is going white, quietly, like frost on a window."],
 			["bran", "Evening. Don't get up on my account. Actually, do get up, the building's being eaten."],
 			["bran", "Breakin' you out's a service. Services cost money. You'll pay me later, when you got some. With interest.", "smug"],
-			["bran", "Wardens are still more scared of paperwork than of the Blank, so they'll try to stop us. Put 'em down, mind the Nibblers, and we walk out the front like taxpayers."]
+			["bran", "Wardens are still more scared of paperwork than of the Blank, so they'll try to stop us. Out the yard, through the tax hall, and we walk out the front like taxpayers."]
 		]},
 		"ch1_recaptured": {"title": "Chapter 1  ·  No Such Person", "lines": [
 			["", "The wardens drag you back to the cell. It is smaller than you remember. The Blank is louder."],
@@ -61,7 +179,7 @@
 			["tobble", "Word travels when a town loses its governor. Two bits of it might interest them as isn't running Hollowmark."],
 			["tobble", "First: there's a hedge-witch in the Gutterwoods, selling cures out of a hollow tree. The Coven wants her gone. A town with no healer could do worse.", "smug"],
 			["tobble", "Second: a Concord corporal walked out on an Erasure order and is hiding along the Tithe Road. Nine fingers. Ten opinions. The Concord's put a price on their head."],
-			["quill", "Rumours like that show up as Rescue jobs on the Guildhall board, or as Rescue missions on the territory map if you'd rather fetch them yourself."],
+			["quill", "Both are on the territory map. Neither will wait for us long. The Coven is smoking the witch out, and press gangs walk fast."],
 			["bran", "A 'ealer and a deserter. Now we're a real outfit. A real, illegal outfit.", "happy"]
 		]},
 		"act1_writ": {"title": "Act 1  ·  The Concord Answers", "lines": [
@@ -547,11 +665,18 @@
 		{"talk": "ch1_recaptured", "repeat": true, "when": {"active": true, "seen": ["ch1_arrest"], "not_cleared": ["ch1_breakout"]}, "then": "launch:ch1_breakout"},
 		{"talk": "ch1_takeover", "when": {"active": true, "cleared": ["ch1_breakout"]}, "then": "command_on",
 			"card": ["Chapter 1 complete: No Such Person", "Hollowmark is yours. The Command Table and the clock are switched on."]},
-		{"talk": "act1_rumours", "when": {"seen": ["ch1_takeover"], "day": 2}},
+		{"talk": "ch1_pruetts", "when": {"seen": ["ch1_takeover"], "chose": ["ch1_ledger_room", 0], "saved": {"pruetts": 1}}},
+		{"talk": "ch1_pruetts_gone", "when": {"seen": ["ch1_takeover"], "chose": ["ch1_ledger_room", 1]}},
+		{"talk": "act1_rumours", "when": {"seen": ["ch1_takeover"], "day": 2},
+			"card": ["New story missions: two people worth finding", "The Witch in the Hollow Tree (the Gutterwoods) and The Deserter (the Tithe Road), on the territory map."]},
+		{"talk": "act1_hobbs", "when": {"cleared": ["act1_daro"], "chose": ["act1_daro_farm", 0], "saved": {"hobbs": 1}}},
+		{"talk": "act1_hobbs_taken", "when": {"cleared": ["act1_daro"], "chose": ["act1_daro_farm", 1]}},
 		{"talk": "act1_writ", "when": {"joined": ["gristle", "ninefingers"]},
 			"card": ["New story mission: The Concord Answers", "Meet the tithe column at Old Mill Crossing (territory map) once Hollowmark holds 4 provinces and has 8 Renown."]},
 		{"talk": "act1_concord_after", "when": {"cleared": ["act1_concord"]},
 			"card": ["New story mission: The Auditor", "Stop him on the Tithe Road. Build an Infirmary and reach 15 Renown first."]},
+		{"talk": "act1_millbrook", "when": {"cleared": ["act1_concord"], "chose": ["act1_concord_hamlet", 0], "saved": {"millbrook": 1}}},
+		{"talk": "act1_millbrook_marched", "when": {"cleared": ["act1_concord"], "chose": ["act1_concord_hamlet", 1]}},
 		{"talk": "act1_end", "when": {"cleared": ["auditor_duel"]}, "then": "open_region:abbey",
 			"card": ["Act 1 complete: The Unregistered Town", "Verity Hale has made her offer. The fog has lifted over Saint Ledger's Abbey, in the north. Hold six provinces and the north will send for you."]},
 		{"talk": "ch2_bells", "when": {"seen": ["act1_end"], "held": 6},
@@ -587,10 +712,10 @@
 		{"talk": "ch4_end", "when": {"cleared": ["ch4_lowwater"]}, "card": ["Chapter 4 complete: The Sea Stops", "The tide is coming home to Halfwave a hand's width a day, and the coast knows Ilse's name. Hold the south-east until the capital calls. New goals are in the journal."]}
 	],
 	"goals": [
-		{"text": "Escape the tax office", "chapter": "ch1", "hint": "Get past the wardens and out through the front door", "done": {"cleared": ["ch1_breakout"]}, "show": {"active": true}},
+		{"text": "Escape the tax office", "chapter": "ch1", "hint": "Out of the cell block, through the tax hall, and away through the square", "done": {"cleared": ["ch1_breakout"]}, "show": {"active": true}},
 		{"text": "Take charge of Hollowmark", "chapter": "ch1", "hint": "Walk back into the square at dawn", "done": {"seen": ["ch1_takeover"]}, "show": {"active": true}},
-		{"text": "Find the hedge-witch in the Gutterwoods", "chapter": "act1", "hint": "Rescue job on the Expeditions board{tag:expeditions}, or a Rescue mission on the map", "done": {"joined": ["gristle"]}, "show": {"seen": ["act1_rumours"]}},
-		{"text": "Free the deserter on the Tithe Road", "chapter": "act1", "hint": "Rescue job on the Expeditions board{tag:expeditions}, or a Rescue mission on the map", "done": {"joined": ["ninefingers"]}, "show": {"seen": ["act1_rumours"]}},
+		{"text": "Find the hedge-witch in the Gutterwoods", "chapter": "act1", "hint": "Story mission in the Gutterwoods: The Witch in the Hollow Tree", "done": {"joined": ["gristle"]}, "show": {"seen": ["act1_rumours"]}},
+		{"text": "Free the deserter on the Tithe Road", "chapter": "act1", "hint": "Story mission on the Tithe Road: The Deserter", "done": {"joined": ["ninefingers"]}, "show": {"seen": ["act1_rumours"]}},
 		{"text": "Make Hollowmark worth answering: hold 4 provinces and earn 8 Renown", "chapter": "act1", "hint": "Claim land on the territory map; missions earn Renown", "done": {"held": 4, "renown": 8}, "show": {"seen": ["act1_writ"], "not_cleared": ["act1_concord"]}},
 		{"text": "The Concord Answers: break the tithe column", "chapter": "act1", "hint": "Story mission at Old Mill Crossing", "done": {"cleared": ["act1_concord"]}, "show": {"seen": ["act1_writ"]}},
 		{"text": "Ready Hollowmark for the Auditor: build an Infirmary and earn 15 Renown", "chapter": "act1", "hint": "Buildings screen{tag:buildings}; missions earn Renown", "done": {"built": {"infirmary": 1}, "renown": 15}, "show": {"seen": ["act1_concord_after"], "not_cleared": ["auditor_duel"]}},

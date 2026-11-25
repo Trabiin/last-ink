@@ -1,5 +1,5 @@
 {
-	"_comment": "Recruits. tier: field (can fight on missions), core (deep bonds), recruit (light). Stats 1-10: might, craft, lore, charm, grit. start: in the roster on a new game. locked_party: always in the party (Ash). Traits are defined below. post: where they stand in Hollowmark when not governing, in the party or injured. look: paper-doll outfit and colors (placeholders until the PixelLab pass). lines: what they say when you talk to them in town. quips: one-liners for expedition reports. join: how someone not on the starting roster is found (claim, building, standing, research, renown, bond, rescue); when it is met they wait at the south gate until hired for their hire price (rescues join straight from the expedition). join region (optional): the map region whose fog must lift before they are even rumoured (claim and rescue hooks use their province's region by themselves), so later chapters' people stay off the Newcomers screen until their chapter. post: hall, tavern, stores, graveyard, gate, market, table_side, well, bench (tools/make_hollowmark.py marks them; a post holds five side by side, the rest spill to the emptiest post). rumour: what the Newcomers screen (N) says before they turn up. pitch: what they say at the gate. welcome: what they say when they join.",
+	"_comment": "Recruits. tier: field (can fight on missions), core (deep bonds), recruit (light). Stats 1-10: might, craft, lore, charm, grit. start: in the roster on a new game. locked_party: always in the party (Ash). Traits are defined below. post: where they stand in Hollowmark when not governing, in the party or injured. look: paper-doll outfit and colors (placeholders until the PixelLab pass). lines: what they say when you talk to them in town. quips: one-liners for expedition reports. join: how someone not on the starting roster is found (claim, building, standing, research, renown, bond, rescue); when it is met they wait at the south gate until hired for their hire price (rescues join straight from the expedition; story: found in a story mission, with an optional \"free\" hook used by a campaign without the story). join region (optional): the map region whose fog must lift before they are even rumoured (claim and rescue hooks use their province's region by themselves), so later chapters' people stay off the Newcomers screen until their chapter. post: hall, tavern, stores, graveyard, gate, market, table_side, well, bench (tools/make_hollowmark.py marks them; a post holds five side by side, the rest spill to the emptiest post). rumour: what the Newcomers screen (N) says before they turn up. pitch: what they say at the gate. welcome: what they say when they join.",
 	"traits": {
 		"greedy": {"name": "Greedy", "desc": "Skims, but squeezes harder. +2 Gilt as governor."},
 		"stubborn": {"name": "Stubborn", "desc": "Will not give an inch. Governs with 1 more Fray resistance."},
@@ -59,7 +59,7 @@
 			"stats": {"might": 3, "craft": 5, "lore": 8, "charm": 4, "grit": 6}, "traits": ["greedy"],
 			"blurb": "Heals the party and bills them for it. Her poisons and her medicines are the same bottles.",
 			"post": "market", "look": {"outfit": "mage", "colors": {"skin": "d6b08c", "cloth": "5a3a5e", "leather": "4a3020", "boots": "2e2228", "trim": "9fbf6a"}},
-			"join": {"type": "rescue", "job": "rescue_gristle"},
+			"join": {"type": "story", "mission": "act1_gristle", "free": {"type": "rescue", "job": "rescue_gristle"}},
 			"rumour": "A hedge-witch in the Gutterwoods is in trouble with her own coven. She would owe you. She would also bill you.",
 			"quips": ["Mother Gristle has billed the squad for \"moral support\".", "Mother Gristle collected some mushrooms. She says they are for cooking. She did not say whose."],
 			"lines": ["This one cures fever. That one causes it. Same price.", "I bill by the wound. You look expensive."]
@@ -69,7 +69,7 @@
 			"stats": {"might": 7, "craft": 4, "lore": 3, "charm": 3, "grit": 6}, "traits": ["ex_concord"],
 			"blurb": "Deserted the Concord army rather than strike out a village. Sharpest tongue in the Inklands.",
 			"post": "gate", "look": {"outfit": "soldier", "colors": {"skin": "b88866", "metal": "a29e96", "cloth": "6a2a2a", "boots": "2a2220"}},
-			"join": {"type": "rescue", "job": "rescue_daro"},
+			"join": {"type": "story", "mission": "act1_daro", "free": {"type": "rescue", "job": "rescue_daro"}},
 			"rumour": "A Concord deserter is hiding somewhere along the Tithe Road with a price on their head. They have opinions about the price.",
 			"quips": ["Daro saluted a scarecrow out of habit, then threatened it.", "Daro wants it on record that the plan was bad and they followed it anyway."],
 			"lines": ["Lost the finger to a form. Long story. Paperwork was involved.", "The Concord strikes out villages with a pen. I prefer the sword. More honest."]

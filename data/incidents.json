@@ -1,0 +1,282 @@
+{
+	"_comment": "Incidents: requests with a face and a deadline (scripts/incidents.gd, Ojon 2026-11-25). Each opens when its 'when' Story conditions hold (story campaigns only), stays on the territory map for 'open_days', and lapses if nobody goes: its 'ignored' effects land and its 'ignored_talk' plays in town. 'rival': opens on the same day; answering one lapses the other. Fields: id, name (the mission's name), province, asker_name (who asks, shown in the briefing), notice (the alert when it opens), stakes and if_ignored (the briefing's first lines), open_days, ask (talk played in town while open), done_talk / ignored_talk (aftermath in town), mission (the mission itself: map, script objective, enemies, rewards, people, bonus, xp, fray, threat), done ({bond, standing} when answered), ignored ({fray: {province: n}, lost: {group: n}, res: {k: -n}, standing, bond, injure: n recruits, injure_days, notice}). speakers and talks are merged into Dialogue.data().",
+	"speakers": {
+		"maud": {"name": "Maud Ashby, lamplighter", "color": "c8a050", "colors": {"skin": "d8b494", "cloth": "3a3a4a", "trim": "f2c25c", "hair": "a0a0a0"}},
+		"ivett": {"name": "Miss Ivett, schoolmistress", "color": "6a7a9a", "colors": {"skin": "e0c0a4", "cloth": "3f4c66", "trim": "d6cdba", "hair": "3a2a1c"}},
+		"tull": {"name": "Agnes Tull, shepherd", "color": "8a9a5a", "colors": {"skin": "c89878", "cloth": "566b3a", "trim": "b5a68a", "hair": "5a3e28"}}
+	},
+	"talks": {
+		"wickham_ask": {"title": "The Lamps of Wickham", "lines": [
+			["maud", "You the one in charge? Nobody else would say. Maud Ashby. I light the lamps on the Wickham road."],
+			["maud", "White's come up the hill. It eats a lamp post, then the next. My lads are still up the ladders, lighting what's left, because nobody told them to stop."],
+			["maud", "I'm not asking for an army. I'm asking for somebody to go and tell them to come down. Before there's no down to come to."]
+		]},
+		"wickham_intro": {"title": "The Lamps of Wickham", "lines": [
+			["", "The Wickham road climbs in a line of lamp posts. The top third of the line is white already. Somebody is still up a ladder near the edge, lighting a wick that isn't there."],
+			["bran", "Light the last ones, so we can see what we're doin'. Then fetch them lads down."]
+		]},
+		"wickham_thanks": {"title": "The Lamps of Wickham", "lines": [
+			["maud", "Got them down. All my lads. They're stood in your square looking for something to light."],
+			["tobble", "We've got lamps. Not many. Get them lit and they can have a drink on the house, the poor beggars."]
+		]},
+		"wickham_dark": {"title": "The Lamps of Wickham", "lines": [
+			["tobble", "Wickham's gone dark. Shepherd saw the lamps go out one at a time up the hill road, top to bottom. Nobody came down the ladders."],
+			["tobble", "Maud Ashby's sat in my taproom. Hasn't said a word. Hasn't touched her drink."]
+		]},
+		"reedmere_ask": {"title": "The Reedmere School", "lines": [
+			["ivett", "I teach at Reedmere, in the marsh. Taught. The reedlings have come up out of the water all round the schoolhouse."],
+			["ivett", "I got out to fetch help. Five children did not. They're on the roof. They were very good about it when I left."]
+		]},
+		"reedmere_intro": {"title": "The Reedmere School", "lines": [
+			["", "The Reedmere schoolhouse stands on stilts in the marsh. Five small faces look down from its roof at the reedlings swaying below."],
+			["bran", "Clear the yard. Then the little 'uns come down and we walk out together, nice and slow, like a school trip."]
+		]},
+		"reedmere_thanks": {"title": "The Reedmere School", "lines": [
+			["ivett", "They're all asleep in your tavern, on the benches. One of them wants to know if the nobody can come and visit the school."],
+			["ivett", "I said you were very busy. And that there isn't a school any more. I'll start another. Here, if you'll have it."]
+		]},
+		"reedmere_lost": {"title": "The Reedmere School", "lines": [
+			["tobble", "Miss Ivett went back out to the marsh on her own. Took a boat. Said she'd been told to wait long enough."],
+			["tobble", "Boat came back empty this morning."]
+		]},
+		"fever_ask": {"title": "The Medicine Cart", "lines": [
+			["quill", "A matter of public health. There is a fever in the low town, the kind that goes through a street in a week."],
+			["quill", "The Coven sold us a cart of willow-bark and feverfew. The Guild has impounded it at Gallows Ferry, for 'unpaid ferry duty'. The duty is the price of the cart. Twice."],
+			["quill", "I would take the cart back myself, but I am a clerk, and they are not."]
+		]},
+		"fever_intro": {"title": "The Medicine Cart", "lines": [
+			["", "Gallows Ferry. The impounded cart stands by the Guild's toll hut, under a tarpaulin, guarded by people who are paid to stand there."],
+			["bran", "Guild knows us. Might be bad for trade, this. Then again, so's a fever."]
+		]},
+		"fever_thanks": {"title": "The Medicine Cart", "lines": [
+			["quill", "The fever has stopped at two streets. The Guild has sent a strongly worded bill. I have filed it with the others, under 'kindling'."]
+		]},
+		"fever_lost": {"title": "The Medicine Cart", "lines": [
+			["quill", "The fever went through the low town, and then up the hill. Half the infirmary beds are full, and nobody built enough of them."],
+			["bran", "We'll live. Most of us. That's me bein' cheerful."]
+		]},
+		"tull_ask": {"title": "Into the White", "lines": [
+			["tull", "My boy Wat went after a lamb. Into the white, in the Meadow. He's eight. The lamb was his."],
+			["tull", "Everyone says nobody comes back out of it. Then they look at you, and they stop saying it."],
+			["bran", "They're right. You come out of it once already. Can't say I'd fancy a second go, mind."]
+		]},
+		"tull_intro": {"title": "Into the White", "lines": [
+			["", "The edge of the white hums. A few paces in, very small and very clear, a boy is sitting holding a lamb, waiting for someone to come and get him."],
+			["bran", "I'll keep the Nibblers off your back. You do the walkin' in. Don't stay long. Don't forget your name."]
+		]},
+		"tull_thanks": {"title": "Into the White", "lines": [
+			["tull", "He won't let go of the lamb. Or of your coat, if you go near him. He says it was quiet in there, and you were the only noise."],
+			["tull", "Whatever you are, you're ours now. The Tulls don't forget."]
+		]},
+		"tull_lost": {"title": "Into the White", "lines": [
+			["tobble", "Agnes Tull sat at the edge of the white all night, in the Meadow. Shepherds saw her there at dawn."],
+			["tobble", "By noon there was nobody at the edge."]
+		]},
+		"charcoal_ask": {"title": "The Charcoal Burners", "lines": [
+			["gristle", "Four burners have a camp deep in the Gutterwoods, dearie. Sold me charcoal thirty years, never once cheated me. Rare, that."],
+			["gristle", "White's between them and the road now. They're sat on their clamps waiting for it, stubborn as stumps. Fetch them out, would you. For me."]
+		]},
+		"charcoal_intro": {"title": "The Charcoal Burners", "lines": [
+			["", "Smoke from four charcoal clamps drifts through the trees, and past it, closer than it should be, the white."],
+			["gristle", "There they are, the daft old things. Shout at them, mind. They're deaf from the fires."]
+		]},
+		"charcoal_thanks": {"title": "The Charcoal Burners", "lines": [
+			["gristle", "My burners are in your forge yard, complaining about the wood. Happiest I've seen them in years."],
+			["gristle", "Owe you one, I do. Don't let it go to your head. I've written it down."]
+		]},
+		"charcoal_lost": {"title": "The Charcoal Burners", "lines": [
+			["gristle", "Went to the Gutterwoods myself. Clamps are still smoking. White's just past them. Nobody tending them."],
+			["gristle", "Thirty years. Never once cheated me. Leave it now."]
+		]},
+		"tollgate_ask": {"title": "The Tollgate", "lines": [
+			["ninefingers", "Tollgate on the Tithe Road. Concord's stopping people walking away from the white. Charging a coin a head to pass."],
+			["ninefingers", "Those that can't pay get struck out on the spot. Saw it done before. Did it once. Not again."],
+			["ninefingers", "Five families waiting at the bar. Go?"]
+		]},
+		"tollgate_intro": {"title": "The Tollgate", "lines": [
+			["", "A striped bar across the Tithe Road, a toll hut, and a queue of people with handcarts who have been standing there since yesterday."],
+			["ninefingers", "Toll-clerk's the one with the ledger. Break the bar. I'll do the talking after."]
+		]},
+		"tollgate_thanks": {"title": "The Tollgate", "lines": [
+			["ninefingers", "Families are through. Every one. Clerk's ledger is in the river."],
+			["ninefingers", "Good day. Don't get many."]
+		]},
+		"tollgate_lost": {"title": "The Tollgate", "lines": [
+			["ninefingers", "Went past the tollgate. Bar's down. Queue's gone. Clerk's ledger is thicker."],
+			["ninefingers", "Asked you once. Won't ask about that again."]
+		]}
+	},
+	"incidents": [
+		{
+			"id": "wickham_lamps", "name": "The Lamps of Wickham", "province": "lampwick", "asker_name": "Maud Ashby, lamplighter",
+			"notice": "the Blank is eating the Wickham lamp posts with the lamplighters still up the ladders",
+			"stakes": "Three lamplighters up their ladders on the Wickham road, and the lamps that keep the hill road lit.",
+			"if_ignored": "Wickham goes dark. The lamplighters are lost, and the Blank gets an easy road onto the hills (Wickham Hills +15 Fray).",
+			"when": {"seen": ["ch1_takeover"], "day": 3}, "open_days": 3,
+			"ask": "wickham_ask", "done_talk": "wickham_thanks", "ignored_talk": "wickham_dark",
+			"mission": {
+				"map": "res://maps/lampwick.txt", "threat": 2,
+				"brief": "The white is eating the lamp posts on the Wickham road, one by one, and Maud Ashby's lamplighters are still up the ladders.",
+				"objective": {"kind": "script", "label": "Up the hill road", "steps": [
+					{"do": "talk", "talk": "wickham_intro"},
+					{"do": "use", "at": [[44, 20], [56, 14], [56, 42]], "seconds": 3, "work_label": "LAMP", "label": "Light the last three lamps",
+						"spawn": {"moth": 2, "nibbler": 1}, "every": 5.0, "first": 2.0, "from": "edge"},
+					{"do": "lead", "at": "rescue", "to": "start", "group": "wickham", "folk": 3, "bodies": ["folk_man", "folk_elder", "folk_man"],
+						"name": "a lamplighter", "label": "Bring the lamplighters down the hill", "creep": 2.5,
+						"spawn": {"moth": 1, "nibbler": 1}, "every": 5.5, "first": 2.0, "from": "edge",
+						"say": "Walk up to the ladders. They'll come down for a voice they don't know."},
+					{"do": "exit", "label": "Back down the hill road"}
+				]},
+				"enemies": {"moth": 2, "nibbler": 1},
+				"rewards": {"gilt": 15, "supplies": 6, "renown": 1},
+				"people": {"wickham": {"count": 3, "place": "Wickham",
+					"saved_text": "%d lamplighters from Wickham walk into Hollowmark.",
+					"lost_text": "%d of Maud's lamplighters didn't come down."}},
+				"xp": 25, "fray": -8
+			},
+			"ignored": {"fray": {"lampwick": 15}, "lost": {"wickham": 3}, "notice": "Wickham's lamps went out one at a time. Nobody came down the ladders."}
+		},
+		{
+			"id": "reedmere_school", "name": "The Reedmere School", "province": "saltreed", "asker_name": "Miss Ivett, schoolmistress",
+			"rival": "fever_cart",
+			"notice": "five children are stranded on the Reedmere schoolhouse roof with reedlings all round",
+			"stakes": "Five children on a schoolhouse roof in Saltreed Marsh, reedlings in the water below.",
+			"if_ignored": "The children are lost. Saltreed frays faster without its school (+10 Fray).",
+			"when": {"seen": ["act1_rumours"], "day": 5}, "open_days": 2,
+			"ask": "reedmere_ask", "done_talk": "reedmere_thanks", "ignored_talk": "reedmere_lost",
+			"mission": {
+				"map": "res://maps/saltreed.txt", "threat": 2,
+				"brief": "Reedlings have come up out of the marsh all round the Reedmere schoolhouse. The schoolmistress got out. Five children did not.",
+				"objective": {"kind": "script", "label": "Into the marsh", "steps": [
+					{"do": "talk", "talk": "reedmere_intro"},
+					{"do": "goto", "at": "rescue", "label": "Wade out to the schoolhouse"},
+					{"do": "clear", "at": "rescue", "label": "Clear the reedlings from the schoolyard", "spawn": {"reedling": 3}, "count": 3},
+					{"do": "lead", "at": "rescue", "to": "start", "group": "reedmere", "folk": 5, "bodies": ["folk_child"],
+						"name": "a Reedmere child", "hp": 26, "label": "Walk the children out of the marsh",
+						"spawn": {"reedling": 2}, "every": 5.0, "first": 3.0},
+					{"do": "exit", "label": "Out of the marsh"}
+				]},
+				"enemies": {"reedling": 3},
+				"rewards": {"gilt": 10, "supplies": 6, "renown": 2},
+				"people": {"reedmere": {"count": 5, "place": "the Reedmere school",
+					"saved_text": "%d children from Reedmere walk into Hollowmark holding hands.",
+					"lost_text": "%d of the Reedmere children didn't make it out of the marsh."}},
+				"xp": 25, "fray": -5
+			},
+			"ignored": {"fray": {"saltreed": 10}, "lost": {"reedmere": 5}, "notice": "Nobody went to Reedmere. The schoolhouse roof is empty."}
+		},
+		{
+			"id": "fever_cart", "name": "The Medicine Cart", "province": "gallows", "asker_name": "Quill, clerk of Hollowmark",
+			"rival": "reedmere_school",
+			"notice": "the Guild has impounded the low town's fever medicine at Gallows Ferry",
+			"stakes": "Hollowmark's low town, a fever spreading street by street, and the cart of medicine that would stop it.",
+			"if_ignored": "The fever runs through Hollowmark: two of your people are laid up for days and the stores go on broth (-8 Supplies).",
+			"when": {"seen": ["act1_rumours"], "day": 5}, "open_days": 2,
+			"ask": "fever_ask", "done_talk": "fever_thanks", "ignored_talk": "fever_lost",
+			"mission": {
+				"map": "res://maps/gallows.txt", "threat": 2,
+				"brief": "The Guild has impounded a cart of fever medicine at Gallows Ferry for 'unpaid ferry duty'. Hollowmark's low town needs it this week.",
+				"objective": {"kind": "script", "label": "Down to the ferry", "steps": [
+					{"do": "talk", "talk": "fever_intro"},
+					{"do": "goto", "at": "cache", "label": "Find the impounded cart by the toll hut"},
+					{"do": "clear", "at": "cache", "label": "Move the Guild's guards along", "spawn": {"sellsword": 2}, "count": 2,
+						"elite": {"kind": "sellsword", "name": "Duty-Officer Gance", "hp": 2.5, "damage": 1.2}},
+					{"do": "use", "at": "cache", "seconds": 5, "work_label": "MEDICINE CART", "label": "Hitch the cart",
+						"spawn": {"sellsword": 1}, "every": 5.0, "first": 2.0},
+					{"do": "exit", "label": "Get the cart home"}
+				]},
+				"enemies": {"sellsword": 3},
+				"rewards": {"supplies": 20, "renown": 1},
+				"xp": 25
+			},
+			"done": {"standing": {"guild": -4}},
+			"ignored": {"injure": 2, "injure_days": 3, "res": {"supplies": -8}, "notice": "The low-town fever went through Hollowmark. Two of your people are in bed for days."}
+		},
+		{
+			"id": "tull_boy", "name": "Into the White", "province": "meadow", "asker_name": "Agnes Tull, shepherd",
+			"notice": "a shepherd's boy walked into the white after his lamb, in the Frayed Meadow",
+			"stakes": "Wat Tull, eight years old, a few paces into the Blank. You are the only one who has ever walked back out of it.",
+			"if_ignored": "Wat is lost, and his mother after him.",
+			"when": {"seen": ["ch1_takeover"], "day": 7}, "open_days": 2,
+			"ask": "tull_ask", "done_talk": "tull_thanks", "ignored_talk": "tull_lost",
+			"mission": {
+				"map": "res://maps/frayed_meadow.txt", "threat": 1,
+				"brief": "A shepherd's boy walked into the white after his lamb. Everyone says nobody comes back out of it. You did.",
+				"objective": {"kind": "script", "label": "To the edge of the white", "steps": [
+					{"do": "talk", "talk": "tull_intro"},
+					{"do": "lead", "at": "blot", "to": "start", "group": "tull", "folk": 1, "bodies": ["folk_child"], "hp": 30,
+						"name": "Wat Tull", "label": "Bring Wat back out of the white", "creep": 3.0, "range": 60.0,
+						"spawn": {"nibbler": 2}, "every": 4.0, "first": 2.0, "from": "edge",
+						"say": "Walk in after him. Keep your name in your head."},
+					{"do": "exit", "label": "Back to the road"}
+				]},
+				"enemies": {"nibbler": 3},
+				"rewards": {"renown": 2, "ink": 1},
+				"people": {"tull": {"count": 1, "place": "the Frayed Meadow",
+					"saved_text": "Wat Tull walks into Hollowmark with his lamb, holding your coat.",
+					"lost_text": "Wat Tull didn't come back out of the white."}},
+				"xp": 20, "fray": -4
+			},
+			"ignored": {"lost": {"tull": 2}, "fray": {"meadow": 6}, "notice": "Agnes Tull walked into the white after her boy."}
+		},
+		{
+			"id": "charcoal_burners", "name": "The Charcoal Burners", "province": "gutterwoods", "asker_name": "Mother Gristle",
+			"rival": "tollgate_families",
+			"notice": "Mother Gristle's charcoal burners are cut off by the white in the Gutterwoods",
+			"stakes": "Four old charcoal burners who have sold Gristle her charcoal for thirty years. Gristle is asking, which she never does.",
+			"if_ignored": "The burners are lost, the Gutterwoods fray faster (+10 Fray), and Gristle won't forget who didn't come.",
+			"when": {"joined": ["gristle", "ninefingers"], "day": 9}, "open_days": 3,
+			"ask": "charcoal_ask", "done_talk": "charcoal_thanks", "ignored_talk": "charcoal_lost",
+			"mission": {
+				"map": "res://maps/gutterwoods.txt", "threat": 2, "force": "gristle",
+				"brief": "Four charcoal burners are sitting on their clamps deep in the Gutterwoods, waiting for the white. Gristle wants them out.",
+				"objective": {"kind": "script", "label": "Into the woods", "steps": [
+					{"do": "talk", "talk": "charcoal_intro"},
+					{"do": "goto", "at": "rescue", "label": "Find the burners' camp by its smoke"},
+					{"do": "lead", "at": "rescue", "to": "start", "group": "burners", "folk": 4, "bodies": ["folk_elder", "folk_man", "folk_elder", "folk_man"],
+						"name": "a charcoal burner", "label": "Get the burners out ahead of the white", "creep": 3.0,
+						"spawn": {"nibbler": 2, "moth": 1}, "every": 4.5, "first": 2.0, "from": "edge"},
+					{"do": "exit", "label": "Out to the road"}
+				]},
+				"enemies": {"nibbler": 2, "moth": 1},
+				"rewards": {"supplies": 10, "gilt": 10, "renown": 1},
+				"people": {"burners": {"count": 4, "place": "the Gutterwoods",
+					"saved_text": "%d charcoal burners walk into Hollowmark, grumbling about the wood.",
+					"lost_text": "%d of the charcoal burners stayed with their clamps."}},
+				"xp": 30, "fray": -6
+			},
+			"done": {"bond": {"gristle": 12}},
+			"ignored": {"bond": {"gristle": -10}, "lost": {"burners": 4}, "fray": {"gutterwoods": 10}, "notice": "The charcoal clamps in the Gutterwoods are still smoking. Nobody is tending them."}
+		},
+		{
+			"id": "tollgate_families", "name": "The Tollgate", "province": "tithe", "asker_name": "Corporal Daro",
+			"rival": "charcoal_burners",
+			"notice": "the Concord is striking out families who can't pay its toll on the Tithe Road",
+			"stakes": "Five families at a Concord tollgate who can't pay a coin a head. Daro did this job once. He is asking you to undo it.",
+			"if_ignored": "The families are struck out at the bar, and Daro won't ask you for anything again.",
+			"when": {"joined": ["gristle", "ninefingers"], "day": 9}, "open_days": 3,
+			"ask": "tollgate_ask", "done_talk": "tollgate_thanks", "ignored_talk": "tollgate_lost",
+			"mission": {
+				"map": "res://maps/tithe_road.txt", "threat": 3, "force": "ninefingers",
+				"brief": "The Concord has put a tollgate across the Tithe Road and strikes out anyone fleeing the white who can't pay. Five families are waiting at the bar.",
+				"objective": {"kind": "script", "label": "Down the Tithe Road", "steps": [
+					{"do": "talk", "talk": "tollgate_intro"},
+					{"do": "goto", "at": "ward", "label": "Walk up to the toll bar"},
+					{"do": "clear", "at": "ward", "label": "Break the tollgate", "spawn": {"enforcer": 1, "sellsword": 1}, "count": 3,
+						"elite": {"kind": "enforcer", "name": "Toll-Clerk Abney, and his ledger", "hp": 3.0, "damage": 1.2}},
+					{"do": "lead", "at": "ward", "to": "start", "group": "tollgate", "folk": 5, "name": "a traveller",
+						"label": "See the families safely down the road", "spawn": {"sellsword": 1}, "every": 6.0, "first": 3.0},
+					{"do": "exit", "label": "Back toward Hollowmark"}
+				]},
+				"enemies": {"enforcer": 2, "sellsword": 2},
+				"rewards": {"gilt": 20, "renown": 2},
+				"people": {"tollgate": {"count": 5, "place": "the Tithe Road tollgate",
+					"saved_text": "%d travellers from the tollgate walk into Hollowmark.",
+					"lost_text": "%d of the travellers were struck out at the bar."}},
+				"xp": 30, "fray": -3
+			},
+			"done": {"bond": {"ninefingers": 12}, "standing": {"concord": -4}},
+			"ignored": {"bond": {"ninefingers": -10}, "lost": {"tollgate": 5}, "notice": "The Tithe Road tollgate struck out the families who couldn't pay."}
+		}
+	]
+}

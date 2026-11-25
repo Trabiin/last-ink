@@ -126,6 +126,10 @@ def build(entry, sprites):
         while os.path.exists(os.path.join(pdir, "%s_v%d.png" % (src, n))) and n <= int(entry.get("variants", 0)):
             recolor_png(os.path.join(pdir, "%s_v%d.png" % (src, n)), os.path.join(pdir, "%s_v%d.png" % (name, n)), steps)
             n += 1
+    elif kind == "tiles" and src.startswith("code:"):  # drawn by a tool, not recoloured (the building kit)
+        sys.path.insert(0, os.path.join(ROOT, "tools"))
+        import make_map_kit
+        make_map_kit.build(os.path.basename(entry["path"].rstrip("/")))
     elif kind == "tiles":
         sdir = os.path.join(ROOT, "assets", "tiles", src)
         for f in sorted(glob.glob(os.path.join(sdir, "*.png"))):

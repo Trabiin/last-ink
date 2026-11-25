@@ -1252,6 +1252,11 @@ func _activate(i: int) -> void:
 func _open_brief(m: Dictionary) -> void:
 	brief_mission = m
 	var lines := []
+	var stakes := Missions.stake_lines(m)  # who asks, who is affected, what is lost if you don't go
+	for st_line in stakes:
+		lines.append_array(_wrap_words(st_line, 64))
+	if not stakes.is_empty():
+		lines.append("")
 	for line in _wrap_words(m.get("brief", ""), 64):
 		lines.append(line)
 	lines.append("")
@@ -1836,6 +1841,14 @@ func _draw_labels() -> void:
 				tcol = tcol.darkened(0.45)
 			_pulses.append(["dot", pos + Vector2(-font.get_string_size(Loc.t(MissionTypes.TYPE_NAMES[tm["type"]]), HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(8)).x / 2.0 - 5, ty - 3), tcol, tm["blocker"] == ""])
 			_text_c(pos + Vector2(0, ty), Loc.t(MissionTypes.TYPE_NAMES[tm["type"]]), 8, tcol, 3)
+			ty += 10.0
+		# Requests with a deadline (scripts/incidents.gd): who is waiting, and how long they can.
+		for rq in Incidents.for_province(p["id"]):
+			var dl2 := int(rq["days_left"])
+			var rtxt := tr("Request: last day") if dl2 <= 0 else Loc.n("Request: %d day", "Request: %d days", dl2) % dl2
+			var rcol := Color("ffb85c") if dl2 > 0 else Color("ff8a6a")
+			_pulses.append(["dot", pos + Vector2(-font.get_string_size(rtxt, HORIZONTAL_ALIGNMENT_LEFT, -1, Access.fs(8)).x / 2.0 - 5, ty - 3), rcol, true])
+			_text_c(pos + Vector2(0, ty), rtxt, 8, rcol, 3)
 			ty += 10.0
 
 
