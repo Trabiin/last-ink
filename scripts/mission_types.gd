@@ -21,9 +21,9 @@ const RECLAIM_INK := 3
 const RECLAIM_FRAY := 60  # what a rewritten province starts at: thin, but standing
 const DEFENSE_FRAY := -5  # the line you held stays a little firmer
 const TYPE_NAMES := {"defense": "Defence", "reclaim": "Reclaim", "rescue": "Rescue", "raid": "Raid",
-	"salvage": "Salvage", "personal": "Personal"}
+	"salvage": "Salvage", "personal": "Personal", "request": "Request"}
 const TYPE_COLORS := {"defense": Color("ff8a6a"), "reclaim": Color("eeebe2"), "rescue": Color("8ad1ff"),
-	"raid": Color("f0b54a"), "salvage": Color("9fe0b0"), "personal": Color("f29bd0")}
+	"raid": Color("f0b54a"), "salvage": Color("9fe0b0"), "personal": Color("f29bd0"), "request": Color("ffb85c")}
 
 ## Fallback spots for a map with no @spot lines (the original Frayed Meadow layout). The Blank's wall is at tile 69.
 const WARD_AT := [50, 31]

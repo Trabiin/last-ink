@@ -57,7 +57,12 @@ static func build(area: Node2D, entities: Node2D, rows: PackedStringArray, kit: 
 	floor_node.material = Art.art_world_material()
 	floor_node.set_meta("kit", kit)
 	area.add_child(floor_node)
-	floor_node.draw.connect(_draw_floor.bind(floor_node, rows, size, kits, cell))
+	var furnished := {}  # furniture cells inside rooms get the room's floor under them
+	for room in rooms(size, cell):
+		for c in room:
+			if cell.call(c.x, c.y) != "_":
+				furnished[c] = str(kits.get(_first_floor(room, cell), kit))
+	floor_node.draw.connect(_draw_floor.bind(floor_node, rows, size, kits, cell, furnished))
 	# Walls: one Y-sorted node per vertical run of wall cells, sorted at the run's foot, so a hero behind a
 	# wall is drawn behind it and one in front is drawn over it.
 	for x in size.x:
@@ -107,13 +112,13 @@ static func _kit_map(rows: PackedStringArray, size: Vector2i, kit: String, kit_a
 	return out
 
 
-static func _draw_floor(n: Node2D, rows: PackedStringArray, size: Vector2i, kits: Dictionary, cell: Callable) -> void:
+static func _draw_floor(n: Node2D, rows: PackedStringArray, size: Vector2i, kits: Dictionary, cell: Callable, furnished: Dictionary) -> void:
 	for y in size.y:
 		for x in size.x:
 			var c: String = cell.call(x, y)
-			if c != "_" and c != "+":
+			if c != "_" and c != "+" and not furnished.has(Vector2i(x, y)):
 				continue
-			var k := str(kits.get(Vector2i(x, y), _default_kit(n)))
+			var k := str(kits.get(Vector2i(x, y), furnished.get(Vector2i(x, y), _default_kit(n))))
 			var t: Texture2D
 			if c == "+":
 				t = tex(k, "door")
@@ -159,7 +164,15 @@ static func _build_collision(area: Node2D, rows: PackedStringArray, size: Vector
 
 
 ## A roof over each room: a set of floor cells closed in by walls (doorways let you in but don't break it).
-static func _build_roofs(area: Node2D, rows: PackedStringArray, size: Vector2i, kits: Dictionary, kit: String, cell: Callable) -> Array:
+## A prop or marker standing on a room's floor (a bench, a strongbox, the party's start "@"): any letter or
+## digit, or "@".
+static func _is_furniture(ch: String) -> bool:
+	return ch == "@" or (ch.length() == 1 and (ch.to_upper() != ch.to_lower() or ch.is_valid_int()))
+
+
+## Every enclosed room: {cell: true} for its floor, the furniture on it included. Floor that runs off into
+## open ground is a courtyard, not a room, and is left out.
+static func rooms(size: Vector2i, cell: Callable) -> Array:
 	var seen := {}
 	var out := []
 	for y in size.y:
@@ -168,13 +181,13 @@ static func _build_roofs(area: Node2D, rows: PackedStringArray, size: Vector2i, 
 				continue
 			var room := {}
 			var todo := [Vector2i(x, y)]
-			var open := false  # floor that runs off into open ground has no roof (a courtyard)
+			var open := false
 			while not todo.is_empty():
 				var c: Vector2i = todo.pop_back()
 				if room.has(c):
 					continue
 				var ch: String = cell.call(c.x, c.y)
-				if ch != "_":
+				if ch != "_" and not _is_furniture(ch):
 					if not ALL.contains(ch):
 						open = true
 					continue
@@ -182,28 +195,41 @@ static func _build_roofs(area: Node2D, rows: PackedStringArray, size: Vector2i, 
 				seen[c] = true
 				for d in [Vector2i.LEFT, Vector2i.RIGHT, Vector2i.UP, Vector2i.DOWN]:
 					todo.append(c + d)
-			if open:
-				continue
-			var r := Rect2i(room.keys()[0], Vector2i.ONE)
-			for c in room:
-				r = r.expand(c).expand(c + Vector2i.ONE)
-			# The walls round the room: one cell each side, and up the north wall (cap and inside face).
-			var top := r.position.y - 1
-			while top > 0 and _row_solid(cell, r.position.x, r.end.x, top - 1):
-				top -= 1
-			var bottom := r.end.y  # the south wall's cap row(s), not its outside face
-			while bottom + 1 < size.y and _row_caps(cell, r.position.x, r.end.x, bottom + 1):
-				bottom += 1
-			var roof := Roof.new()
-			roof.cells = Rect2i(r.position.x - 1, top, r.size.x + 2, bottom - top + 1)
-			roof.inside = room
-			roof.kit = str(kits.get(room.keys()[0], kit))
-			roof.z_index = ROOF_Z
-			roof.position = Vector2(roof.cells.position * 16)
-			roof.material = Art.art_world_material()
-			area.get_parent().add_child.call_deferred(roof)
-			out.append(roof)
+			if not open:
+				out.append(room)
 	return out
+
+
+static func _build_roofs(area: Node2D, rows: PackedStringArray, size: Vector2i, kits: Dictionary, kit: String, cell: Callable) -> Array:
+	var out := []
+	for room in rooms(size, cell):
+		var r := Rect2i(room.keys()[0], Vector2i.ONE)
+		for c in room:
+			r = r.expand(c).expand(c + Vector2i.ONE)
+		# The walls round the room: one cell each side, and up the north wall (cap and inside face).
+		var top := r.position.y - 1
+		while top > 0 and _row_solid(cell, r.position.x, r.end.x, top - 1):
+			top -= 1
+		var bottom := r.end.y  # the south wall's cap row(s), not its outside face
+		while bottom + 1 < size.y and _row_caps(cell, r.position.x, r.end.x, bottom + 1):
+			bottom += 1
+		var roof := Roof.new()
+		roof.cells = Rect2i(r.position.x - 1, top, r.size.x + 2, bottom - top + 1)
+		roof.inside = room
+		roof.kit = str(kits.get(_first_floor(room, cell), kit))
+		roof.z_index = ROOF_Z
+		roof.position = Vector2(roof.cells.position * 16)
+		roof.material = Art.art_world_material()
+		area.get_parent().add_child.call_deferred(roof)
+		out.append(roof)
+	return out
+
+
+static func _first_floor(room: Dictionary, cell: Callable) -> Vector2i:
+	for c in room:
+		if cell.call(c.x, c.y) == "_":
+			return c
+	return room.keys()[0]
 
 
 static func _row_solid(cell: Callable, x0: int, x1: int, y: int) -> bool:

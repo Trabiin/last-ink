@@ -143,6 +143,8 @@ var ai_techs := {}
 var journal := {}
 ## Faction asks: favours the factions ask of you (scripts/faction_asks.gd, issue #131).
 var asks := {}
+## Requests with a deadline and their people (scripts/incidents.gd): open, done, ignored, saved and lost.
+var incidents := {}
 ## The late economy: feasts, unpaid upkeep, one-time notices (scripts/sinks.gd, issue #189).
 var sinks := {}
 ## Per-save facts for achievements (scripts/achievements.gd, issue #150): {"lowest_difficulty"}.
@@ -222,6 +224,7 @@ func reset() -> void:
 	visitors = {}
 	journal = Journal.fresh()
 	asks = FactionAsks.fresh()
+	incidents = Incidents.fresh()
 	rng.seed = 1234
 	if _territory != null:
 		_territory.reload_data()
@@ -243,6 +246,7 @@ func tick_frame(delta: float) -> void:
 func tick(delta: float) -> void:
 	_check_leads()
 	FactionAsks.check()
+	Incidents.check()
 	if SPEEDS[speed] == 0:
 		return
 	var days: float = delta * SPEEDS[speed] / DAY_SECONDS
@@ -2358,6 +2362,7 @@ func to_dict() -> Dictionary:
 		"visitors": visitors,
 		"journal": journal,
 		"asks": asks,
+		"incidents": incidents,
 		"missions_cleared": missions_cleared,
 		"progress": progress,
 		"dialogue": Dialogue.seen,
@@ -2491,6 +2496,7 @@ func from_dict(d: Dictionary) -> void:
 	_load_visitors(d)
 	journal = Journal.from_save(d.get("journal", null))
 	asks = FactionAsks.from_save(d.get("asks", null))
+	incidents = Incidents.from_save(d.get("incidents", null))
 	progress = Progress.from_save(d.get("progress", {}))
 	if d.has("rng_state"):
 		rng.state = int(d["rng_state"])
@@ -2894,7 +2900,11 @@ var visitors := {}
 
 
 func join_hook(id: String) -> Dictionary:
-	return recruit(id).get("join", {})
+	var h: Dictionary = recruit(id).get("join", {})
+	# A story join keeps a way in for a campaign without the story (an old save): its "free" hook.
+	if h.get("type", "") == "story" and h.has("free") and not Story.active():
+		return h["free"]
+	return h
 
 
 ## The map region a lead belongs to ("" = anywhere): the join hook's own "region", else the region of
